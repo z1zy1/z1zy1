@@ -1,0 +1,182 @@
+import json
+import os
+import random
+
+import h5py
+import numpy as np
+import torch
+from torch.utils.data import DataLoader, Dataset
+from torch.utils.data.dataloader import default_collate
+
+
+class RCCDataset(Dataset):
+    def __init__(self, cfg, split):
+        self.cfg = cfg
+        self.split = split
+
+        print('Speaker Dataset loading vocab json file: ', cfg.data.vocab_json)
+        with open(cfg.data.vocab_json, 'r', encoding='utf-8') as f:
+            self.word_to_idx = json.load(f)
+        self.idx_to_word = {idx: word for word, idx in self.word_to_idx.items()}
+        self.vocab_size = len(self.idx_to_word)
+        print('vocab size is ', self.vocab_size)
+
+        with open(cfg.data.splits_json, 'r', encoding='utf-8') as f:
+            self.splits = json.load(f)
+        self.idx_to_filename = self.splits['idx_to_filename']
+        self.idx_to_split = self.splits['idx_to_split']
+
+        self.d_feat_dir = cfg.data.default_feature_dir
+        self.s_feat_dir = cfg.data.semantic_feature_dir
+        self.d_img_dir = cfg.data.default_img_dir
+        self.s_img_dir = cfg.data.semantic_img_dir
+
+        if split == 'train':
+            self.batch_size = cfg.data.train.batch_size
+            self.seq_per_img = cfg.data.train.seq_per_img
+            self.split_idxs = self.splits['train']
+            self.num_samples = len(self.split_idxs)
+            if cfg.data.train.max_samples is not None:
+                self.num_samples = min(cfg.data.train.max_samples, self.num_samples)
+        elif split == 'val':
+            self.batch_size = cfg.data.val.batch_size
+            self.seq_per_img = cfg.data.val.seq_per_img
+            self.split_idxs = self.splits['val']
+            self.num_samples = len(self.split_idxs)
+            if cfg.data.val.max_samples is not None:
+                self.num_samples = min(cfg.data.val.max_samples, self.num_samples)
+        elif split == 'test':
+            self.batch_size = cfg.data.test.batch_size
+            self.seq_per_img = cfg.data.test.seq_per_img
+            self.split_idxs = self.splits['test']
+            self.num_samples = len(self.split_idxs)
+            if cfg.data.test.max_samples is not None:
+                self.num_samples = min(cfg.data.test.max_samples, self.num_samples)
+        else:
+            raise Exception('Unknown data split %s' % split)
+
+        print("Dataset size for %s: %d" % (split, self.num_samples))
+
+        with h5py.File(cfg.data.h5_label_file, 'r') as h5_label_file:
+            seq_size = h5_label_file['labels'].shape
+            self.labels = h5_label_file['labels'][:]
+            self.max_seq_length = seq_size[1]
+            self.IGNORE = -1
+            self.label_start_idx = h5_label_file['label_start_idx'][:]
+            self.label_end_idx = h5_label_file['label_end_idx'][:]
+        print('Max sequence length is %d' % self.max_seq_length)
+
+    def __len__(self):
+        return self.num_samples
+
+    @staticmethod
+    def _resolve_feature_path(base_dir, split_name, filename):
+        stem = os.path.splitext(filename)[0]
+        candidates = [
+            os.path.join(base_dir, split_name, filename + '.npy'),
+            os.path.join(base_dir, split_name, stem + '.npy'),
+            os.path.join(base_dir, filename + '.npy'),
+            os.path.join(base_dir, stem + '.npy'),
+        ]
+        for path in candidates:
+            if os.path.exists(path):
+                return path
+        raise FileNotFoundError(
+            f'Cannot find feature for "{filename}" under "{base_dir}" and split "{split_name}".'
+        )
+
+    def __getitem__(self, index):
+        img_idx = int(self.split_idxs[index])
+        idx_key = str(img_idx)
+        filename = self.idx_to_filename[idx_key]
+        split_name = self.idx_to_split[idx_key]
+
+        d_feat_path = self._resolve_feature_path(self.d_feat_dir, split_name, filename)
+        q_feat_path = self._resolve_feature_path(self.s_feat_dir, split_name, filename)
+
+        d_img_path = os.path.join(self.d_img_dir, split_name, filename)
+        q_img_path = os.path.join(self.s_img_dir, split_name, filename)
+
+        d_feature = torch.FloatTensor(np.load(d_feat_path))
+        q_feature = torch.FloatTensor(np.load(q_feat_path))
+
+        ix1 = int(self.label_start_idx[img_idx])
+        ix2 = int(self.label_end_idx[img_idx])
+        n_cap = ix2 - ix1 + 1
+
+        seq = np.zeros([self.seq_per_img, self.max_seq_length], dtype=int)
+        if n_cap < self.seq_per_img:
+            for q in range(self.seq_per_img):
+                ixl = random.randint(ix1, ix2)
+                seq[q, :self.max_seq_length] = self.labels[ixl, :self.max_seq_length]
+        else:
+            ixl = random.randint(ix1, ix2 - self.seq_per_img + 1)
+            seq[:, :self.max_seq_length] = self.labels[ixl: ixl + self.seq_per_img, :self.max_seq_length]
+
+        mask = np.zeros_like(seq)
+        nonzeros = np.array(list(map(lambda x: (x != 0).sum(), seq)))
+        for ix, row in enumerate(mask):
+            row[:nonzeros[ix]] = 1
+        if seq.size == self.max_seq_length:
+            labels_with_ignore_tolish = [
+                self.IGNORE if m == 0 else tid
+                for tid, m in zip(seq.squeeze(0).tolist(), mask.squeeze(0).tolist())
+            ][1:] + [self.IGNORE]
+            labels_with_ignore = np.array(labels_with_ignore_tolish)
+            labels_with_ignore = np.expand_dims(labels_with_ignore, 0)
+        else:
+            labels_with_ignore = np.zeros_like(seq)
+
+        return (
+            d_feature,
+            q_feature,
+            seq,
+            labels_with_ignore,
+            mask,
+            d_img_path,
+            q_img_path,
+        )
+
+    def get_vocab_size(self):
+        return self.vocab_size
+
+    def get_idx_to_word(self):
+        return self.idx_to_word
+
+    def get_word_to_idx(self):
+        return self.word_to_idx
+
+    def get_max_seq_length(self):
+        return self.max_seq_length
+
+
+def rcc_collate(batch):
+    transposed = list(zip(*batch))
+    d_feat_batch = transposed[0]
+    q_feat_batch = transposed[1]
+    seq_batch = default_collate(transposed[2])
+    label_with_ignore_batch = default_collate(transposed[3])
+    mask_batch = default_collate(transposed[4])
+
+    if any(f is not None for f in d_feat_batch):
+        d_feat_batch = default_collate(d_feat_batch)
+    if any(f is not None for f in q_feat_batch):
+        q_feat_batch = default_collate(q_feat_batch)
+
+    d_img_batch = transposed[5]
+    q_img_batch = transposed[6]
+    return (
+        d_feat_batch,
+        q_feat_batch,
+        seq_batch,
+        label_with_ignore_batch,
+        mask_batch,
+        d_img_batch,
+        q_img_batch,
+    )
+
+
+class RCCDataLoader(DataLoader):
+    def __init__(self, dataset, **kwargs):
+        kwargs['collate_fn'] = rcc_collate
+        super().__init__(dataset, **kwargs)

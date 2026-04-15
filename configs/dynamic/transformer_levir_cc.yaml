@@ -24,10 +24,12 @@ model:
 
 data:
     dataset: 'rcc_dataset_transformer_levir'
-    default_feature_dir: "./Levir-CC/features/A"
-    semantic_feature_dir: "./Levir-CC/features/B"
-    default_img_dir: "./Levir-CC/images/A"
-    semantic_img_dir: "./Levir-CC/images/B"
+    default_feature_dir: "./Levir-CC/features"
+    semantic_feature_dir: "./Levir-CC/features"
+    default_img_dir: "./Levir-CC/images"
+    semantic_img_dir: "./Levir-CC/images"
+    default_phase: "A"
+    semantic_phase: "B"
     splits_json: "./Levir-CC/splits.json"
     vocab_json: "./Levir-CC/transformer_levir_vocab.json"
     h5_label_file: "./Levir-CC/transformer_levir_labels.h5"

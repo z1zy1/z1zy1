@@ -30,6 +30,8 @@ class RCCDataset(Dataset):
         self.s_feat_dir = cfg.data.semantic_feature_dir
         self.d_img_dir = cfg.data.default_img_dir
         self.s_img_dir = cfg.data.semantic_img_dir
+        self.default_phase = getattr(cfg.data, 'default_phase', 'A')
+        self.semantic_phase = getattr(cfg.data, 'semantic_phase', 'B')
 
         if split == 'train':
             self.batch_size = cfg.data.train.batch_size
@@ -70,9 +72,13 @@ class RCCDataset(Dataset):
         return self.num_samples
 
     @staticmethod
-    def _resolve_feature_path(base_dir, split_name, filename):
+    def _resolve_feature_path(base_dir, split_name, phase_name, filename):
         stem = os.path.splitext(filename)[0]
         candidates = [
+            os.path.join(base_dir, split_name, phase_name, filename + '.npy'),
+            os.path.join(base_dir, split_name, phase_name, stem + '.npy'),
+            os.path.join(base_dir, phase_name, split_name, filename + '.npy'),
+            os.path.join(base_dir, phase_name, split_name, stem + '.npy'),
             os.path.join(base_dir, split_name, filename + '.npy'),
             os.path.join(base_dir, split_name, stem + '.npy'),
             os.path.join(base_dir, filename + '.npy'),
@@ -91,11 +97,15 @@ class RCCDataset(Dataset):
         filename = self.idx_to_filename[idx_key]
         split_name = self.idx_to_split[idx_key]
 
-        d_feat_path = self._resolve_feature_path(self.d_feat_dir, split_name, filename)
-        q_feat_path = self._resolve_feature_path(self.s_feat_dir, split_name, filename)
+        d_feat_path = self._resolve_feature_path(
+            self.d_feat_dir, split_name, self.default_phase, filename
+        )
+        q_feat_path = self._resolve_feature_path(
+            self.s_feat_dir, split_name, self.semantic_phase, filename
+        )
 
-        d_img_path = os.path.join(self.d_img_dir, split_name, filename)
-        q_img_path = os.path.join(self.s_img_dir, split_name, filename)
+        d_img_path = os.path.join(self.d_img_dir, split_name, self.default_phase, filename)
+        q_img_path = os.path.join(self.s_img_dir, split_name, self.semantic_phase, filename)
 
         d_feature = torch.FloatTensor(np.load(d_feat_path))
         q_feature = torch.FloatTensor(np.load(q_feat_path))

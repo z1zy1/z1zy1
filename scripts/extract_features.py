@@ -86,6 +86,13 @@ def main(args):
   input_paths.sort(key=lambda x: x[1])
   if args.max_images is not None:
     input_paths = input_paths[:args.max_images]
+  if len(input_paths) == 0:
+    raise ValueError(
+      'No .png images found under "%s". '
+      'For Levir-CC, the actual layout is usually '
+      '"Levir-CC/images/{train,val,test}/{A,B}". '
+      'Please check the input path you passed in.' % args.input_image_dir
+    )
   print(input_paths[0])
   print(input_paths[-1])
 

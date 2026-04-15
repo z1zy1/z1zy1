@@ -21,7 +21,6 @@ from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, \
                         EntropyLoss, LabelSmoothingLoss
 
 from utils.vis_utils import visualize_att
-os.environ["CUDA_VISIBLE_DEVICES"] = "2"
 
 # Load config
 parser = argparse.ArgumentParser()
@@ -35,9 +34,13 @@ merge_cfg_from_file(args.cfg)
 use_cuda = torch.cuda.is_available()
 gpu_ids = cfg.gpu_id
 torch.backends.cudnn.enabled = False
-default_gpu_device = gpu_ids[0]
-torch.cuda.set_device(default_gpu_device)
-device = torch.device("cuda" if use_cuda else "cpu")
+if use_cuda:
+    default_gpu_device = gpu_ids[0]
+    torch.cuda.set_device(default_gpu_device)
+    device = torch.device("cuda", default_gpu_device)
+else:
+    default_gpu_device = None
+    device = torch.device("cpu")
 
 # Experiment configuration
 exp_dir = cfg.exp_dir

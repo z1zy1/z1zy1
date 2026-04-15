@@ -34,9 +34,13 @@ if args.gpu == -1:
 else:
     gpu_ids = [args.gpu]
 torch.backends.cudnn.enabled  = True
-default_gpu_device = gpu_ids[0]
-torch.cuda.set_device(default_gpu_device)
-device = torch.device("cuda" if use_cuda else "cpu")
+if use_cuda:
+    default_gpu_device = gpu_ids[0]
+    torch.cuda.set_device(default_gpu_device)
+    device = torch.device("cuda", default_gpu_device)
+else:
+    default_gpu_device = None
+    device = torch.device("cpu")
 
 # Experiment configuration
 exp_dir = cfg.exp_dir

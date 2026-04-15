@@ -28,6 +28,16 @@ parser.add_argument('--batch_size', default=128, type=int)
 use_cuda = torch.cuda.is_available()
 device = torch.device("cuda" if use_cuda else "cpu")
 
+
+def ensure_rgb(img):
+  if img.ndim == 2:
+    img = np.stack([img, img, img], axis=-1)
+  elif img.ndim == 3 and img.shape[2] == 1:
+    img = np.repeat(img, 3, axis=2)
+  elif img.ndim == 3 and img.shape[2] >= 4:
+    img = img[:, :, :3]
+  return img
+
 def build_model(args):
   if not hasattr(torchvision.models, args.model):
     raise ValueError('Invalid model "%s"' % args.model)
@@ -107,8 +117,8 @@ def main(args):
   cur_batch = []
   cur_path_batch = []
   for i, (path, rel_path) in enumerate(input_paths):
-    # img = imread(path, pilmode='RGB')
-    img = imread(path, format='tiff-pil') # read tiff images
+    img = imread(path)
+    img = ensure_rgb(img)
     # img = cv2.resize(img, img_size, interp='bicubic')
     img = cv2.resize(img, img_size, interpolation=cv2.INTER_CUBIC)
     img = img.transpose(2, 0, 1)[None]

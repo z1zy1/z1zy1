@@ -23,10 +23,26 @@ class CrossTransformer(nn.Module):
         return output, attn_weight
 
 
+class AuxMaskHead(nn.Module):
+    def __init__(self, input_dim):
+        super().__init__()
+        hidden_dim = max(input_dim // 2, 1)
+        self.net = nn.Sequential(
+            nn.Conv2d(input_dim, hidden_dim, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(hidden_dim, 1, kernel_size=1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
 class CARD(nn.Module):
 
     def __init__(self, cfg, temp=0.07):
         super().__init__()
+        self.enable_aux_mask = cfg.model.enable_aux_mask
         self.temp = nn.Parameter(torch.ones([]) * temp)
         self.feat_dim = cfg.model.transformer_encoder.feat_dim
         self.att_dim = cfg.model.transformer_encoder.att_dim
@@ -75,6 +91,7 @@ class CARD(nn.Module):
             nn.Dropout(0.1),
             nn.ReLU()
         )
+        self.aux_mask_head = AuxMaskHead(self.embed_dim) if self.enable_aux_mask else None
 
         self._reset_parameters()
 
@@ -177,8 +194,12 @@ class CARD(nn.Module):
 
         output = torch.cat([input_1_diff, input_2_diff], -1)
         output = self.fc(output)
+        mask_pred = None
+        if self.enable_aux_mask:
+            aux_feat = output.permute(0, 2, 1).contiguous().view(batch_size, self.embed_dim, H, W)
+            mask_pred = self.aux_mask_head(aux_feat)
 
-        return output, loss_con+HSIC, att1, att2
+        return output, loss_con+HSIC, att1, att2, mask_pred
 
 
 class AddSpatialInfo(nn.Module):

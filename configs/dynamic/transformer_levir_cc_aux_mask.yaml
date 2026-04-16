@@ -1,9 +1,9 @@
-exp_name: 'card_levir_cc'
+exp_name: 'card_levir_cc_aux_mask'
 gpu_id: [0]
 logger:
     display_id: 9908
 model:
-    enable_aux_mask: False
+    enable_aux_mask: True
     transformer_encoder:
         input_dim: 2048
         feat_dim: 1024
@@ -31,7 +31,7 @@ data:
     semantic_img_dir: "./Levir-CC/images"
     default_phase: "A"
     semantic_phase: "B"
-    pseudo_mask_root: ""
+    pseudo_mask_root: "./Levir-CC/pseudo_masks"
     allow_missing_pseudo_mask: False
     splits_json: "./Levir-CC/splits.json"
     vocab_json: "./Levir-CC/transformer_levir_vocab.json"

@@ -22,6 +22,37 @@ from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, \
 
 from utils.vis_utils import visualize_att
 
+
+def compute_mask_loss(pred, target, ignore_mask=None):
+    target = target.float()
+    if target.shape[-2:] != pred.shape[-2:]:
+        target = F.interpolate(target, size=pred.shape[-2:], mode='bilinear', align_corners=False)
+
+    if ignore_mask is None:
+        return F.binary_cross_entropy(pred, target)
+
+    ignore_mask = ignore_mask.float()
+    if ignore_mask.shape[-2:] != pred.shape[-2:]:
+        ignore_mask = F.interpolate(ignore_mask, size=pred.shape[-2:], mode='nearest')
+    valid_mask = (~ignore_mask.bool()).float()
+    bce = F.binary_cross_entropy(pred, target, reduction='none')
+    weighted_bce = bce * valid_mask
+    valid_count = valid_mask.sum()
+    if valid_count.item() == 0:
+        return pred.sum() * 0.0
+    return weighted_bce.sum() / valid_count
+
+
+def unpack_batch(batch):
+    if len(batch) == 7:
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths = batch
+        pseudo_masks = None
+    elif len(batch) == 8:
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = batch
+    else:
+        raise ValueError('Unexpected batch size: %d' % len(batch))
+    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks
+
 # Load config
 parser = argparse.ArgumentParser()
 parser.add_argument('--cfg', required=True)
@@ -77,6 +108,13 @@ random.seed(1111)
 np.random.seed(1111)
 torch.manual_seed(1111)
 
+if not cfg.model.enable_aux_mask:
+    experiment_mode = 'baseline'
+elif cfg.train.use_mask_conf_filter:
+    experiment_mode = 'aux_mask + conf_filter'
+else:
+    experiment_mode = 'aux_mask'
+
 # Data loading part
 train_dataset, train_loader = create_dataset(cfg, 'train')
 val_dataset, val_loader = create_dataset(cfg, 'val')
@@ -97,9 +135,24 @@ speaker.to(device)
 print(change_detector)
 print(speaker)
 
+experiment_summary = [
+    'Experiment Summary:',
+    f'  exp_name: {exp_name}',
+    f'  mode: {experiment_mode}',
+    f'  enable_aux_mask: {cfg.model.enable_aux_mask}',
+    f'  lambda_mask: {cfg.train.lambda_mask}',
+    f'  use_mask_conf_filter: {cfg.train.use_mask_conf_filter}',
+    f'  mask_conf_threshold: {cfg.train.mask_conf_threshold}',
+    f'  pseudo_mask_root: {cfg.data.pseudo_mask_root}',
+]
+for line in experiment_summary:
+    print(line)
+
 with open(os.path.join(output_dir, 'model_print'), 'w') as f:
     print(change_detector, file=f)
     print(speaker, file=f)
+    for line in experiment_summary:
+        print(line, file=f)
 
 all_params = list(change_detector.parameters()) + list(speaker.parameters())
 optimizer = build_optimizer(all_params, cfg)
@@ -132,8 +185,7 @@ while t < cfg.train.max_iter:
     for i, batch in enumerate(train_loader):
         iter_start_time = time.time()
 
-        d_feats, sc_feats, \
-        labels, labels_with_ignore, masks, d_img_paths, sc_img_paths = batch
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = unpack_batch(batch)
 
         batch_size = d_feats.size(0)
         labels = labels.squeeze(1)
@@ -144,10 +196,12 @@ while t < cfg.train.max_iter:
         d_feats,  sc_feats = d_feats.to(device), sc_feats.to(device)
 
         labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
+        if pseudo_masks is not None:
+            pseudo_masks = pseudo_masks.to(device).float()
 
         optimizer.zero_grad()
 
-        encoder_output, constraint_loss, _, _ = change_detector(d_feats, sc_feats)
+        encoder_output, constraint_loss, _, _, mask_pred = change_detector(d_feats, sc_feats)
 
         loss_pos, _, att_pos = speaker._forward(encoder_output,
                                                 labels, masks, labels_with_ignore=labels_with_ignore)
@@ -155,8 +209,21 @@ while t < cfg.train.max_iter:
         speaker_loss = loss_pos
         speaker_loss_val = speaker_loss.item()
         constraint_loss_val = constraint_loss.item()
+        mask_loss = None
+        mask_loss_val = 0.0
+        if cfg.model.enable_aux_mask:
+            if pseudo_masks is None:
+                raise ValueError('Pseudo masks are required when aux mask is enabled.')
+            ignore_mask = None
+            if cfg.train.use_mask_conf_filter:
+                confidence = torch.maximum(pseudo_masks, 1.0 - pseudo_masks)
+                ignore_mask = confidence < cfg.train.mask_conf_threshold
+            mask_loss = compute_mask_loss(mask_pred, pseudo_masks, ignore_mask=ignore_mask)
+            mask_loss_val = mask_loss.item()
 
         total_loss = speaker_loss + 0.001 * constraint_loss # 0.001
+        if mask_loss is not None:
+            total_loss = total_loss + cfg.train.lambda_mask * mask_loss
 
         total_loss_val = total_loss.item()
 
@@ -172,6 +239,8 @@ while t < cfg.train.max_iter:
         stats['avg_constraint_loss'] = constraint_loss_avg.avg
         stats['total_loss'] = total_loss_val
         stats['avg_total_loss'] = total_loss_avg.avg
+        if cfg.model.enable_aux_mask:
+            stats['mask_loss'] = mask_loss_val
 
         #results, sample_logprobs = model(d_feats, q_feats, labels, cfg=cfg, mode='sample')
         total_loss.backward()
@@ -222,9 +291,7 @@ while t < cfg.train.max_iter:
 
                 result_sents_pos = {}
                 for val_i, val_batch in enumerate(val_loader):
-                    d_feats, sc_feats, \
-                    labels, labels_with_ignore, masks,   \
-                    d_img_paths,  sc_img_paths = val_batch
+                    d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _ = unpack_batch(val_batch)
 
                     val_batch_size = d_feats.size(0)
 
@@ -233,7 +300,7 @@ while t < cfg.train.max_iter:
                     labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
 
 
-                    encoder_output, _, att1, att2 = change_detector(d_feats, sc_feats)
+                    encoder_output, _, att1, att2, _ = change_detector(d_feats, sc_feats)
 
 
                     speaker_output_pos, _ = speaker.sample(encoder_output)

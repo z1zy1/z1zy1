@@ -27,6 +27,7 @@ __C.logger.display_port = 8097
 # --------------------------------------------------------------------------- #
 __C.model = AttrDict()
 __C.model.type = ''
+__C.model.enable_aux_mask = False
 
 # Encoder
 __C.model.encoder = AttrDict()
@@ -115,6 +116,8 @@ __C.data.semantic_img_dir = './data/sc_images'
 __C.data.nonsemantic_img_dir = './data/nsc_images'
 __C.data.default_phase = 'A'
 __C.data.semantic_phase = 'B'
+__C.data.pseudo_mask_root = ''
+__C.data.allow_missing_pseudo_mask = False
 __C.data.vocab_json = './data/vocab.json'
 __C.data.dep_vocab_json = './data/dep_vocab.json'
 __C.data.change2neg_json = './data/change2neg_changes.json'
@@ -167,6 +170,9 @@ __C.train.hallucinate_per_iter = 2
 __C.train.adapt_per_iter = 2
 __C.train.keep_rate = 0.95
 __C.train.grad_clip = 1.0
+__C.train.lambda_mask = 0.05
+__C.train.use_mask_conf_filter = False
+__C.train.mask_conf_threshold = 0.5
 
 
 # --------------------------------------------------------------------------- #

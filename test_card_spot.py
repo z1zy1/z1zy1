@@ -18,6 +18,17 @@ from utils.utils import AverageMeter, accuracy, set_mode, load_checkpoint, \
 from utils.vis_utils import visualize_att
 from tqdm import tqdm
 
+
+def unpack_batch(batch):
+    if len(batch) == 7:
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths = batch
+        pseudo_masks = None
+    elif len(batch) == 8:
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = batch
+    else:
+        raise ValueError('Unexpected batch size: %d' % len(batch))
+    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks
+
 # Load config
 parser = argparse.ArgumentParser()
 parser.add_argument('--cfg', required=True)
@@ -98,9 +109,7 @@ with torch.no_grad():
     result_sents_pos = {}
     for i, batch in tqdm(enumerate(test_loader)):
 
-        d_feats,  sc_feats, \
-        labels, labels_with_ignore, masks,  \
-        d_img_paths, sc_img_paths = batch
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _ = unpack_batch(batch)
 
         batch_size = d_feats.size(0)
 
@@ -108,7 +117,7 @@ with torch.no_grad():
 
         labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
 
-        encoder_output, _, _, _ = change_detector(d_feats, sc_feats)
+        encoder_output, _, _, _, _ = change_detector(d_feats, sc_feats)
 
         speaker_output_pos, pos_dynamic_atts = speaker.sample(encoder_output, sample_max=1)
 

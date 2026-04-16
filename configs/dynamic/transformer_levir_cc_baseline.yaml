@@ -1,4 +1,4 @@
-exp_name: 'card_levir_cc'
+exp_name: 'card_levir_cc_baseline'
 gpu_id: [0]
 logger:
     display_id: 9908

@@ -5,6 +5,7 @@ import random
 import h5py
 import numpy as np
 import torch
+from imageio.v2 import imread
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.dataloader import default_collate
 
@@ -32,6 +33,9 @@ class RCCDataset(Dataset):
         self.s_img_dir = cfg.data.semantic_img_dir
         self.default_phase = getattr(cfg.data, 'default_phase', 'A')
         self.semantic_phase = getattr(cfg.data, 'semantic_phase', 'B')
+        self.pseudo_mask_root = cfg.data.pseudo_mask_root
+        self.allow_missing_pseudo_mask = cfg.data.allow_missing_pseudo_mask
+        self.enable_aux_mask = cfg.model.enable_aux_mask
 
         if split == 'train':
             self.batch_size = cfg.data.train.batch_size
@@ -91,6 +95,48 @@ class RCCDataset(Dataset):
             f'Cannot find feature for "{filename}" under "{base_dir}" and split "{split_name}".'
         )
 
+    @staticmethod
+    def _load_mask(mask_path):
+        if mask_path.endswith('.npy'):
+            mask = np.load(mask_path)
+        else:
+            mask = imread(mask_path)
+        if mask.ndim == 3:
+            mask = mask[..., 0]
+        mask = mask.astype(np.float32)
+        if mask.max() > 1.0:
+            mask = mask / 255.0
+        return torch.from_numpy(mask).unsqueeze(0)
+
+    def _resolve_pseudo_mask_path(self, split_name, filename):
+        if not self.pseudo_mask_root:
+            if self.enable_aux_mask:
+                raise ValueError('cfg.data.pseudo_mask_root must be set when aux mask is enabled.')
+            return None
+
+        stem = os.path.splitext(filename)[0]
+        candidates = [
+            os.path.join(self.pseudo_mask_root, split_name, filename),
+            os.path.join(self.pseudo_mask_root, split_name, stem + '.png'),
+            os.path.join(self.pseudo_mask_root, split_name, stem + '.jpg'),
+            os.path.join(self.pseudo_mask_root, split_name, stem + '.jpeg'),
+            os.path.join(self.pseudo_mask_root, split_name, stem + '.npy'),
+            os.path.join(self.pseudo_mask_root, filename),
+            os.path.join(self.pseudo_mask_root, stem + '.png'),
+            os.path.join(self.pseudo_mask_root, stem + '.jpg'),
+            os.path.join(self.pseudo_mask_root, stem + '.jpeg'),
+            os.path.join(self.pseudo_mask_root, stem + '.npy'),
+        ]
+        for path in candidates:
+            if os.path.exists(path):
+                return path
+
+        if self.allow_missing_pseudo_mask:
+            return None
+        raise FileNotFoundError(
+            f'Cannot find pseudo mask for "{filename}" under "{self.pseudo_mask_root}" and split "{split_name}".'
+        )
+
     def __getitem__(self, index):
         img_idx = int(self.split_idxs[index])
         idx_key = str(img_idx)
@@ -109,6 +155,11 @@ class RCCDataset(Dataset):
 
         d_feature = torch.FloatTensor(np.load(d_feat_path))
         q_feature = torch.FloatTensor(np.load(q_feat_path))
+        pseudo_mask = None
+        if self.enable_aux_mask:
+            pseudo_mask_path = self._resolve_pseudo_mask_path(split_name, filename)
+            if pseudo_mask_path is not None:
+                pseudo_mask = self._load_mask(pseudo_mask_path)
 
         ix1 = int(self.label_start_idx[img_idx])
         ix2 = int(self.label_end_idx[img_idx])
@@ -145,6 +196,7 @@ class RCCDataset(Dataset):
             mask,
             d_img_path,
             q_img_path,
+            pseudo_mask,
         )
 
     def get_vocab_size(self):
@@ -175,6 +227,9 @@ def rcc_collate(batch):
 
     d_img_batch = transposed[5]
     q_img_batch = transposed[6]
+    pseudo_mask_batch = None
+    if len(transposed) > 7 and any(m is not None for m in transposed[7]):
+        pseudo_mask_batch = default_collate(transposed[7])
     return (
         d_feat_batch,
         q_feat_batch,
@@ -183,6 +238,7 @@ def rcc_collate(batch):
         mask_batch,
         d_img_batch,
         q_img_batch,
+        pseudo_mask_batch,
     )
 
 

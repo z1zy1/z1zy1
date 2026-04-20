@@ -11,6 +11,7 @@ import torch.nn.functional as F
 import random
 
 from configs.config_transformer import cfg, merge_cfg_from_file
+from configs.config_transformer import merge_cfg_from_list
 from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
@@ -23,24 +24,65 @@ from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, \
 from utils.vis_utils import visualize_att
 
 
-def compute_mask_loss(pred, target, ignore_mask=None):
-    target = target.float()
-    if target.shape[-2:] != pred.shape[-2:]:
-        target = F.interpolate(target, size=pred.shape[-2:], mode='bilinear', align_corners=False)
+def align_mask_tensor(tensor, spatial_size, mode):
+    if tensor is None:
+        return None
+    tensor = tensor.float()
+    if tensor.shape[-2:] != spatial_size:
+        if mode == 'nearest':
+            tensor = F.interpolate(tensor, size=spatial_size, mode=mode)
+        else:
+            tensor = F.interpolate(tensor, size=spatial_size, mode=mode, align_corners=False)
+    return tensor
 
-    if ignore_mask is None:
-        return F.binary_cross_entropy(pred, target)
 
-    ignore_mask = ignore_mask.float()
-    if ignore_mask.shape[-2:] != pred.shape[-2:]:
-        ignore_mask = F.interpolate(ignore_mask, size=pred.shape[-2:], mode='nearest')
-    valid_mask = (~ignore_mask.bool()).float()
+def compute_dice_loss(pred, target, valid_mask=None, eps=1e-6):
+    if valid_mask is None:
+        valid_mask = torch.ones_like(pred)
+    pred = pred * valid_mask
+    target = target * valid_mask
+    intersection = (pred * target).sum(dim=(1, 2, 3))
+    denominator = pred.sum(dim=(1, 2, 3)) + target.sum(dim=(1, 2, 3))
+    dice_score = (2.0 * intersection + eps) / (denominator + eps)
+    return 1.0 - dice_score.mean()
+
+
+def compute_mask_loss(pred, target, ignore_mask=None, loss_type='bce', bce_dice_alpha=0.5):
+    target = align_mask_tensor(target, pred.shape[-2:], mode='bilinear')
+    valid_mask = None
+    if ignore_mask is not None:
+        ignore_mask = align_mask_tensor(ignore_mask, pred.shape[-2:], mode='nearest')
+        valid_mask = (~ignore_mask.bool()).float()
+
     bce = F.binary_cross_entropy(pred, target, reduction='none')
-    weighted_bce = bce * valid_mask
-    valid_count = valid_mask.sum()
-    if valid_count.item() == 0:
-        return pred.sum() * 0.0
-    return weighted_bce.sum() / valid_count
+    if valid_mask is not None:
+        bce = bce * valid_mask
+        valid_count = valid_mask.sum()
+        if valid_count.item() == 0:
+            bce_loss = pred.sum() * 0.0
+        else:
+            bce_loss = bce.sum() / valid_count
+    else:
+        bce_loss = bce.mean()
+
+    if loss_type == 'bce':
+        return bce_loss
+    if loss_type == 'bce_dice':
+        dice_loss = compute_dice_loss(pred, target, valid_mask=valid_mask)
+        return bce_dice_alpha * bce_loss + (1.0 - bce_dice_alpha) * dice_loss
+    raise ValueError('Unknown mask_loss_type: %s' % loss_type)
+
+
+def get_effective_lambda_mask(cfg, global_step):
+    if not cfg.model.enable_aux_mask:
+        return 0.0
+    if not cfg.train.use_mask_warmup:
+        return cfg.train.lambda_mask
+    if cfg.train.mask_warmup_steps <= 0:
+        return cfg.train.lambda_mask
+    if global_step < cfg.train.mask_warmup_steps:
+        return 0.0
+    return cfg.train.lambda_mask
 
 
 def unpack_batch(batch):
@@ -58,8 +100,11 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--cfg', required=True)
 parser.add_argument('--visualize', action='store_true')
 parser.add_argument('--visualize_every', type=int, default=10)
+parser.add_argument('opts', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 merge_cfg_from_file(args.cfg)
+if args.opts:
+    merge_cfg_from_list(args.opts)
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -143,6 +188,10 @@ experiment_summary = [
     f'  lambda_mask: {cfg.train.lambda_mask}',
     f'  use_mask_conf_filter: {cfg.train.use_mask_conf_filter}',
     f'  mask_conf_threshold: {cfg.train.mask_conf_threshold}',
+    f'  use_mask_warmup: {cfg.train.use_mask_warmup}',
+    f'  mask_warmup_steps: {cfg.train.mask_warmup_steps}',
+    f'  mask_loss_type: {cfg.train.mask_loss_type}',
+    f'  mask_bce_dice_alpha: {cfg.train.mask_bce_dice_alpha}',
     f'  pseudo_mask_root: {cfg.data.pseudo_mask_root}',
 ]
 for line in experiment_summary:
@@ -164,6 +213,7 @@ lr_scheduler = torch.optim.lr_scheduler.StepLR(
 # Train loop
 t = 0
 epoch = 0
+printed_binary_mask_warning = False
 
 set_mode('train', [change_detector, speaker])
 
@@ -201,42 +251,59 @@ while t < cfg.train.max_iter:
 
         optimizer.zero_grad()
 
-        encoder_output, constraint_loss, _, _, mask_pred = change_detector(d_feats, sc_feats)
+        encoder_output, con_loss, ind_loss, _, _, mask_pred = change_detector(d_feats, sc_feats)
 
         loss_pos, _, att_pos = speaker._forward(encoder_output,
                                                 labels, masks, labels_with_ignore=labels_with_ignore)
 
-        speaker_loss = loss_pos
-        speaker_loss_val = speaker_loss.item()
-        constraint_loss_val = constraint_loss.item()
+        cap_loss = loss_pos
+        cap_loss_val = cap_loss.item()
+        con_loss_val = con_loss.item()
+        ind_loss_val = ind_loss.item()
         mask_loss = None
         mask_loss_val = 0.0
+        effective_lambda_mask = get_effective_lambda_mask(cfg, t)
         if cfg.model.enable_aux_mask:
             if pseudo_masks is None:
                 raise ValueError('Pseudo masks are required when aux mask is enabled.')
+            if cfg.train.use_mask_conf_filter and not printed_binary_mask_warning:
+                is_binary_mask = bool(torch.all((pseudo_masks == 0) | (pseudo_masks == 1)).item())
+                if is_binary_mask:
+                    print('Warning: pseudo masks appear binary. mask_conf_threshold will have little or no effect unless masks store soft confidence values.')
+                printed_binary_mask_warning = True
             ignore_mask = None
             if cfg.train.use_mask_conf_filter:
+                # Low-confidence pseudo-label regions are ignored in mask supervision.
                 confidence = torch.maximum(pseudo_masks, 1.0 - pseudo_masks)
                 ignore_mask = confidence < cfg.train.mask_conf_threshold
-            mask_loss = compute_mask_loss(mask_pred, pseudo_masks, ignore_mask=ignore_mask)
+            mask_loss = compute_mask_loss(
+                mask_pred,
+                pseudo_masks,
+                ignore_mask=ignore_mask,
+                loss_type=cfg.train.mask_loss_type,
+                bce_dice_alpha=cfg.train.mask_bce_dice_alpha,
+            )
             mask_loss_val = mask_loss.item()
 
-        total_loss = speaker_loss + 0.001 * constraint_loss # 0.001
+        total_loss = cap_loss + 0.001 * con_loss + 0.001 * ind_loss
         if mask_loss is not None:
-            total_loss = total_loss + cfg.train.lambda_mask * mask_loss
+            total_loss = total_loss + effective_lambda_mask * mask_loss
 
         total_loss_val = total_loss.item()
 
-        speaker_loss_avg.update(speaker_loss_val, 2 * batch_size)
-        constraint_loss_avg.update(constraint_loss_val, 2 * batch_size)
+        speaker_loss_avg.update(cap_loss_val, 2 * batch_size)
+        constraint_loss_avg.update(con_loss_val + ind_loss_val, 2 * batch_size)
         total_loss_avg.update(total_loss_val, 2 * batch_size)
 
         stats = {}
 
-        stats['speaker_loss'] = speaker_loss_val
-        stats['avg_speaker_loss'] = speaker_loss_avg.avg
-        stats['constraint_loss'] = constraint_loss_val
+        stats['cap_loss'] = cap_loss_val
+        stats['avg_cap_loss'] = speaker_loss_avg.avg
+        stats['con_loss'] = con_loss_val
+        stats['ind_loss'] = ind_loss_val
         stats['avg_constraint_loss'] = constraint_loss_avg.avg
+        stats['lambda_mask'] = cfg.train.lambda_mask
+        stats['effective_lambda_mask'] = effective_lambda_mask
         stats['total_loss'] = total_loss_val
         stats['avg_total_loss'] = total_loss_avg.avg
         if cfg.model.enable_aux_mask:
@@ -300,7 +367,7 @@ while t < cfg.train.max_iter:
                     labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
 
 
-                    encoder_output, _, att1, att2, _ = change_detector(d_feats, sc_feats)
+                    encoder_output, _, _, att1, att2, _ = change_detector(d_feats, sc_feats)
 
 
                     speaker_output_pos, _ = speaker.sample(encoder_output)

@@ -168,7 +168,7 @@ class CARD(nn.Module):
         K = self.GaussianKernelMatrix(bef_diff_norm, s_x)
         L = self.GaussianKernelMatrix(aft_diff_norm, s_y)
         hsic_center = torch.eye(m, device=bef_diff_norm.device) - 1.0 / m * torch.ones((m, m), device=bef_diff_norm.device)
-        HSIC = torch.trace(torch.mm(L, torch.mm(hsic_center, torch.mm(K, hsic_center)))) / ((m - 1) ** 2)
+        loss_ind = torch.trace(torch.mm(L, torch.mm(hsic_center, torch.mm(K, hsic_center)))) / ((m - 1) ** 2)
         ################
 
         input_1_common = torch.cat([bef_common.unsqueeze(0).expand_as(input_1[1:, :, :]), input_1[1:, :, :]], dim=-1)
@@ -198,7 +198,7 @@ class CARD(nn.Module):
             aux_feat = output.permute(0, 2, 1).contiguous().view(batch_size, self.embed_dim, H, W)
             mask_pred = self.aux_mask_head(aux_feat)
 
-        return output, loss_con+HSIC, att1, att2, mask_pred
+        return output, loss_con, loss_ind, att1, att2, mask_pred
 
 
 class AddSpatialInfo(nn.Module):

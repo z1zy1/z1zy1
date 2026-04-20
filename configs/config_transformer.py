@@ -173,6 +173,10 @@ __C.train.grad_clip = 1.0
 __C.train.lambda_mask = 0.05
 __C.train.use_mask_conf_filter = False
 __C.train.mask_conf_threshold = 0.5
+__C.train.use_mask_warmup = False
+__C.train.mask_warmup_steps = 0
+__C.train.mask_loss_type = 'bce'
+__C.train.mask_bce_dice_alpha = 0.5
 
 
 # --------------------------------------------------------------------------- #

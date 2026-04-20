@@ -9,6 +9,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from configs.config_transformer import cfg, merge_cfg_from_file
+from configs.config_transformer import merge_cfg_from_list
 from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
@@ -35,8 +36,11 @@ parser.add_argument('--cfg', required=True)
 parser.add_argument('--visualize', action='store_true')
 parser.add_argument('--snapshot', type=int, required=True)
 parser.add_argument('--gpu', type=int, default=-1)
+parser.add_argument('opts', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 merge_cfg_from_file(args.cfg)
+if args.opts:
+    merge_cfg_from_list(args.opts)
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -117,7 +121,7 @@ with torch.no_grad():
 
         labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
 
-        encoder_output, _, _, _, _ = change_detector(d_feats, sc_feats)
+        encoder_output, _, _, _, _, _ = change_detector(d_feats, sc_feats)
 
         speaker_output_pos, pos_dynamic_atts = speaker.sample(encoder_output, sample_max=1)
 

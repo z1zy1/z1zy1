@@ -45,6 +45,10 @@ train:
     lambda_mask: 0.05
     use_mask_conf_filter: True
     mask_conf_threshold: 0.5
+    use_mask_warmup: False
+    mask_warmup_steps: 0
+    mask_loss_type: "bce"
+    mask_bce_dice_alpha: 0.5
     optim:
         type: 'adam'
         lr: 0.0002

@@ -8,6 +8,8 @@ import torch.nn.functional as F
 import math
 from torch.nn.init import xavier_uniform_
 
+from utils.semantic_tags import read_semantic_tags
+
 
 class CrossTransformer(nn.Module):
     def __init__(self, d_model, n_head, dropout=0.1):
@@ -38,11 +40,26 @@ class AuxMaskHead(nn.Module):
         return self.net(x)
 
 
+class SemanticAuxHead(nn.Module):
+    def __init__(self, input_dim, num_semantic_tags, dropout=0.1):
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, input_dim),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+            nn.Linear(input_dim, num_semantic_tags),
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
 class CARD(nn.Module):
 
     def __init__(self, cfg, temp=0.07):
         super().__init__()
         self.enable_aux_mask = cfg.model.enable_aux_mask
+        self.use_semantic_aux = bool(cfg.train.use_semantic_aux)
         self.temp = nn.Parameter(torch.ones([]) * temp)
         self.feat_dim = cfg.model.transformer_encoder.feat_dim
         self.att_dim = cfg.model.transformer_encoder.att_dim
@@ -92,6 +109,17 @@ class CARD(nn.Module):
             nn.ReLU()
         )
         self.aux_mask_head = AuxMaskHead(self.embed_dim) if self.enable_aux_mask else None
+        self.semantic_tags = []
+        self.num_semantic_tags = 0
+        self.semantic_head = None
+        if self.use_semantic_aux:
+            self.semantic_tags = read_semantic_tags(cfg.train.semantic_tag_file)
+            self.num_semantic_tags = len(self.semantic_tags)
+            self.semantic_head = SemanticAuxHead(
+                self.embed_dim,
+                self.num_semantic_tags,
+                dropout=cfg.train.semantic_aux_dropout,
+            )
 
         self._reset_parameters()
 
@@ -194,10 +222,15 @@ class CARD(nn.Module):
         output = torch.cat([input_1_diff, input_2_diff], -1)
         output = self.fc(output)
         mask_pred = None
+        semantic_logits = None
         if self.enable_aux_mask:
             aux_feat = output.permute(0, 2, 1).contiguous().view(batch_size, self.embed_dim, H, W)
             mask_pred = self.aux_mask_head(aux_feat)
+        if self.use_semantic_aux:
+            semantic_logits = self.semantic_head(output.mean(dim=1))
 
+        if self.use_semantic_aux:
+            return output, loss_con, loss_ind, att1, att2, mask_pred, semantic_logits
         return output, loss_con, loss_ind, att1, att2, mask_pred
 
 

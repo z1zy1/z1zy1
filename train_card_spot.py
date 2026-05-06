@@ -86,14 +86,28 @@ def get_effective_lambda_mask(cfg, global_step):
 
 
 def unpack_batch(batch):
+    semantic_labels = None
     if len(batch) == 7:
         d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths = batch
         pseudo_masks = None
     elif len(batch) == 8:
         d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = batch
+    elif len(batch) == 9:
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels = batch
     else:
         raise ValueError('Unexpected batch size: %d' % len(batch))
-    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks
+    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels
+
+
+def unpack_change_detector_output(outputs):
+    if len(outputs) == 6:
+        encoder_output, con_loss, ind_loss, att1, att2, mask_pred = outputs
+        semantic_logits = None
+    elif len(outputs) == 7:
+        encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits = outputs
+    else:
+        raise ValueError('Unexpected CARD output size: %d' % len(outputs))
+    return encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits
 
 # Load config
 parser = argparse.ArgumentParser()
@@ -159,12 +173,24 @@ elif cfg.train.use_mask_conf_filter:
     experiment_mode = 'aux_mask + conf_filter'
 else:
     experiment_mode = 'aux_mask'
+if cfg.train.use_semantic_aux:
+    experiment_mode += ' + semantic_aux'
 
 # Data loading part
 train_dataset, train_loader = create_dataset(cfg, 'train')
 val_dataset, val_loader = create_dataset(cfg, 'val')
 train_size = len(train_dataset)
 val_size = len(val_dataset)
+num_semantic_tags = train_dataset.get_num_semantic_tags() if hasattr(train_dataset, 'get_num_semantic_tags') else 0
+
+if cfg.train.use_semantic_aux:
+    if cfg.train.semantic_loss_type != 'multilabel_bce':
+        raise ValueError('Unknown semantic_loss_type: %s' % cfg.train.semantic_loss_type)
+    if num_semantic_tags <= 0:
+        raise ValueError('Semantic auxiliary branch is enabled but no semantic tags were loaded.')
+    print('Semantic auxiliary branch enabled.')
+    print('Number of semantic tags: %d' % num_semantic_tags)
+    print('Semantic tag file: %s' % cfg.train.semantic_tag_file)
 
 # Keep decoder vocabulary / max length aligned with dataset preprocessing outputs.
 cfg.model.transformer_decoder.vocab_size = train_dataset.get_vocab_size()
@@ -193,6 +219,13 @@ experiment_summary = [
     f'  mask_loss_type: {cfg.train.mask_loss_type}',
     f'  mask_bce_dice_alpha: {cfg.train.mask_bce_dice_alpha}',
     f'  pseudo_mask_root: {cfg.data.pseudo_mask_root}',
+    f'  use_semantic_aux: {cfg.train.use_semantic_aux}',
+    f'  lambda_semantic: {cfg.train.lambda_semantic}',
+    f'  semantic_loss_type: {cfg.train.semantic_loss_type}',
+    f'  semantic_tag_file: {cfg.train.semantic_tag_file}',
+    f'  semantic_aux_dropout: {cfg.train.semantic_aux_dropout}',
+    f'  semantic_normalize_synonyms: {cfg.train.semantic_normalize_synonyms}',
+    f'  num_semantic_tags: {num_semantic_tags}',
 ]
 for line in experiment_summary:
     print(line)
@@ -209,6 +242,7 @@ lr_scheduler = torch.optim.lr_scheduler.StepLR(
     optimizer,
     step_size=cfg.train.optim.step_size,
     gamma=cfg.train.optim.gamma)
+semantic_loss_func = nn.BCEWithLogitsLoss() if cfg.train.use_semantic_aux else None
 
 # Train loop
 t = 0
@@ -235,7 +269,7 @@ while t < cfg.train.max_iter:
     for i, batch in enumerate(train_loader):
         iter_start_time = time.time()
 
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = unpack_batch(batch)
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels = unpack_batch(batch)
 
         batch_size = d_feats.size(0)
         labels = labels.squeeze(1)
@@ -248,10 +282,13 @@ while t < cfg.train.max_iter:
         labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
         if pseudo_masks is not None:
             pseudo_masks = pseudo_masks.to(device).float()
+        if semantic_labels is not None:
+            semantic_labels = semantic_labels.to(device).float()
 
         optimizer.zero_grad()
 
-        encoder_output, con_loss, ind_loss, _, _, mask_pred = change_detector(d_feats, sc_feats)
+        change_outputs = change_detector(d_feats, sc_feats)
+        encoder_output, con_loss, ind_loss, _, _, mask_pred, semantic_logits = unpack_change_detector_output(change_outputs)
 
         loss_pos, _, att_pos = speaker._forward(encoder_output,
                                                 labels, masks, labels_with_ignore=labels_with_ignore)
@@ -262,6 +299,8 @@ while t < cfg.train.max_iter:
         ind_loss_val = ind_loss.item()
         mask_loss = None
         mask_loss_val = 0.0
+        semantic_loss = None
+        semantic_loss_val = 0.0
         effective_lambda_mask = get_effective_lambda_mask(cfg, t)
         if cfg.model.enable_aux_mask:
             if pseudo_masks is None:
@@ -284,10 +323,24 @@ while t < cfg.train.max_iter:
                 bce_dice_alpha=cfg.train.mask_bce_dice_alpha,
             )
             mask_loss_val = mask_loss.item()
+        if cfg.train.use_semantic_aux:
+            if semantic_labels is None:
+                raise ValueError('Semantic labels are required when train.use_semantic_aux is enabled.')
+            if semantic_logits is None:
+                raise ValueError('CARD did not return semantic_logits while train.use_semantic_aux is enabled.')
+            if semantic_logits.shape != semantic_labels.shape:
+                raise ValueError(
+                    'semantic_logits shape %s does not match semantic_labels shape %s.'
+                    % (tuple(semantic_logits.shape), tuple(semantic_labels.shape))
+                )
+            semantic_loss = semantic_loss_func(semantic_logits, semantic_labels.float())
+            semantic_loss_val = semantic_loss.item()
 
         total_loss = cap_loss + 0.001 * con_loss + 0.001 * ind_loss
         if mask_loss is not None:
             total_loss = total_loss + effective_lambda_mask * mask_loss
+        if semantic_loss is not None:
+            total_loss = total_loss + cfg.train.lambda_semantic * semantic_loss
 
         total_loss_val = total_loss.item()
 
@@ -298,16 +351,22 @@ while t < cfg.train.max_iter:
         stats = {}
 
         stats['cap_loss'] = cap_loss_val
+        stats['loss_caption'] = cap_loss_val
         stats['avg_cap_loss'] = speaker_loss_avg.avg
         stats['con_loss'] = con_loss_val
         stats['ind_loss'] = ind_loss_val
         stats['avg_constraint_loss'] = constraint_loss_avg.avg
         stats['lambda_mask'] = cfg.train.lambda_mask
         stats['effective_lambda_mask'] = effective_lambda_mask
+        stats['lambda_semantic'] = cfg.train.lambda_semantic
+        stats['num_semantic_tags'] = num_semantic_tags
         stats['total_loss'] = total_loss_val
         stats['avg_total_loss'] = total_loss_avg.avg
         if cfg.model.enable_aux_mask:
             stats['mask_loss'] = mask_loss_val
+            stats['loss_mask'] = mask_loss_val
+        if cfg.train.use_semantic_aux:
+            stats['loss_semantic'] = semantic_loss_val
 
         #results, sample_logprobs = model(d_feats, q_feats, labels, cfg=cfg, mode='sample')
         total_loss.backward()
@@ -358,7 +417,7 @@ while t < cfg.train.max_iter:
 
                 result_sents_pos = {}
                 for val_i, val_batch in enumerate(val_loader):
-                    d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _ = unpack_batch(val_batch)
+                    d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _, _ = unpack_batch(val_batch)
 
                     val_batch_size = d_feats.size(0)
 
@@ -367,7 +426,8 @@ while t < cfg.train.max_iter:
                     labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
 
 
-                    encoder_output, _, _, att1, att2, _ = change_detector(d_feats, sc_feats)
+                    change_outputs = change_detector(d_feats, sc_feats)
+                    encoder_output, _, _, att1, att2, _, _ = unpack_change_detector_output(change_outputs)
 
 
                     speaker_output_pos, _ = speaker.sample(encoder_output)

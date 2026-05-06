@@ -177,6 +177,12 @@ __C.train.use_mask_warmup = False
 __C.train.mask_warmup_steps = 0
 __C.train.mask_loss_type = 'bce'
 __C.train.mask_bce_dice_alpha = 0.5
+__C.train.use_semantic_aux = False
+__C.train.lambda_semantic = 0.1
+__C.train.semantic_loss_type = 'multilabel_bce'
+__C.train.semantic_tag_file = 'configs/semantic_tags/levir_cc_change_tags.txt'
+__C.train.semantic_aux_dropout = 0.1
+__C.train.semantic_normalize_synonyms = True
 
 
 # --------------------------------------------------------------------------- #

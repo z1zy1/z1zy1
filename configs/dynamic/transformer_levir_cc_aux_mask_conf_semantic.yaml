@@ -1,0 +1,63 @@
+exp_name: 'card_levir_cc_aux_mask_conf_semantic'
+gpu_id: [0]
+logger:
+    display_id: 9908
+model:
+    enable_aux_mask: True
+    transformer_encoder:
+        input_dim: 2048
+        feat_dim: 1024
+        emb_dim: 512
+        att_dim: 512
+        att_head: 8
+        att_layer: 2
+        dim: 128
+    transformer_decoder:
+        input_dim: 2048
+        word_dim: 300
+        att_dim: 512
+        att_head: 8
+        att_layer: 2
+        vocab_size: 860
+        seq_length: 41
+        share_wd_cls_weight: False
+        label_smoothing: 0.0
+
+data:
+    dataset: 'rcc_dataset_transformer_levir'
+    default_feature_dir: "./Levir-CC/features"
+    semantic_feature_dir: "./Levir-CC/features"
+    default_img_dir: "./Levir-CC/images"
+    semantic_img_dir: "./Levir-CC/images"
+    default_phase: "A"
+    semantic_phase: "B"
+    pseudo_mask_root: "./Levir-CC/pseudo_masks"
+    allow_missing_pseudo_mask: False
+    splits_json: "./Levir-CC/splits.json"
+    vocab_json: "./Levir-CC/transformer_levir_vocab.json"
+    h5_label_file: "./Levir-CC/transformer_levir_labels.h5"
+    train:
+        batch_size: 32
+train:
+    max_iter: 10000
+    snapshot_interval: 1000
+    grad_clip: -1.0
+    lambda_mask: 0.05
+    use_mask_conf_filter: True
+    mask_conf_threshold: 0.5
+    use_mask_warmup: False
+    mask_warmup_steps: 0
+    mask_loss_type: "bce"
+    mask_bce_dice_alpha: 0.5
+    use_semantic_aux: True
+    lambda_semantic: 0.1
+    semantic_loss_type: "multilabel_bce"
+    semantic_tag_file: "configs/semantic_tags/levir_cc_change_tags.txt"
+    semantic_aux_dropout: 0.1
+    semantic_normalize_synonyms: True
+    optim:
+        type: 'adam'
+        lr: 0.0002
+        weight_decay: 0.0
+        step_size: 17
+        gamma: 0.1

@@ -21,14 +21,28 @@ from tqdm import tqdm
 
 
 def unpack_batch(batch):
+    semantic_labels = None
     if len(batch) == 7:
         d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths = batch
         pseudo_masks = None
     elif len(batch) == 8:
         d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = batch
+    elif len(batch) == 9:
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels = batch
     else:
         raise ValueError('Unexpected batch size: %d' % len(batch))
-    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks
+    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels
+
+
+def unpack_change_detector_output(outputs):
+    if len(outputs) == 6:
+        encoder_output, con_loss, ind_loss, att1, att2, mask_pred = outputs
+        semantic_logits = None
+    elif len(outputs) == 7:
+        encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits = outputs
+    else:
+        raise ValueError('Unexpected CARD output size: %d' % len(outputs))
+    return encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits
 
 # Load config
 parser = argparse.ArgumentParser()
@@ -113,7 +127,7 @@ with torch.no_grad():
     result_sents_pos = {}
     for i, batch in tqdm(enumerate(test_loader)):
 
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _ = unpack_batch(batch)
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _, _ = unpack_batch(batch)
 
         batch_size = d_feats.size(0)
 
@@ -121,7 +135,8 @@ with torch.no_grad():
 
         labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
 
-        encoder_output, _, _, _, _, _ = change_detector(d_feats, sc_feats)
+        change_outputs = change_detector(d_feats, sc_feats)
+        encoder_output, _, _, _, _, _, _ = unpack_change_detector_output(change_outputs)
 
         speaker_output_pos, pos_dynamic_atts = speaker.sample(encoder_output, sample_max=1)
 

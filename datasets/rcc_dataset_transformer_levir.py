@@ -9,6 +9,8 @@ from imageio.v2 import imread
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.dataloader import default_collate
 
+from utils.semantic_tags import build_semantic_label, read_semantic_tags
+
 
 class RCCDataset(Dataset):
     def __init__(self, cfg, split):
@@ -18,7 +20,7 @@ class RCCDataset(Dataset):
         print('Speaker Dataset loading vocab json file: ', cfg.data.vocab_json)
         with open(cfg.data.vocab_json, 'r', encoding='utf-8') as f:
             self.word_to_idx = json.load(f)
-        self.idx_to_word = {idx: word for word, idx in self.word_to_idx.items()}
+        self.idx_to_word = {int(idx): word for word, idx in self.word_to_idx.items()}
         self.vocab_size = len(self.idx_to_word)
         print('vocab size is ', self.vocab_size)
 
@@ -36,6 +38,15 @@ class RCCDataset(Dataset):
         self.pseudo_mask_root = cfg.data.pseudo_mask_root
         self.allow_missing_pseudo_mask = cfg.data.allow_missing_pseudo_mask
         self.enable_aux_mask = cfg.model.enable_aux_mask
+        self.use_semantic_aux = bool(cfg.train.use_semantic_aux) and split == 'train'
+        self.semantic_normalize_synonyms = bool(cfg.train.semantic_normalize_synonyms)
+        self.semantic_tags = []
+        self.num_semantic_tags = 0
+        self.semantic_labels_by_img_idx = {}
+
+        if self.use_semantic_aux:
+            self.semantic_tags = read_semantic_tags(cfg.train.semantic_tag_file)
+            self.num_semantic_tags = len(self.semantic_tags)
 
         if split == 'train':
             self.batch_size = cfg.data.train.batch_size
@@ -72,6 +83,13 @@ class RCCDataset(Dataset):
             self.label_end_idx = h5_label_file['label_end_idx'][:]
         print('Max sequence length is %d' % self.max_seq_length)
 
+        if self.use_semantic_aux:
+            self.semantic_labels_by_img_idx = self._build_semantic_labels_by_img_idx()
+            print(
+                'Semantic labels enabled for %s split: %d tags from %s'
+                % (split, self.num_semantic_tags, cfg.train.semantic_tag_file)
+            )
+
     def __len__(self):
         return self.num_samples
 
@@ -107,6 +125,41 @@ class RCCDataset(Dataset):
         if mask.max() > 1.0:
             mask = mask / 255.0
         return torch.from_numpy(mask).unsqueeze(0)
+
+    def _decode_reference_caption(self, token_ids):
+        words = []
+        for token_id in token_ids:
+            token_id = int(token_id)
+            if token_id == 0 or token_id == 3:
+                break
+            word = self.idx_to_word.get(token_id)
+            if word is None:
+                continue
+            if word.startswith('<') and word.endswith('>'):
+                continue
+            words.append(word)
+        return ' '.join(words)
+
+    def _get_reference_captions(self, img_idx):
+        ix1 = int(self.label_start_idx[img_idx])
+        ix2 = int(self.label_end_idx[img_idx])
+        return [
+            self._decode_reference_caption(self.labels[ix, :self.max_seq_length])
+            for ix in range(ix1, ix2 + 1)
+        ]
+
+    def _build_semantic_labels_by_img_idx(self):
+        labels_by_img_idx = {}
+        for img_idx in self.split_idxs[:self.num_samples]:
+            img_idx = int(img_idx)
+            captions = self._get_reference_captions(img_idx)
+            semantic_label = build_semantic_label(
+                captions,
+                self.semantic_tags,
+                normalize_synonyms=self.semantic_normalize_synonyms,
+            )
+            labels_by_img_idx[img_idx] = torch.from_numpy(semantic_label)
+        return labels_by_img_idx
 
     def _resolve_pseudo_mask_path(self, split_name, filename):
         if not self.pseudo_mask_root:
@@ -160,6 +213,11 @@ class RCCDataset(Dataset):
             pseudo_mask_path = self._resolve_pseudo_mask_path(split_name, filename)
             if pseudo_mask_path is not None:
                 pseudo_mask = self._load_mask(pseudo_mask_path)
+        semantic_labels = None
+        if self.use_semantic_aux:
+            semantic_labels = self.semantic_labels_by_img_idx.get(img_idx)
+            if semantic_labels is None:
+                raise ValueError('Missing semantic labels for image index %d.' % img_idx)
 
         ix1 = int(self.label_start_idx[img_idx])
         ix2 = int(self.label_end_idx[img_idx])
@@ -188,7 +246,7 @@ class RCCDataset(Dataset):
         else:
             labels_with_ignore = np.zeros_like(seq)
 
-        return (
+        sample = (
             d_feature,
             q_feature,
             seq,
@@ -198,6 +256,9 @@ class RCCDataset(Dataset):
             q_img_path,
             pseudo_mask,
         )
+        if self.use_semantic_aux:
+            return sample + (semantic_labels,)
+        return sample
 
     def get_vocab_size(self):
         return self.vocab_size
@@ -210,6 +271,12 @@ class RCCDataset(Dataset):
 
     def get_max_seq_length(self):
         return self.max_seq_length
+
+    def get_num_semantic_tags(self):
+        return self.num_semantic_tags
+
+    def get_semantic_tags(self):
+        return self.semantic_tags
 
 
 def rcc_collate(batch):
@@ -230,7 +297,7 @@ def rcc_collate(batch):
     pseudo_mask_batch = None
     if len(transposed) > 7 and any(m is not None for m in transposed[7]):
         pseudo_mask_batch = default_collate(transposed[7])
-    return (
+    output = (
         d_feat_batch,
         q_feat_batch,
         seq_batch,
@@ -240,6 +307,10 @@ def rcc_collate(batch):
         q_img_batch,
         pseudo_mask_batch,
     )
+    if len(transposed) > 8:
+        semantic_label_batch = default_collate(transposed[8])
+        return output + (semantic_label_batch,)
+    return output
 
 
 class RCCDataLoader(DataLoader):

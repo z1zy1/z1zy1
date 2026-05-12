@@ -94,6 +94,20 @@ _CONTENT_TOKEN_STOPWORDS = {
     "were",
 }
 
+_NO_CHANGE_PHRASES = [
+    "no difference",
+    "no change",
+    "no changes",
+    "nothing has changed",
+    "almost nothing has changed",
+    "the scene is the same as before",
+    "same as before",
+    "two scenes seem identical",
+    "scenes seem identical",
+    "seem identical",
+    "are identical",
+]
+
 
 def _normalize_text(text):
     text = text.lower().replace("_", " ")
@@ -111,9 +125,23 @@ def _match_any(text, phrases):
     return any(_phrase_to_pattern(phrase).search(text) for phrase in phrases)
 
 
+def _is_no_change_caption(normalized_caption):
+    return _match_any(normalized_caption, _NO_CHANGE_PHRASES)
+
+
+def is_no_change_caption(caption):
+    return _is_no_change_caption(_normalize_text(caption))
+
+
+def is_no_change_caption_set(captions):
+    return bool(captions) and all(is_no_change_caption(caption) for caption in captions)
+
+
 def extract_caption_semantics(caption):
     """Return object/action indices mentioned in one caption."""
     normalized = _normalize_text(caption)
+    if _is_no_change_caption(normalized):
+        return set(), set(), normalized
     object_ids = set()
     action_ids = set()
 

@@ -10,6 +10,14 @@ from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.dataloader import default_collate
 
 from utils.semantic_tags import build_semantic_label, read_semantic_tags
+from utils.semantic_label import (
+    ACTION_VOCAB,
+    OBJECT_VOCAB,
+    build_semantic_targets,
+    load_semantic_target_cache,
+    save_semantic_target_cache,
+    semantic_targets_to_tensors,
+)
 
 
 class RCCDataset(Dataset):
@@ -38,11 +46,15 @@ class RCCDataset(Dataset):
         self.pseudo_mask_root = cfg.data.pseudo_mask_root
         self.allow_missing_pseudo_mask = cfg.data.allow_missing_pseudo_mask
         self.enable_aux_mask = cfg.model.enable_aux_mask
+        self.require_aux_mask = self.enable_aux_mask and cfg.train.lambda_mask > 0
         self.use_semantic_aux = bool(cfg.train.use_semantic_aux) and split == 'train'
+        self.use_relation_aux = bool(cfg.train.use_relation_aux)
         self.semantic_normalize_synonyms = bool(cfg.train.semantic_normalize_synonyms)
+        self.semantic_relation_cache = getattr(cfg.data, 'semantic_relation_cache', '')
         self.semantic_tags = []
         self.num_semantic_tags = 0
         self.semantic_labels_by_img_idx = {}
+        self.semantic_targets_by_img_idx = {}
 
         if self.use_semantic_aux:
             self.semantic_tags = read_semantic_tags(cfg.train.semantic_tag_file)
@@ -88,6 +100,12 @@ class RCCDataset(Dataset):
             print(
                 'Semantic labels enabled for %s split: %d tags from %s'
                 % (split, self.num_semantic_tags, cfg.train.semantic_tag_file)
+            )
+        if self.use_relation_aux:
+            self.semantic_targets_by_img_idx = self._build_relation_targets_by_img_idx()
+            print(
+                'Relation auxiliary targets enabled for %s split: %d objects, %d actions'
+                % (split, len(OBJECT_VOCAB), len(ACTION_VOCAB))
             )
 
     def __len__(self):
@@ -161,9 +179,32 @@ class RCCDataset(Dataset):
             labels_by_img_idx[img_idx] = torch.from_numpy(semantic_label)
         return labels_by_img_idx
 
+    def _build_relation_targets_by_img_idx(self):
+        cached_targets = {}
+        if self.semantic_relation_cache and os.path.exists(self.semantic_relation_cache):
+            cached_targets = load_semantic_target_cache(self.semantic_relation_cache)
+
+        targets_by_img_idx = {}
+        cache_updated = False
+        for img_idx in self.split_idxs[:self.num_samples]:
+            img_idx = int(img_idx)
+            cache_key = str(img_idx)
+            if cache_key in cached_targets:
+                semantic_targets = cached_targets[cache_key]
+            else:
+                captions = self._get_reference_captions(img_idx)
+                semantic_targets = build_semantic_targets(captions)
+                cached_targets[cache_key] = semantic_targets
+                cache_updated = True
+            targets_by_img_idx[img_idx] = semantic_targets_to_tensors(semantic_targets)
+
+        if self.semantic_relation_cache and cache_updated:
+            save_semantic_target_cache(self.semantic_relation_cache, cached_targets)
+        return targets_by_img_idx
+
     def _resolve_pseudo_mask_path(self, split_name, filename):
         if not self.pseudo_mask_root:
-            if self.enable_aux_mask:
+            if self.require_aux_mask:
                 raise ValueError('cfg.data.pseudo_mask_root must be set when aux mask is enabled.')
             return None
 
@@ -209,7 +250,7 @@ class RCCDataset(Dataset):
         d_feature = torch.FloatTensor(np.load(d_feat_path))
         q_feature = torch.FloatTensor(np.load(q_feat_path))
         pseudo_mask = None
-        if self.enable_aux_mask:
+        if self.require_aux_mask:
             pseudo_mask_path = self._resolve_pseudo_mask_path(split_name, filename)
             if pseudo_mask_path is not None:
                 pseudo_mask = self._load_mask(pseudo_mask_path)
@@ -218,6 +259,11 @@ class RCCDataset(Dataset):
             semantic_labels = self.semantic_labels_by_img_idx.get(img_idx)
             if semantic_labels is None:
                 raise ValueError('Missing semantic labels for image index %d.' % img_idx)
+        semantic_targets = None
+        if self.use_relation_aux:
+            semantic_targets = self.semantic_targets_by_img_idx.get(img_idx)
+            if semantic_targets is None:
+                raise ValueError('Missing relation semantic targets for image index %d.' % img_idx)
 
         ix1 = int(self.label_start_idx[img_idx])
         ix2 = int(self.label_end_idx[img_idx])
@@ -257,7 +303,9 @@ class RCCDataset(Dataset):
             pseudo_mask,
         )
         if self.use_semantic_aux:
-            return sample + (semantic_labels,)
+            sample = sample + (semantic_labels,)
+        if self.use_relation_aux:
+            sample = sample + (semantic_targets,)
         return sample
 
     def get_vocab_size(self):
@@ -277,6 +325,12 @@ class RCCDataset(Dataset):
 
     def get_semantic_tags(self):
         return self.semantic_tags
+
+    def get_num_relation_objects(self):
+        return len(OBJECT_VOCAB)
+
+    def get_num_relation_actions(self):
+        return len(ACTION_VOCAB)
 
 
 def rcc_collate(batch):
@@ -307,9 +361,13 @@ def rcc_collate(batch):
         q_img_batch,
         pseudo_mask_batch,
     )
+    extra_batches = []
     if len(transposed) > 8:
-        semantic_label_batch = default_collate(transposed[8])
-        return output + (semantic_label_batch,)
+        extra_batches.append(default_collate(transposed[8]))
+    if len(transposed) > 9:
+        extra_batches.append(default_collate(transposed[9]))
+    if extra_batches:
+        return output + tuple(extra_batches)
     return output
 
 

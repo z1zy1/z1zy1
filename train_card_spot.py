@@ -16,6 +16,7 @@ from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
 from utils.logger import Logger
+from utils.semantic_label import build_content_word_token_ids
 from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, \
                         LanguageModelCriterion, decode_sequence, decode_sequence_transformer, decode_beams, \
                         build_optimizer, coco_gen_format_save, one_hot_encode, \
@@ -76,49 +77,139 @@ def compute_mask_loss(pred, target, ignore_mask=None, loss_type='bce', bce_dice_
 def get_effective_lambda_mask(cfg, global_step):
     if not cfg.model.enable_aux_mask:
         return 0.0
+    if cfg.train.lambda_mask <= 0:
+        return 0.0
     if not cfg.train.use_mask_warmup:
         return cfg.train.lambda_mask
     if cfg.train.mask_warmup_steps <= 0:
         return cfg.train.lambda_mask
-    if global_step < cfg.train.mask_warmup_steps:
+    return cfg.train.lambda_mask * min(1.0, float(global_step) / float(cfg.train.mask_warmup_steps))
+
+
+def get_warmup_lambda(target_lambda, global_step, warmup_steps):
+    if target_lambda <= 0:
         return 0.0
-    return cfg.train.lambda_mask
+    if warmup_steps <= 0:
+        return target_lambda
+    return target_lambda * min(1.0, float(global_step) / float(warmup_steps))
+
+
+def move_semantic_targets_to_device(semantic_targets, device):
+    if semantic_targets is None:
+        return None
+    return {
+        key: value.to(device).float()
+        for key, value in semantic_targets.items()
+    }
+
+
+def update_micro_f1_counts(counts, logits, targets, threshold):
+    preds = torch.sigmoid(logits) >= threshold
+    gold = targets >= 0.5
+    counts['tp'] += (preds & gold).sum().item()
+    counts['fp'] += (preds & (~gold)).sum().item()
+    counts['fn'] += ((~preds) & gold).sum().item()
+
+
+def micro_f1_from_counts(counts):
+    denom = 2 * counts['tp'] + counts['fp'] + counts['fn']
+    if denom == 0:
+        return 0.0
+    return 2.0 * counts['tp'] / float(denom)
+
+
+def apply_cli_overrides(args, cfg):
+    if args.use_relation_aux:
+        cfg.train.use_relation_aux = True
+    if args.lambda_obj is not None:
+        cfg.train.lambda_obj = args.lambda_obj
+    if args.lambda_act is not None:
+        cfg.train.lambda_act = args.lambda_act
+    if args.lambda_rel is not None:
+        cfg.train.lambda_rel = args.lambda_rel
+    if args.relation_aux_dropout is not None:
+        cfg.train.relation_aux_dropout = args.relation_aux_dropout
+    if args.semantic_warmup_steps is not None:
+        cfg.train.semantic_warmup_steps = args.semantic_warmup_steps
+    if args.semantic_threshold is not None:
+        cfg.train.semantic_threshold = args.semantic_threshold
+    if args.use_content_word_weight:
+        cfg.train.use_content_word_weight = True
+    if args.content_word_weight is not None:
+        cfg.train.content_word_weight = args.content_word_weight
+    if args.max_content_word_weight is not None:
+        cfg.train.max_content_word_weight = args.max_content_word_weight
+    if args.use_weak_mask_prior:
+        cfg.train.use_weak_mask_prior = True
+    if args.mask_alpha is not None:
+        cfg.train.mask_alpha = args.mask_alpha
+    if args.lambda_mask is not None:
+        cfg.train.lambda_mask = args.lambda_mask
+    if args.mask_warmup_steps is not None:
+        cfg.train.mask_warmup_steps = args.mask_warmup_steps
+        if args.mask_warmup_steps > 0:
+            cfg.train.use_mask_warmup = True
 
 
 def unpack_batch(batch):
     semantic_labels = None
+    semantic_targets = None
     if len(batch) == 7:
         d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths = batch
         pseudo_masks = None
     elif len(batch) == 8:
         d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = batch
     elif len(batch) == 9:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels = batch
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, extra = batch
+        if isinstance(extra, dict):
+            semantic_targets = extra
+        else:
+            semantic_labels = extra
+    elif len(batch) == 10:
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets = batch
     else:
         raise ValueError('Unexpected batch size: %d' % len(batch))
-    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels
+    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets
 
 
 def unpack_change_detector_output(outputs):
+    relation_aux_logits = None
     if len(outputs) == 6:
         encoder_output, con_loss, ind_loss, att1, att2, mask_pred = outputs
         semantic_logits = None
     elif len(outputs) == 7:
         encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits = outputs
+    elif len(outputs) == 8:
+        encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits, relation_aux_logits = outputs
     else:
         raise ValueError('Unexpected CARD output size: %d' % len(outputs))
-    return encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits
+    return encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits, relation_aux_logits
 
 # Load config
 parser = argparse.ArgumentParser()
 parser.add_argument('--cfg', required=True)
 parser.add_argument('--visualize', action='store_true')
 parser.add_argument('--visualize_every', type=int, default=10)
+parser.add_argument('--use_relation_aux', action='store_true')
+parser.add_argument('--lambda_obj', type=float, default=None)
+parser.add_argument('--lambda_act', type=float, default=None)
+parser.add_argument('--lambda_rel', type=float, default=None)
+parser.add_argument('--relation_aux_dropout', type=float, default=None)
+parser.add_argument('--semantic_warmup_steps', type=int, default=None)
+parser.add_argument('--semantic_threshold', type=float, default=None)
+parser.add_argument('--use_content_word_weight', action='store_true')
+parser.add_argument('--content_word_weight', type=float, default=None)
+parser.add_argument('--max_content_word_weight', type=float, default=None)
+parser.add_argument('--use_weak_mask_prior', action='store_true')
+parser.add_argument('--mask_alpha', type=float, default=None)
+parser.add_argument('--lambda_mask', type=float, default=None)
+parser.add_argument('--mask_warmup_steps', type=int, default=None)
 parser.add_argument('opts', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 merge_cfg_from_file(args.cfg)
 if args.opts:
     merge_cfg_from_list(args.opts)
+apply_cli_overrides(args, cfg)
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -175,6 +266,12 @@ else:
     experiment_mode = 'aux_mask'
 if cfg.train.use_semantic_aux:
     experiment_mode += ' + semantic_aux'
+if cfg.train.use_relation_aux:
+    experiment_mode += ' + relation_aux'
+if cfg.train.use_content_word_weight:
+    experiment_mode += ' + content_word_weight'
+if cfg.train.use_weak_mask_prior:
+    experiment_mode += ' + weak_mask_prior'
 
 # Data loading part
 train_dataset, train_loader = create_dataset(cfg, 'train')
@@ -182,6 +279,8 @@ val_dataset, val_loader = create_dataset(cfg, 'val')
 train_size = len(train_dataset)
 val_size = len(val_dataset)
 num_semantic_tags = train_dataset.get_num_semantic_tags() if hasattr(train_dataset, 'get_num_semantic_tags') else 0
+num_relation_objects = train_dataset.get_num_relation_objects() if hasattr(train_dataset, 'get_num_relation_objects') else 0
+num_relation_actions = train_dataset.get_num_relation_actions() if hasattr(train_dataset, 'get_num_relation_actions') else 0
 
 if cfg.train.use_semantic_aux:
     if cfg.train.semantic_loss_type != 'multilabel_bce':
@@ -192,9 +291,19 @@ if cfg.train.use_semantic_aux:
     print('Number of semantic tags: %d' % num_semantic_tags)
     print('Semantic tag file: %s' % cfg.train.semantic_tag_file)
 
+if cfg.train.use_relation_aux:
+    if num_relation_objects <= 0 or num_relation_actions <= 0:
+        raise ValueError('Relation auxiliary branch is enabled but the dataset does not expose object/action vocab sizes.')
+    print('Relation auxiliary branch enabled.')
+    print('Number of relation objects: %d' % num_relation_objects)
+    print('Number of relation actions: %d' % num_relation_actions)
+
 # Keep decoder vocabulary / max length aligned with dataset preprocessing outputs.
 cfg.model.transformer_decoder.vocab_size = train_dataset.get_vocab_size()
 cfg.model.transformer_decoder.seq_length = train_dataset.get_max_seq_length()
+if cfg.train.use_content_word_weight:
+    cfg.train.content_word_token_ids = build_content_word_token_ids(train_dataset.get_word_to_idx())
+    print('Content word weighted CE enabled. Token ids: %s' % cfg.train.content_word_token_ids)
 
 # Create model
 change_detector = CARD(cfg)
@@ -218,6 +327,8 @@ experiment_summary = [
     f'  mask_warmup_steps: {cfg.train.mask_warmup_steps}',
     f'  mask_loss_type: {cfg.train.mask_loss_type}',
     f'  mask_bce_dice_alpha: {cfg.train.mask_bce_dice_alpha}',
+    f'  use_weak_mask_prior: {cfg.train.use_weak_mask_prior}',
+    f'  mask_alpha: {cfg.train.mask_alpha}',
     f'  pseudo_mask_root: {cfg.data.pseudo_mask_root}',
     f'  use_semantic_aux: {cfg.train.use_semantic_aux}',
     f'  lambda_semantic: {cfg.train.lambda_semantic}',
@@ -226,6 +337,19 @@ experiment_summary = [
     f'  semantic_aux_dropout: {cfg.train.semantic_aux_dropout}',
     f'  semantic_normalize_synonyms: {cfg.train.semantic_normalize_synonyms}',
     f'  num_semantic_tags: {num_semantic_tags}',
+    f'  use_relation_aux: {cfg.train.use_relation_aux}',
+    f'  lambda_obj: {cfg.train.lambda_obj}',
+    f'  lambda_act: {cfg.train.lambda_act}',
+    f'  lambda_rel: {cfg.train.lambda_rel}',
+    f'  relation_aux_dropout: {cfg.train.relation_aux_dropout}',
+    f'  semantic_warmup_steps: {cfg.train.semantic_warmup_steps}',
+    f'  semantic_threshold: {cfg.train.semantic_threshold}',
+    f'  num_relation_objects: {num_relation_objects}',
+    f'  num_relation_actions: {num_relation_actions}',
+    f'  use_content_word_weight: {cfg.train.use_content_word_weight}',
+    f'  content_word_weight: {cfg.train.content_word_weight}',
+    f'  max_content_word_weight: {cfg.train.max_content_word_weight}',
+    f'  content_word_token_count: {len(cfg.train.content_word_token_ids)}',
 ]
 for line in experiment_summary:
     print(line)
@@ -243,6 +367,7 @@ lr_scheduler = torch.optim.lr_scheduler.StepLR(
     step_size=cfg.train.optim.step_size,
     gamma=cfg.train.optim.gamma)
 semantic_loss_func = nn.BCEWithLogitsLoss() if cfg.train.use_semantic_aux else None
+relation_loss_func = nn.BCEWithLogitsLoss() if cfg.train.use_relation_aux else None
 
 # Train loop
 t = 0
@@ -269,7 +394,7 @@ while t < cfg.train.max_iter:
     for i, batch in enumerate(train_loader):
         iter_start_time = time.time()
 
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels = unpack_batch(batch)
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets = unpack_batch(batch)
 
         batch_size = d_feats.size(0)
         labels = labels.squeeze(1)
@@ -284,11 +409,12 @@ while t < cfg.train.max_iter:
             pseudo_masks = pseudo_masks.to(device).float()
         if semantic_labels is not None:
             semantic_labels = semantic_labels.to(device).float()
+        semantic_targets = move_semantic_targets_to_device(semantic_targets, device)
 
         optimizer.zero_grad()
 
         change_outputs = change_detector(d_feats, sc_feats)
-        encoder_output, con_loss, ind_loss, _, _, mask_pred, semantic_logits = unpack_change_detector_output(change_outputs)
+        encoder_output, con_loss, ind_loss, _, _, mask_pred, semantic_logits, relation_aux_logits = unpack_change_detector_output(change_outputs)
 
         loss_pos, _, att_pos = speaker._forward(encoder_output,
                                                 labels, masks, labels_with_ignore=labels_with_ignore)
@@ -301,8 +427,17 @@ while t < cfg.train.max_iter:
         mask_loss_val = 0.0
         semantic_loss = None
         semantic_loss_val = 0.0
+        object_loss = None
+        action_loss = None
+        relation_loss = None
+        object_loss_val = 0.0
+        action_loss_val = 0.0
+        relation_loss_val = 0.0
+        object_pos_count = 0.0
+        action_pos_count = 0.0
+        relation_pos_count = 0.0
         effective_lambda_mask = get_effective_lambda_mask(cfg, t)
-        if cfg.model.enable_aux_mask:
+        if cfg.model.enable_aux_mask and cfg.train.lambda_mask > 0:
             if pseudo_masks is None:
                 raise ValueError('Pseudo masks are required when aux mask is enabled.')
             if cfg.train.use_mask_conf_filter and not printed_binary_mask_warning:
@@ -336,11 +471,43 @@ while t < cfg.train.max_iter:
             semantic_loss = semantic_loss_func(semantic_logits, semantic_labels.float())
             semantic_loss_val = semantic_loss.item()
 
+        lambda_obj_current = get_warmup_lambda(cfg.train.lambda_obj, t, cfg.train.semantic_warmup_steps)
+        lambda_act_current = get_warmup_lambda(cfg.train.lambda_act, t, cfg.train.semantic_warmup_steps)
+        lambda_rel_current = get_warmup_lambda(cfg.train.lambda_rel, t, cfg.train.semantic_warmup_steps)
+        if cfg.train.use_relation_aux:
+            if semantic_targets is None:
+                raise ValueError('Relation semantic targets are required when train.use_relation_aux is enabled.')
+            if relation_aux_logits is None:
+                raise ValueError('CARD did not return relation_aux_logits while train.use_relation_aux is enabled.')
+            for key in ('objects', 'actions', 'relations'):
+                if key not in semantic_targets or key not in relation_aux_logits:
+                    raise ValueError('Missing relation auxiliary key: %s' % key)
+                if relation_aux_logits[key].shape != semantic_targets[key].shape:
+                    raise ValueError(
+                        'relation_aux_logits[%s] shape %s does not match semantic_targets[%s] shape %s.'
+                        % (key, tuple(relation_aux_logits[key].shape), key, tuple(semantic_targets[key].shape))
+                    )
+            object_loss = relation_loss_func(relation_aux_logits['objects'], semantic_targets['objects'])
+            action_loss = relation_loss_func(relation_aux_logits['actions'], semantic_targets['actions'])
+            relation_loss = relation_loss_func(relation_aux_logits['relations'], semantic_targets['relations'])
+            object_loss_val = object_loss.item()
+            action_loss_val = action_loss.item()
+            relation_loss_val = relation_loss.item()
+            object_pos_count = semantic_targets['objects'].sum().item()
+            action_pos_count = semantic_targets['actions'].sum().item()
+            relation_pos_count = semantic_targets['relations'].sum().item()
+
         total_loss = cap_loss + 0.001 * con_loss + 0.001 * ind_loss
         if mask_loss is not None:
             total_loss = total_loss + effective_lambda_mask * mask_loss
         if semantic_loss is not None:
             total_loss = total_loss + cfg.train.lambda_semantic * semantic_loss
+        if object_loss is not None:
+            total_loss = total_loss + lambda_obj_current * object_loss
+        if action_loss is not None:
+            total_loss = total_loss + lambda_act_current * action_loss
+        if relation_loss is not None:
+            total_loss = total_loss + lambda_rel_current * relation_loss
 
         total_loss_val = total_loss.item()
 
@@ -351,6 +518,7 @@ while t < cfg.train.max_iter:
         stats = {}
 
         stats['cap_loss'] = cap_loss_val
+        stats['loss_cap'] = cap_loss_val
         stats['loss_caption'] = cap_loss_val
         stats['avg_cap_loss'] = speaker_loss_avg.avg
         stats['con_loss'] = con_loss_val
@@ -362,11 +530,21 @@ while t < cfg.train.max_iter:
         stats['num_semantic_tags'] = num_semantic_tags
         stats['total_loss'] = total_loss_val
         stats['avg_total_loss'] = total_loss_avg.avg
-        if cfg.model.enable_aux_mask:
+        if cfg.model.enable_aux_mask and cfg.train.lambda_mask > 0:
             stats['mask_loss'] = mask_loss_val
             stats['loss_mask'] = mask_loss_val
         if cfg.train.use_semantic_aux:
             stats['loss_semantic'] = semantic_loss_val
+        if cfg.train.use_relation_aux:
+            stats['loss_obj'] = object_loss_val
+            stats['loss_act'] = action_loss_val
+            stats['loss_rel'] = relation_loss_val
+            stats['lambda_obj_current'] = lambda_obj_current
+            stats['lambda_act_current'] = lambda_act_current
+            stats['lambda_rel_current'] = lambda_rel_current
+            stats['object_pos_count'] = object_pos_count
+            stats['action_pos_count'] = action_pos_count
+            stats['relation_pos_count'] = relation_pos_count
 
         #results, sample_logprobs = model(d_feats, q_feats, labels, cfg=cfg, mode='sample')
         total_loss.backward()
@@ -416,18 +594,31 @@ while t < cfg.train.max_iter:
                     os.makedirs(sent_save_dir)
 
                 result_sents_pos = {}
+                val_f1_counts = {
+                    'objects': {'tp': 0, 'fp': 0, 'fn': 0},
+                    'actions': {'tp': 0, 'fp': 0, 'fn': 0},
+                    'relations': {'tp': 0, 'fp': 0, 'fn': 0},
+                }
                 for val_i, val_batch in enumerate(val_loader):
-                    d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _, _ = unpack_batch(val_batch)
+                    d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _, _, semantic_targets = unpack_batch(val_batch)
 
                     val_batch_size = d_feats.size(0)
 
                     d_feats, sc_feats = d_feats.to(device), sc_feats.to(device)
 
                     labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
+                    semantic_targets = move_semantic_targets_to_device(semantic_targets, device)
 
 
                     change_outputs = change_detector(d_feats, sc_feats)
-                    encoder_output, _, _, att1, att2, _, _ = unpack_change_detector_output(change_outputs)
+                    encoder_output, _, _, att1, att2, _, _, relation_aux_logits = unpack_change_detector_output(change_outputs)
+                    if cfg.train.use_relation_aux:
+                        if relation_aux_logits is None or semantic_targets is None:
+                            raise ValueError('Relation auxiliary validation requires logits and semantic targets.')
+                        threshold = cfg.train.semantic_threshold
+                        update_micro_f1_counts(val_f1_counts['objects'], relation_aux_logits['objects'], semantic_targets['objects'], threshold)
+                        update_micro_f1_counts(val_f1_counts['actions'], relation_aux_logits['actions'], semantic_targets['actions'], threshold)
+                        update_micro_f1_counts(val_f1_counts['relations'], relation_aux_logits['relations'], semantic_targets['relations'], threshold)
 
 
                     speaker_output_pos, _ = speaker.sample(encoder_output)
@@ -453,6 +644,13 @@ while t < cfg.train.max_iter:
                 test_iter_end_time = time.time() - test_iter_start_time
                 result_save_path_pos = os.path.join(sent_save_dir, 'sc_results.json')
                 coco_gen_format_save(result_sents_pos, result_save_path_pos)
+                if cfg.train.use_relation_aux:
+                    val_stats = {
+                        'object_f1': micro_f1_from_counts(val_f1_counts['objects']),
+                        'action_f1': micro_f1_from_counts(val_f1_counts['actions']),
+                        'relation_f1': micro_f1_from_counts(val_f1_counts['relations']),
+                    }
+                    val_logger.print_current_stats(epoch, 0, t, val_stats, test_iter_end_time)
 
             set_mode('train', [change_detector, speaker])
     lr_scheduler.step()

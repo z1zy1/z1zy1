@@ -72,7 +72,7 @@ class CrossTransformer(nn.Module):
         tgt_length = dec_mask.size(1)
         mask = (torch.triu(torch.ones(tgt_length, tgt_length)) == 1).transpose(0, 1)
         mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
-        mask = mask.cuda()
+        mask = mask.to(dec_mask.device)
         pad_mask = 1 - dec_mask
         pad_mask = pad_mask.bool()
         attn_output, self_weight = self.self_att(input1, input1, input1, attn_mask=mask,key_padding_mask=pad_mask)
@@ -156,6 +156,9 @@ class DynamicSpeaker(nn.Module):
         self.core = DynamicCore(cfg)
 
         self.share_wd_cls_weight = cfg.model.transformer_decoder.share_wd_cls_weight
+        self.use_content_word_weight = bool(cfg.train.use_content_word_weight)
+        self.content_word_weight = min(cfg.train.content_word_weight, cfg.train.max_content_word_weight)
+        self.content_word_token_ids = [int(x) for x in getattr(cfg.train, 'content_word_token_ids', [])]
 
 
         if self.share_wd_cls_weight:
@@ -187,9 +190,32 @@ class DynamicSpeaker(nn.Module):
         prediction_scores = self.logit(decoder_outputs)
         caption_loss = 0.
         if labels_with_ignore is not None:
-            caption_loss = self.loss_func(prediction_scores.view(-1, self.vocab_size),
-                                          labels_with_ignore.view(-1))
+            caption_loss = self._caption_loss(
+                prediction_scores.view(-1, self.vocab_size),
+                labels_with_ignore.view(-1),
+            )
         return caption_loss, prediction_scores, attention_weight
+
+    def _caption_loss(self, prediction_scores, targets):
+        if not self.use_content_word_weight or not self.content_word_token_ids:
+            return self.loss_func(prediction_scores, targets)
+
+        token_loss = F.cross_entropy(
+            prediction_scores,
+            targets,
+            ignore_index=-1,
+            reduction='none',
+        )
+        valid_mask = targets.ne(-1)
+        valid_count = valid_mask.float().sum().clamp_min(1.0)
+        content_mask = torch.zeros_like(valid_mask)
+        for token_id in self.content_word_token_ids:
+            content_mask = content_mask | targets.eq(token_id)
+
+        weights = torch.ones_like(token_loss)
+        weights = weights.masked_fill(content_mask & valid_mask, float(self.content_word_weight))
+        token_loss = token_loss * weights * valid_mask.float()
+        return token_loss.sum() / valid_count
 
     def sample(
             self,

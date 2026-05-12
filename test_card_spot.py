@@ -13,6 +13,7 @@ from configs.config_transformer import merge_cfg_from_list
 from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
+from utils.semantic_label import build_content_word_token_ids
 
 from utils.utils import AverageMeter, accuracy, set_mode, load_checkpoint, \
                         decode_sequence, decode_sequence_transformer, coco_gen_format_save
@@ -22,27 +23,52 @@ from tqdm import tqdm
 
 def unpack_batch(batch):
     semantic_labels = None
+    semantic_targets = None
     if len(batch) == 7:
         d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths = batch
         pseudo_masks = None
     elif len(batch) == 8:
         d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = batch
     elif len(batch) == 9:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels = batch
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, extra = batch
+        if isinstance(extra, dict):
+            semantic_targets = extra
+        else:
+            semantic_labels = extra
+    elif len(batch) == 10:
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets = batch
     else:
         raise ValueError('Unexpected batch size: %d' % len(batch))
-    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels
+    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets
 
 
 def unpack_change_detector_output(outputs):
+    relation_aux_logits = None
     if len(outputs) == 6:
         encoder_output, con_loss, ind_loss, att1, att2, mask_pred = outputs
         semantic_logits = None
     elif len(outputs) == 7:
         encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits = outputs
+    elif len(outputs) == 8:
+        encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits, relation_aux_logits = outputs
     else:
         raise ValueError('Unexpected CARD output size: %d' % len(outputs))
-    return encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits
+    return encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits, relation_aux_logits
+
+
+def apply_cli_overrides(args, cfg):
+    if args.use_relation_aux:
+        cfg.train.use_relation_aux = True
+    if args.use_content_word_weight:
+        cfg.train.use_content_word_weight = True
+    if args.content_word_weight is not None:
+        cfg.train.content_word_weight = args.content_word_weight
+    if args.max_content_word_weight is not None:
+        cfg.train.max_content_word_weight = args.max_content_word_weight
+    if args.use_weak_mask_prior:
+        cfg.train.use_weak_mask_prior = True
+    if args.mask_alpha is not None:
+        cfg.train.mask_alpha = args.mask_alpha
 
 # Load config
 parser = argparse.ArgumentParser()
@@ -50,11 +76,18 @@ parser.add_argument('--cfg', required=True)
 parser.add_argument('--visualize', action='store_true')
 parser.add_argument('--snapshot', type=int, required=True)
 parser.add_argument('--gpu', type=int, default=-1)
+parser.add_argument('--use_relation_aux', action='store_true')
+parser.add_argument('--use_content_word_weight', action='store_true')
+parser.add_argument('--content_word_weight', type=float, default=None)
+parser.add_argument('--max_content_word_weight', type=float, default=None)
+parser.add_argument('--use_weak_mask_prior', action='store_true')
+parser.add_argument('--mask_alpha', type=float, default=None)
 parser.add_argument('opts', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 merge_cfg_from_file(args.cfg)
 if args.opts:
     merge_cfg_from_list(args.opts)
+apply_cli_overrides(args, cfg)
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -107,6 +140,8 @@ test_dataset, test_loader = create_dataset(cfg, 'test')
 # Keep decoder vocabulary / max length aligned with dataset preprocessing outputs.
 cfg.model.transformer_decoder.vocab_size = train_dataset.get_vocab_size()
 cfg.model.transformer_decoder.seq_length = train_dataset.get_max_seq_length()
+if cfg.train.use_content_word_weight:
+    cfg.train.content_word_token_ids = build_content_word_token_ids(train_dataset.get_word_to_idx())
 
 # Load modules
 change_detector = CARD(cfg)
@@ -127,7 +162,7 @@ with torch.no_grad():
     result_sents_pos = {}
     for i, batch in tqdm(enumerate(test_loader)):
 
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _, _ = unpack_batch(batch)
+        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _, _, _ = unpack_batch(batch)
 
         batch_size = d_feats.size(0)
 
@@ -136,7 +171,7 @@ with torch.no_grad():
         labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
 
         change_outputs = change_detector(d_feats, sc_feats)
-        encoder_output, _, _, _, _, _, _ = unpack_change_detector_output(change_outputs)
+        encoder_output, _, _, _, _, _, _, _ = unpack_change_detector_output(change_outputs)
 
         speaker_output_pos, pos_dynamic_atts = speaker.sample(encoder_output, sample_max=1)
 

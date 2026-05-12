@@ -8,6 +8,7 @@ import torch.nn.functional as F
 import math
 from torch.nn.init import xavier_uniform_
 
+from utils.semantic_label import ACTION_VOCAB, OBJECT_VOCAB
 from utils.semantic_tags import read_semantic_tags
 
 
@@ -54,12 +55,48 @@ class SemanticAuxHead(nn.Module):
         return self.net(x)
 
 
+class RelationAuxiliaryHead(nn.Module):
+    def __init__(self, input_dim, num_objects, num_actions, dropout=0.1):
+        super().__init__()
+        self.num_objects = num_objects
+        self.num_actions = num_actions
+        self.proj = nn.Sequential(
+            nn.Linear(input_dim, input_dim),
+            nn.ReLU(inplace=True),
+            nn.Dropout(dropout),
+        )
+        self.object_classifier = nn.Linear(input_dim, num_objects)
+        self.action_classifier = nn.Linear(input_dim, num_actions)
+        self.relation_classifier = nn.Linear(input_dim, num_actions * num_objects)
+
+    def _pool(self, x):
+        if x.dim() == 3:
+            return x.mean(dim=1)
+        if x.dim() == 4:
+            return x.mean(dim=(2, 3))
+        raise ValueError('RelationAuxiliaryHead expects [B, N, D] or [B, D, H, W], got %s' % (tuple(x.shape),))
+
+    def forward(self, x):
+        pooled = self._pool(x)
+        hidden = self.proj(pooled)
+        relation_logits = self.relation_classifier(hidden)
+        relation_logits = relation_logits.view(-1, self.num_actions, self.num_objects)
+        return {
+            'objects': self.object_classifier(hidden),
+            'actions': self.action_classifier(hidden),
+            'relations': relation_logits,
+        }
+
+
 class CARD(nn.Module):
 
     def __init__(self, cfg, temp=0.07):
         super().__init__()
         self.enable_aux_mask = cfg.model.enable_aux_mask
         self.use_semantic_aux = bool(cfg.train.use_semantic_aux)
+        self.use_relation_aux = bool(cfg.train.use_relation_aux)
+        self.use_weak_mask_prior = bool(cfg.train.use_weak_mask_prior)
+        self.mask_alpha = cfg.train.mask_alpha
         self.temp = nn.Parameter(torch.ones([]) * temp)
         self.feat_dim = cfg.model.transformer_encoder.feat_dim
         self.att_dim = cfg.model.transformer_encoder.att_dim
@@ -108,7 +145,7 @@ class CARD(nn.Module):
             nn.Dropout(0.1),
             nn.ReLU()
         )
-        self.aux_mask_head = AuxMaskHead(self.embed_dim) if self.enable_aux_mask else None
+        self.aux_mask_head = AuxMaskHead(self.embed_dim) if (self.enable_aux_mask or self.use_weak_mask_prior) else None
         self.semantic_tags = []
         self.num_semantic_tags = 0
         self.semantic_head = None
@@ -119,6 +156,14 @@ class CARD(nn.Module):
                 self.embed_dim,
                 self.num_semantic_tags,
                 dropout=cfg.train.semantic_aux_dropout,
+            )
+        self.relation_aux_head = None
+        if self.use_relation_aux:
+            self.relation_aux_head = RelationAuxiliaryHead(
+                self.embed_dim,
+                len(OBJECT_VOCAB),
+                len(ACTION_VOCAB),
+                dropout=cfg.train.relation_aux_dropout,
             )
 
         self._reset_parameters()
@@ -174,7 +219,7 @@ class CARD(nn.Module):
         sim_a2b = aft_cls_feat @ bef_cls_feat.t() / self.temp
 
         sim_targets = torch.zeros_like(sim_b2a)
-        sim_targets[:, :] = torch.eye(batch_size)
+        sim_targets[:, :] = torch.eye(batch_size, device=sim_targets.device)
 
         loss_b2a = -torch.sum(F.log_softmax(sim_b2a, dim=1) * sim_targets, dim=1).mean()
         loss_a2b = -torch.sum(F.log_softmax(sim_a2b, dim=1) * sim_targets, dim=1).mean()
@@ -223,12 +268,22 @@ class CARD(nn.Module):
         output = self.fc(output)
         mask_pred = None
         semantic_logits = None
-        if self.enable_aux_mask:
+        relation_aux_logits = None
+        if self.aux_mask_head is not None:
             aux_feat = output.permute(0, 2, 1).contiguous().view(batch_size, self.embed_dim, H, W)
             mask_pred = self.aux_mask_head(aux_feat)
+        if self.use_weak_mask_prior:
+            if mask_pred is None:
+                raise ValueError('Weak mask prior requires an auxiliary mask prediction.')
+            mask_tokens = mask_pred.flatten(2).transpose(1, 2)
+            output = output * (1.0 + self.mask_alpha * mask_tokens)
         if self.use_semantic_aux:
             semantic_logits = self.semantic_head(output.mean(dim=1))
+        if self.use_relation_aux:
+            relation_aux_logits = self.relation_aux_head(output)
 
+        if self.use_relation_aux:
+            return output, loss_con, loss_ind, att1, att2, mask_pred, semantic_logits, relation_aux_logits
         if self.use_semantic_aux:
             return output, loss_con, loss_ind, att1, att2, mask_pred, semantic_logits
         return output, loss_con, loss_ind, att1, att2, mask_pred

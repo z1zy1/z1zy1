@@ -125,6 +125,7 @@ __C.data.splits_json = './data/splits.json'
 __C.data.h5_label_file = './data/labels.h5'
 __C.data.h5_ref_label_file = './data/ref_labels.h5'
 __C.data.type_mapping_json = './data/type_mapping_v2.json'
+__C.data.semantic_relation_cache = ''
 
 __C.data.train = AttrDict()
 __C.data.train.batch_size = 128
@@ -170,19 +171,32 @@ __C.train.hallucinate_per_iter = 2
 __C.train.adapt_per_iter = 2
 __C.train.keep_rate = 0.95
 __C.train.grad_clip = 1.0
-__C.train.lambda_mask = 0.05
+__C.train.lambda_mask = 0.0
 __C.train.use_mask_conf_filter = False
 __C.train.mask_conf_threshold = 0.5
 __C.train.use_mask_warmup = False
 __C.train.mask_warmup_steps = 0
 __C.train.mask_loss_type = 'bce'
 __C.train.mask_bce_dice_alpha = 0.5
+__C.train.use_weak_mask_prior = False
+__C.train.mask_alpha = 0.2
 __C.train.use_semantic_aux = False
 __C.train.lambda_semantic = 0.1
 __C.train.semantic_loss_type = 'multilabel_bce'
 __C.train.semantic_tag_file = 'configs/semantic_tags/levir_cc_change_tags.txt'
 __C.train.semantic_aux_dropout = 0.1
 __C.train.semantic_normalize_synonyms = True
+__C.train.use_relation_aux = False
+__C.train.lambda_obj = 0.05
+__C.train.lambda_act = 0.05
+__C.train.lambda_rel = 0.10
+__C.train.relation_aux_dropout = 0.1
+__C.train.semantic_warmup_steps = 1000
+__C.train.semantic_threshold = 0.5
+__C.train.use_content_word_weight = False
+__C.train.content_word_weight = 1.5
+__C.train.max_content_word_weight = 2.0
+__C.train.content_word_token_ids = []
 
 
 # --------------------------------------------------------------------------- #

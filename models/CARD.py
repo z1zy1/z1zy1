@@ -51,8 +51,15 @@ class SemanticAuxHead(nn.Module):
             nn.Linear(input_dim, num_semantic_tags),
         )
 
+    def _pool(self, x):
+        if x.dim() == 3:
+            return x.mean(dim=1)
+        if x.dim() == 4:
+            return F.adaptive_avg_pool2d(x, output_size=1).flatten(1)
+        raise ValueError('SemanticAuxHead expects [B, N, D] or [B, D, H, W], got %s' % (tuple(x.shape),))
+
     def forward(self, x):
-        return self.net(x)
+        return self.net(self._pool(x))
 
 
 class RelationAuxiliaryHead(nn.Module):
@@ -278,7 +285,7 @@ class CARD(nn.Module):
             mask_tokens = mask_pred.flatten(2).transpose(1, 2)
             output = output * (1.0 + self.mask_alpha * mask_tokens)
         if self.use_semantic_aux:
-            semantic_logits = self.semantic_head(output.mean(dim=1))
+            semantic_logits = self.semantic_head(output)
         if self.use_relation_aux:
             relation_aux_logits = self.relation_aux_head(output)
 

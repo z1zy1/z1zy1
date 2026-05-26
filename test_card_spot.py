@@ -56,11 +56,52 @@ def unpack_change_detector_output(outputs):
     return encoder_output, con_loss, ind_loss, att1, att2, mask_pred, semantic_logits, relation_aux_logits
 
 
+def is_content_word_weighted_ce_enabled(cfg):
+    return bool(
+        getattr(cfg.train, 'use_content_word_weight', False)
+        or getattr(cfg.train, 'use_content_word_weighted_ce', False)
+    )
+
+
+def load_change_detector_state_compat(model, state_dict):
+    current_keys = set(model.state_dict().keys())
+    state_keys = set(state_dict.keys())
+    missing_keys = sorted(current_keys - state_keys)
+    unexpected_keys = sorted(state_keys - current_keys)
+    semantic_only = all(
+        key.startswith('semantic_head.')
+        for key in missing_keys + unexpected_keys
+    )
+    if not missing_keys and not unexpected_keys:
+        model.load_state_dict(state_dict)
+        return
+    if semantic_only:
+        print('Loading change detector with semantic_head checkpoint compatibility.')
+        incompatible = model.load_state_dict(state_dict, strict=False)
+        non_semantic_missing = [
+            key for key in incompatible.missing_keys
+            if not key.startswith('semantic_head.')
+        ]
+        non_semantic_unexpected = [
+            key for key in incompatible.unexpected_keys
+            if not key.startswith('semantic_head.')
+        ]
+        if non_semantic_missing or non_semantic_unexpected:
+            raise RuntimeError(
+                'Non-semantic checkpoint mismatch: missing=%s unexpected=%s'
+                % (non_semantic_missing, non_semantic_unexpected)
+            )
+        return
+    model.load_state_dict(state_dict)
+
+
 def apply_cli_overrides(args, cfg):
     if args.use_relation_aux:
         cfg.train.use_relation_aux = True
     if args.use_content_word_weight:
         cfg.train.use_content_word_weight = True
+        if hasattr(cfg.train, 'use_content_word_weighted_ce'):
+            cfg.train.use_content_word_weighted_ce = True
     if args.content_word_weight is not None:
         cfg.train.content_word_weight = args.content_word_weight
     if args.max_content_word_weight is not None:
@@ -69,6 +110,8 @@ def apply_cli_overrides(args, cfg):
         cfg.train.use_weak_mask_prior = True
     if args.mask_alpha is not None:
         cfg.train.mask_alpha = args.mask_alpha
+    if getattr(cfg.train, 'use_content_word_weighted_ce', False):
+        cfg.train.use_content_word_weight = True
 
 # Load config
 parser = argparse.ArgumentParser()
@@ -140,12 +183,14 @@ test_dataset, test_loader = create_dataset(cfg, 'test')
 # Keep decoder vocabulary / max length aligned with dataset preprocessing outputs.
 cfg.model.transformer_decoder.vocab_size = train_dataset.get_vocab_size()
 cfg.model.transformer_decoder.seq_length = train_dataset.get_max_seq_length()
-if cfg.train.use_content_word_weight:
+if is_content_word_weighted_ce_enabled(cfg):
     cfg.train.content_word_token_ids = build_content_word_token_ids(train_dataset.get_word_to_idx())
+else:
+    cfg.train.content_word_token_ids = []
 
 # Load modules
 change_detector = CARD(cfg)
-change_detector.load_state_dict(change_detector_state)
+load_change_detector_state_compat(change_detector, change_detector_state)
 change_detector = change_detector.to(device)
 
 speaker = DynamicSpeaker(cfg)

@@ -54,6 +54,7 @@ class RCCDataset(Dataset):
         self.semantic_tags = []
         self.num_semantic_tags = 0
         self.semantic_labels_by_img_idx = {}
+        self.semantic_label_stats = None
         self.semantic_targets_by_img_idx = {}
 
         if self.use_semantic_aux:
@@ -97,10 +98,12 @@ class RCCDataset(Dataset):
 
         if self.use_semantic_aux:
             self.semantic_labels_by_img_idx = self._build_semantic_labels_by_img_idx()
+            self.semantic_label_stats = self._summarize_semantic_labels()
             print(
                 'Semantic labels enabled for %s split: %d tags from %s'
                 % (split, self.num_semantic_tags, cfg.train.semantic_tag_file)
             )
+            self._print_semantic_label_stats()
         if self.use_relation_aux:
             self.semantic_targets_by_img_idx = self._build_relation_targets_by_img_idx()
             print(
@@ -178,6 +181,44 @@ class RCCDataset(Dataset):
             )
             labels_by_img_idx[img_idx] = torch.from_numpy(semantic_label)
         return labels_by_img_idx
+
+    def _summarize_semantic_labels(self):
+        if not self.semantic_labels_by_img_idx:
+            return {
+                'total_samples': 0,
+                'tag_counts': np.zeros(self.num_semantic_tags, dtype=np.float32),
+                'all_zero_samples': 0,
+                'avg_positive_tags': 0.0,
+            }
+        label_matrix = torch.stack(
+            [label.float() for label in self.semantic_labels_by_img_idx.values()],
+            dim=0,
+        )
+        positive_per_sample = label_matrix.sum(dim=1)
+        return {
+            'total_samples': int(label_matrix.size(0)),
+            'tag_counts': label_matrix.sum(dim=0).cpu().numpy(),
+            'all_zero_samples': int((positive_per_sample == 0).sum().item()),
+            'avg_positive_tags': float(positive_per_sample.mean().item()),
+        }
+
+    def _print_semantic_label_stats(self):
+        if self.semantic_label_stats is None:
+            return
+        total_samples = self.semantic_label_stats['total_samples']
+        tag_counts = self.semantic_label_stats['tag_counts']
+        all_zero_samples = self.semantic_label_stats['all_zero_samples']
+        avg_positive_tags = self.semantic_label_stats['avg_positive_tags']
+        print('Semantic label stats for %s split:' % self.split)
+        print('  samples: %d' % total_samples)
+        print('  all_zero_samples: %d' % all_zero_samples)
+        print('  avg_positive_tags_per_sample: %.4f' % avg_positive_tags)
+        for tag, count in zip(self.semantic_tags, tag_counts):
+            print('  semantic_tag_count %s: %.0f' % (tag, float(count)))
+        if total_samples > 0 and float(np.sum(tag_counts)) == 0.0:
+            print('WARNING: all semantic labels are zero. Check semantic tag rules and captions.')
+        elif total_samples > 0 and avg_positive_tags < 0.25:
+            print('WARNING: semantic labels are very sparse. Inspect tag rules before long training.')
 
     def _build_relation_targets_by_img_idx(self):
         cached_targets = {}
@@ -325,6 +366,9 @@ class RCCDataset(Dataset):
 
     def get_semantic_tags(self):
         return self.semantic_tags
+
+    def get_semantic_label_stats(self):
+        return self.semantic_label_stats
 
     def get_num_relation_objects(self):
         return len(OBJECT_VOCAB)

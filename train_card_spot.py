@@ -118,6 +118,13 @@ def micro_f1_from_counts(counts):
     return 2.0 * counts['tp'] / float(denom)
 
 
+def is_content_word_weighted_ce_enabled(cfg):
+    return bool(
+        getattr(cfg.train, 'use_content_word_weight', False)
+        or getattr(cfg.train, 'use_content_word_weighted_ce', False)
+    )
+
+
 def apply_cli_overrides(args, cfg):
     if args.use_relation_aux:
         cfg.train.use_relation_aux = True
@@ -135,6 +142,8 @@ def apply_cli_overrides(args, cfg):
         cfg.train.semantic_threshold = args.semantic_threshold
     if args.use_content_word_weight:
         cfg.train.use_content_word_weight = True
+        if hasattr(cfg.train, 'use_content_word_weighted_ce'):
+            cfg.train.use_content_word_weighted_ce = True
     if args.content_word_weight is not None:
         cfg.train.content_word_weight = args.content_word_weight
     if args.max_content_word_weight is not None:
@@ -149,6 +158,8 @@ def apply_cli_overrides(args, cfg):
         cfg.train.mask_warmup_steps = args.mask_warmup_steps
         if args.mask_warmup_steps > 0:
             cfg.train.use_mask_warmup = True
+    if getattr(cfg.train, 'use_content_word_weighted_ce', False):
+        cfg.train.use_content_word_weight = True
 
 
 def unpack_batch(batch):
@@ -268,7 +279,7 @@ if cfg.train.use_semantic_aux:
     experiment_mode += ' + semantic_aux'
 if cfg.train.use_relation_aux:
     experiment_mode += ' + relation_aux'
-if cfg.train.use_content_word_weight:
+if is_content_word_weighted_ce_enabled(cfg):
     experiment_mode += ' + content_word_weight'
 if cfg.train.use_weak_mask_prior:
     experiment_mode += ' + weak_mask_prior'
@@ -288,8 +299,26 @@ if cfg.train.use_semantic_aux:
     if num_semantic_tags <= 0:
         raise ValueError('Semantic auxiliary branch is enabled but no semantic tags were loaded.')
     print('Semantic auxiliary branch enabled.')
+    print('Semantic supervision type: object/action multi-label BCE.')
     print('Number of semantic tags: %d' % num_semantic_tags)
     print('Semantic tag file: %s' % cfg.train.semantic_tag_file)
+    print('lambda_semantic: %s' % cfg.train.lambda_semantic)
+    print('Relation auxiliary loss: %s.' % ('enabled' if cfg.train.use_relation_aux else 'disabled'))
+    print(
+        'Content word weighted CE: %s.'
+        % ('enabled' if is_content_word_weighted_ce_enabled(cfg) else 'disabled')
+    )
+    if hasattr(train_dataset, 'get_semantic_label_stats'):
+        semantic_label_stats = train_dataset.get_semantic_label_stats()
+        if semantic_label_stats is not None:
+            print(
+                'Semantic label check: samples=%d all_zero_samples=%d avg_positive_tags=%.4f'
+                % (
+                    semantic_label_stats['total_samples'],
+                    semantic_label_stats['all_zero_samples'],
+                    semantic_label_stats['avg_positive_tags'],
+                )
+            )
 
 if cfg.train.use_relation_aux:
     if num_relation_objects <= 0 or num_relation_actions <= 0:
@@ -301,9 +330,11 @@ if cfg.train.use_relation_aux:
 # Keep decoder vocabulary / max length aligned with dataset preprocessing outputs.
 cfg.model.transformer_decoder.vocab_size = train_dataset.get_vocab_size()
 cfg.model.transformer_decoder.seq_length = train_dataset.get_max_seq_length()
-if cfg.train.use_content_word_weight:
+if is_content_word_weighted_ce_enabled(cfg):
     cfg.train.content_word_token_ids = build_content_word_token_ids(train_dataset.get_word_to_idx())
     print('Content word weighted CE enabled. Token ids: %s' % cfg.train.content_word_token_ids)
+else:
+    cfg.train.content_word_token_ids = []
 
 # Create model
 change_detector = CARD(cfg)
@@ -347,6 +378,7 @@ experiment_summary = [
     f'  num_relation_objects: {num_relation_objects}',
     f'  num_relation_actions: {num_relation_actions}',
     f'  use_content_word_weight: {cfg.train.use_content_word_weight}',
+    f'  use_content_word_weighted_ce: {cfg.train.use_content_word_weighted_ce}',
     f'  content_word_weight: {cfg.train.content_word_weight}',
     f'  max_content_word_weight: {cfg.train.max_content_word_weight}',
     f'  content_word_token_count: {len(cfg.train.content_word_token_ids)}',
@@ -528,7 +560,9 @@ while t < cfg.train.max_iter:
         stats['effective_lambda_mask'] = effective_lambda_mask
         stats['lambda_semantic'] = cfg.train.lambda_semantic
         stats['num_semantic_tags'] = num_semantic_tags
+        stats['use_semantic_aux'] = float(cfg.train.use_semantic_aux)
         stats['total_loss'] = total_loss_val
+        stats['loss_total'] = total_loss_val
         stats['avg_total_loss'] = total_loss_avg.avg
         if cfg.model.enable_aux_mask and cfg.train.lambda_mask > 0:
             stats['mask_loss'] = mask_loss_val

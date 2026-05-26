@@ -156,7 +156,10 @@ class DynamicSpeaker(nn.Module):
         self.core = DynamicCore(cfg)
 
         self.share_wd_cls_weight = cfg.model.transformer_decoder.share_wd_cls_weight
-        self.use_content_word_weight = bool(cfg.train.use_content_word_weight)
+        self.use_content_word_weight = bool(
+            getattr(cfg.train, 'use_content_word_weight', False)
+            or getattr(cfg.train, 'use_content_word_weighted_ce', False)
+        )
         self.content_word_weight = min(cfg.train.content_word_weight, cfg.train.max_content_word_weight)
         self.content_word_token_ids = [int(x) for x in getattr(cfg.train, 'content_word_token_ids', [])]
 

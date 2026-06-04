@@ -94,6 +94,35 @@ def get_warmup_lambda(target_lambda, global_step, warmup_steps):
     return target_lambda * min(1.0, float(global_step) / float(warmup_steps))
 
 
+def get_effective_lambda_semantic(
+    current_iter: int,
+    lambda_semantic: float,
+    use_semantic_warmup: bool,
+    semantic_warmup_start: int,
+    semantic_warmup_end: int,
+    semantic_warmup_type: str = 'linear',
+) -> float:
+    if lambda_semantic <= 0:
+        return 0.0
+
+    if not use_semantic_warmup:
+        return lambda_semantic
+
+    if current_iter < semantic_warmup_start:
+        return 0.0
+
+    if current_iter >= semantic_warmup_end:
+        return lambda_semantic
+
+    denom = max(1, semantic_warmup_end - semantic_warmup_start)
+    progress = (current_iter - semantic_warmup_start) / float(denom)
+    progress = max(0.0, min(1.0, progress))
+
+    if semantic_warmup_type == 'linear':
+        return lambda_semantic * progress
+    raise ValueError('Unsupported semantic_warmup_type: %s' % semantic_warmup_type)
+
+
 def move_semantic_targets_to_device(semantic_targets, device):
     if semantic_targets is None:
         return None
@@ -138,6 +167,16 @@ def apply_cli_overrides(args, cfg):
         cfg.train.relation_aux_dropout = args.relation_aux_dropout
     if args.semantic_warmup_steps is not None:
         cfg.train.semantic_warmup_steps = args.semantic_warmup_steps
+    if args.lambda_semantic is not None:
+        cfg.train.lambda_semantic = args.lambda_semantic
+    if args.use_semantic_warmup:
+        cfg.train.use_semantic_warmup = True
+    if args.semantic_warmup_start is not None:
+        cfg.train.semantic_warmup_start = args.semantic_warmup_start
+    if args.semantic_warmup_end is not None:
+        cfg.train.semantic_warmup_end = args.semantic_warmup_end
+    if args.semantic_warmup_type is not None:
+        cfg.train.semantic_warmup_type = args.semantic_warmup_type
     if args.semantic_threshold is not None:
         cfg.train.semantic_threshold = args.semantic_threshold
     if args.use_content_word_weight:
@@ -207,6 +246,11 @@ parser.add_argument('--lambda_act', type=float, default=None)
 parser.add_argument('--lambda_rel', type=float, default=None)
 parser.add_argument('--relation_aux_dropout', type=float, default=None)
 parser.add_argument('--semantic_warmup_steps', type=int, default=None)
+parser.add_argument('--lambda_semantic', type=float, default=None)
+parser.add_argument('--use_semantic_warmup', action='store_true')
+parser.add_argument('--semantic_warmup_start', type=int, default=None)
+parser.add_argument('--semantic_warmup_end', type=int, default=None)
+parser.add_argument('--semantic_warmup_type', type=str, default=None)
 parser.add_argument('--semantic_threshold', type=float, default=None)
 parser.add_argument('--use_content_word_weight', action='store_true')
 parser.add_argument('--content_word_weight', type=float, default=None)
@@ -303,6 +347,15 @@ if cfg.train.use_semantic_aux:
     print('Number of semantic tags: %d' % num_semantic_tags)
     print('Semantic tag file: %s' % cfg.train.semantic_tag_file)
     print('lambda_semantic: %s' % cfg.train.lambda_semantic)
+    print(
+        'Semantic warmup: enabled=%s start=%s end=%s type=%s.'
+        % (
+            cfg.train.use_semantic_warmup,
+            cfg.train.semantic_warmup_start,
+            cfg.train.semantic_warmup_end,
+            cfg.train.semantic_warmup_type,
+        )
+    )
     print('Relation auxiliary loss: %s.' % ('enabled' if cfg.train.use_relation_aux else 'disabled'))
     print(
         'Content word weighted CE: %s.'
@@ -363,6 +416,10 @@ experiment_summary = [
     f'  pseudo_mask_root: {cfg.data.pseudo_mask_root}',
     f'  use_semantic_aux: {cfg.train.use_semantic_aux}',
     f'  lambda_semantic: {cfg.train.lambda_semantic}',
+    f'  use_semantic_warmup: {cfg.train.use_semantic_warmup}',
+    f'  semantic_warmup_start: {cfg.train.semantic_warmup_start}',
+    f'  semantic_warmup_end: {cfg.train.semantic_warmup_end}',
+    f'  semantic_warmup_type: {cfg.train.semantic_warmup_type}',
     f'  semantic_loss_type: {cfg.train.semantic_loss_type}',
     f'  semantic_tag_file: {cfg.train.semantic_tag_file}',
     f'  semantic_aux_dropout: {cfg.train.semantic_aux_dropout}',
@@ -459,6 +516,7 @@ while t < cfg.train.max_iter:
         mask_loss_val = 0.0
         semantic_loss = None
         semantic_loss_val = 0.0
+        effective_lambda_semantic = 0.0
         object_loss = None
         action_loss = None
         relation_loss = None
@@ -499,9 +557,17 @@ while t < cfg.train.max_iter:
                 raise ValueError(
                     'semantic_logits shape %s does not match semantic_labels shape %s.'
                     % (tuple(semantic_logits.shape), tuple(semantic_labels.shape))
-                )
+            )
             semantic_loss = semantic_loss_func(semantic_logits, semantic_labels.float())
             semantic_loss_val = semantic_loss.item()
+            effective_lambda_semantic = get_effective_lambda_semantic(
+                t,
+                cfg.train.lambda_semantic,
+                cfg.train.use_semantic_warmup,
+                cfg.train.semantic_warmup_start,
+                cfg.train.semantic_warmup_end,
+                cfg.train.semantic_warmup_type,
+            )
 
         lambda_obj_current = get_warmup_lambda(cfg.train.lambda_obj, t, cfg.train.semantic_warmup_steps)
         lambda_act_current = get_warmup_lambda(cfg.train.lambda_act, t, cfg.train.semantic_warmup_steps)
@@ -533,7 +599,7 @@ while t < cfg.train.max_iter:
         if mask_loss is not None:
             total_loss = total_loss + effective_lambda_mask * mask_loss
         if semantic_loss is not None:
-            total_loss = total_loss + cfg.train.lambda_semantic * semantic_loss
+            total_loss = total_loss + effective_lambda_semantic * semantic_loss
         if object_loss is not None:
             total_loss = total_loss + lambda_obj_current * object_loss
         if action_loss is not None:
@@ -559,6 +625,8 @@ while t < cfg.train.max_iter:
         stats['lambda_mask'] = cfg.train.lambda_mask
         stats['effective_lambda_mask'] = effective_lambda_mask
         stats['lambda_semantic'] = cfg.train.lambda_semantic
+        stats['effective_lambda_semantic'] = effective_lambda_semantic
+        stats['use_semantic_warmup'] = float(cfg.train.use_semantic_warmup)
         stats['num_semantic_tags'] = num_semantic_tags
         stats['use_semantic_aux'] = float(cfg.train.use_semantic_aux)
         stats['total_loss'] = total_loss_val

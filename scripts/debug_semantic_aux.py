@@ -14,6 +14,7 @@ from configs.config_transformer import cfg, merge_cfg_from_file, merge_cfg_from_
 from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
+from utils.semantic_warmup import get_effective_lambda_semantic
 from utils.semantic_tags import build_semantic_label
 
 
@@ -135,7 +136,18 @@ def synthetic_forward(batch_size, use_cpu):
         labels_with_ignore=labels_with_ignore,
     )
     semantic_loss = nn.BCEWithLogitsLoss()(semantic_logits, semantic_labels)
-    total_loss = caption_loss + 0.001 * con_loss + 0.001 * ind_loss + cfg.train.lambda_semantic * semantic_loss
+    effective_lambda_semantic = get_effective_lambda_semantic(
+        current_iter=1,
+        lambda_semantic=cfg.train.lambda_semantic,
+        use_semantic_warmup=cfg.train.use_semantic_warmup,
+        semantic_warmup_start=cfg.train.semantic_warmup_start,
+        semantic_warmup_end=cfg.train.semantic_warmup_end,
+        semantic_warmup_type=cfg.train.semantic_warmup_type,
+        semantic_late_start=cfg.train.semantic_late_start,
+        semantic_start_iter=cfg.train.semantic_start_iter,
+    )
+    weighted_semantic_loss = effective_lambda_semantic * semantic_loss
+    total_loss = caption_loss + 0.001 * con_loss + 0.001 * ind_loss + weighted_semantic_loss
     total_loss.backward()
 
     print('synthetic_forward device=%s' % device)
@@ -146,10 +158,12 @@ def synthetic_forward(batch_size, use_cpu):
         tuple(semantic_labels.shape),
     ))
     print(
-        'losses caption=%.6f semantic=%.6f total=%.6f finite=%s'
+        'losses caption=%.6f semantic=%.6f effective_lambda_semantic=%.6f weighted_semantic=%.6f total=%.6f finite=%s'
         % (
             caption_loss.item(),
             semantic_loss.item(),
+            effective_lambda_semantic,
+            weighted_semantic_loss.item(),
             total_loss.item(),
             bool(torch.isfinite(total_loss).item()),
         )

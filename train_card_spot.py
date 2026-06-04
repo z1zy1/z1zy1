@@ -17,6 +17,7 @@ from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
 from utils.logger import Logger
 from utils.semantic_label import build_content_word_token_ids
+from utils.semantic_warmup import get_effective_lambda_semantic
 from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, \
                         LanguageModelCriterion, decode_sequence, decode_sequence_transformer, decode_beams, \
                         build_optimizer, coco_gen_format_save, one_hot_encode, \
@@ -94,35 +95,6 @@ def get_warmup_lambda(target_lambda, global_step, warmup_steps):
     return target_lambda * min(1.0, float(global_step) / float(warmup_steps))
 
 
-def get_effective_lambda_semantic(
-    current_iter: int,
-    lambda_semantic: float,
-    use_semantic_warmup: bool,
-    semantic_warmup_start: int,
-    semantic_warmup_end: int,
-    semantic_warmup_type: str = 'linear',
-) -> float:
-    if lambda_semantic <= 0:
-        return 0.0
-
-    if not use_semantic_warmup:
-        return lambda_semantic
-
-    if current_iter < semantic_warmup_start:
-        return 0.0
-
-    if current_iter >= semantic_warmup_end:
-        return lambda_semantic
-
-    denom = max(1, semantic_warmup_end - semantic_warmup_start)
-    progress = (current_iter - semantic_warmup_start) / float(denom)
-    progress = max(0.0, min(1.0, progress))
-
-    if semantic_warmup_type == 'linear':
-        return lambda_semantic * progress
-    raise ValueError('Unsupported semantic_warmup_type: %s' % semantic_warmup_type)
-
-
 def move_semantic_targets_to_device(semantic_targets, device):
     if semantic_targets is None:
         return None
@@ -177,6 +149,10 @@ def apply_cli_overrides(args, cfg):
         cfg.train.semantic_warmup_end = args.semantic_warmup_end
     if args.semantic_warmup_type is not None:
         cfg.train.semantic_warmup_type = args.semantic_warmup_type
+    if args.semantic_late_start:
+        cfg.train.semantic_late_start = True
+    if args.semantic_start_iter is not None:
+        cfg.train.semantic_start_iter = args.semantic_start_iter
     if args.semantic_threshold is not None:
         cfg.train.semantic_threshold = args.semantic_threshold
     if args.use_content_word_weight:
@@ -251,6 +227,8 @@ parser.add_argument('--use_semantic_warmup', action='store_true')
 parser.add_argument('--semantic_warmup_start', type=int, default=None)
 parser.add_argument('--semantic_warmup_end', type=int, default=None)
 parser.add_argument('--semantic_warmup_type', type=str, default=None)
+parser.add_argument('--semantic_late_start', action='store_true')
+parser.add_argument('--semantic_start_iter', type=int, default=None)
 parser.add_argument('--semantic_threshold', type=float, default=None)
 parser.add_argument('--use_content_word_weight', action='store_true')
 parser.add_argument('--content_word_weight', type=float, default=None)
@@ -356,6 +334,10 @@ if cfg.train.use_semantic_aux:
             cfg.train.semantic_warmup_type,
         )
     )
+    print(
+        'Semantic late start: enabled=%s start_iter=%s.'
+        % (cfg.train.semantic_late_start, cfg.train.semantic_start_iter)
+    )
     print('Relation auxiliary loss: %s.' % ('enabled' if cfg.train.use_relation_aux else 'disabled'))
     print(
         'Content word weighted CE: %s.'
@@ -420,6 +402,8 @@ experiment_summary = [
     f'  semantic_warmup_start: {cfg.train.semantic_warmup_start}',
     f'  semantic_warmup_end: {cfg.train.semantic_warmup_end}',
     f'  semantic_warmup_type: {cfg.train.semantic_warmup_type}',
+    f'  semantic_late_start: {cfg.train.semantic_late_start}',
+    f'  semantic_start_iter: {cfg.train.semantic_start_iter}',
     f'  semantic_loss_type: {cfg.train.semantic_loss_type}',
     f'  semantic_tag_file: {cfg.train.semantic_tag_file}',
     f'  semantic_aux_dropout: {cfg.train.semantic_aux_dropout}',
@@ -514,9 +498,11 @@ while t < cfg.train.max_iter:
         ind_loss_val = ind_loss.item()
         mask_loss = None
         mask_loss_val = 0.0
+        weighted_mask_loss_val = 0.0
         semantic_loss = None
         semantic_loss_val = 0.0
         effective_lambda_semantic = 0.0
+        weighted_semantic_loss_val = 0.0
         object_loss = None
         action_loss = None
         relation_loss = None
@@ -526,6 +512,7 @@ while t < cfg.train.max_iter:
         object_pos_count = 0.0
         action_pos_count = 0.0
         relation_pos_count = 0.0
+        current_iter = t + 1
         effective_lambda_mask = get_effective_lambda_mask(cfg, t)
         if cfg.model.enable_aux_mask and cfg.train.lambda_mask > 0:
             if pseudo_masks is None:
@@ -548,6 +535,7 @@ while t < cfg.train.max_iter:
                 bce_dice_alpha=cfg.train.mask_bce_dice_alpha,
             )
             mask_loss_val = mask_loss.item()
+            weighted_mask_loss_val = effective_lambda_mask * mask_loss_val
         if cfg.train.use_semantic_aux:
             if semantic_labels is None:
                 raise ValueError('Semantic labels are required when train.use_semantic_aux is enabled.')
@@ -561,13 +549,16 @@ while t < cfg.train.max_iter:
             semantic_loss = semantic_loss_func(semantic_logits, semantic_labels.float())
             semantic_loss_val = semantic_loss.item()
             effective_lambda_semantic = get_effective_lambda_semantic(
-                t,
+                current_iter,
                 cfg.train.lambda_semantic,
                 cfg.train.use_semantic_warmup,
                 cfg.train.semantic_warmup_start,
                 cfg.train.semantic_warmup_end,
                 cfg.train.semantic_warmup_type,
+                cfg.train.semantic_late_start,
+                cfg.train.semantic_start_iter,
             )
+            weighted_semantic_loss_val = effective_lambda_semantic * semantic_loss_val
 
         lambda_obj_current = get_warmup_lambda(cfg.train.lambda_obj, t, cfg.train.semantic_warmup_steps)
         lambda_act_current = get_warmup_lambda(cfg.train.lambda_act, t, cfg.train.semantic_warmup_steps)
@@ -627,16 +618,21 @@ while t < cfg.train.max_iter:
         stats['lambda_semantic'] = cfg.train.lambda_semantic
         stats['effective_lambda_semantic'] = effective_lambda_semantic
         stats['use_semantic_warmup'] = float(cfg.train.use_semantic_warmup)
+        stats['semantic_warmup_start'] = cfg.train.semantic_warmup_start
+        stats['semantic_warmup_end'] = cfg.train.semantic_warmup_end
+        stats['semantic_late_start'] = float(cfg.train.semantic_late_start)
+        stats['semantic_start_iter'] = cfg.train.semantic_start_iter
         stats['num_semantic_tags'] = num_semantic_tags
         stats['use_semantic_aux'] = float(cfg.train.use_semantic_aux)
+        stats['loss_mask'] = mask_loss_val
+        stats['weighted_mask_loss'] = weighted_mask_loss_val
+        stats['loss_semantic'] = semantic_loss_val
+        stats['weighted_semantic_loss'] = weighted_semantic_loss_val
         stats['total_loss'] = total_loss_val
         stats['loss_total'] = total_loss_val
         stats['avg_total_loss'] = total_loss_avg.avg
         if cfg.model.enable_aux_mask and cfg.train.lambda_mask > 0:
             stats['mask_loss'] = mask_loss_val
-            stats['loss_mask'] = mask_loss_val
-        if cfg.train.use_semantic_aux:
-            stats['loss_semantic'] = semantic_loss_val
         if cfg.train.use_relation_aux:
             stats['loss_obj'] = object_loss_val
             stats['loss_act'] = action_loss_val

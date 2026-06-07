@@ -192,6 +192,7 @@ __C.train.semantic_loss_type = 'multilabel_bce'
 __C.train.semantic_tag_file = 'configs/semantic_tags/levir_cc_object_action_tags.txt'
 __C.train.semantic_aux_dropout = 0.1
 __C.train.semantic_normalize_synonyms = True
+__C.train.use_semantic_detach = False
 __C.train.use_relation_aux = False
 __C.train.lambda_obj = 0.05
 __C.train.lambda_act = 0.05

@@ -127,8 +127,28 @@ def is_content_word_weighted_ce_enabled(cfg):
 
 
 def apply_cli_overrides(args, cfg):
+    if args.output_dir is not None:
+        output_dir = os.path.normpath(args.output_dir)
+        exp_dir, exp_name = os.path.split(output_dir)
+        if not exp_name:
+            raise ValueError('--output_dir must point to an experiment directory, not a root directory.')
+        if args.exp_name is not None and args.exp_name != exp_name:
+            raise ValueError(
+                '--exp_name (%s) must match the basename of --output_dir (%s).'
+                % (args.exp_name, exp_name)
+            )
+        cfg.exp_dir = exp_dir or '.'
+        cfg.exp_name = exp_name
+    elif args.exp_name is not None:
+        cfg.exp_name = args.exp_name
+    if args.use_mask_aux:
+        cfg.model.enable_aux_mask = True
     if args.use_relation_aux:
         cfg.train.use_relation_aux = True
+    if args.use_semantic_aux:
+        cfg.train.use_semantic_aux = True
+    if args.use_semantic_detach:
+        cfg.train.use_semantic_detach = True
     if args.lambda_obj is not None:
         cfg.train.lambda_obj = args.lambda_obj
     if args.lambda_act is not None:
@@ -216,7 +236,12 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--cfg', required=True)
 parser.add_argument('--visualize', action='store_true')
 parser.add_argument('--visualize_every', type=int, default=10)
+parser.add_argument('--exp_name', type=str, default=None)
+parser.add_argument('--output_dir', type=str, default=None)
+parser.add_argument('--use_mask_aux', action='store_true')
 parser.add_argument('--use_relation_aux', action='store_true')
+parser.add_argument('--use_semantic_aux', action='store_true')
+parser.add_argument('--use_semantic_detach', action='store_true')
 parser.add_argument('--lambda_obj', type=float, default=None)
 parser.add_argument('--lambda_act', type=float, default=None)
 parser.add_argument('--lambda_rel', type=float, default=None)
@@ -325,6 +350,7 @@ if cfg.train.use_semantic_aux:
     print('Number of semantic tags: %d' % num_semantic_tags)
     print('Semantic tag file: %s' % cfg.train.semantic_tag_file)
     print('lambda_semantic: %s' % cfg.train.lambda_semantic)
+    print('use_semantic_detach: %s' % cfg.train.use_semantic_detach)
     print(
         'Semantic warmup: enabled=%s start=%s end=%s type=%s.'
         % (
@@ -398,6 +424,7 @@ experiment_summary = [
     f'  pseudo_mask_root: {cfg.data.pseudo_mask_root}',
     f'  use_semantic_aux: {cfg.train.use_semantic_aux}',
     f'  lambda_semantic: {cfg.train.lambda_semantic}',
+    f'  use_semantic_detach: {cfg.train.use_semantic_detach}',
     f'  use_semantic_warmup: {cfg.train.use_semantic_warmup}',
     f'  semantic_warmup_start: {cfg.train.semantic_warmup_start}',
     f'  semantic_warmup_end: {cfg.train.semantic_warmup_end}',
@@ -614,6 +641,7 @@ while t < cfg.train.max_iter:
         stats['ind_loss'] = ind_loss_val
         stats['avg_constraint_loss'] = constraint_loss_avg.avg
         stats['lambda_mask'] = cfg.train.lambda_mask
+        stats['use_mask_aux'] = float(cfg.model.enable_aux_mask)
         stats['effective_lambda_mask'] = effective_lambda_mask
         stats['lambda_semantic'] = cfg.train.lambda_semantic
         stats['effective_lambda_semantic'] = effective_lambda_semantic
@@ -624,6 +652,7 @@ while t < cfg.train.max_iter:
         stats['semantic_start_iter'] = cfg.train.semantic_start_iter
         stats['num_semantic_tags'] = num_semantic_tags
         stats['use_semantic_aux'] = float(cfg.train.use_semantic_aux)
+        stats['use_semantic_detach'] = float(cfg.train.use_semantic_detach)
         stats['loss_mask'] = mask_loss_val
         stats['weighted_mask_loss'] = weighted_mask_loss_val
         stats['loss_semantic'] = semantic_loss_val

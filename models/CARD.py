@@ -101,6 +101,7 @@ class CARD(nn.Module):
         super().__init__()
         self.enable_aux_mask = cfg.model.enable_aux_mask
         self.use_semantic_aux = bool(cfg.train.use_semantic_aux)
+        self.use_semantic_detach = bool(getattr(cfg.train, 'use_semantic_detach', False))
         self.use_relation_aux = bool(cfg.train.use_relation_aux)
         self.use_weak_mask_prior = bool(cfg.train.use_weak_mask_prior)
         self.mask_alpha = cfg.train.mask_alpha
@@ -285,7 +286,8 @@ class CARD(nn.Module):
             mask_tokens = mask_pred.flatten(2).transpose(1, 2)
             output = output * (1.0 + self.mask_alpha * mask_tokens)
         if self.use_semantic_aux:
-            semantic_logits = self.semantic_head(output)
+            semantic_input = output.detach() if self.use_semantic_detach else output
+            semantic_logits = self.semantic_head(semantic_input)
         if self.use_relation_aux:
             relation_aux_logits = self.relation_aux_head(output)
 

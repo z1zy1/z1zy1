@@ -61,6 +61,7 @@ train:
     semantic_tag_file: "configs/semantic_tags/levir_cc_object_action_tags.txt"
     semantic_aux_dropout: 0.1
     semantic_normalize_synonyms: True
+    use_semantic_detach: False
     use_relation_aux: False
     use_content_word_weight: False
     use_content_word_weighted_ce: False

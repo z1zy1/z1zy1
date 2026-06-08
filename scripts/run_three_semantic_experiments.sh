@@ -86,7 +86,7 @@ python test_card_spot.py \\
   train.use_semantic_detach "$use_semantic_detach"
 
 python evaluate_spot.py \\
-  --results_dir "$EXP_ROOT/$exp_name/test_output/captions/test" \\
+  --results_dir "$EXP_ROOT/$exp_name/test_output/captions" \\
   --anno "$ANNO"
 EOF
 }

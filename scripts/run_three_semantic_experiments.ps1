@@ -95,7 +95,7 @@ python test_card_spot.py `
   train.use_semantic_detach "$UseSemanticDetach"
 
 python evaluate_spot.py `
-  --results_dir "$ExpRoot/$ExpName/test_output/captions/test" `
+  --results_dir "$ExpRoot/$ExpName/test_output/captions" `
   --anno "$Anno"
 "@ | Set-Content -LiteralPath $Path -Encoding UTF8
 }

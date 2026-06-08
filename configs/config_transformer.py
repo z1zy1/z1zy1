@@ -150,6 +150,7 @@ __C.train = AttrDict()
 __C.train.snapshot_interval = 1000
 __C.train.start_from = None
 __C.train.max_iter = 10000
+__C.train.seed = 1111
 __C.train.log_interval = 50
 __C.train.scheduled_sampling_start = 1000000
 __C.train.scheduled_sampling_increase_every = 5

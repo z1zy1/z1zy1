@@ -105,6 +105,7 @@ class CARD(nn.Module):
         self.use_relation_aux = bool(cfg.train.use_relation_aux)
         self.use_weak_mask_prior = bool(cfg.train.use_weak_mask_prior)
         self.mask_alpha = cfg.train.mask_alpha
+        self.semantic_detach_debug = {}
         self.temp = nn.Parameter(torch.ones([]) * temp)
         self.feat_dim = cfg.model.transformer_encoder.feat_dim
         self.att_dim = cfg.model.transformer_encoder.att_dim
@@ -192,6 +193,7 @@ class CARD(nn.Module):
         return torch.exp(-pairwise_distances_ / sigma)
 
     def forward(self, input_1, input_2):
+        self.semantic_detach_debug = {}
         with torch.no_grad():
             self.temp.clamp_(0.001, 0.5)
         batch_size, C, H, W = input_1.size()
@@ -285,17 +287,25 @@ class CARD(nn.Module):
                 raise ValueError('Weak mask prior requires an auxiliary mask prediction.')
             mask_tokens = mask_pred.flatten(2).transpose(1, 2)
             output = output * (1.0 + self.mask_alpha * mask_tokens)
+        diff_features = output
+        caption_input = diff_features
         if self.use_semantic_aux:
-            semantic_input = output.detach() if self.use_semantic_detach else output
+            semantic_input = diff_features.detach() if self.use_semantic_detach else diff_features
             semantic_logits = self.semantic_head(semantic_input)
+            self.semantic_detach_debug = {
+                'semantic_input_requires_grad': float(semantic_input.requires_grad),
+                'diff_features_requires_grad': float(diff_features.requires_grad),
+                'caption_input_requires_grad': float(caption_input.requires_grad),
+                'semantic_logits_requires_grad': float(semantic_logits.requires_grad),
+            }
         if self.use_relation_aux:
-            relation_aux_logits = self.relation_aux_head(output)
+            relation_aux_logits = self.relation_aux_head(caption_input)
 
         if self.use_relation_aux:
-            return output, loss_con, loss_ind, att1, att2, mask_pred, semantic_logits, relation_aux_logits
+            return caption_input, loss_con, loss_ind, att1, att2, mask_pred, semantic_logits, relation_aux_logits
         if self.use_semantic_aux:
-            return output, loss_con, loss_ind, att1, att2, mask_pred, semantic_logits
-        return output, loss_con, loss_ind, att1, att2, mask_pred
+            return caption_input, loss_con, loss_ind, att1, att2, mask_pred, semantic_logits
+        return caption_input, loss_con, loss_ind, att1, att2, mask_pred
 
 
 class AddSpatialInfo(nn.Module):

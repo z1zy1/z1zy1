@@ -149,6 +149,14 @@ def apply_cli_overrides(args, cfg):
         cfg.train.use_semantic_aux = True
     if args.use_semantic_detach:
         cfg.train.use_semantic_detach = True
+    if args.seed is not None:
+        cfg.train.seed = args.seed
+    if args.debug_semantic_detach:
+        cfg.train.use_semantic_aux = True
+        cfg.train.use_semantic_detach = True
+        cfg.train.log_interval = 1
+        cfg.train.max_iter = min(cfg.train.max_iter, 2)
+        cfg.train.snapshot_interval = max(cfg.train.snapshot_interval, cfg.train.max_iter + 1)
     if args.lambda_obj is not None:
         cfg.train.lambda_obj = args.lambda_obj
     if args.lambda_act is not None:
@@ -242,6 +250,8 @@ parser.add_argument('--use_mask_aux', action='store_true')
 parser.add_argument('--use_relation_aux', action='store_true')
 parser.add_argument('--use_semantic_aux', action='store_true')
 parser.add_argument('--use_semantic_detach', action='store_true')
+parser.add_argument('--debug_semantic_detach', action='store_true')
+parser.add_argument('--seed', type=int, default=None)
 parser.add_argument('--lambda_obj', type=float, default=None)
 parser.add_argument('--lambda_act', type=float, default=None)
 parser.add_argument('--lambda_rel', type=float, default=None)
@@ -312,9 +322,11 @@ snapshot_file_format = '%s_checkpoint_%d.pt'
 train_logger = Logger(cfg, output_dir, is_train=True)
 val_logger = Logger(cfg, output_dir, is_train=False)
 
-random.seed(1111)
-np.random.seed(1111)
-torch.manual_seed(1111)
+random.seed(cfg.train.seed)
+np.random.seed(cfg.train.seed)
+torch.manual_seed(cfg.train.seed)
+if use_cuda:
+    torch.cuda.manual_seed_all(cfg.train.seed)
 
 if not cfg.model.enable_aux_mask:
     experiment_mode = 'baseline'
@@ -411,6 +423,7 @@ experiment_summary = [
     'Experiment Summary:',
     f'  exp_name: {exp_name}',
     f'  mode: {experiment_mode}',
+    f'  seed: {cfg.train.seed}',
     f'  enable_aux_mask: {cfg.model.enable_aux_mask}',
     f'  lambda_mask: {cfg.train.lambda_mask}',
     f'  use_mask_conf_filter: {cfg.train.use_mask_conf_filter}',
@@ -657,6 +670,14 @@ while t < cfg.train.max_iter:
         stats['weighted_mask_loss'] = weighted_mask_loss_val
         stats['loss_semantic'] = semantic_loss_val
         stats['weighted_semantic_loss'] = weighted_semantic_loss_val
+        semantic_debug_info = getattr(change_detector, 'semantic_detach_debug', {})
+        for debug_key in (
+            'semantic_input_requires_grad',
+            'diff_features_requires_grad',
+            'caption_input_requires_grad',
+            'semantic_logits_requires_grad',
+        ):
+            stats[debug_key] = semantic_debug_info.get(debug_key, 0.0)
         stats['total_loss'] = total_loss_val
         stats['loss_total'] = total_loss_val
         stats['avg_total_loss'] = total_loss_avg.avg

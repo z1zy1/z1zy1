@@ -29,7 +29,7 @@ def check_detach_source():
     card_path = os.path.join(PROJECT_ROOT, 'models', 'CARD.py')
     with open(card_path, 'r', encoding='utf-8') as f:
         source = f.read()
-    has_semantic_detach = 'semantic_input = diff_features.detach() if self.use_semantic_detach else diff_features' in source
+    has_semantic_detach = 'semantic_input = diff_features.detach() if detach_semantic_input else diff_features' in source
     has_caption_output = 'return caption_input' in source
     print('')
     print('E3 semantic detach:')

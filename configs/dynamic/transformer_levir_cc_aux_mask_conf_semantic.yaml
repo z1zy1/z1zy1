@@ -63,6 +63,8 @@ train:
     semantic_aux_dropout: 0.1
     semantic_normalize_synonyms: True
     use_semantic_detach: False
+    use_semantic_partial_detach: False
+    semantic_update_visual: True
     use_relation_aux: False
     use_content_word_weight: False
     use_content_word_weighted_ce: False

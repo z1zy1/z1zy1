@@ -95,6 +95,29 @@ def get_warmup_lambda(target_lambda, global_step, warmup_steps):
     return target_lambda * min(1.0, float(global_step) / float(warmup_steps))
 
 
+def grad_norm(parameters):
+    total_sq = 0.0
+    for p in parameters:
+        if p.grad is None:
+            continue
+        param_norm = p.grad.detach().float().norm(2).item()
+        total_sq += param_norm * param_norm
+    return total_sq ** 0.5
+
+
+def set_requires_grad(parameters, requires_grad):
+    previous = []
+    for p in parameters:
+        previous.append(p.requires_grad)
+        p.requires_grad_(requires_grad)
+    return previous
+
+
+def restore_requires_grad(parameters, previous):
+    for p, requires_grad in zip(parameters, previous):
+        p.requires_grad_(requires_grad)
+
+
 def move_semantic_targets_to_device(semantic_targets, device):
     if semantic_targets is None:
         return None
@@ -149,6 +172,12 @@ def apply_cli_overrides(args, cfg):
         cfg.train.use_semantic_aux = True
     if args.use_semantic_detach:
         cfg.train.use_semantic_detach = True
+    if args.use_semantic_partial_detach:
+        cfg.train.use_semantic_partial_detach = True
+    if args.semantic_update_visual:
+        cfg.train.semantic_update_visual = True
+    if args.no_semantic_update_visual:
+        cfg.train.semantic_update_visual = False
     if args.seed is not None:
         cfg.train.seed = args.seed
     if args.debug_semantic_detach:
@@ -157,6 +186,8 @@ def apply_cli_overrides(args, cfg):
         cfg.train.log_interval = 1
         cfg.train.max_iter = min(cfg.train.max_iter, 2)
         cfg.train.snapshot_interval = max(cfg.train.snapshot_interval, cfg.train.max_iter + 1)
+    if cfg.train.use_semantic_detach and cfg.train.use_semantic_partial_detach:
+        raise ValueError('use_semantic_detach and use_semantic_partial_detach cannot both be True')
     if args.lambda_obj is not None:
         cfg.train.lambda_obj = args.lambda_obj
     if args.lambda_act is not None:
@@ -250,6 +281,9 @@ parser.add_argument('--use_mask_aux', action='store_true')
 parser.add_argument('--use_relation_aux', action='store_true')
 parser.add_argument('--use_semantic_aux', action='store_true')
 parser.add_argument('--use_semantic_detach', action='store_true')
+parser.add_argument('--use_semantic_partial_detach', action='store_true')
+parser.add_argument('--semantic_update_visual', action='store_true')
+parser.add_argument('--no_semantic_update_visual', action='store_true')
 parser.add_argument('--debug_semantic_detach', action='store_true')
 parser.add_argument('--seed', type=int, default=None)
 parser.add_argument('--lambda_obj', type=float, default=None)
@@ -363,6 +397,8 @@ if cfg.train.use_semantic_aux:
     print('Semantic tag file: %s' % cfg.train.semantic_tag_file)
     print('lambda_semantic: %s' % cfg.train.lambda_semantic)
     print('use_semantic_detach: %s' % cfg.train.use_semantic_detach)
+    print('use_semantic_partial_detach: %s' % cfg.train.use_semantic_partial_detach)
+    print('semantic_update_visual: %s' % cfg.train.semantic_update_visual)
     print(
         'Semantic warmup: enabled=%s start=%s end=%s type=%s.'
         % (
@@ -438,6 +474,8 @@ experiment_summary = [
     f'  use_semantic_aux: {cfg.train.use_semantic_aux}',
     f'  lambda_semantic: {cfg.train.lambda_semantic}',
     f'  use_semantic_detach: {cfg.train.use_semantic_detach}',
+    f'  use_semantic_partial_detach: {cfg.train.use_semantic_partial_detach}',
+    f'  semantic_update_visual: {cfg.train.semantic_update_visual}',
     f'  use_semantic_warmup: {cfg.train.use_semantic_warmup}',
     f'  semantic_warmup_start: {cfg.train.semantic_warmup_start}',
     f'  semantic_warmup_end: {cfg.train.semantic_warmup_end}',
@@ -626,19 +664,26 @@ while t < cfg.train.max_iter:
             action_pos_count = semantic_targets['actions'].sum().item()
             relation_pos_count = semantic_targets['relations'].sum().item()
 
-        total_loss = cap_loss + 0.001 * con_loss + 0.001 * ind_loss
+        main_loss = cap_loss + 0.001 * con_loss + 0.001 * ind_loss
         if mask_loss is not None:
-            total_loss = total_loss + effective_lambda_mask * mask_loss
-        if semantic_loss is not None:
-            total_loss = total_loss + effective_lambda_semantic * semantic_loss
+            main_loss = main_loss + effective_lambda_mask * mask_loss
         if object_loss is not None:
-            total_loss = total_loss + lambda_obj_current * object_loss
+            main_loss = main_loss + lambda_obj_current * object_loss
         if action_loss is not None:
-            total_loss = total_loss + lambda_act_current * action_loss
+            main_loss = main_loss + lambda_act_current * action_loss
         if relation_loss is not None:
-            total_loss = total_loss + lambda_rel_current * relation_loss
+            main_loss = main_loss + lambda_rel_current * relation_loss
+
+        weighted_semantic_loss = None
+        if semantic_loss is not None:
+            weighted_semantic_loss = effective_lambda_semantic * semantic_loss
+
+        total_loss = main_loss
+        if weighted_semantic_loss is not None:
+            total_loss = total_loss + weighted_semantic_loss
 
         total_loss_val = total_loss.item()
+        main_loss_val = main_loss.item()
 
         speaker_loss_avg.update(cap_loss_val, 2 * batch_size)
         constraint_loss_avg.update(con_loss_val + ind_loss_val, 2 * batch_size)
@@ -666,6 +711,8 @@ while t < cfg.train.max_iter:
         stats['num_semantic_tags'] = num_semantic_tags
         stats['use_semantic_aux'] = float(cfg.train.use_semantic_aux)
         stats['use_semantic_detach'] = float(cfg.train.use_semantic_detach)
+        stats['use_semantic_partial_detach'] = float(cfg.train.use_semantic_partial_detach)
+        stats['semantic_update_visual'] = float(cfg.train.semantic_update_visual)
         stats['loss_mask'] = mask_loss_val
         stats['weighted_mask_loss'] = weighted_mask_loss_val
         stats['loss_semantic'] = semantic_loss_val
@@ -676,8 +723,14 @@ while t < cfg.train.max_iter:
             'diff_features_requires_grad',
             'caption_input_requires_grad',
             'semantic_logits_requires_grad',
+            'semantic_branch_depends_on_decoder',
         ):
             stats[debug_key] = semantic_debug_info.get(debug_key, 0.0)
+        stats['caption_decoder_grad_from_semantic_blocked'] = 0.0
+        stats['semantic_head_grad_norm'] = 0.0
+        stats['decoder_grad_norm_after_main_loss'] = 0.0
+        stats['decoder_grad_norm_after_semantic_loss'] = 0.0
+        stats['main_loss'] = main_loss_val
         stats['total_loss'] = total_loss_val
         stats['loss_total'] = total_loss_val
         stats['avg_total_loss'] = total_loss_avg.avg
@@ -695,7 +748,31 @@ while t < cfg.train.max_iter:
             stats['relation_pos_count'] = relation_pos_count
 
         #results, sample_logprobs = model(d_feats, q_feats, labels, cfg=cfg, mode='sample')
-        total_loss.backward()
+        if cfg.train.use_semantic_partial_detach and weighted_semantic_loss is not None:
+            main_loss.backward(retain_graph=True)
+            decoder_grad_after_main = grad_norm(speaker.parameters())
+            speaker_requires_grad = set_requires_grad(speaker.parameters(), False)
+            try:
+                weighted_semantic_loss.backward()
+            finally:
+                restore_requires_grad(speaker.parameters(), speaker_requires_grad)
+            decoder_grad_after_semantic = grad_norm(speaker.parameters())
+            stats['decoder_grad_norm_after_main_loss'] = decoder_grad_after_main
+            stats['decoder_grad_norm_after_semantic_loss'] = decoder_grad_after_semantic
+            stats['caption_decoder_grad_from_semantic_blocked'] = float(
+                abs(decoder_grad_after_semantic - decoder_grad_after_main) <= 1e-12
+            )
+        else:
+            total_loss.backward()
+            decoder_grad_after_main = grad_norm(speaker.parameters())
+            stats['decoder_grad_norm_after_main_loss'] = decoder_grad_after_main
+            stats['decoder_grad_norm_after_semantic_loss'] = decoder_grad_after_main
+            stats['caption_decoder_grad_from_semantic_blocked'] = float(
+                not cfg.train.use_semantic_aux
+                or semantic_debug_info.get('semantic_branch_depends_on_decoder', 0.0) == 0.0
+            )
+        if getattr(change_detector, 'semantic_head', None) is not None:
+            stats['semantic_head_grad_norm'] = grad_norm(change_detector.semantic_head.parameters())
         if cfg.train.grad_clip != -1.0:  # enable, -1 == disable
             nn.utils.clip_grad_norm_(change_detector.parameters(), cfg.train.grad_clip)
             nn.utils.clip_grad_norm_(speaker.parameters(), cfg.train.grad_clip)

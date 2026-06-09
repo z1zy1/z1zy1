@@ -102,6 +102,10 @@ class CARD(nn.Module):
         self.enable_aux_mask = cfg.model.enable_aux_mask
         self.use_semantic_aux = bool(cfg.train.use_semantic_aux)
         self.use_semantic_detach = bool(getattr(cfg.train, 'use_semantic_detach', False))
+        self.use_semantic_partial_detach = bool(getattr(cfg.train, 'use_semantic_partial_detach', False))
+        self.semantic_update_visual = bool(getattr(cfg.train, 'semantic_update_visual', True))
+        if self.use_semantic_detach and self.use_semantic_partial_detach:
+            raise ValueError('use_semantic_detach and use_semantic_partial_detach cannot both be True')
         self.use_relation_aux = bool(cfg.train.use_relation_aux)
         self.use_weak_mask_prior = bool(cfg.train.use_weak_mask_prior)
         self.mask_alpha = cfg.train.mask_alpha
@@ -290,13 +294,18 @@ class CARD(nn.Module):
         diff_features = output
         caption_input = diff_features
         if self.use_semantic_aux:
-            semantic_input = diff_features.detach() if self.use_semantic_detach else diff_features
+            detach_semantic_input = (
+                self.use_semantic_detach
+                or (self.use_semantic_partial_detach and not self.semantic_update_visual)
+            )
+            semantic_input = diff_features.detach() if detach_semantic_input else diff_features
             semantic_logits = self.semantic_head(semantic_input)
             self.semantic_detach_debug = {
                 'semantic_input_requires_grad': float(semantic_input.requires_grad),
                 'diff_features_requires_grad': float(diff_features.requires_grad),
                 'caption_input_requires_grad': float(caption_input.requires_grad),
                 'semantic_logits_requires_grad': float(semantic_logits.requires_grad),
+                'semantic_branch_depends_on_decoder': 0.0,
             }
         if self.use_relation_aux:
             relation_aux_logits = self.relation_aux_head(caption_input)

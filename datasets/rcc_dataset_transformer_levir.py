@@ -47,6 +47,7 @@ class RCCDataset(Dataset):
         self.allow_missing_pseudo_mask = cfg.data.allow_missing_pseudo_mask
         self.enable_aux_mask = cfg.model.enable_aux_mask
         self.require_aux_mask = self.enable_aux_mask and cfg.train.lambda_mask > 0
+        self.mask_ignore_index = getattr(cfg.train, 'mask_ignore_index', -1)
         self.use_semantic_aux = bool(cfg.train.use_semantic_aux) and split == 'train'
         self.use_relation_aux = bool(cfg.train.use_relation_aux)
         self.semantic_normalize_synonyms = bool(cfg.train.semantic_normalize_synonyms)
@@ -56,10 +57,16 @@ class RCCDataset(Dataset):
         self.semantic_labels_by_img_idx = {}
         self.semantic_label_stats = None
         self.semantic_targets_by_img_idx = {}
+        self._missing_pseudo_mask_warnings = 0
 
         if self.use_semantic_aux:
             self.semantic_tags = read_semantic_tags(cfg.train.semantic_tag_file)
             self.num_semantic_tags = len(self.semantic_tags)
+        if self.require_aux_mask and not self.pseudo_mask_root:
+            print(
+                'Warning: aux mask is enabled but cfg.data.pseudo_mask_root is empty. '
+                'Mask supervision will be ignored for missing masks.'
+            )
 
         if split == 'train':
             self.batch_size = cfg.data.train.batch_size
@@ -134,8 +141,7 @@ class RCCDataset(Dataset):
             f'Cannot find feature for "{filename}" under "{base_dir}" and split "{split_name}".'
         )
 
-    @staticmethod
-    def _load_mask(mask_path):
+    def _load_mask(self, mask_path):
         if mask_path.endswith('.npy'):
             mask = np.load(mask_path)
         else:
@@ -144,7 +150,8 @@ class RCCDataset(Dataset):
             mask = mask[..., 0]
         mask = mask.astype(np.float32)
         if mask.max() > 1.0:
-            mask = mask / 255.0
+            ignore_mask = mask == float(self.mask_ignore_index)
+            mask = np.where(ignore_mask, mask, mask / 255.0)
         return torch.from_numpy(mask).unsqueeze(0)
 
     def _decode_reference_caption(self, token_ids):
@@ -245,8 +252,6 @@ class RCCDataset(Dataset):
 
     def _resolve_pseudo_mask_path(self, split_name, filename):
         if not self.pseudo_mask_root:
-            if self.require_aux_mask:
-                raise ValueError('cfg.data.pseudo_mask_root must be set when aux mask is enabled.')
             return None
 
         stem = os.path.splitext(filename)[0]
@@ -266,11 +271,13 @@ class RCCDataset(Dataset):
             if os.path.exists(path):
                 return path
 
-        if self.allow_missing_pseudo_mask:
-            return None
-        raise FileNotFoundError(
-            f'Cannot find pseudo mask for "{filename}" under "{self.pseudo_mask_root}" and split "{split_name}".'
-        )
+        if not self.allow_missing_pseudo_mask and self._missing_pseudo_mask_warnings < 5:
+            print(
+                f'Warning: cannot find pseudo mask for "{filename}" under "{self.pseudo_mask_root}" '
+                f'and split "{split_name}". This sample will be ignored for mask loss.'
+            )
+            self._missing_pseudo_mask_warnings += 1
+        return None
 
     def __getitem__(self, index):
         img_idx = int(self.split_idxs[index])
@@ -295,11 +302,15 @@ class RCCDataset(Dataset):
             pseudo_mask_path = self._resolve_pseudo_mask_path(split_name, filename)
             if pseudo_mask_path is not None:
                 pseudo_mask = self._load_mask(pseudo_mask_path)
+            else:
+                pseudo_mask = torch.full(
+                    (1, d_feature.shape[-2], d_feature.shape[-1]),
+                    float(self.mask_ignore_index),
+                    dtype=torch.float32,
+                )
         semantic_labels = None
         if self.use_semantic_aux:
             semantic_labels = self.semantic_labels_by_img_idx.get(img_idx)
-            if semantic_labels is None:
-                raise ValueError('Missing semantic labels for image index %d.' % img_idx)
         semantic_targets = None
         if self.use_relation_aux:
             semantic_targets = self.semantic_targets_by_img_idx.get(img_idx)
@@ -407,9 +418,9 @@ def rcc_collate(batch):
     )
     extra_batches = []
     if len(transposed) > 8:
-        extra_batches.append(default_collate(transposed[8]))
+        extra_batches.append(default_collate(transposed[8]) if all(x is not None for x in transposed[8]) else None)
     if len(transposed) > 9:
-        extra_batches.append(default_collate(transposed[9]))
+        extra_batches.append(default_collate(transposed[9]) if all(x is not None for x in transposed[9]) else None)
     if extra_batches:
         return output + tuple(extra_batches)
     return output

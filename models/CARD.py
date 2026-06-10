@@ -33,8 +33,7 @@ class AuxMaskHead(nn.Module):
         self.net = nn.Sequential(
             nn.Conv2d(input_dim, hidden_dim, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(hidden_dim, 1, kernel_size=1),
-            nn.Sigmoid()
+            nn.Conv2d(hidden_dim, 1, kernel_size=1)
         )
 
     def forward(self, x):
@@ -95,6 +94,62 @@ class RelationAuxiliaryHead(nn.Module):
         }
 
 
+def partial_detach_feature(feat, detach_ratio: float):
+    if detach_ratio <= 0:
+        return feat
+    if detach_ratio >= 1:
+        return feat.detach()
+    return feat.detach() * detach_ratio + feat * (1.0 - detach_ratio)
+
+
+def reweight_feature_with_mask(feat, mask_logits, alpha: float, spatial_size=None):
+    if mask_logits is None or alpha <= 0:
+        return feat
+    if mask_logits.dim() != 4 or mask_logits.size(1) != 1:
+        raise ValueError(
+            'Feature reweight expects mask logits with shape [B, 1, H, W], got %s.'
+            % (tuple(mask_logits.shape),)
+        )
+
+    mask_prob = torch.sigmoid(mask_logits)
+    if feat.dim() == 3:
+        batch_size, num_tokens, _ = feat.shape
+        if mask_prob.size(0) != batch_size:
+            raise ValueError(
+                'Feature reweight batch mismatch: feat=%s mask=%s.'
+                % (tuple(feat.shape), tuple(mask_logits.shape))
+            )
+        if spatial_size is not None:
+            expected_tokens = int(spatial_size[0]) * int(spatial_size[1])
+            if num_tokens != expected_tokens:
+                raise ValueError(
+                    'Feature reweight token count %d does not match spatial size %s.'
+                    % (num_tokens, spatial_size)
+                )
+            if mask_prob.shape[-2:] != spatial_size:
+                mask_prob = F.interpolate(mask_prob, size=spatial_size, mode='bilinear', align_corners=False)
+        mask_tokens = mask_prob.flatten(2).transpose(1, 2)
+        if mask_tokens.size(1) != num_tokens:
+            raise ValueError(
+                'Feature reweight mask token count %d does not match feat token count %d.'
+                % (mask_tokens.size(1), num_tokens)
+            )
+        return feat * (1.0 + float(alpha) * mask_tokens)
+
+    if feat.dim() == 4:
+        batch_size, _, height, width = feat.shape
+        if mask_prob.size(0) != batch_size:
+            raise ValueError(
+                'Feature reweight batch mismatch: feat=%s mask=%s.'
+                % (tuple(feat.shape), tuple(mask_logits.shape))
+            )
+        if mask_prob.shape[-2:] != (height, width):
+            mask_prob = F.interpolate(mask_prob, size=(height, width), mode='bilinear', align_corners=False)
+        return feat * (1.0 + float(alpha) * mask_prob)
+
+    raise ValueError('Feature reweight expects [B, N, C] or [B, C, H, W], got %s.' % (tuple(feat.shape),))
+
+
 class CARD(nn.Module):
 
     def __init__(self, cfg, temp=0.07):
@@ -109,6 +164,9 @@ class CARD(nn.Module):
         self.use_relation_aux = bool(cfg.train.use_relation_aux)
         self.use_weak_mask_prior = bool(cfg.train.use_weak_mask_prior)
         self.mask_alpha = cfg.train.mask_alpha
+        self.use_feature_reweight = bool(getattr(cfg.train, 'use_feature_reweight', False))
+        self.reweight_alpha = float(getattr(cfg.train, 'reweight_alpha', 0.2))
+        self.semantic_detach_ratio = float(getattr(cfg.train, 'semantic_detach_ratio', 0.5))
         self.semantic_detach_debug = {}
         self.temp = nn.Parameter(torch.ones([]) * temp)
         self.feat_dim = cfg.model.transformer_encoder.feat_dim
@@ -158,7 +216,9 @@ class CARD(nn.Module):
             nn.Dropout(0.1),
             nn.ReLU()
         )
-        self.aux_mask_head = AuxMaskHead(self.embed_dim) if (self.enable_aux_mask or self.use_weak_mask_prior) else None
+        self.aux_mask_head = AuxMaskHead(self.embed_dim) if (
+            self.enable_aux_mask or self.use_weak_mask_prior or self.use_feature_reweight
+        ) else None
         self.semantic_tags = []
         self.num_semantic_tags = 0
         self.semantic_head = None
@@ -289,16 +349,26 @@ class CARD(nn.Module):
         if self.use_weak_mask_prior:
             if mask_pred is None:
                 raise ValueError('Weak mask prior requires an auxiliary mask prediction.')
-            mask_tokens = mask_pred.flatten(2).transpose(1, 2)
+            mask_tokens = torch.sigmoid(mask_pred).flatten(2).transpose(1, 2)
             output = output * (1.0 + self.mask_alpha * mask_tokens)
         diff_features = output
         caption_input = diff_features
-        if self.use_semantic_aux:
-            detach_semantic_input = (
-                self.use_semantic_detach
-                or (self.use_semantic_partial_detach and not self.semantic_update_visual)
+        if self.use_feature_reweight:
+            caption_input = reweight_feature_with_mask(
+                diff_features,
+                mask_pred,
+                self.reweight_alpha,
+                spatial_size=(H, W),
             )
-            semantic_input = diff_features.detach() if detach_semantic_input else diff_features
+        if self.use_semantic_aux:
+            if self.use_semantic_detach:
+                semantic_input = diff_features.detach()
+            elif self.use_semantic_partial_detach:
+                semantic_input = partial_detach_feature(diff_features, self.semantic_detach_ratio)
+            elif not self.semantic_update_visual:
+                semantic_input = diff_features.detach()
+            else:
+                semantic_input = diff_features
             semantic_logits = self.semantic_head(semantic_input)
             self.semantic_detach_debug = {
                 'semantic_input_requires_grad': float(semantic_input.requires_grad),
@@ -306,6 +376,8 @@ class CARD(nn.Module):
                 'caption_input_requires_grad': float(caption_input.requires_grad),
                 'semantic_logits_requires_grad': float(semantic_logits.requires_grad),
                 'semantic_branch_depends_on_decoder': 0.0,
+                'semantic_detach_ratio': self.semantic_detach_ratio if self.use_semantic_partial_detach else 0.0,
+                'feature_reweight_enabled': float(self.use_feature_reweight),
             }
         if self.use_relation_aux:
             relation_aux_logits = self.relation_aux_head(caption_input)

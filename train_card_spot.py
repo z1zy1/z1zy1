@@ -3,6 +3,7 @@ import sys
 import json
 import argparse
 import time
+import shutil
 import numpy as np
 import torch
 torch.backends.cudnn.enabled = False
@@ -24,6 +25,15 @@ from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, \
                         EntropyLoss, LabelSmoothingLoss
 
 from utils.vis_utils import visualize_att
+
+
+BASELINE_EVAL = {
+    "Bleu_4": 0.4375,
+    "METEOR": 0.3377,
+    "ROUGE_L": 0.6942,
+    "CIDEr": 1.2299,
+    "SPICE": 0.2607,
+}
 
 
 def align_mask_tensor(tensor, spatial_size, mode):
@@ -49,14 +59,19 @@ def compute_dice_loss(pred, target, valid_mask=None, eps=1e-6):
     return 1.0 - dice_score.mean()
 
 
-def compute_mask_loss(pred, target, ignore_mask=None, loss_type='bce', bce_dice_alpha=0.5):
-    target = align_mask_tensor(target, pred.shape[-2:], mode='bilinear')
-    valid_mask = None
+def compute_mask_loss(pred, target, ignore_mask=None, loss_type='bce', bce_dice_alpha=0.5, ignore_index=None):
+    target = align_mask_tensor(target, pred.shape[-2:], mode='nearest')
+    valid_mask = torch.ones_like(target)
+    if ignore_index is not None:
+        valid_mask = valid_mask * (target != float(ignore_index)).float()
+        target = torch.where(valid_mask > 0, target, torch.zeros_like(target))
     if ignore_mask is not None:
         ignore_mask = align_mask_tensor(ignore_mask, pred.shape[-2:], mode='nearest')
-        valid_mask = (~ignore_mask.bool()).float()
+        valid_mask = valid_mask * (~ignore_mask.bool()).float()
 
-    bce = F.binary_cross_entropy(pred, target, reduction='none')
+    target = target.clamp(0.0, 1.0)
+    pred_prob = torch.sigmoid(pred)
+    bce = F.binary_cross_entropy_with_logits(pred, target, reduction='none')
     if valid_mask is not None:
         bce = bce * valid_mask
         valid_count = valid_mask.sum()
@@ -70,7 +85,7 @@ def compute_mask_loss(pred, target, ignore_mask=None, loss_type='bce', bce_dice_
     if loss_type == 'bce':
         return bce_loss
     if loss_type == 'bce_dice':
-        dice_loss = compute_dice_loss(pred, target, valid_mask=valid_mask)
+        dice_loss = compute_dice_loss(pred_prob, target, valid_mask=valid_mask)
         return bce_dice_alpha * bce_loss + (1.0 - bce_dice_alpha) * dice_loss
     raise ValueError('Unknown mask_loss_type: %s' % loss_type)
 
@@ -85,6 +100,98 @@ def get_effective_lambda_mask(cfg, global_step):
     if cfg.train.mask_warmup_steps <= 0:
         return cfg.train.lambda_mask
     return cfg.train.lambda_mask * min(1.0, float(global_step) / float(cfg.train.mask_warmup_steps))
+
+
+def get_aux_weights(progress, lmask, lsem, warmup_start=0.3, warmup_end=0.7,
+                    sem_decay_start=0.7, sem_decay_final_ratio=0.5):
+    progress = max(0.0, min(1.0, float(progress)))
+    if progress < warmup_start:
+        return 0.0, 0.0
+
+    if progress < warmup_end:
+        denom = max(1e-8, warmup_end - warmup_start)
+        ratio = (progress - warmup_start) / denom
+        return lmask * ratio, lsem * ratio
+
+    lambda_mask = lmask
+    if progress >= sem_decay_start:
+        decay_ratio = (progress - sem_decay_start) / max(1e-8, 1.0 - sem_decay_start)
+        final_lsem = lsem * sem_decay_final_ratio
+        lambda_sem = lsem * (1.0 - decay_ratio) + final_lsem * decay_ratio
+    else:
+        lambda_sem = lsem
+    return lambda_mask, lambda_sem
+
+
+def compute_balanced_score(metrics, baseline=BASELINE_EVAL):
+    return (
+        0.25 * (float(metrics.get('CIDEr', 0.0)) / baseline['CIDEr'])
+        + 0.25 * (float(metrics.get('SPICE', 0.0)) / baseline['SPICE'])
+        + 0.20 * (float(metrics.get('Bleu_4', 0.0)) / baseline['Bleu_4'])
+        + 0.15 * (float(metrics.get('METEOR', 0.0)) / baseline['METEOR'])
+        + 0.15 * (float(metrics.get('ROUGE_L', 0.0)) / baseline['ROUGE_L'])
+    )
+
+
+def metrics_all_above_baseline(metrics, baseline=BASELINE_EVAL):
+    return all(float(metrics.get(metric, -float('inf'))) > value for metric, value in baseline.items())
+
+
+def evaluate_caption_metrics_if_available(cfg, result_json_path):
+    anno_path = getattr(cfg.data, 'eval_anno_path', '')
+    if not anno_path:
+        return None
+    if not os.path.exists(anno_path):
+        print('Warning: data.eval_anno_path does not exist, skipping training-time metrics: %s' % anno_path)
+        return None
+    try:
+        from utils.eval_utils_spot import score_generation
+    except Exception as exc:
+        print('Warning: could not import COCO evaluation tools, skipping training-time metrics: %s' % exc)
+        return None
+    try:
+        metrics = score_generation(anno_path, result_json_path)
+    except Exception as exc:
+        print('Warning: training-time caption evaluation failed: %s' % exc)
+        return None
+    metrics = dict(metrics)
+    metrics['balanced_score'] = compute_balanced_score(metrics)
+    metrics['all_above_baseline'] = metrics_all_above_baseline(metrics)
+    return metrics
+
+
+def update_best_training_checkpoints(output_dir, snapshot_path, metrics, best_records):
+    if metrics is None:
+        return
+
+    cider = float(metrics.get('CIDEr', -float('inf')))
+    if cider > best_records['cider']['score']:
+        best_records['cider'] = {'score': cider, 'snapshot': snapshot_path}
+        shutil.copy2(snapshot_path, os.path.join(output_dir, 'best_cider.pth'))
+
+    spice = float(metrics.get('SPICE', -float('inf')))
+    if spice > best_records['spice']['score']:
+        best_records['spice'] = {'score': spice, 'snapshot': snapshot_path}
+        shutil.copy2(snapshot_path, os.path.join(output_dir, 'best_spice.pth'))
+
+    balanced_score = float(metrics.get('balanced_score', -float('inf')))
+    all_above = bool(metrics.get('all_above_baseline', False))
+    best_balanced = best_records['balanced']
+    should_update_balanced = (
+        (all_above and not best_balanced['all_above_baseline'])
+        or (all_above == best_balanced['all_above_baseline'] and balanced_score > best_balanced['score'])
+    )
+    if should_update_balanced:
+        best_records['balanced'] = {
+            'score': balanced_score,
+            'snapshot': snapshot_path,
+            'all_above_baseline': all_above,
+        }
+        shutil.copy2(snapshot_path, os.path.join(output_dir, 'best_balanced.pth'))
+
+    record_path = os.path.join(output_dir, 'best_training_checkpoints.json')
+    with open(record_path, 'w', encoding='utf-8') as f:
+        json.dump(best_records, f, indent=2)
 
 
 def get_warmup_lambda(target_lambda, global_step, warmup_steps):
@@ -164,11 +271,11 @@ def apply_cli_overrides(args, cfg):
         cfg.exp_name = exp_name
     elif args.exp_name is not None:
         cfg.exp_name = args.exp_name
-    if args.use_mask_aux:
+    if args.use_mask_aux or args.use_aux_mask:
         cfg.model.enable_aux_mask = True
     if args.use_relation_aux:
         cfg.train.use_relation_aux = True
-    if args.use_semantic_aux:
+    if args.use_semantic_aux or args.use_aux_semantic:
         cfg.train.use_semantic_aux = True
     if args.use_semantic_detach:
         cfg.train.use_semantic_detach = True
@@ -208,6 +315,18 @@ def apply_cli_overrides(args, cfg):
         cfg.train.semantic_warmup_end = args.semantic_warmup_end
     if args.semantic_warmup_type is not None:
         cfg.train.semantic_warmup_type = args.semantic_warmup_type
+    if args.use_aux_warmup:
+        cfg.train.use_aux_warmup = True
+    if args.aux_warmup_start_ratio is not None:
+        cfg.train.aux_warmup_start_ratio = args.aux_warmup_start_ratio
+    if args.aux_warmup_end_ratio is not None:
+        cfg.train.aux_warmup_end_ratio = args.aux_warmup_end_ratio
+    if args.semantic_decay_start_ratio is not None:
+        cfg.train.semantic_decay_start_ratio = args.semantic_decay_start_ratio
+    if args.semantic_decay_final_ratio is not None:
+        cfg.train.semantic_decay_final_ratio = args.semantic_decay_final_ratio
+    if args.semantic_detach_ratio is not None:
+        cfg.train.semantic_detach_ratio = args.semantic_detach_ratio
     if args.semantic_late_start:
         cfg.train.semantic_late_start = True
     if args.semantic_start_iter is not None:
@@ -228,6 +347,14 @@ def apply_cli_overrides(args, cfg):
         cfg.train.mask_alpha = args.mask_alpha
     if args.lambda_mask is not None:
         cfg.train.lambda_mask = args.lambda_mask
+    if args.lmask is not None:
+        cfg.train.lambda_mask = args.lmask
+    if args.lsem is not None:
+        cfg.train.lambda_semantic = args.lsem
+    if args.use_feature_reweight:
+        cfg.train.use_feature_reweight = True
+    if args.reweight_alpha is not None:
+        cfg.train.reweight_alpha = args.reweight_alpha
     if args.mask_warmup_steps is not None:
         cfg.train.mask_warmup_steps = args.mask_warmup_steps
         if args.mask_warmup_steps > 0:
@@ -277,11 +404,14 @@ parser.add_argument('--visualize', action='store_true')
 parser.add_argument('--visualize_every', type=int, default=10)
 parser.add_argument('--exp_name', type=str, default=None)
 parser.add_argument('--output_dir', type=str, default=None)
+parser.add_argument('--use_aux_mask', action='store_true')
+parser.add_argument('--use_aux_semantic', action='store_true')
 parser.add_argument('--use_mask_aux', action='store_true')
 parser.add_argument('--use_relation_aux', action='store_true')
 parser.add_argument('--use_semantic_aux', action='store_true')
 parser.add_argument('--use_semantic_detach', action='store_true')
 parser.add_argument('--use_semantic_partial_detach', action='store_true')
+parser.add_argument('--semantic_detach_ratio', type=float, default=None)
 parser.add_argument('--semantic_update_visual', action='store_true')
 parser.add_argument('--no_semantic_update_visual', action='store_true')
 parser.add_argument('--debug_semantic_detach', action='store_true')
@@ -292,10 +422,16 @@ parser.add_argument('--lambda_rel', type=float, default=None)
 parser.add_argument('--relation_aux_dropout', type=float, default=None)
 parser.add_argument('--semantic_warmup_steps', type=int, default=None)
 parser.add_argument('--lambda_semantic', type=float, default=None)
+parser.add_argument('--lsem', type=float, default=None)
 parser.add_argument('--use_semantic_warmup', action='store_true')
 parser.add_argument('--semantic_warmup_start', type=int, default=None)
 parser.add_argument('--semantic_warmup_end', type=int, default=None)
 parser.add_argument('--semantic_warmup_type', type=str, default=None)
+parser.add_argument('--use_aux_warmup', action='store_true')
+parser.add_argument('--aux_warmup_start_ratio', type=float, default=None)
+parser.add_argument('--aux_warmup_end_ratio', type=float, default=None)
+parser.add_argument('--semantic_decay_start_ratio', type=float, default=None)
+parser.add_argument('--semantic_decay_final_ratio', type=float, default=None)
 parser.add_argument('--semantic_late_start', action='store_true')
 parser.add_argument('--semantic_start_iter', type=int, default=None)
 parser.add_argument('--semantic_threshold', type=float, default=None)
@@ -305,6 +441,9 @@ parser.add_argument('--max_content_word_weight', type=float, default=None)
 parser.add_argument('--use_weak_mask_prior', action='store_true')
 parser.add_argument('--mask_alpha', type=float, default=None)
 parser.add_argument('--lambda_mask', type=float, default=None)
+parser.add_argument('--lmask', type=float, default=None)
+parser.add_argument('--use_feature_reweight', action='store_true')
+parser.add_argument('--reweight_alpha', type=float, default=None)
 parser.add_argument('--mask_warmup_steps', type=int, default=None)
 parser.add_argument('opts', nargs=argparse.REMAINDER)
 args = parser.parse_args()
@@ -376,6 +515,10 @@ if is_content_word_weighted_ce_enabled(cfg):
     experiment_mode += ' + content_word_weight'
 if cfg.train.use_weak_mask_prior:
     experiment_mode += ' + weak_mask_prior'
+if cfg.train.use_feature_reweight:
+    experiment_mode += ' + feature_reweight'
+if cfg.train.use_aux_warmup:
+    experiment_mode += ' + aux_warmup'
 
 # Data loading part
 train_dataset, train_loader = create_dataset(cfg, 'train')
@@ -398,6 +541,7 @@ if cfg.train.use_semantic_aux:
     print('lambda_semantic: %s' % cfg.train.lambda_semantic)
     print('use_semantic_detach: %s' % cfg.train.use_semantic_detach)
     print('use_semantic_partial_detach: %s' % cfg.train.use_semantic_partial_detach)
+    print('semantic_detach_ratio: %s' % cfg.train.semantic_detach_ratio)
     print('semantic_update_visual: %s' % cfg.train.semantic_update_visual)
     print(
         'Semantic warmup: enabled=%s start=%s end=%s type=%s.'
@@ -406,6 +550,16 @@ if cfg.train.use_semantic_aux:
             cfg.train.semantic_warmup_start,
             cfg.train.semantic_warmup_end,
             cfg.train.semantic_warmup_type,
+        )
+    )
+    print(
+        'Aux warmup: enabled=%s start_ratio=%s end_ratio=%s sem_decay_start_ratio=%s sem_decay_final_ratio=%s.'
+        % (
+            cfg.train.use_aux_warmup,
+            cfg.train.aux_warmup_start_ratio,
+            cfg.train.aux_warmup_end_ratio,
+            cfg.train.semantic_decay_start_ratio,
+            cfg.train.semantic_decay_final_ratio,
         )
     )
     print(
@@ -468,18 +622,28 @@ experiment_summary = [
     f'  mask_warmup_steps: {cfg.train.mask_warmup_steps}',
     f'  mask_loss_type: {cfg.train.mask_loss_type}',
     f'  mask_bce_dice_alpha: {cfg.train.mask_bce_dice_alpha}',
+    f'  mask_ignore_index: {cfg.train.mask_ignore_index}',
     f'  use_weak_mask_prior: {cfg.train.use_weak_mask_prior}',
     f'  mask_alpha: {cfg.train.mask_alpha}',
+    f'  use_feature_reweight: {cfg.train.use_feature_reweight}',
+    f'  reweight_alpha: {cfg.train.reweight_alpha}',
     f'  pseudo_mask_root: {cfg.data.pseudo_mask_root}',
+    f'  eval_anno_path: {cfg.data.eval_anno_path}',
     f'  use_semantic_aux: {cfg.train.use_semantic_aux}',
     f'  lambda_semantic: {cfg.train.lambda_semantic}',
     f'  use_semantic_detach: {cfg.train.use_semantic_detach}',
     f'  use_semantic_partial_detach: {cfg.train.use_semantic_partial_detach}',
+    f'  semantic_detach_ratio: {cfg.train.semantic_detach_ratio}',
     f'  semantic_update_visual: {cfg.train.semantic_update_visual}',
     f'  use_semantic_warmup: {cfg.train.use_semantic_warmup}',
     f'  semantic_warmup_start: {cfg.train.semantic_warmup_start}',
     f'  semantic_warmup_end: {cfg.train.semantic_warmup_end}',
     f'  semantic_warmup_type: {cfg.train.semantic_warmup_type}',
+    f'  use_aux_warmup: {cfg.train.use_aux_warmup}',
+    f'  aux_warmup_start_ratio: {cfg.train.aux_warmup_start_ratio}',
+    f'  aux_warmup_end_ratio: {cfg.train.aux_warmup_end_ratio}',
+    f'  semantic_decay_start_ratio: {cfg.train.semantic_decay_start_ratio}',
+    f'  semantic_decay_final_ratio: {cfg.train.semantic_decay_final_ratio}',
     f'  semantic_late_start: {cfg.train.semantic_late_start}',
     f'  semantic_start_iter: {cfg.train.semantic_start_iter}',
     f'  semantic_loss_type: {cfg.train.semantic_loss_type}',
@@ -524,6 +688,11 @@ relation_loss_func = nn.BCEWithLogitsLoss() if cfg.train.use_relation_aux else N
 t = 0
 epoch = 0
 printed_binary_mask_warning = False
+best_training_records = {
+    'cider': {'score': -float('inf'), 'snapshot': None},
+    'spice': {'score': -float('inf'), 'snapshot': None},
+    'balanced': {'score': -float('inf'), 'snapshot': None, 'all_above_baseline': False},
+}
 
 set_mode('train', [change_detector, speaker])
 
@@ -591,51 +760,79 @@ while t < cfg.train.max_iter:
         action_pos_count = 0.0
         relation_pos_count = 0.0
         current_iter = t + 1
-        effective_lambda_mask = get_effective_lambda_mask(cfg, t)
+        aux_progress = float(current_iter) / float(max(1, cfg.train.max_iter))
+        if cfg.train.use_aux_warmup:
+            effective_lambda_mask, effective_lambda_semantic = get_aux_weights(
+                aux_progress,
+                cfg.train.lambda_mask,
+                cfg.train.lambda_semantic,
+                warmup_start=cfg.train.aux_warmup_start_ratio,
+                warmup_end=cfg.train.aux_warmup_end_ratio,
+                sem_decay_start=cfg.train.semantic_decay_start_ratio,
+                sem_decay_final_ratio=cfg.train.semantic_decay_final_ratio,
+            )
+            if not cfg.model.enable_aux_mask:
+                effective_lambda_mask = 0.0
+            if not cfg.train.use_semantic_aux:
+                effective_lambda_semantic = 0.0
+        else:
+            effective_lambda_mask = get_effective_lambda_mask(cfg, current_iter)
+            effective_lambda_semantic = (
+                get_effective_lambda_semantic(
+                    current_iter,
+                    cfg.train.lambda_semantic,
+                    cfg.train.use_semantic_warmup,
+                    cfg.train.semantic_warmup_start,
+                    cfg.train.semantic_warmup_end,
+                    cfg.train.semantic_warmup_type,
+                    cfg.train.semantic_late_start,
+                    cfg.train.semantic_start_iter,
+                )
+                if cfg.train.use_semantic_aux
+                else 0.0
+            )
         if cfg.model.enable_aux_mask and cfg.train.lambda_mask > 0:
             if pseudo_masks is None:
-                raise ValueError('Pseudo masks are required when aux mask is enabled.')
-            if cfg.train.use_mask_conf_filter and not printed_binary_mask_warning:
-                is_binary_mask = bool(torch.all((pseudo_masks == 0) | (pseudo_masks == 1)).item())
-                if is_binary_mask:
-                    print('Warning: pseudo masks appear binary. mask_conf_threshold will have little or no effect unless masks store soft confidence values.')
-                printed_binary_mask_warning = True
-            ignore_mask = None
-            if cfg.train.use_mask_conf_filter:
-                # Low-confidence pseudo-label regions are ignored in mask supervision.
-                confidence = torch.maximum(pseudo_masks, 1.0 - pseudo_masks)
-                ignore_mask = confidence < cfg.train.mask_conf_threshold
-            mask_loss = compute_mask_loss(
-                mask_pred,
-                pseudo_masks,
-                ignore_mask=ignore_mask,
-                loss_type=cfg.train.mask_loss_type,
-                bce_dice_alpha=cfg.train.mask_bce_dice_alpha,
-            )
+                mask_loss = mask_pred.sum() * 0.0 if mask_pred is not None else cap_loss * 0.0
+            else:
+                if cfg.train.use_mask_conf_filter and not printed_binary_mask_warning:
+                    valid_for_binary_check = pseudo_masks
+                    if cfg.train.mask_ignore_index is not None:
+                        valid_for_binary_check = pseudo_masks[pseudo_masks != float(cfg.train.mask_ignore_index)]
+                    if valid_for_binary_check.numel() > 0:
+                        is_binary_mask = bool(torch.all((valid_for_binary_check == 0) | (valid_for_binary_check == 1)).item())
+                        if is_binary_mask:
+                            print('Warning: pseudo masks appear binary. mask_conf_threshold will have little or no effect unless masks store soft confidence values.')
+                    printed_binary_mask_warning = True
+                ignore_mask = None
+                if cfg.train.use_mask_conf_filter:
+                    # Low-confidence pseudo-label regions are ignored in mask supervision.
+                    confidence = torch.maximum(pseudo_masks, 1.0 - pseudo_masks)
+                    ignore_mask = confidence < cfg.train.mask_conf_threshold
+                mask_loss = compute_mask_loss(
+                    mask_pred,
+                    pseudo_masks,
+                    ignore_mask=ignore_mask,
+                    loss_type=cfg.train.mask_loss_type,
+                    bce_dice_alpha=cfg.train.mask_bce_dice_alpha,
+                    ignore_index=cfg.train.mask_ignore_index,
+                )
             mask_loss_val = mask_loss.item()
             weighted_mask_loss_val = effective_lambda_mask * mask_loss_val
         if cfg.train.use_semantic_aux:
             if semantic_labels is None:
-                raise ValueError('Semantic labels are required when train.use_semantic_aux is enabled.')
-            if semantic_logits is None:
-                raise ValueError('CARD did not return semantic_logits while train.use_semantic_aux is enabled.')
-            if semantic_logits.shape != semantic_labels.shape:
-                raise ValueError(
-                    'semantic_logits shape %s does not match semantic_labels shape %s.'
-                    % (tuple(semantic_logits.shape), tuple(semantic_labels.shape))
-            )
-            semantic_loss = semantic_loss_func(semantic_logits, semantic_labels.float())
+                semantic_loss = semantic_logits.sum() * 0.0 if semantic_logits is not None else cap_loss * 0.0
+            else:
+                if semantic_logits is None:
+                    semantic_loss = cap_loss * 0.0
+                else:
+                    if semantic_logits.shape != semantic_labels.shape:
+                        raise ValueError(
+                            'semantic_logits shape %s does not match semantic_labels shape %s.'
+                            % (tuple(semantic_logits.shape), tuple(semantic_labels.shape))
+                        )
+                    semantic_loss = semantic_loss_func(semantic_logits, semantic_labels.float())
             semantic_loss_val = semantic_loss.item()
-            effective_lambda_semantic = get_effective_lambda_semantic(
-                current_iter,
-                cfg.train.lambda_semantic,
-                cfg.train.use_semantic_warmup,
-                cfg.train.semantic_warmup_start,
-                cfg.train.semantic_warmup_end,
-                cfg.train.semantic_warmup_type,
-                cfg.train.semantic_late_start,
-                cfg.train.semantic_start_iter,
-            )
             weighted_semantic_loss_val = effective_lambda_semantic * semantic_loss_val
 
         lambda_obj_current = get_warmup_lambda(cfg.train.lambda_obj, t, cfg.train.semantic_warmup_steps)
@@ -691,6 +888,8 @@ while t < cfg.train.max_iter:
 
         stats = {}
 
+        stats['lr'] = optimizer.param_groups[0]['lr']
+        stats['aux_progress'] = aux_progress
         stats['cap_loss'] = cap_loss_val
         stats['loss_cap'] = cap_loss_val
         stats['loss_caption'] = cap_loss_val
@@ -701,8 +900,11 @@ while t < cfg.train.max_iter:
         stats['lambda_mask'] = cfg.train.lambda_mask
         stats['use_mask_aux'] = float(cfg.model.enable_aux_mask)
         stats['effective_lambda_mask'] = effective_lambda_mask
+        stats['lambda_mask_t'] = effective_lambda_mask
         stats['lambda_semantic'] = cfg.train.lambda_semantic
         stats['effective_lambda_semantic'] = effective_lambda_semantic
+        stats['lambda_sem_t'] = effective_lambda_semantic
+        stats['use_aux_warmup'] = float(cfg.train.use_aux_warmup)
         stats['use_semantic_warmup'] = float(cfg.train.use_semantic_warmup)
         stats['semantic_warmup_start'] = cfg.train.semantic_warmup_start
         stats['semantic_warmup_end'] = cfg.train.semantic_warmup_end
@@ -712,10 +914,14 @@ while t < cfg.train.max_iter:
         stats['use_semantic_aux'] = float(cfg.train.use_semantic_aux)
         stats['use_semantic_detach'] = float(cfg.train.use_semantic_detach)
         stats['use_semantic_partial_detach'] = float(cfg.train.use_semantic_partial_detach)
+        stats['semantic_detach_ratio'] = cfg.train.semantic_detach_ratio
         stats['semantic_update_visual'] = float(cfg.train.semantic_update_visual)
+        stats['use_feature_reweight'] = float(cfg.train.use_feature_reweight)
+        stats['reweight_alpha'] = cfg.train.reweight_alpha
         stats['loss_mask'] = mask_loss_val
         stats['weighted_mask_loss'] = weighted_mask_loss_val
         stats['loss_semantic'] = semantic_loss_val
+        stats['loss_sem'] = semantic_loss_val
         stats['weighted_semantic_loss'] = weighted_semantic_loss_val
         semantic_debug_info = getattr(change_detector, 'semantic_detach_debug', {})
         for debug_key in (
@@ -724,6 +930,7 @@ while t < cfg.train.max_iter:
             'caption_input_requires_grad',
             'semantic_logits_requires_grad',
             'semantic_branch_depends_on_decoder',
+            'feature_reweight_enabled',
         ):
             stats[debug_key] = semantic_debug_info.get(debug_key, 0.0)
         stats['caption_decoder_grad_from_semantic_blocked'] = 0.0
@@ -869,12 +1076,27 @@ while t < cfg.train.max_iter:
                 test_iter_end_time = time.time() - test_iter_start_time
                 result_save_path_pos = os.path.join(sent_save_dir, 'sc_results.json')
                 coco_gen_format_save(result_sents_pos, result_save_path_pos)
+                val_stats = {}
                 if cfg.train.use_relation_aux:
-                    val_stats = {
+                    val_stats.update({
                         'object_f1': micro_f1_from_counts(val_f1_counts['objects']),
                         'action_f1': micro_f1_from_counts(val_f1_counts['actions']),
                         'relation_f1': micro_f1_from_counts(val_f1_counts['relations']),
-                    }
+                    })
+
+                caption_metrics = evaluate_caption_metrics_if_available(cfg, result_save_path_pos)
+                if caption_metrics is not None:
+                    metrics_save_path = os.path.join(sent_save_dir, 'metrics.json')
+                    with open(metrics_save_path, 'w', encoding='utf-8') as f:
+                        json.dump(caption_metrics, f, indent=2)
+                    for metric_name in ('Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE'):
+                        if metric_name in caption_metrics:
+                            val_stats[metric_name] = float(caption_metrics[metric_name])
+                    val_stats['balanced_score'] = float(caption_metrics['balanced_score'])
+                    val_stats['ALL_ABOVE_BASELINE'] = float(caption_metrics['all_above_baseline'])
+                    update_best_training_checkpoints(output_dir, save_path, caption_metrics, best_training_records)
+
+                if val_stats:
                     val_logger.print_current_stats(epoch, 0, t, val_stats, test_iter_end_time)
 
             set_mode('train', [change_detector, speaker])

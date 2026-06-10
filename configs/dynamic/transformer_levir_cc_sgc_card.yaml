@@ -1,0 +1,81 @@
+exp_name: 'sgc_card_lm003_ls005_pd05_rw02_warmup'
+gpu_id: [0]
+logger:
+    display_id: 9908
+model:
+    enable_aux_mask: True
+    transformer_encoder:
+        input_dim: 2048
+        feat_dim: 1024
+        emb_dim: 512
+        att_dim: 512
+        att_head: 8
+        att_layer: 2
+        dim: 128
+    transformer_decoder:
+        input_dim: 2048
+        word_dim: 300
+        att_dim: 512
+        att_head: 8
+        att_layer: 2
+        vocab_size: 860
+        seq_length: 41
+        share_wd_cls_weight: False
+        label_smoothing: 0.0
+
+data:
+    dataset: 'rcc_dataset_transformer_levir'
+    default_feature_dir: "./Levir-CC/features"
+    semantic_feature_dir: "./Levir-CC/features"
+    default_img_dir: "./Levir-CC/images"
+    semantic_img_dir: "./Levir-CC/images"
+    default_phase: "A"
+    semantic_phase: "B"
+    pseudo_mask_root: "./Levir-CC/pseudo_masks"
+    allow_missing_pseudo_mask: True
+    eval_anno_path: "./Levir-CC/levir_cc_captions_reformat.json"
+    splits_json: "./Levir-CC/splits.json"
+    vocab_json: "./Levir-CC/transformer_levir_vocab.json"
+    h5_label_file: "./Levir-CC/transformer_levir_labels.h5"
+    train:
+        batch_size: 32
+train:
+    max_iter: 10000
+    seed: 1111
+    snapshot_interval: 1000
+    grad_clip: -1.0
+    lambda_mask: 0.003
+    use_mask_conf_filter: True
+    mask_conf_threshold: 0.5
+    mask_ignore_index: -1
+    use_mask_warmup: False
+    mask_warmup_steps: 0
+    mask_loss_type: "bce_dice"
+    mask_bce_dice_alpha: 0.5
+    use_feature_reweight: True
+    reweight_alpha: 0.2
+    use_semantic_aux: True
+    lambda_semantic: 0.005
+    use_semantic_warmup: False
+    use_aux_warmup: True
+    aux_warmup_start_ratio: 0.30
+    aux_warmup_end_ratio: 0.70
+    semantic_decay_start_ratio: 0.70
+    semantic_decay_final_ratio: 0.50
+    semantic_loss_type: "multilabel_bce"
+    semantic_tag_file: "configs/semantic_tags/levir_cc_object_action_tags.txt"
+    semantic_aux_dropout: 0.1
+    semantic_normalize_synonyms: True
+    use_semantic_detach: False
+    use_semantic_partial_detach: True
+    semantic_detach_ratio: 0.5
+    semantic_update_visual: True
+    use_relation_aux: False
+    use_content_word_weight: False
+    use_content_word_weighted_ce: False
+    optim:
+        type: 'adam'
+        lr: 0.0002
+        weight_decay: 0.0
+        step_size: 17
+        gamma: 0.1

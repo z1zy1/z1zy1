@@ -1,1 +1,4 @@
 Levir-CC/
+__pycache__/
+*.pyc
+*.pyc.*

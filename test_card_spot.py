@@ -117,7 +117,10 @@ def apply_cli_overrides(args, cfg):
 parser = argparse.ArgumentParser()
 parser.add_argument('--cfg', required=True)
 parser.add_argument('--visualize', action='store_true')
-parser.add_argument('--snapshot', type=int, required=True)
+parser.add_argument('--snapshot', type=int, default=None)
+parser.add_argument('--snapshot_path', type=str, default=None)
+parser.add_argument('--split', type=str, default='test', choices=['val', 'test'])
+parser.add_argument('--result_json', type=str, default=None)
 parser.add_argument('--gpu', type=int, default=-1)
 parser.add_argument('--use_relation_aux', action='store_true')
 parser.add_argument('--use_content_word_weight', action='store_true')
@@ -153,24 +156,38 @@ exp_name = cfg.exp_name
 
 output_dir = os.path.join(exp_dir, exp_name)
 
-test_output_dir = os.path.join(output_dir, 'test_output')
-if not os.path.exists(test_output_dir):
-    os.makedirs(test_output_dir)
-caption_output_path = os.path.join(test_output_dir, 'captions', 'test')
-if not os.path.exists(caption_output_path):
-    os.makedirs(caption_output_path)
-att_output_path = os.path.join(test_output_dir, 'attentions', 'test')
+if args.result_json is not None:
+    result_save_path_pos = os.path.normpath(args.result_json)
+    caption_output_path = os.path.dirname(result_save_path_pos)
+    if caption_output_path and not os.path.exists(caption_output_path):
+        os.makedirs(caption_output_path)
+    eval_output_dir = os.path.dirname(os.path.dirname(caption_output_path))
+else:
+    eval_output_dir = os.path.join(output_dir, '%s_output' % args.split)
+    if not os.path.exists(eval_output_dir):
+        os.makedirs(eval_output_dir)
+    caption_output_path = os.path.join(eval_output_dir, 'captions', args.split)
+    if not os.path.exists(caption_output_path):
+        os.makedirs(caption_output_path)
+    result_save_path_pos = os.path.join(caption_output_path, 'sc_results.json')
+
+att_output_path = os.path.join(eval_output_dir, 'attentions', args.split)
 if not os.path.exists(att_output_path):
     os.makedirs(att_output_path)
 
 if args.visualize:
-    visualize_save_dir = os.path.join(test_output_dir, 'visualizations')
+    visualize_save_dir = os.path.join(eval_output_dir, 'visualizations')
     if not os.path.exists(visualize_save_dir):
         os.makedirs(visualize_save_dir)
 
-snapshot_dir = os.path.join(output_dir, 'snapshots')
-snapshot_file = '%s_checkpoint_%d.pt' % (exp_name, args.snapshot)
-snapshot_full_path = os.path.join(snapshot_dir, snapshot_file)
+if args.snapshot_path is not None:
+    snapshot_full_path = os.path.normpath(args.snapshot_path)
+elif args.snapshot is not None:
+    snapshot_dir = os.path.join(output_dir, 'snapshots')
+    snapshot_file = '%s_checkpoint_%d.pt' % (exp_name, args.snapshot)
+    snapshot_full_path = os.path.join(snapshot_dir, snapshot_file)
+else:
+    raise ValueError('Either --snapshot or --snapshot_path must be provided.')
 checkpoint = load_checkpoint(snapshot_full_path)
 change_detector_state = checkpoint['change_detector_state']
 speaker_state = checkpoint['speaker_state']
@@ -178,7 +195,7 @@ speaker_state = checkpoint['speaker_state']
 # Data loading part
 train_dataset, train_loader = create_dataset(cfg, 'train')
 idx_to_word = train_dataset.get_idx_to_word()
-test_dataset, test_loader = create_dataset(cfg, 'test')
+eval_dataset, eval_loader = create_dataset(cfg, args.split)
 
 # Keep decoder vocabulary / max length aligned with dataset preprocessing outputs.
 cfg.model.transformer_decoder.vocab_size = train_dataset.get_vocab_size()
@@ -205,7 +222,7 @@ with torch.no_grad():
     test_iter_start_time = time.time()
 
     result_sents_pos = {}
-    for i, batch in tqdm(enumerate(test_loader)):
+    for i, batch in tqdm(enumerate(eval_loader)):
 
         d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _, _, _ = unpack_batch(batch)
 
@@ -230,8 +247,8 @@ with torch.no_grad():
             image_num = image_id.split('.')[0]
 
     test_iter_end_time = time.time() - test_iter_start_time
-    print('Test took %.4f seconds' % test_iter_end_time)
-    result_save_path_pos = os.path.join(caption_output_path, 'sc_results.json')
+    print('%s inference took %.4f seconds' % (args.split, test_iter_end_time))
     coco_gen_format_save(result_sents_pos, result_save_path_pos)
+    print('Saved captions to %s' % result_save_path_pos)
 
 

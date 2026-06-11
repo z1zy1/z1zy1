@@ -4,77 +4,66 @@ set -euo pipefail
 PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
 cd "$PROJECT_DIR"
 
-export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
-PYTORCH_GPU="${PYTORCH_GPU:-0}"
+EXP_PATH="${EXP_PATH:-./experiments/sgc_card_lm003_ls005_pd05_rw02_warmup}"
 
-EXP_NAME="${EXP_NAME:-sgc_card_lm003_ls005_pd05_rw02_warmup}"
-EXP_DIR="${EXP_DIR:-./experiments}"
-EXP_PATH="$EXP_DIR/$EXP_NAME"
-BASE_CFG="${BASE_CFG:-configs/dynamic/transformer_levir_cc_sgc_card.yaml}"
-ANNO="${ANNO:-./Levir-CC/levir_cc_captions_reformat.json}"
-BEST_JSON="${BEST_JSON:-$EXP_PATH/best_snapshot.json}"
+usage() {
+  echo "Usage: bash scripts/test_best_sgc_card.sh [EXP_DIR] [--exp_dir EXP_DIR]" >&2
+}
 
-LMASK="${LMASK:-0.003}"
-LSEM="${LSEM:-0.005}"
-SEMANTIC_DETACH_RATIO="${SEMANTIC_DETACH_RATIO:-0.5}"
-USE_FEATURE_REWEIGHT="${USE_FEATURE_REWEIGHT:-1}"
-REWEIGHT_ALPHA="${REWEIGHT_ALPHA:-0.2}"
-
-if [ "$USE_FEATURE_REWEIGHT" = "1" ] || [ "$USE_FEATURE_REWEIGHT" = "true" ] || [ "$USE_FEATURE_REWEIGHT" = "True" ]; then
-  FEATURE_REWEIGHT_BOOL=True
-else
-  FEATURE_REWEIGHT_BOOL=False
+if [ "$#" -gt 0 ] && [[ "$1" != --* ]]; then
+  EXP_PATH="$1"
+  shift
 fi
 
-if [ ! -f "$BEST_JSON" ]; then
-  echo "Best snapshot JSON does not exist: $BEST_JSON" >&2
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --exp_dir)
+      EXP_PATH="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage
+      exit 2
+      ;;
+  esac
+done
+
+EXP_PATH="${EXP_PATH%/}"
+BEST_SNAPSHOT=""
+SELECTED_BY=""
+
+read_best_json() {
+  local json_path="$1"
+  JSON_PATH="$json_path" python -c 'import json, os; print(json.load(open(os.environ["JSON_PATH"], encoding="utf-8"))["best_snapshot"])'
+}
+
+if [ -f "$EXP_PATH/best_snapshot_v2.json" ]; then
+  BEST_SNAPSHOT="$(read_best_json "$EXP_PATH/best_snapshot_v2.json")"
+  SELECTED_BY="v2"
+elif [ -f "$EXP_PATH/best_balanced_v2.pth" ]; then
+  BEST_SNAPSHOT="$EXP_PATH/best_balanced_v2.pth"
+  SELECTED_BY="v2"
+elif [ -f "$EXP_PATH/best_snapshot.json" ]; then
+  BEST_SNAPSHOT="$(read_best_json "$EXP_PATH/best_snapshot.json")"
+  SELECTED_BY="old"
+elif [ -f "$EXP_PATH/best_balanced.pth" ]; then
+  BEST_SNAPSHOT="$EXP_PATH/best_balanced.pth"
+  SELECTED_BY="old"
+else
+  echo "No best snapshot found under $EXP_PATH." >&2
+  echo "Expected one of: best_snapshot_v2.json, best_balanced_v2.pth, best_snapshot.json, best_balanced.pth" >&2
   exit 1
 fi
 
-BEST_SNAPSHOT="$(
-  BEST_JSON_PATH="$BEST_JSON" python -c 'import json, os; print(json.load(open(os.environ["BEST_JSON_PATH"], encoding="utf-8"))["best_snapshot"])'
-)"
+echo "Using snapshot selected by: $SELECTED_BY"
+echo "Checkpoint path: $BEST_SNAPSHOT"
 
-RESULT_JSON="$EXP_PATH/test_output/captions/test/sc_results.json"
-RESULT_METRICS_JSON="$EXP_PATH/test_best_result.json"
-RESULT_METRICS_TXT="$EXP_PATH/test_best_result.txt"
-mkdir -p "$(dirname "$RESULT_JSON")"
-
-COMMON_OPTS=(
-  exp_dir "$EXP_DIR"
-  exp_name "$EXP_NAME"
-  gpu_id "[$PYTORCH_GPU]"
-  model.enable_aux_mask True
-  train.use_semantic_aux True
-  train.lambda_mask "$LMASK"
-  train.lambda_semantic "$LSEM"
-  train.use_semantic_partial_detach True
-  train.semantic_detach_ratio "$SEMANTIC_DETACH_RATIO"
-  train.use_feature_reweight "$FEATURE_REWEIGHT_BOOL"
-  train.reweight_alpha "$REWEIGHT_ALPHA"
-  data.allow_missing_pseudo_mask True
-)
-
-echo "========== test best snapshot $BEST_SNAPSHOT =========="
-python test_card_spot.py \
-  --cfg "$BASE_CFG" \
-  --snapshot_path "$BEST_SNAPSHOT" \
-  --split test \
-  --result_json "$RESULT_JSON" \
-  --gpu "$PYTORCH_GPU" \
-  "${COMMON_OPTS[@]}" \
-  2>&1 | tee "$EXP_PATH/test_best.log"
-
-echo "========== score test output =========="
-python scripts/sgc_card_metrics.py \
-  --anno "$ANNO" \
-  --result_json "$RESULT_JSON" \
-  --snapshot_path "$BEST_SNAPSHOT" \
-  --baseline test \
-  --output_json "$RESULT_METRICS_JSON" \
-  --output_txt "$RESULT_METRICS_TXT" \
-  2>&1 | tee -a "$EXP_PATH/test_best.log"
-
-echo "Wrote test metrics:"
-echo "  $RESULT_METRICS_JSON"
-echo "  $RESULT_METRICS_TXT"
+bash scripts/test_specific_snapshot_sgc_card.sh \
+  --exp_dir "$EXP_PATH" \
+  --checkpoint "$BEST_SNAPSHOT" \
+  --tag best

@@ -12,8 +12,38 @@ EXP_DIR="${EXP_DIR:-./experiments}"
 EXP_PATH="$EXP_DIR/$EXP_NAME"
 BASE_CFG="${BASE_CFG:-configs/dynamic/transformer_levir_cc_sgc_card.yaml}"
 ANNO="${ANNO:-./Levir-CC/levir_cc_captions_reformat.json}"
-CSV_PATH="${CSV_PATH:-$EXP_PATH/eval_snapshots.csv}"
+CSV_PATH="${CSV_PATH:-}"
 FORCE_INFER="${FORCE_INFER:-0}"
+
+usage() {
+  echo "Usage: bash scripts/eval_all_snapshots_sgc_card.sh [--exp_dir experiments/<exp_name>] [--force]" >&2
+}
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --exp_dir)
+      EXP_PATH="${2%/}"
+      EXP_DIR="$(dirname "$EXP_PATH")"
+      EXP_NAME="$(basename "$EXP_PATH")"
+      shift 2
+      ;;
+    --force|--force_infer)
+      FORCE_INFER=1
+      shift
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "Unknown argument: $1" >&2
+      usage
+      exit 2
+      ;;
+  esac
+done
+
+CSV_PATH="${CSV_PATH:-$EXP_PATH/eval_snapshots.csv}"
 
 LMASK="${LMASK:-0.003}"
 LSEM="${LSEM:-0.005}"

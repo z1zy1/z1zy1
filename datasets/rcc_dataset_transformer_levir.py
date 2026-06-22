@@ -9,6 +9,7 @@ from imageio.v2 import imread
 from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.dataloader import default_collate
 
+from utils.dataset_config import feature_extraction_command
 from utils.semantic_tags import build_semantic_label, read_semantic_tags
 from utils.semantic_label import (
     ACTION_VOCAB,
@@ -44,6 +45,7 @@ class RCCDataset(Dataset):
         self.default_phase = getattr(cfg.data, 'default_phase', 'A')
         self.semantic_phase = getattr(cfg.data, 'semantic_phase', 'B')
         self.pseudo_mask_root = cfg.data.pseudo_mask_root
+        self.pseudo_mask_phase = getattr(cfg.data, 'pseudo_mask_phase', '')
         self.allow_missing_pseudo_mask = cfg.data.allow_missing_pseudo_mask
         self.enable_aux_mask = cfg.model.enable_aux_mask
         self.require_aux_mask = self.enable_aux_mask and cfg.train.lambda_mask > 0
@@ -102,6 +104,7 @@ class RCCDataset(Dataset):
             self.label_start_idx = h5_label_file['label_start_idx'][:]
             self.label_end_idx = h5_label_file['label_end_idx'][:]
         print('Max sequence length is %d' % self.max_seq_length)
+        self._preflight_feature_paths()
 
         if self.use_semantic_aux:
             self.semantic_labels_by_img_idx = self._build_semantic_labels_by_img_idx()
@@ -120,6 +123,68 @@ class RCCDataset(Dataset):
 
     def __len__(self):
         return self.num_samples
+
+    def _feature_source_path(self, img_dir, split_name, phase_name, filename):
+        return os.path.join(img_dir, split_name, phase_name, filename)
+
+    def _format_feature_preflight_error(self, missing):
+        lines = [
+            'Feature preflight failed for dataset "%s" split "%s".'
+            % (getattr(self.cfg.data, 'dataset', 'unknown'), self.split),
+            'The CARD baseline expects pre-extracted ResNet .npy features before training/testing.',
+        ]
+        for item in missing:
+            lines.extend([
+                'Missing %s feature for image "%s".' % (item['role'], item['filename']),
+                '  feature_root: %s' % item['feature_root'],
+                '  phase: %s' % item['phase'],
+                '  source_image: %s' % item['source_image'],
+            ])
+        lines.extend([
+            'Generate features on the server first, for example:',
+            '  %s' % feature_extraction_command(self.cfg),
+        ])
+        return '\n'.join(lines)
+
+    def _preflight_feature_paths(self):
+        if self.num_samples <= 0:
+            return
+        img_idx = int(self.split_idxs[0])
+        idx_key = str(img_idx)
+        filename = self.idx_to_filename[idx_key]
+        split_name = self.idx_to_split[idx_key]
+        checks = [
+            {
+                'role': 'before/default',
+                'feature_root': self.d_feat_dir,
+                'image_root': self.d_img_dir,
+                'phase': self.default_phase,
+            },
+            {
+                'role': 'after/semantic',
+                'feature_root': self.s_feat_dir,
+                'image_root': self.s_img_dir,
+                'phase': self.semantic_phase,
+            },
+        ]
+        missing = []
+        for item in checks:
+            try:
+                self._resolve_feature_path(
+                    item['feature_root'], split_name, item['phase'], filename
+                )
+            except FileNotFoundError:
+                missing.append({
+                    'role': item['role'],
+                    'filename': filename,
+                    'feature_root': item['feature_root'],
+                    'phase': item['phase'],
+                    'source_image': self._feature_source_path(
+                        item['image_root'], split_name, item['phase'], filename
+                    ),
+                })
+        if missing:
+            raise FileNotFoundError(self._format_feature_preflight_error(missing))
 
     @staticmethod
     def _resolve_feature_path(base_dir, split_name, phase_name, filename):
@@ -255,7 +320,21 @@ class RCCDataset(Dataset):
             return None
 
         stem = os.path.splitext(filename)[0]
-        candidates = [
+        candidates = []
+        if self.pseudo_mask_phase:
+            candidates.extend([
+                os.path.join(self.pseudo_mask_root, split_name, self.pseudo_mask_phase, filename),
+                os.path.join(self.pseudo_mask_root, split_name, self.pseudo_mask_phase, stem + '.png'),
+                os.path.join(self.pseudo_mask_root, split_name, self.pseudo_mask_phase, stem + '.jpg'),
+                os.path.join(self.pseudo_mask_root, split_name, self.pseudo_mask_phase, stem + '.jpeg'),
+                os.path.join(self.pseudo_mask_root, split_name, self.pseudo_mask_phase, stem + '.npy'),
+                os.path.join(self.pseudo_mask_root, self.pseudo_mask_phase, split_name, filename),
+                os.path.join(self.pseudo_mask_root, self.pseudo_mask_phase, split_name, stem + '.png'),
+                os.path.join(self.pseudo_mask_root, self.pseudo_mask_phase, split_name, stem + '.jpg'),
+                os.path.join(self.pseudo_mask_root, self.pseudo_mask_phase, split_name, stem + '.jpeg'),
+                os.path.join(self.pseudo_mask_root, self.pseudo_mask_phase, split_name, stem + '.npy'),
+            ])
+        candidates.extend([
             os.path.join(self.pseudo_mask_root, split_name, filename),
             os.path.join(self.pseudo_mask_root, split_name, stem + '.png'),
             os.path.join(self.pseudo_mask_root, split_name, stem + '.jpg'),
@@ -266,7 +345,7 @@ class RCCDataset(Dataset):
             os.path.join(self.pseudo_mask_root, stem + '.jpg'),
             os.path.join(self.pseudo_mask_root, stem + '.jpeg'),
             os.path.join(self.pseudo_mask_root, stem + '.npy'),
-        ]
+        ])
         for path in candidates:
             if os.path.exists(path):
                 return path

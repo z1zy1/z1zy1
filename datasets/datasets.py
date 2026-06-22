@@ -1,7 +1,10 @@
 def create_dataset(cfg, split='train'):
+    from utils.dataset_config import canonical_dataset_name
+
     dataset = None
     data_loader = None
-    if cfg.data.dataset == 'rcc_dataset':
+    dataset_name = canonical_dataset_name(cfg.data.dataset)
+    if dataset_name == 'rcc_dataset':
         from datasets.rcc_dataset import RCCDataset, RCCDataLoader
 
         dataset = RCCDataset(cfg, split)
@@ -11,7 +14,7 @@ def create_dataset(cfg, split='train'):
             shuffle=True if split == 'train' else False,
             num_workers=cfg.data.num_workers,
             pin_memory=True)
-    elif cfg.data.dataset == 'rcc_dataset_spot':
+    elif dataset_name == 'rcc_dataset_spot':
         from datasets.rcc_dataset_spot import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -21,7 +24,7 @@ def create_dataset(cfg, split='train'):
             num_workers=cfg.data.num_workers,
             pin_memory=True)
 
-    elif cfg.data.dataset == 'rcc_dataset_dc':
+    elif dataset_name == 'rcc_dataset_dc':
         from datasets.rcc_dataset_dc import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -31,7 +34,7 @@ def create_dataset(cfg, split='train'):
             num_workers=cfg.data.num_workers,
             pin_memory=True)
 
-    elif cfg.data.dataset == 'rcc_dataset_multi':
+    elif dataset_name == 'rcc_dataset_multi':
         from datasets.rcc_dataset_multi import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -40,7 +43,7 @@ def create_dataset(cfg, split='train'):
             shuffle=True if split == 'train' else False,
             num_workers=cfg.data.num_workers,
             pin_memory=True)
-    elif cfg.data.dataset == 'rcc_dataset_transformer_multi':
+    elif dataset_name == 'rcc_dataset_transformer_multi':
         from datasets.rcc_dataset_transformer_multi import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -49,7 +52,7 @@ def create_dataset(cfg, split='train'):
             shuffle=True if split == 'train' else False,
             num_workers=cfg.data.num_workers,
             pin_memory=True)
-    elif cfg.data.dataset == 'rcc_dataset_transformer_levir':
+    elif dataset_name == 'rcc_dataset_transformer_levir':
         from datasets.rcc_dataset_transformer_levir import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -58,7 +61,7 @@ def create_dataset(cfg, split='train'):
             shuffle=True if split == 'train' else False,
             num_workers=cfg.data.num_workers,
             pin_memory=True)
-    elif cfg.data.dataset == 'rcc_dataset_transformer_dubai':
+    elif dataset_name == 'rcc_dataset_transformer_dubai':
         from datasets.rcc_dataset_transformer_dubai import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -67,7 +70,7 @@ def create_dataset(cfg, split='train'):
             shuffle=True if split == 'train' else False,
             num_workers=cfg.data.num_workers,
             pin_memory=True)
-    elif cfg.data.dataset == 'rcc_dataset_transformer_dc':
+    elif dataset_name == 'rcc_dataset_transformer_dc':
         from datasets.rcc_dataset_transformer_dc import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -76,7 +79,7 @@ def create_dataset(cfg, split='train'):
             shuffle=True if split == 'train' else False,
             num_workers=cfg.data.num_workers,
             pin_memory=True)
-    elif cfg.data.dataset == 'rcc_dataset_transformer_spot':
+    elif dataset_name == 'rcc_dataset_transformer_spot':
         from datasets.rcc_dataset_transformer_spot import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -85,7 +88,7 @@ def create_dataset(cfg, split='train'):
             shuffle=True if split == 'train' else False,
             num_workers=cfg.data.num_workers,
             pin_memory=True)
-    elif cfg.data.dataset == 'rcc_dataset_spot_transformer':
+    elif dataset_name == 'rcc_dataset_spot_transformer':
         from datasets.rcc_dataset_transformer_spot import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -94,7 +97,7 @@ def create_dataset(cfg, split='train'):
             shuffle=True if split == 'train' else False,
             num_workers=cfg.data.num_workers,
             pin_memory=True)
-    elif cfg.data.dataset == 'rcc_dataset_transformer_edit':
+    elif dataset_name == 'rcc_dataset_transformer_edit':
         from datasets.rcc_dataset_transformer_edit import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(
@@ -103,7 +106,7 @@ def create_dataset(cfg, split='train'):
             shuffle=True if split == 'train' else False,
             num_workers=cfg.data.num_workers,
             pin_memory=True)
-    elif cfg.data.dataset == 'rcc_dataset_transformer_with_dep_edit':
+    elif dataset_name == 'rcc_dataset_transformer_with_dep_edit':
         from datasets.rcc_dataset_transformer_with_dep_edit import RCCDataset, RCCDataLoader
         dataset = RCCDataset(cfg, split)
         data_loader = RCCDataLoader(

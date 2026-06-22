@@ -13,6 +13,7 @@ from configs.config_transformer import merge_cfg_from_list
 from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
+from utils.dataset_config import apply_dataset_cli_overrides
 from utils.semantic_label import build_content_word_token_ids
 
 from utils.utils import AverageMeter, accuracy, set_mode, load_checkpoint, \
@@ -96,6 +97,7 @@ def load_change_detector_state_compat(model, state_dict):
 
 
 def apply_cli_overrides(args, cfg):
+    apply_dataset_cli_overrides(args, cfg)
     if args.use_relation_aux:
         cfg.train.use_relation_aux = True
     if args.use_content_word_weight:
@@ -119,8 +121,13 @@ parser.add_argument('--cfg', required=True)
 parser.add_argument('--visualize', action='store_true')
 parser.add_argument('--snapshot', type=int, default=None)
 parser.add_argument('--snapshot_path', type=str, default=None)
+parser.add_argument('--checkpoint', type=str, default=None)
 parser.add_argument('--split', type=str, default='test', choices=['val', 'test'])
 parser.add_argument('--result_json', type=str, default=None)
+parser.add_argument('--dataset', type=str, default=None)
+parser.add_argument('--levir_mci_root', type=str, default=None)
+parser.add_argument('--second_cc_root', type=str, default=None)
+parser.add_argument('--feature_root', type=str, default=None)
 parser.add_argument('--gpu', type=int, default=-1)
 parser.add_argument('--use_relation_aux', action='store_true')
 parser.add_argument('--use_content_word_weight', action='store_true')
@@ -180,14 +187,19 @@ if args.visualize:
     if not os.path.exists(visualize_save_dir):
         os.makedirs(visualize_save_dir)
 
-if args.snapshot_path is not None:
-    snapshot_full_path = os.path.normpath(args.snapshot_path)
+snapshot_path_arg = args.snapshot_path or args.checkpoint
+if args.snapshot_path is not None and args.checkpoint is not None:
+    if os.path.normpath(args.snapshot_path) != os.path.normpath(args.checkpoint):
+        raise ValueError('--snapshot_path and --checkpoint point to different files.')
+
+if snapshot_path_arg is not None:
+    snapshot_full_path = os.path.normpath(snapshot_path_arg)
 elif args.snapshot is not None:
     snapshot_dir = os.path.join(output_dir, 'snapshots')
     snapshot_file = '%s_checkpoint_%d.pt' % (exp_name, args.snapshot)
     snapshot_full_path = os.path.join(snapshot_dir, snapshot_file)
 else:
-    raise ValueError('Either --snapshot or --snapshot_path must be provided.')
+    raise ValueError('Either --snapshot, --snapshot_path, or --checkpoint must be provided.')
 checkpoint = load_checkpoint(snapshot_full_path)
 change_detector_state = checkpoint['change_detector_state']
 speaker_state = checkpoint['speaker_state']

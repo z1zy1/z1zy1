@@ -117,6 +117,7 @@ __C.data.nonsemantic_img_dir = './data/nsc_images'
 __C.data.default_phase = 'A'
 __C.data.semantic_phase = 'B'
 __C.data.pseudo_mask_root = ''
+__C.data.pseudo_mask_phase = ''
 __C.data.allow_missing_pseudo_mask = False
 __C.data.eval_anno_path = ''
 __C.data.vocab_json = './data/vocab.json'

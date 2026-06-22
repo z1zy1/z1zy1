@@ -16,6 +16,7 @@ from configs.config_transformer import merge_cfg_from_list
 from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
+from utils.dataset_config import apply_dataset_cli_overrides
 from utils.logger import Logger
 from utils.semantic_label import build_content_word_token_ids
 from utils.semantic_warmup import get_effective_lambda_semantic
@@ -257,6 +258,7 @@ def is_content_word_weighted_ce_enabled(cfg):
 
 
 def apply_cli_overrides(args, cfg):
+    apply_dataset_cli_overrides(args, cfg)
     if args.output_dir is not None:
         output_dir = os.path.normpath(args.output_dir)
         exp_dir, exp_name = os.path.split(output_dir)
@@ -404,6 +406,10 @@ parser.add_argument('--visualize', action='store_true')
 parser.add_argument('--visualize_every', type=int, default=10)
 parser.add_argument('--exp_name', type=str, default=None)
 parser.add_argument('--output_dir', type=str, default=None)
+parser.add_argument('--dataset', type=str, default=None)
+parser.add_argument('--levir_mci_root', type=str, default=None)
+parser.add_argument('--second_cc_root', type=str, default=None)
+parser.add_argument('--feature_root', type=str, default=None)
 parser.add_argument('--use_aux_mask', action='store_true')
 parser.add_argument('--use_aux_semantic', action='store_true')
 parser.add_argument('--use_mask_aux', action='store_true')
@@ -614,6 +620,13 @@ experiment_summary = [
     f'  exp_name: {exp_name}',
     f'  mode: {experiment_mode}',
     f'  seed: {cfg.train.seed}',
+    f'  data.dataset: {cfg.data.dataset}',
+    f'  default_feature_dir: {cfg.data.default_feature_dir}',
+    f'  semantic_feature_dir: {cfg.data.semantic_feature_dir}',
+    f'  default_img_dir: {cfg.data.default_img_dir}',
+    f'  semantic_img_dir: {cfg.data.semantic_img_dir}',
+    f'  default_phase: {cfg.data.default_phase}',
+    f'  semantic_phase: {cfg.data.semantic_phase}',
     f'  enable_aux_mask: {cfg.model.enable_aux_mask}',
     f'  lambda_mask: {cfg.train.lambda_mask}',
     f'  use_mask_conf_filter: {cfg.train.use_mask_conf_filter}',
@@ -1100,4 +1113,7 @@ while t < cfg.train.max_iter:
                     val_logger.print_current_stats(epoch, 0, t, val_stats, test_iter_end_time)
 
             set_mode('train', [change_detector, speaker])
+
+        if t >= cfg.train.max_iter:
+            break
     lr_scheduler.step()

@@ -2,3 +2,7 @@ Levir-CC/
 __pycache__/
 *.pyc
 *.pyc.*
+LEVIR-MCI-dataset/
+SECOND-CC-AUG/
+LEVIR-MCI-dataset.zip
+SECOND-CC-AUG.zip

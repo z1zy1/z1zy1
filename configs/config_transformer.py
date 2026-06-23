@@ -328,6 +328,8 @@ def _check_and_coerce_cfg_value_type(value_a, value_b, key, full_key):
     type_a = type(value_a)
     if type_a is type_b:
         return value_a
+    if value_b is None:
+        return value_a
 
     # Exceptions: numpy arrays, strings, tuple<->list
     if isinstance(value_b, np.ndarray):

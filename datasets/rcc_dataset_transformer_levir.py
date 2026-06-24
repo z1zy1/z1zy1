@@ -154,9 +154,10 @@ class RCCDataset(Dataset):
         self.require_aux_mask = self.enable_aux_mask and float(cfg.train.lambda_mask) > 0
         self.use_change_mask = _as_bool(getattr(cfg.data, 'use_change_mask', False)) or self.require_aux_mask
         self.mask_label_dir = getattr(cfg.data, 'mask_label_dir', '')
+        self.return_dict = _as_bool(getattr(cfg.data, 'return_dict', False))
 
         self.semantic_input_mode = str(getattr(cfg.model, 'semantic_input_mode', 'none')).lower()
-        self.use_semantic_maps = _as_bool(getattr(cfg.data, 'use_semantic_maps', False)) or self.semantic_input_mode not in ('', 'none')
+        self.use_semantic_maps = _as_bool(getattr(cfg.data, 'use_semantic_maps', False)) or self.semantic_input_mode in ('early_fusion', 'cross_attention', 'hard_gate')
         self.semantic_map_root = getattr(cfg.data, 'semantic_map_root', '') or self.s_img_dir
         self.semantic_before_phase = getattr(cfg.data, 'semantic_before_phase', '') or 'sem/A'
         self.semantic_after_phase = getattr(cfg.data, 'semantic_after_phase', '') or 'sem/B'

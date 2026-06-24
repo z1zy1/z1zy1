@@ -46,6 +46,10 @@ fi
 mkdir -p "$EXP_ROOT"
 : > "$FAIL_LOG"
 FAILURES=0
+USER_LMASK="${LMASK:-}"
+USER_LSEM="${LSEM:-}"
+USER_SEMANTIC_DETACH_RATIO="${SEMANTIC_DETACH_RATIO:-}"
+USER_REWEIGHT_ALPHA="${REWEIGHT_ALPHA:-}"
 
 contains_exp() {
   local target="$1"
@@ -69,7 +73,7 @@ run_or_log() {
 
 configure_levir_env() {
   local exp="$1"
-  unset NUM_MASK_CLASSES MASK_LOSS_TYPE SEMANTIC_LOSS_TYPE NUM_SEMANTIC_CLASSES REWEIGHT_ALPHA DETACH_REWEIGHT_MASK
+  unset NUM_MASK_CLASSES MASK_LOSS_TYPE SEMANTIC_LOSS_TYPE NUM_SEMANTIC_CLASSES REWEIGHT_ALPHA DETACH_REWEIGHT_MASK LMASK LSEM SEMANTIC_DETACH_RATIO
   export EXP_DIR="$EXP_ROOT"
   export EXP_NAME="$exp"
   export DATASET="levir_mci"
@@ -81,21 +85,21 @@ configure_levir_env() {
   export ALLOW_MISSING_PSEUDO_MASK=0
   export USE_FEATURE_REWEIGHT=0
   export USE_SEMANTIC_PARTIAL_DETACH=0
-  export SEMANTIC_DETACH_RATIO="${SEMANTIC_DETACH_RATIO:-0.5}"
+  export SEMANTIC_DETACH_RATIO="${USER_SEMANTIC_DETACH_RATIO:-0.5}"
   case "$exp" in
     levir_mci_card_baseline)
-      export BASE_CFG="configs/dynamic/transformer_levir_mci_baseline.yaml" MODEL_TYPE=card USE_CHANGE_MASK=0 MASK_TYPE=binary ENABLE_AUX_MASK=0 USE_AUX_SEMANTIC=0 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=none LMASK=0 LSEM=0 ;;
+      export BASE_CFG="configs/dynamic/transformer_levir_mci_baseline.yaml" MODEL_TYPE=card USE_CHANGE_MASK=0 MASK_TYPE=binary ENABLE_AUX_MASK=0 USE_AUX_SEMANTIC=0 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=none LMASK=0.0 LSEM=0.0 ;;
     levir_mci_card_mask_loss)
-      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=0 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=none LMASK="${LMASK:-0.003}" LSEM=0 MASK_LOSS_TYPE=ce_dice ;;
+      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=0 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=none LMASK="${USER_LMASK:-0.003}" LSEM=0.0 MASK_LOSS_TYPE=ce_dice ;;
     levir_mci_card_semantic_loss)
-      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=0 MASK_TYPE=binary ENABLE_AUX_MASK=0 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux LMASK=0 LSEM="${LSEM:-0.005}" SEMANTIC_LOSS_TYPE=multilabel_bce ;;
+      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=0 MASK_TYPE=binary ENABLE_AUX_MASK=0 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux LMASK=0.0 LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=multilabel_bce ;;
     levir_mci_card_mask_semantic)
-      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux LMASK="${LMASK:-0.003}" LSEM="${LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce ;;
+      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux LMASK="${USER_LMASK:-0.003}" LSEM="${USER_LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce ;;
     levir_mci_card_mask_semantic_pd05|levir_mci_card_mask_semantic_pd05_noreweight|levir_mci_ours_weak_coupled_final)
-      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux USE_SEMANTIC_PARTIAL_DETACH=1 LMASK="${LMASK:-0.003}" LSEM="${LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce
+      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux USE_SEMANTIC_PARTIAL_DETACH=1 LMASK="${USER_LMASK:-0.003}" LSEM="${USER_LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce
       if [ "$exp" = "levir_mci_ours_weak_coupled_final" ]; then export SEMANTIC_INPUT_MODE=weak_coupled; fi ;;
     levir_mci_card_mask_semantic_pd05_reweight)
-      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux USE_SEMANTIC_PARTIAL_DETACH=1 USE_FEATURE_REWEIGHT=1 REWEIGHT_ALPHA="${REWEIGHT_ALPHA:-0.2}" DETACH_REWEIGHT_MASK=1 LMASK="${LMASK:-0.003}" LSEM="${LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce ;;
+      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux USE_SEMANTIC_PARTIAL_DETACH=1 USE_FEATURE_REWEIGHT=1 REWEIGHT_ALPHA="${USER_REWEIGHT_ALPHA:-0.2}" DETACH_REWEIGHT_MASK=1 LMASK="${USER_LMASK:-0.003}" LSEM="${USER_LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce ;;
   esac
 }
 

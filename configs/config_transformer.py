@@ -355,6 +355,21 @@ def _check_and_coerce_cfg_value_type(value_a, value_b, key, full_key):
     if value_b is None:
         return value_a
 
+    # Numeric CLI overrides often come from shell variables.  Treat int/float
+    # pairs as compatible, especially for YAML values written as 0 but later
+    # overridden by fractional loss weights such as 0.003.
+    numeric_a = isinstance(value_a, (int, float)) and not isinstance(value_a, bool)
+    numeric_b = isinstance(value_b, (int, float)) and not isinstance(value_b, bool)
+    if numeric_a and numeric_b:
+        if isinstance(value_b, float):
+            return float(value_a)
+        if isinstance(value_a, float):
+            if value_a.is_integer():
+                return int(value_a)
+            if value_b == 0:
+                return value_a
+        return value_a
+
     # Exceptions: numpy arrays, strings, tuple<->list
     if isinstance(value_b, np.ndarray):
         value_a = np.array(value_a, dtype=value_b.dtype)

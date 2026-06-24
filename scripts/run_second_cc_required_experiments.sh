@@ -44,6 +44,10 @@ fi
 mkdir -p "$EXP_ROOT"
 : > "$FAIL_LOG"
 FAILURES=0
+USER_LMASK="${LMASK:-}"
+USER_LSEM="${LSEM:-}"
+USER_SEMANTIC_DETACH_RATIO="${SEMANTIC_DETACH_RATIO:-}"
+USER_REWEIGHT_ALPHA="${REWEIGHT_ALPHA:-}"
 
 contains_exp() {
   local target="$1"
@@ -67,7 +71,7 @@ run_or_log() {
 
 configure_second_env() {
   local exp="$1"
-  unset NUM_MASK_CLASSES MASK_LOSS_TYPE SEMANTIC_LOSS_TYPE NUM_SEMANTIC_CLASSES REWEIGHT_ALPHA DETACH_REWEIGHT_MASK
+  unset NUM_MASK_CLASSES MASK_LOSS_TYPE SEMANTIC_LOSS_TYPE NUM_SEMANTIC_CLASSES REWEIGHT_ALPHA DETACH_REWEIGHT_MASK LMASK LSEM SEMANTIC_DETACH_RATIO
   export EXP_DIR="$EXP_ROOT"
   export EXP_NAME="$exp"
   export DATASET="second_cc"
@@ -85,19 +89,19 @@ configure_second_env() {
   export SEMANTIC_INPUT_MODE=none
   export USE_SEMANTIC_PARTIAL_DETACH=0
   export USE_FEATURE_REWEIGHT=0
-  export LMASK=0
-  export LSEM=0
+  export LMASK=0.0
+  export LSEM=0.0
   case "$exp" in
     second_cc_card_rgb_baseline)
       export BASE_CFG="configs/dynamic/transformer_second_cc_aug_baseline.yaml" MODEL_TYPE=card ;;
     second_cc_card_semantic_aux)
-      export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=aux LSEM="${LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
+      export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=aux LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
     second_cc_card_semantic_crossattn)
-      export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=cross_attention LSEM="${LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
+      export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=cross_attention LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
     second_cc_card_semantic_hardgate)
-      export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=hard_gate LSEM="${LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
+      export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=hard_gate LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
     second_cc_ours_weak_coupled_final)
-      export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=weak_coupled USE_SEMANTIC_PARTIAL_DETACH=1 SEMANTIC_DETACH_RATIO="${SEMANTIC_DETACH_RATIO:-0.5}" LSEM="${LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
+      export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=weak_coupled USE_SEMANTIC_PARTIAL_DETACH=1 SEMANTIC_DETACH_RATIO="${USER_SEMANTIC_DETACH_RATIO:-0.5}" LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
   esac
 }
 

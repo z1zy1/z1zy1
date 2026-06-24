@@ -5,6 +5,9 @@ PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
 cd "$PROJECT_DIR"
 
 export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
+case "${OMP_NUM_THREADS:-}" in
+  ''|*[!0-9]*|0) export OMP_NUM_THREADS=1 ;;
+esac
 PYTORCH_GPU="${PYTORCH_GPU:-0}"
 EXP_DIR="${EXP_DIR:-./experiments}"
 EXP_NAME="${EXP_NAME:?EXP_NAME is required}"

@@ -49,6 +49,18 @@ def align_mask_tensor(tensor, spatial_size, mode):
     return tensor
 
 
+def align_class_tensor(tensor, spatial_size):
+    if tensor is None:
+        return None
+    if tensor.dim() == 4 and tensor.size(1) == 1:
+        tensor = tensor[:, 0]
+    if tensor.dim() != 3:
+        raise ValueError('Expected class target [B,H,W], got %s' % (tuple(tensor.shape),))
+    if tensor.shape[-2:] != spatial_size:
+        tensor = F.interpolate(tensor.unsqueeze(1).float(), size=spatial_size, mode='nearest').squeeze(1)
+    return tensor.long()
+
+
 def compute_dice_loss(pred, target, valid_mask=None, eps=1e-6):
     if valid_mask is None:
         valid_mask = torch.ones_like(pred)
@@ -60,7 +72,45 @@ def compute_dice_loss(pred, target, valid_mask=None, eps=1e-6):
     return 1.0 - dice_score.mean()
 
 
-def compute_mask_loss(pred, target, ignore_mask=None, loss_type='bce', bce_dice_alpha=0.5, ignore_index=None):
+def compute_multiclass_dice_loss(logits, target, ignore_index=-1, include_background=False, eps=1e-6):
+    target = align_class_tensor(target, logits.shape[-2:])
+    num_classes = logits.size(1)
+    valid = target != int(ignore_index)
+    if valid.sum().item() == 0:
+        return logits.sum() * 0.0
+    safe_target = torch.where(valid, target.clamp(0, num_classes - 1), torch.zeros_like(target))
+    probs = F.softmax(logits, dim=1)
+    one_hot = F.one_hot(safe_target, num_classes=num_classes).permute(0, 3, 1, 2).float()
+    valid = valid.unsqueeze(1).float()
+    probs = probs * valid
+    one_hot = one_hot * valid
+    start_class = 0 if include_background else 1
+    if start_class >= num_classes:
+        start_class = 0
+    probs = probs[:, start_class:]
+    one_hot = one_hot[:, start_class:]
+    intersection = (probs * one_hot).sum(dim=(0, 2, 3))
+    denominator = probs.sum(dim=(0, 2, 3)) + one_hot.sum(dim=(0, 2, 3))
+    dice = (2.0 * intersection + eps) / (denominator + eps)
+    return 1.0 - dice.mean()
+
+
+def compute_mask_loss(pred, target, ignore_mask=None, loss_type='bce', bce_dice_alpha=0.5,
+                      ignore_index=None, include_background=False):
+    if pred is None or target is None:
+        raise ValueError('compute_mask_loss requires prediction and target tensors.')
+    if pred.size(1) > 1:
+        target = align_class_tensor(target, pred.shape[-2:])
+        ce = F.cross_entropy(pred, target, ignore_index=int(ignore_index), reduction='mean')
+        if loss_type in ('ce', 'cross_entropy', 'multiclass_ce'):
+            return ce
+        if loss_type in ('ce_dice', 'bce_dice'):
+            dice = compute_multiclass_dice_loss(
+                pred, target, ignore_index=ignore_index, include_background=include_background
+            )
+            return bce_dice_alpha * ce + (1.0 - bce_dice_alpha) * dice
+        raise ValueError('Unknown multiclass mask_loss_type: %s' % loss_type)
+
     target = align_mask_tensor(target, pred.shape[-2:], mode='nearest')
     valid_mask = torch.ones_like(target)
     if ignore_index is not None:
@@ -73,15 +123,12 @@ def compute_mask_loss(pred, target, ignore_mask=None, loss_type='bce', bce_dice_
     target = target.clamp(0.0, 1.0)
     pred_prob = torch.sigmoid(pred)
     bce = F.binary_cross_entropy_with_logits(pred, target, reduction='none')
-    if valid_mask is not None:
-        bce = bce * valid_mask
-        valid_count = valid_mask.sum()
-        if valid_count.item() == 0:
-            bce_loss = pred.sum() * 0.0
-        else:
-            bce_loss = bce.sum() / valid_count
+    bce = bce * valid_mask
+    valid_count = valid_mask.sum()
+    if valid_count.item() == 0:
+        bce_loss = pred.sum() * 0.0
     else:
-        bce_loss = bce.mean()
+        bce_loss = bce.sum() / valid_count
 
     if loss_type == 'bce':
         return bce_loss
@@ -90,6 +137,65 @@ def compute_mask_loss(pred, target, ignore_mask=None, loss_type='bce', bce_dice_
         return bce_dice_alpha * bce_loss + (1.0 - bce_dice_alpha) * dice_loss
     raise ValueError('Unknown mask_loss_type: %s' % loss_type)
 
+
+def compute_dense_semantic_loss(logits, target, loss_type='ce', ignore_index=-1, include_background=False):
+    if logits is None or target is None:
+        raise ValueError('compute_dense_semantic_loss requires logits and target.')
+    target = align_class_tensor(target, logits.shape[-2:])
+    ce = F.cross_entropy(logits, target, ignore_index=int(ignore_index), reduction='mean')
+    if loss_type in ('ce', 'cross_entropy', 'multiclass_ce', 'dense_ce'):
+        return ce
+    if loss_type in ('ce_dice', 'bce_dice'):
+        dice = compute_multiclass_dice_loss(
+            logits, target, ignore_index=ignore_index, include_background=include_background
+        )
+        return 0.5 * ce + 0.5 * dice
+    raise ValueError('Unknown semantic_loss_type for dense target: %s' % loss_type)
+
+
+def segmentation_metrics(logits, target, ignore_index=-1, positive_classes=None):
+    if logits is None or target is None:
+        return {}
+    if logits.size(1) == 1:
+        pred = (torch.sigmoid(logits) >= 0.5).long()[:, 0]
+        target = align_mask_tensor(target, logits.shape[-2:], mode='nearest')[:, 0]
+        valid = target != float(ignore_index)
+        gold = (target > 0.5).long()
+        classes = [1]
+    else:
+        pred = torch.argmax(logits, dim=1)
+        target = align_class_tensor(target, logits.shape[-2:])
+        valid = target != int(ignore_index)
+        gold = target.long()
+        if positive_classes is None:
+            classes = list(range(1, logits.size(1))) or [0]
+        else:
+            classes = list(positive_classes)
+    if valid.sum().item() == 0:
+        return {'precision': 0.0, 'recall': 0.0, 'f1': 0.0, 'iou': 0.0, 'miou': 0.0}
+    pred_pos = torch.zeros_like(pred, dtype=torch.bool)
+    gold_pos = torch.zeros_like(gold, dtype=torch.bool)
+    for cls_id in classes:
+        pred_pos |= pred == int(cls_id)
+        gold_pos |= gold == int(cls_id)
+    pred_pos &= valid
+    gold_pos &= valid
+    tp = (pred_pos & gold_pos).sum().item()
+    fp = (pred_pos & (~gold_pos) & valid).sum().item()
+    fn = ((~pred_pos) & gold_pos & valid).sum().item()
+    precision = tp / float(tp + fp) if (tp + fp) else 0.0
+    recall = tp / float(tp + fn) if (tp + fn) else 0.0
+    f1 = 2 * precision * recall / float(precision + recall) if (precision + recall) else 0.0
+    iou = tp / float(tp + fp + fn) if (tp + fp + fn) else 0.0
+    ious = []
+    for cls_id in classes:
+        cls_pred = (pred == int(cls_id)) & valid
+        cls_gold = (gold == int(cls_id)) & valid
+        union = (cls_pred | cls_gold).sum().item()
+        if union:
+            ious.append(((cls_pred & cls_gold).sum().item()) / float(union))
+    miou = float(np.mean(ious)) if ious else 0.0
+    return {'precision': precision, 'recall': recall, 'f1': f1, 'iou': iou, 'miou': miou}
 
 def get_effective_lambda_mask(cfg, global_step):
     if not cfg.model.enable_aux_mask:
@@ -259,6 +365,15 @@ def is_content_word_weighted_ce_enabled(cfg):
 
 def apply_cli_overrides(args, cfg):
     apply_dataset_cli_overrides(args, cfg)
+    if args.model is not None:
+        cfg.model.type = args.model
+        if args.model == 'card':
+            cfg.model.enable_aux_mask = False
+            cfg.train.use_semantic_aux = False
+            cfg.train.use_feature_reweight = False
+            cfg.model.semantic_input_mode = 'none'
+    if args.paper_selection_mode:
+        cfg.train.paper_selection_mode = True
     if args.output_dir is not None:
         output_dir = os.path.normpath(args.output_dir)
         exp_dir, exp_name = os.path.split(output_dir)
@@ -357,6 +472,12 @@ def apply_cli_overrides(args, cfg):
         cfg.train.use_feature_reweight = True
     if args.reweight_alpha is not None:
         cfg.train.reweight_alpha = args.reweight_alpha
+    if args.detach_reweight_mask:
+        cfg.train.detach_reweight_mask = True
+    if args.mask_loss_type is not None:
+        cfg.train.mask_loss_type = args.mask_loss_type
+    if args.semantic_loss_type is not None:
+        cfg.train.semantic_loss_type = args.semantic_loss_type
     if args.mask_warmup_steps is not None:
         cfg.train.mask_warmup_steps = args.mask_warmup_steps
         if args.mask_warmup_steps > 0:
@@ -366,25 +487,36 @@ def apply_cli_overrides(args, cfg):
 
 
 def unpack_batch(batch):
-    semantic_labels = None
-    semantic_targets = None
-    if len(batch) == 7:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths = batch
-        pseudo_masks = None
-    elif len(batch) == 8:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = batch
-    elif len(batch) == 9:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, extra = batch
-        if isinstance(extra, dict):
-            semantic_targets = extra
-        else:
-            semantic_labels = extra
-    elif len(batch) == 10:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets = batch
-    else:
+    if isinstance(batch, dict):
+        return batch
+    if len(batch) < 8:
         raise ValueError('Unexpected batch size: %d' % len(batch))
-    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets
+    data = {
+        'feature_before': batch[0],
+        'feature_after': batch[1],
+        'caption_tokens': batch[2],
+        'labels_with_ignore': batch[3],
+        'caption_mask': batch[4],
+        'image_before': batch[5],
+        'image_after': batch[6],
+        'mask': batch[7],
+        'semantic_labels': batch[8] if len(batch) > 8 else None,
+        'semantic_targets': batch[9] if len(batch) > 9 else None,
+        'semantic_dense': batch[10] if len(batch) > 10 else None,
+        'semantic_before': batch[11] if len(batch) > 11 else None,
+        'semantic_after': batch[12] if len(batch) > 12 else None,
+        'semantic_diff': batch[13] if len(batch) > 13 else None,
+        'changeflag': batch[14] if len(batch) > 14 else None,
+        'image_id': batch[15] if len(batch) > 15 else None,
+    }
+    return data
 
+
+def move_optional_tensor(value, device, dtype=None):
+    if value is None:
+        return None
+    value = value.to(device)
+    return value.to(dtype=dtype) if dtype is not None else value
 
 def unpack_change_detector_output(outputs):
     relation_aux_logits = None
@@ -407,9 +539,19 @@ parser.add_argument('--visualize_every', type=int, default=10)
 parser.add_argument('--exp_name', type=str, default=None)
 parser.add_argument('--output_dir', type=str, default=None)
 parser.add_argument('--dataset', type=str, default=None)
+parser.add_argument('--model', type=str, default=None, choices=['card', 'sgc_card'])
+parser.add_argument('--data_root', type=str, default=None)
 parser.add_argument('--levir_mci_root', type=str, default=None)
 parser.add_argument('--second_cc_root', type=str, default=None)
 parser.add_argument('--feature_root', type=str, default=None)
+parser.add_argument('--use_change_mask', action='store_true')
+parser.add_argument('--mask_type', type=str, default=None, choices=['binary', 'multiclass'])
+parser.add_argument('--num_mask_classes', type=int, default=None)
+parser.add_argument('--use_semantic_maps', action='store_true')
+parser.add_argument('--semantic_input_mode', type=str, default=None, choices=['none', 'aux', 'early_fusion', 'cross_attention', 'hard_gate', 'weak_coupled'])
+parser.add_argument('--num_semantic_classes', type=int, default=None)
+parser.add_argument('--eval_change_nochange_split', action='store_true')
+parser.add_argument('--paper_selection_mode', action='store_true')
 parser.add_argument('--use_aux_mask', action='store_true')
 parser.add_argument('--use_aux_semantic', action='store_true')
 parser.add_argument('--use_mask_aux', action='store_true')
@@ -450,6 +592,9 @@ parser.add_argument('--lambda_mask', type=float, default=None)
 parser.add_argument('--lmask', type=float, default=None)
 parser.add_argument('--use_feature_reweight', action='store_true')
 parser.add_argument('--reweight_alpha', type=float, default=None)
+parser.add_argument('--detach_reweight_mask', action='store_true')
+parser.add_argument('--mask_loss_type', type=str, default=None)
+parser.add_argument('--semantic_loss_type', type=str, default=None)
 parser.add_argument('--mask_warmup_steps', type=int, default=None)
 parser.add_argument('opts', nargs=argparse.REMAINDER)
 args = parser.parse_args()
@@ -536,14 +681,22 @@ num_relation_objects = train_dataset.get_num_relation_objects() if hasattr(train
 num_relation_actions = train_dataset.get_num_relation_actions() if hasattr(train_dataset, 'get_num_relation_actions') else 0
 
 if cfg.train.use_semantic_aux:
-    if cfg.train.semantic_loss_type != 'multilabel_bce':
-        raise ValueError('Unknown semantic_loss_type: %s' % cfg.train.semantic_loss_type)
-    if num_semantic_tags <= 0:
-        raise ValueError('Semantic auxiliary branch is enabled but no semantic tags were loaded.')
-    print('Semantic auxiliary branch enabled.')
-    print('Semantic supervision type: object/action multi-label BCE.')
-    print('Number of semantic tags: %d' % num_semantic_tags)
-    print('Semantic tag file: %s' % cfg.train.semantic_tag_file)
+    dense_semantic_aux = cfg.train.semantic_loss_type != 'multilabel_bce'
+    if dense_semantic_aux:
+        if cfg.train.semantic_loss_type not in ('ce', 'ce_dice'):
+            raise ValueError('Unknown semantic_loss_type: %s' % cfg.train.semantic_loss_type)
+        if int(getattr(cfg.model, 'num_semantic_classes', 0) or 0) <= 0:
+            raise ValueError('Dense semantic auxiliary branch needs model.num_semantic_classes > 0.')
+        print('Semantic auxiliary branch enabled.')
+        print('Semantic supervision type: dense semantic map %s.' % cfg.train.semantic_loss_type)
+        print('Number of semantic dense classes: %d' % cfg.model.num_semantic_classes)
+    else:
+        if num_semantic_tags <= 0:
+            raise ValueError('Semantic auxiliary branch is enabled but no semantic tags were loaded.')
+        print('Semantic auxiliary branch enabled.')
+        print('Semantic supervision type: object/action multi-label BCE.')
+        print('Number of semantic tags: %d' % num_semantic_tags)
+        print('Semantic tag file: %s' % cfg.train.semantic_tag_file)
     print('lambda_semantic: %s' % cfg.train.lambda_semantic)
     print('use_semantic_detach: %s' % cfg.train.use_semantic_detach)
     print('use_semantic_partial_detach: %s' % cfg.train.use_semantic_partial_detach)
@@ -727,7 +880,19 @@ while t < cfg.train.max_iter:
     for i, batch in enumerate(train_loader):
         iter_start_time = time.time()
 
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets = unpack_batch(batch)
+        batch_data = unpack_batch(batch)
+        d_feats = batch_data['feature_before']
+        sc_feats = batch_data['feature_after']
+        labels = batch_data['caption_tokens']
+        labels_with_ignore = batch_data['labels_with_ignore']
+        masks = batch_data['caption_mask']
+        pseudo_masks = batch_data.get('mask')
+        semantic_labels = batch_data.get('semantic_labels')
+        semantic_targets = batch_data.get('semantic_targets')
+        semantic_dense = batch_data.get('semantic_dense')
+        semantic_before = batch_data.get('semantic_before')
+        semantic_after = batch_data.get('semantic_after')
+        semantic_diff = batch_data.get('semantic_diff')
 
         batch_size = d_feats.size(0)
         labels = labels.squeeze(1)
@@ -735,18 +900,25 @@ while t < cfg.train.max_iter:
 
         masks = masks.squeeze(1).float()
 
-        d_feats,  sc_feats = d_feats.to(device), sc_feats.to(device)
+        d_feats, sc_feats = d_feats.to(device), sc_feats.to(device)
 
         labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
         if pseudo_masks is not None:
-            pseudo_masks = pseudo_masks.to(device).float()
+            pseudo_masks = pseudo_masks.to(device)
+            if pseudo_masks.dtype != torch.long:
+                pseudo_masks = pseudo_masks.float()
         if semantic_labels is not None:
             semantic_labels = semantic_labels.to(device).float()
+        if semantic_dense is not None:
+            semantic_dense = semantic_dense.to(device).long()
+        semantic_before = move_optional_tensor(semantic_before, device, dtype=torch.long)
+        semantic_after = move_optional_tensor(semantic_after, device, dtype=torch.long)
+        semantic_diff = move_optional_tensor(semantic_diff, device, dtype=torch.long)
         semantic_targets = move_semantic_targets_to_device(semantic_targets, device)
 
         optimizer.zero_grad()
 
-        change_outputs = change_detector(d_feats, sc_feats)
+        change_outputs = change_detector(d_feats, sc_feats, semantic_before=semantic_before, semantic_after=semantic_after, semantic_diff=semantic_diff)
         encoder_output, con_loss, ind_loss, _, _, mask_pred, semantic_logits, relation_aux_logits = unpack_change_detector_output(change_outputs)
 
         loss_pos, _, att_pos = speaker._forward(encoder_output,
@@ -804,23 +976,27 @@ while t < cfg.train.max_iter:
                 if cfg.train.use_semantic_aux
                 else 0.0
             )
+        mask_metric_values = {'precision': 0.0, 'recall': 0.0, 'f1': 0.0, 'iou': 0.0, 'miou': 0.0}
+        semantic_metric_values = {'miou': 0.0}
         if cfg.model.enable_aux_mask and cfg.train.lambda_mask > 0:
-            if pseudo_masks is None:
+            if pseudo_masks is None or mask_pred is None:
+                if not printed_binary_mask_warning:
+                    print('Warning: mask auxiliary loss requested but mask label or prediction is missing; loss_mask=0 for missing batches.')
+                    printed_binary_mask_warning = True
                 mask_loss = mask_pred.sum() * 0.0 if mask_pred is not None else cap_loss * 0.0
             else:
-                if cfg.train.use_mask_conf_filter and not printed_binary_mask_warning:
-                    valid_for_binary_check = pseudo_masks
-                    if cfg.train.mask_ignore_index is not None:
-                        valid_for_binary_check = pseudo_masks[pseudo_masks != float(cfg.train.mask_ignore_index)]
-                    if valid_for_binary_check.numel() > 0:
-                        is_binary_mask = bool(torch.all((valid_for_binary_check == 0) | (valid_for_binary_check == 1)).item())
-                        if is_binary_mask:
-                            print('Warning: pseudo masks appear binary. mask_conf_threshold will have little or no effect unless masks store soft confidence values.')
-                    printed_binary_mask_warning = True
                 ignore_mask = None
-                if cfg.train.use_mask_conf_filter:
-                    # Low-confidence pseudo-label regions are ignored in mask supervision.
-                    confidence = torch.maximum(pseudo_masks, 1.0 - pseudo_masks)
+                if mask_pred.size(1) == 1 and cfg.train.use_mask_conf_filter:
+                    if not printed_binary_mask_warning:
+                        valid_for_binary_check = pseudo_masks
+                        if cfg.train.mask_ignore_index is not None:
+                            valid_for_binary_check = pseudo_masks[pseudo_masks != float(cfg.train.mask_ignore_index)]
+                        if valid_for_binary_check.numel() > 0:
+                            is_binary_mask = bool(torch.all((valid_for_binary_check == 0) | (valid_for_binary_check == 1)).item())
+                            if is_binary_mask:
+                                print('Warning: pseudo masks appear binary. mask_conf_threshold has little effect unless masks store soft confidence values.')
+                        printed_binary_mask_warning = True
+                    confidence = torch.maximum(pseudo_masks.float(), 1.0 - pseudo_masks.float())
                     ignore_mask = confidence < cfg.train.mask_conf_threshold
                 mask_loss = compute_mask_loss(
                     mask_pred,
@@ -829,22 +1005,44 @@ while t < cfg.train.max_iter:
                     loss_type=cfg.train.mask_loss_type,
                     bce_dice_alpha=cfg.train.mask_bce_dice_alpha,
                     ignore_index=cfg.train.mask_ignore_index,
+                    include_background=getattr(cfg.train, 'mask_dice_include_background', False),
                 )
+                with torch.no_grad():
+                    mask_metric_values = segmentation_metrics(
+                        mask_pred.detach(), pseudo_masks.detach(), ignore_index=cfg.train.mask_ignore_index
+                    )
             mask_loss_val = mask_loss.item()
             weighted_mask_loss_val = effective_lambda_mask * mask_loss_val
         if cfg.train.use_semantic_aux:
-            if semantic_labels is None:
-                semantic_loss = semantic_logits.sum() * 0.0 if semantic_logits is not None else cap_loss * 0.0
-            else:
-                if semantic_logits is None:
-                    semantic_loss = cap_loss * 0.0
+            if semantic_logits is None:
+                semantic_loss = cap_loss * 0.0
+            elif semantic_logits.dim() == 4:
+                if semantic_dense is None:
+                    print('Warning: dense semantic auxiliary loss requested but semantic target is missing; loss_sem=0 for this batch.')
+                    semantic_loss = semantic_logits.sum() * 0.0
                 else:
-                    if semantic_logits.shape != semantic_labels.shape:
-                        raise ValueError(
-                            'semantic_logits shape %s does not match semantic_labels shape %s.'
-                            % (tuple(semantic_logits.shape), tuple(semantic_labels.shape))
+                    semantic_loss = compute_dense_semantic_loss(
+                        semantic_logits,
+                        semantic_dense,
+                        loss_type=cfg.train.semantic_loss_type,
+                        ignore_index=getattr(cfg.train, 'semantic_ignore_index', -1),
+                        include_background=getattr(cfg.train, 'semantic_dice_include_background', False),
+                    )
+                    with torch.no_grad():
+                        semantic_metric_values = segmentation_metrics(
+                            semantic_logits.detach(),
+                            semantic_dense.detach(),
+                            ignore_index=getattr(cfg.train, 'semantic_ignore_index', -1),
                         )
-                    semantic_loss = semantic_loss_func(semantic_logits, semantic_labels.float())
+            elif semantic_labels is None:
+                semantic_loss = semantic_logits.sum() * 0.0
+            else:
+                if semantic_logits.shape != semantic_labels.shape:
+                    raise ValueError(
+                        'semantic_logits shape %s does not match semantic_labels shape %s.'
+                        % (tuple(semantic_logits.shape), tuple(semantic_labels.shape))
+                    )
+                semantic_loss = semantic_loss_func(semantic_logits, semantic_labels.float())
             semantic_loss_val = semantic_loss.item()
             weighted_semantic_loss_val = effective_lambda_semantic * semantic_loss_val
 
@@ -909,6 +1107,8 @@ while t < cfg.train.max_iter:
         stats['avg_cap_loss'] = speaker_loss_avg.avg
         stats['con_loss'] = con_loss_val
         stats['ind_loss'] = ind_loss_val
+        stats['loss_card_con'] = con_loss_val
+        stats['loss_card_ind'] = ind_loss_val
         stats['avg_constraint_loss'] = constraint_loss_avg.avg
         stats['lambda_mask'] = cfg.train.lambda_mask
         stats['use_mask_aux'] = float(cfg.model.enable_aux_mask)
@@ -936,6 +1136,12 @@ while t < cfg.train.max_iter:
         stats['loss_semantic'] = semantic_loss_val
         stats['loss_sem'] = semantic_loss_val
         stats['weighted_semantic_loss'] = weighted_semantic_loss_val
+        stats['mask_precision'] = mask_metric_values.get('precision', 0.0)
+        stats['mask_recall'] = mask_metric_values.get('recall', 0.0)
+        stats['mask_f1'] = mask_metric_values.get('f1', 0.0)
+        stats['mask_iou'] = mask_metric_values.get('iou', 0.0)
+        stats['mask_miou'] = mask_metric_values.get('miou', 0.0)
+        stats['semantic_miou'] = semantic_metric_values.get('miou', 0.0)
         semantic_debug_info = getattr(change_detector, 'semantic_detach_debug', {})
         for debug_key in (
             'semantic_input_requires_grad',
@@ -993,6 +1199,8 @@ while t < cfg.train.max_iter:
             )
         if getattr(change_detector, 'semantic_head', None) is not None:
             stats['semantic_head_grad_norm'] = grad_norm(change_detector.semantic_head.parameters())
+        if getattr(change_detector, 'semantic_dense_head', None) is not None:
+            stats['semantic_head_grad_norm'] = grad_norm(change_detector.semantic_dense_head.parameters())
         if cfg.train.grad_clip != -1.0:  # enable, -1 == disable
             nn.utils.clip_grad_norm_(change_detector.parameters(), cfg.train.grad_clip)
             nn.utils.clip_grad_norm_(speaker.parameters(), cfg.train.grad_clip)
@@ -1045,17 +1253,30 @@ while t < cfg.train.max_iter:
                     'relations': {'tp': 0, 'fp': 0, 'fn': 0},
                 }
                 for val_i, val_batch in enumerate(val_loader):
-                    d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _, _, semantic_targets = unpack_batch(val_batch)
+                    val_data = unpack_batch(val_batch)
+                    d_feats = val_data['feature_before']
+                    sc_feats = val_data['feature_after']
+                    labels = val_data['caption_tokens']
+                    labels_with_ignore = val_data['labels_with_ignore']
+                    masks = val_data['caption_mask']
+                    d_img_paths = val_data['image_before']
+                    semantic_targets = val_data.get('semantic_targets')
+                    semantic_before = val_data.get('semantic_before')
+                    semantic_after = val_data.get('semantic_after')
+                    semantic_diff = val_data.get('semantic_diff')
 
                     val_batch_size = d_feats.size(0)
 
                     d_feats, sc_feats = d_feats.to(device), sc_feats.to(device)
 
                     labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
+                    semantic_before = move_optional_tensor(semantic_before, device, dtype=torch.long)
+                    semantic_after = move_optional_tensor(semantic_after, device, dtype=torch.long)
+                    semantic_diff = move_optional_tensor(semantic_diff, device, dtype=torch.long)
                     semantic_targets = move_semantic_targets_to_device(semantic_targets, device)
 
 
-                    change_outputs = change_detector(d_feats, sc_feats)
+                    change_outputs = change_detector(d_feats, sc_feats, semantic_before=semantic_before, semantic_after=semantic_after, semantic_diff=semantic_diff)
                     encoder_output, _, _, att1, att2, _, _, relation_aux_logits = unpack_change_detector_output(change_outputs)
                     if cfg.train.use_relation_aux:
                         if relation_aux_logits is None or semantic_targets is None:

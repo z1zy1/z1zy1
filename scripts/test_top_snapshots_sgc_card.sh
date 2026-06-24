@@ -42,7 +42,7 @@ EXP_PATH="${EXP_PATH%/}"
 SUMMARY_CSV="$EXP_PATH/test_top_snapshots_summary.csv"
 mkdir -p "$EXP_PATH"
 
-printf 'tag,snapshot_path,Bleu_1,Bleu_2,Bleu_3,Bleu_4,METEOR,ROUGE_L,CIDEr,SPICE,delta_Bleu_4,delta_METEOR,delta_ROUGE_L,delta_CIDEr,delta_SPICE,all_above_test_baseline\n' > "$SUMMARY_CSV"
+printf 'tag,snapshot_path,Bleu_1,Bleu_2,Bleu_3,Bleu_4,METEOR,ROUGE_L,CIDEr,SPICE,Mask_F1,Mask_IoU,Mask_mIoU,IoU_road,IoU_building,Semantic_mIoU,delta_Bleu_4,delta_METEOR,delta_ROUGE_L,delta_CIDEr,delta_SPICE,all_above_test_baseline\n' > "$SUMMARY_CSV"
 
 resolve_snapshot() {
   local tag="$1"
@@ -144,6 +144,7 @@ with open(result_json, encoding="utf-8") as f:
     data = json.load(f)
 
 metrics = data.get("metrics", {})
+aux = data.get("aux_metrics", {})
 deltas = data.get("deltas", {})
 row = [
     tag,
@@ -156,6 +157,12 @@ row = [
     metrics.get("ROUGE_L", ""),
     metrics.get("CIDEr", ""),
     metrics.get("SPICE", ""),
+    aux.get("Mask_F1", ""),
+    aux.get("Mask_IoU", ""),
+    aux.get("Mask_mIoU", ""),
+    aux.get("IoU_road", ""),
+    aux.get("IoU_building", ""),
+    aux.get("Semantic_mIoU", ""),
     deltas.get("Bleu_4", ""),
     deltas.get("METEOR", ""),
     deltas.get("ROUGE_L", ""),

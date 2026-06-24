@@ -27,13 +27,27 @@ class CrossTransformer(nn.Module):
 
 
 class AuxMaskHead(nn.Module):
-    def __init__(self, input_dim):
+    def __init__(self, input_dim, out_channels=1):
         super().__init__()
         hidden_dim = max(input_dim // 2, 1)
         self.net = nn.Sequential(
             nn.Conv2d(input_dim, hidden_dim, kernel_size=3, padding=1),
             nn.ReLU(inplace=True),
-            nn.Conv2d(hidden_dim, 1, kernel_size=1)
+            nn.Conv2d(hidden_dim, int(out_channels), kernel_size=1)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
+class DenseSemanticHead(nn.Module):
+    def __init__(self, input_dim, out_channels):
+        super().__init__()
+        hidden_dim = max(input_dim // 2, 1)
+        self.net = nn.Sequential(
+            nn.Conv2d(input_dim, hidden_dim, kernel_size=3, padding=1),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(hidden_dim, int(out_channels), kernel_size=1),
         )
 
     def forward(self, x):
@@ -102,16 +116,22 @@ def partial_detach_feature(feat, detach_ratio: float):
     return feat.detach() * detach_ratio + feat * (1.0 - detach_ratio)
 
 
-def reweight_feature_with_mask(feat, mask_logits, alpha: float, spatial_size=None):
+def reweight_feature_with_mask(feat, mask_logits, alpha: float, spatial_size=None, detach_mask=True):
     if mask_logits is None or alpha <= 0:
         return feat
-    if mask_logits.dim() != 4 or mask_logits.size(1) != 1:
+    if mask_logits.dim() != 4:
         raise ValueError(
-            'Feature reweight expects mask logits with shape [B, 1, H, W], got %s.'
+            'Feature reweight expects mask logits with shape [B, C, H, W], got %s.'
             % (tuple(mask_logits.shape),)
         )
 
-    mask_prob = torch.sigmoid(mask_logits)
+    if mask_logits.size(1) == 1:
+        mask_prob = torch.sigmoid(mask_logits)
+    else:
+        probs = F.softmax(mask_logits, dim=1)
+        mask_prob = 1.0 - probs[:, :1, :, :]
+    if detach_mask:
+        mask_prob = mask_prob.detach()
     if feat.dim() == 3:
         batch_size, num_tokens, _ = feat.shape
         if mask_prob.size(0) != batch_size:
@@ -150,10 +170,41 @@ def reweight_feature_with_mask(feat, mask_logits, alpha: float, spatial_size=Non
     raise ValueError('Feature reweight expects [B, N, C] or [B, C, H, W], got %s.' % (tuple(feat.shape),))
 
 
+def semantic_map_to_tokens(semantic_map, embedding, spatial_size, ignore_index=-1):
+    if semantic_map is None or embedding is None:
+        return None
+    if semantic_map.dim() == 4 and semantic_map.size(1) == 1:
+        semantic_map = semantic_map[:, 0]
+    if semantic_map.dim() != 3:
+        raise ValueError('semantic_map_to_tokens expects [B, H, W], got %s.' % (tuple(semantic_map.shape),))
+    semantic_map = semantic_map.long()
+    valid = semantic_map != int(ignore_index)
+    semantic_map = torch.where(valid, semantic_map, torch.zeros_like(semantic_map))
+    semantic_map = semantic_map.clamp(0, embedding.num_embeddings - 1)
+    if semantic_map.shape[-2:] != spatial_size:
+        semantic_map = F.interpolate(
+            semantic_map.unsqueeze(1).float(), size=spatial_size, mode='nearest'
+        ).squeeze(1).long()
+    return embedding(semantic_map).flatten(1, 2)
+
+
+def semantic_gate_from_map(semantic_map, spatial_size, ignore_index=-1):
+    if semantic_map is None:
+        return None
+    if semantic_map.dim() == 4 and semantic_map.size(1) == 1:
+        semantic_map = semantic_map[:, 0]
+    gate = (semantic_map != 0) & (semantic_map != int(ignore_index))
+    gate = gate.float().unsqueeze(1)
+    if gate.shape[-2:] != spatial_size:
+        gate = F.interpolate(gate, size=spatial_size, mode='nearest')
+    return gate.flatten(2).transpose(1, 2)
+
+
 class CARD(nn.Module):
 
     def __init__(self, cfg, temp=0.07):
         super().__init__()
+        self.cfg = cfg
         self.enable_aux_mask = cfg.model.enable_aux_mask
         self.use_semantic_aux = bool(cfg.train.use_semantic_aux)
         self.use_semantic_detach = bool(getattr(cfg.train, 'use_semantic_detach', False))
@@ -166,6 +217,15 @@ class CARD(nn.Module):
         self.mask_alpha = cfg.train.mask_alpha
         self.use_feature_reweight = bool(getattr(cfg.train, 'use_feature_reweight', False))
         self.reweight_alpha = float(getattr(cfg.train, 'reweight_alpha', 0.2))
+        self.detach_reweight_mask = bool(getattr(cfg.train, 'detach_reweight_mask', True))
+        self.semantic_input_mode = str(getattr(cfg.model, 'semantic_input_mode', 'none')).lower()
+        self.num_mask_classes = int(getattr(cfg.model, 'num_mask_classes', getattr(cfg.data, 'num_mask_classes', 1)) or 1)
+        self.num_semantic_classes = int(getattr(cfg.model, 'num_semantic_classes', getattr(cfg.data, 'num_semantic_classes', 0)) or 0)
+        self.use_semantic_maps = bool(getattr(cfg.data, 'use_semantic_maps', False)) or self.semantic_input_mode in ('early_fusion', 'cross_attention', 'hard_gate')
+        self.semantic_loss_type = str(getattr(cfg.train, 'semantic_loss_type', 'multilabel_bce')).lower()
+        self.use_dense_semantic_aux = self.use_semantic_aux and (
+            self.use_semantic_maps or self.semantic_loss_type in ('ce', 'cross_entropy', 'ce_dice', 'multiclass_ce', 'dense_ce')
+        )
         self.semantic_detach_ratio = float(getattr(cfg.train, 'semantic_detach_ratio', 0.5))
         self.semantic_detach_debug = {}
         self.temp = nn.Parameter(torch.ones([]) * temp)
@@ -216,20 +276,32 @@ class CARD(nn.Module):
             nn.Dropout(0.1),
             nn.ReLU()
         )
-        self.aux_mask_head = AuxMaskHead(self.embed_dim) if (
+        mask_head_channels = self.num_mask_classes if self.num_mask_classes > 1 else 1
+        self.aux_mask_head = AuxMaskHead(self.embed_dim, mask_head_channels) if (
             self.enable_aux_mask or self.use_weak_mask_prior or self.use_feature_reweight
         ) else None
         self.semantic_tags = []
         self.num_semantic_tags = 0
         self.semantic_head = None
+        self.semantic_dense_head = None
+        self.semantic_embedding = None
+        self.semantic_cross = None
+        if self.use_semantic_maps and self.num_semantic_classes > 0:
+            self.semantic_embedding = nn.Embedding(self.num_semantic_classes, self.embed_dim)
+            if self.semantic_input_mode == 'cross_attention':
+                self.semantic_cross = CrossTransformer(self.embed_dim, self.att_head)
         if self.use_semantic_aux:
-            self.semantic_tags = read_semantic_tags(cfg.train.semantic_tag_file)
-            self.num_semantic_tags = len(self.semantic_tags)
-            self.semantic_head = SemanticAuxHead(
-                self.embed_dim,
-                self.num_semantic_tags,
-                dropout=cfg.train.semantic_aux_dropout,
-            )
+            if self.use_dense_semantic_aux:
+                out_classes = max(1, self.num_semantic_classes)
+                self.semantic_dense_head = DenseSemanticHead(self.embed_dim, out_classes)
+            else:
+                self.semantic_tags = read_semantic_tags(cfg.train.semantic_tag_file)
+                self.num_semantic_tags = len(self.semantic_tags)
+                self.semantic_head = SemanticAuxHead(
+                    self.embed_dim,
+                    self.num_semantic_tags,
+                    dropout=cfg.train.semantic_aux_dropout,
+                )
         self.relation_aux_head = None
         if self.use_relation_aux:
             self.relation_aux_head = RelationAuxiliaryHead(
@@ -256,7 +328,7 @@ class CARD(nn.Module):
         pairwise_distances_ = self.pairwise_distances(x)
         return torch.exp(-pairwise_distances_ / sigma)
 
-    def forward(self, input_1, input_2):
+    def forward(self, input_1, input_2, semantic_before=None, semantic_after=None, semantic_diff=None):
         self.semantic_detach_debug = {}
         with torch.no_grad():
             self.temp.clamp_(0.001, 0.5)
@@ -343,22 +415,47 @@ class CARD(nn.Module):
         mask_pred = None
         semantic_logits = None
         relation_aux_logits = None
+        aux_feat = output.permute(0, 2, 1).contiguous().view(batch_size, self.embed_dim, H, W)
         if self.aux_mask_head is not None:
-            aux_feat = output.permute(0, 2, 1).contiguous().view(batch_size, self.embed_dim, H, W)
             mask_pred = self.aux_mask_head(aux_feat)
         if self.use_weak_mask_prior:
             if mask_pred is None:
                 raise ValueError('Weak mask prior requires an auxiliary mask prediction.')
-            mask_tokens = torch.sigmoid(mask_pred).flatten(2).transpose(1, 2)
+            if mask_pred.size(1) == 1:
+                mask_tokens = torch.sigmoid(mask_pred).flatten(2).transpose(1, 2)
+            else:
+                mask_tokens = (1.0 - F.softmax(mask_pred, dim=1)[:, :1]).flatten(2).transpose(1, 2)
             output = output * (1.0 + self.mask_alpha * mask_tokens)
         diff_features = output
+
+        semantic_tokens = semantic_map_to_tokens(
+            semantic_diff,
+            self.semantic_embedding,
+            (H, W),
+            ignore_index=getattr(self.cfg.train, 'semantic_ignore_index', -1) if hasattr(self, 'cfg') else -1,
+        ) if self.semantic_embedding is not None else None
+
         caption_input = diff_features
+        if semantic_tokens is not None and self.semantic_input_mode == 'early_fusion':
+            caption_input = caption_input + semantic_tokens
+        elif semantic_tokens is not None and self.semantic_input_mode == 'cross_attention' and self.semantic_cross is not None:
+            caption_seq, _ = self.semantic_cross(
+                caption_input.permute(1, 0, 2),
+                semantic_tokens.permute(1, 0, 2),
+            )
+            caption_input = caption_seq.permute(1, 0, 2)
+        elif self.semantic_input_mode == 'hard_gate':
+            gate_tokens = semantic_gate_from_map(semantic_diff, (H, W))
+            if gate_tokens is not None:
+                caption_input = caption_input * (1.0 + self.reweight_alpha * gate_tokens)
+
         if self.use_feature_reweight:
             caption_input = reweight_feature_with_mask(
-                diff_features,
+                caption_input,
                 mask_pred,
                 self.reweight_alpha,
                 spatial_size=(H, W),
+                detach_mask=self.detach_reweight_mask,
             )
         if self.use_semantic_aux:
             if self.use_semantic_detach:
@@ -369,15 +466,20 @@ class CARD(nn.Module):
                 semantic_input = diff_features.detach()
             else:
                 semantic_input = diff_features
-            semantic_logits = self.semantic_head(semantic_input)
+            if self.semantic_dense_head is not None:
+                semantic_feat = semantic_input.permute(0, 2, 1).contiguous().view(batch_size, self.embed_dim, H, W)
+                semantic_logits = self.semantic_dense_head(semantic_feat)
+            elif self.semantic_head is not None:
+                semantic_logits = self.semantic_head(semantic_input)
             self.semantic_detach_debug = {
                 'semantic_input_requires_grad': float(semantic_input.requires_grad),
                 'diff_features_requires_grad': float(diff_features.requires_grad),
                 'caption_input_requires_grad': float(caption_input.requires_grad),
-                'semantic_logits_requires_grad': float(semantic_logits.requires_grad),
+                'semantic_logits_requires_grad': float(semantic_logits.requires_grad) if semantic_logits is not None else 0.0,
                 'semantic_branch_depends_on_decoder': 0.0,
                 'semantic_detach_ratio': self.semantic_detach_ratio if self.use_semantic_partial_detach else 0.0,
                 'feature_reweight_enabled': float(self.use_feature_reweight),
+                'semantic_input_mode_%s' % self.semantic_input_mode: 1.0,
             }
         if self.use_relation_aux:
             relation_aux_logits = self.relation_aux_head(caption_input)

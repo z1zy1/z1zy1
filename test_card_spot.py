@@ -23,25 +23,106 @@ from tqdm import tqdm
 
 
 def unpack_batch(batch):
-    semantic_labels = None
-    semantic_targets = None
-    if len(batch) == 7:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths = batch
-        pseudo_masks = None
-    elif len(batch) == 8:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks = batch
-    elif len(batch) == 9:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, extra = batch
-        if isinstance(extra, dict):
-            semantic_targets = extra
-        else:
-            semantic_labels = extra
-    elif len(batch) == 10:
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets = batch
-    else:
+    if isinstance(batch, dict):
+        return batch
+    if len(batch) < 8:
         raise ValueError('Unexpected batch size: %d' % len(batch))
-    return d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, pseudo_masks, semantic_labels, semantic_targets
+    return {
+        'feature_before': batch[0],
+        'feature_after': batch[1],
+        'caption_tokens': batch[2],
+        'labels_with_ignore': batch[3],
+        'caption_mask': batch[4],
+        'image_before': batch[5],
+        'image_after': batch[6],
+        'mask': batch[7],
+        'semantic_labels': batch[8] if len(batch) > 8 else None,
+        'semantic_targets': batch[9] if len(batch) > 9 else None,
+        'semantic_dense': batch[10] if len(batch) > 10 else None,
+        'semantic_before': batch[11] if len(batch) > 11 else None,
+        'semantic_after': batch[12] if len(batch) > 12 else None,
+        'semantic_diff': batch[13] if len(batch) > 13 else None,
+        'changeflag': batch[14] if len(batch) > 14 else None,
+        'image_id': batch[15] if len(batch) > 15 else None,
+    }
 
+
+def move_optional_tensor(value, device, dtype=None):
+    if value is None:
+        return None
+    value = value.to(device)
+    return value.to(dtype=dtype) if dtype is not None else value
+
+
+def align_mask_tensor(tensor, spatial_size):
+    if tensor is None:
+        return None
+    tensor = tensor.float()
+    if tensor.shape[-2:] != spatial_size:
+        tensor = F.interpolate(tensor, size=spatial_size, mode='nearest')
+    return tensor
+
+
+def align_class_tensor(tensor, spatial_size):
+    if tensor is None:
+        return None
+    if tensor.dim() == 4 and tensor.size(1) == 1:
+        tensor = tensor[:, 0]
+    if tensor.shape[-2:] != spatial_size:
+        tensor = F.interpolate(tensor.unsqueeze(1).float(), size=spatial_size, mode='nearest').squeeze(1)
+    return tensor.long()
+
+
+def segmentation_metrics(logits, target, ignore_index=-1):
+    if logits is None or target is None:
+        return None
+    if logits.size(1) == 1:
+        pred = (torch.sigmoid(logits) >= 0.5).long()[:, 0]
+        target = align_mask_tensor(target, logits.shape[-2:])[:, 0]
+        valid = target != float(ignore_index)
+        gold = (target > 0.5).long()
+        classes = [1]
+    else:
+        pred = torch.argmax(logits, dim=1)
+        target = align_class_tensor(target, logits.shape[-2:])
+        valid = target != int(ignore_index)
+        gold = target.long()
+        classes = list(range(1, logits.size(1))) or [0]
+    if valid.sum().item() == 0:
+        return {'precision': 0.0, 'recall': 0.0, 'f1': 0.0, 'iou': 0.0, 'miou': 0.0}
+    pred_pos = torch.zeros_like(pred, dtype=torch.bool)
+    gold_pos = torch.zeros_like(gold, dtype=torch.bool)
+    for cls_id in classes:
+        pred_pos |= pred == int(cls_id)
+        gold_pos |= gold == int(cls_id)
+    pred_pos &= valid
+    gold_pos &= valid
+    tp = (pred_pos & gold_pos).sum().item()
+    fp = (pred_pos & (~gold_pos) & valid).sum().item()
+    fn = ((~pred_pos) & gold_pos & valid).sum().item()
+    precision = tp / float(tp + fp) if (tp + fp) else 0.0
+    recall = tp / float(tp + fn) if (tp + fn) else 0.0
+    f1 = 2 * precision * recall / float(precision + recall) if (precision + recall) else 0.0
+    iou = tp / float(tp + fp + fn) if (tp + fp + fn) else 0.0
+    result = {'precision': precision, 'recall': recall, 'f1': f1, 'iou': iou}
+    ious = []
+    for cls_id in classes:
+        cls_pred = (pred == int(cls_id)) & valid
+        cls_gold = (gold == int(cls_id)) & valid
+        union = (cls_pred | cls_gold).sum().item()
+        if union:
+            cls_iou = ((cls_pred & cls_gold).sum().item()) / float(union)
+            result['class_%d_iou' % cls_id] = cls_iou
+            ious.append(cls_iou)
+    result['miou'] = float(np.mean(ious)) if ious else 0.0
+    return result
+
+
+def average_metric_list(items):
+    if not items:
+        return {}
+    keys = sorted({key for item in items for key in item.keys()})
+    return {key: float(np.mean([item[key] for item in items if key in item])) for key in keys}
 
 def unpack_change_detector_output(outputs):
     relation_aux_logits = None
@@ -69,10 +150,10 @@ def load_change_detector_state_compat(model, state_dict):
     state_keys = set(state_dict.keys())
     missing_keys = sorted(current_keys - state_keys)
     unexpected_keys = sorted(state_keys - current_keys)
-    semantic_only = all(
-        key.startswith('semantic_head.')
-        for key in missing_keys + unexpected_keys
+    optional_prefixes = (
+        'semantic_head.', 'semantic_dense_head.', 'semantic_embedding.', 'semantic_cross.', 'aux_mask_head.'
     )
+    semantic_only = all(key.startswith(optional_prefixes) for key in missing_keys + unexpected_keys)
     if not missing_keys and not unexpected_keys:
         model.load_state_dict(state_dict)
         return
@@ -81,11 +162,11 @@ def load_change_detector_state_compat(model, state_dict):
         incompatible = model.load_state_dict(state_dict, strict=False)
         non_semantic_missing = [
             key for key in incompatible.missing_keys
-            if not key.startswith('semantic_head.')
+            if not key.startswith(optional_prefixes)
         ]
         non_semantic_unexpected = [
             key for key in incompatible.unexpected_keys
-            if not key.startswith('semantic_head.')
+            if not key.startswith(optional_prefixes)
         ]
         if non_semantic_missing or non_semantic_unexpected:
             raise RuntimeError(
@@ -98,6 +179,35 @@ def load_change_detector_state_compat(model, state_dict):
 
 def apply_cli_overrides(args, cfg):
     apply_dataset_cli_overrides(args, cfg)
+    if args.model is not None:
+        cfg.model.type = args.model
+        if args.model == 'card':
+            cfg.model.enable_aux_mask = False
+            cfg.train.use_semantic_aux = False
+            cfg.train.use_feature_reweight = False
+            cfg.model.semantic_input_mode = 'none'
+    if args.use_aux_mask:
+        cfg.model.enable_aux_mask = True
+    if args.use_aux_semantic:
+        cfg.train.use_semantic_aux = True
+    if args.use_semantic_partial_detach:
+        cfg.train.use_semantic_partial_detach = True
+    if args.use_feature_reweight:
+        cfg.train.use_feature_reweight = True
+    if args.reweight_alpha is not None:
+        cfg.train.reweight_alpha = args.reweight_alpha
+    if args.lmask is not None:
+        cfg.train.lambda_mask = args.lmask
+    if args.lsem is not None:
+        cfg.train.lambda_semantic = args.lsem
+    if args.mask_loss_type is not None:
+        cfg.train.mask_loss_type = args.mask_loss_type
+    if args.semantic_loss_type is not None:
+        cfg.train.semantic_loss_type = args.semantic_loss_type
+    if args.semantic_detach_ratio is not None:
+        cfg.train.semantic_detach_ratio = args.semantic_detach_ratio
+    if args.paper_selection_mode:
+        cfg.train.paper_selection_mode = True
     if args.use_relation_aux:
         cfg.train.use_relation_aux = True
     if args.use_content_word_weight:
@@ -125,9 +235,29 @@ parser.add_argument('--checkpoint', type=str, default=None)
 parser.add_argument('--split', type=str, default='test', choices=['val', 'test'])
 parser.add_argument('--result_json', type=str, default=None)
 parser.add_argument('--dataset', type=str, default=None)
+parser.add_argument('--model', type=str, default=None, choices=['card', 'sgc_card'])
+parser.add_argument('--data_root', type=str, default=None)
 parser.add_argument('--levir_mci_root', type=str, default=None)
 parser.add_argument('--second_cc_root', type=str, default=None)
 parser.add_argument('--feature_root', type=str, default=None)
+parser.add_argument('--use_change_mask', action='store_true')
+parser.add_argument('--mask_type', type=str, default=None, choices=['binary', 'multiclass'])
+parser.add_argument('--num_mask_classes', type=int, default=None)
+parser.add_argument('--use_semantic_maps', action='store_true')
+parser.add_argument('--semantic_input_mode', type=str, default=None, choices=['none', 'aux', 'early_fusion', 'cross_attention', 'hard_gate', 'weak_coupled'])
+parser.add_argument('--num_semantic_classes', type=int, default=None)
+parser.add_argument('--eval_change_nochange_split', action='store_true')
+parser.add_argument('--paper_selection_mode', action='store_true')
+parser.add_argument('--use_aux_mask', action='store_true')
+parser.add_argument('--use_aux_semantic', action='store_true')
+parser.add_argument('--use_semantic_partial_detach', action='store_true')
+parser.add_argument('--semantic_detach_ratio', type=float, default=None)
+parser.add_argument('--lmask', type=float, default=None)
+parser.add_argument('--lsem', type=float, default=None)
+parser.add_argument('--use_feature_reweight', action='store_true')
+parser.add_argument('--reweight_alpha', type=float, default=None)
+parser.add_argument('--mask_loss_type', type=str, default=None)
+parser.add_argument('--semantic_loss_type', type=str, default=None)
 parser.add_argument('--gpu', type=int, default=-1)
 parser.add_argument('--use_relation_aux', action='store_true')
 parser.add_argument('--use_content_word_weight', action='store_true')
@@ -234,18 +364,53 @@ with torch.no_grad():
     test_iter_start_time = time.time()
 
     result_sents_pos = {}
+    mask_metric_items = []
+    semantic_metric_items = []
     for i, batch in tqdm(enumerate(eval_loader)):
 
-        d_feats, sc_feats, labels, labels_with_ignore, masks, d_img_paths, sc_img_paths, _, _, _ = unpack_batch(batch)
+        batch_data = unpack_batch(batch)
+        d_feats = batch_data['feature_before']
+        sc_feats = batch_data['feature_after']
+        labels = batch_data['caption_tokens']
+        masks = batch_data.get('mask')
+        semantic_dense = batch_data.get('semantic_dense')
+        semantic_before = batch_data.get('semantic_before')
+        semantic_after = batch_data.get('semantic_after')
+        semantic_diff = batch_data.get('semantic_diff')
+        d_img_paths = batch_data.get('image_before')
+        image_ids = batch_data.get('image_id')
 
         batch_size = d_feats.size(0)
 
-        d_feats, sc_feats = d_feats.to(device),  sc_feats.to(device)
+        d_feats, sc_feats = d_feats.to(device), sc_feats.to(device)
+        labels = labels.to(device)
+        masks = move_optional_tensor(masks, device)
+        semantic_dense = move_optional_tensor(semantic_dense, device)
+        semantic_before = move_optional_tensor(semantic_before, device)
+        semantic_after = move_optional_tensor(semantic_after, device)
+        semantic_diff = move_optional_tensor(semantic_diff, device)
 
-        labels, labels_with_ignore, masks = labels.to(device), labels_with_ignore.to(device), masks.to(device)
+        change_outputs = change_detector(
+            d_feats,
+            sc_feats,
+            semantic_before=semantic_before,
+            semantic_after=semantic_after,
+            semantic_diff=semantic_diff,
+        )
+        encoder_output, _, _, _, _, mask_pred, semantic_logits, _ = unpack_change_detector_output(change_outputs)
 
-        change_outputs = change_detector(d_feats, sc_feats)
-        encoder_output, _, _, _, _, _, _, _ = unpack_change_detector_output(change_outputs)
+        mask_metrics = segmentation_metrics(mask_pred, masks, getattr(cfg.train, 'mask_ignore_index', -1))
+        if mask_metrics is not None:
+            mask_metric_items.append(mask_metrics)
+        dense_sem_target = semantic_dense if semantic_dense is not None else semantic_diff
+        if semantic_logits is not None and semantic_logits.dim() == 4:
+            semantic_metrics = segmentation_metrics(
+                semantic_logits,
+                dense_sem_target,
+                getattr(cfg.train, 'semantic_ignore_index', -1),
+            )
+            if semantic_metrics is not None:
+                semantic_metric_items.append(semantic_metrics)
 
         speaker_output_pos, pos_dynamic_atts = speaker.sample(encoder_output, sample_max=1)
 
@@ -254,7 +419,12 @@ with torch.no_grad():
         for j in range(batch_size):
             gts = decode_sequence_transformer(idx_to_word, labels[j][:, 1:])
             sent_pos = gen_sents_pos[j]
-            image_id = os.path.basename(d_img_paths[j])
+            if image_ids is not None:
+                image_id = os.path.basename(str(image_ids[j]))
+            elif d_img_paths is not None:
+                image_id = os.path.basename(str(d_img_paths[j]))
+            else:
+                image_id = str(i * cfg.data.batch_size + j)
             result_sents_pos[image_id] = sent_pos
             image_num = image_id.split('.')[0]
 
@@ -262,5 +432,31 @@ with torch.no_grad():
     print('%s inference took %.4f seconds' % (args.split, test_iter_end_time))
     coco_gen_format_save(result_sents_pos, result_save_path_pos)
     print('Saved captions to %s' % result_save_path_pos)
+    aux_metrics = {}
+    averaged_mask_metrics = average_metric_list(mask_metric_items)
+    if averaged_mask_metrics:
+        aux_metrics.update({
+            'Mask_Precision': averaged_mask_metrics.get('precision', 0.0),
+            'Mask_Recall': averaged_mask_metrics.get('recall', 0.0),
+            'Mask_F1': averaged_mask_metrics.get('f1', 0.0),
+            'Mask_IoU': averaged_mask_metrics.get('iou', 0.0),
+            'Mask_mIoU': averaged_mask_metrics.get('miou', 0.0),
+        })
+        if 'class_1_iou' in averaged_mask_metrics:
+            aux_metrics['IoU_road'] = averaged_mask_metrics['class_1_iou']
+        if 'class_2_iou' in averaged_mask_metrics:
+            aux_metrics['IoU_building'] = averaged_mask_metrics['class_2_iou']
+    averaged_semantic_metrics = average_metric_list(semantic_metric_items)
+    if averaged_semantic_metrics:
+        aux_metrics.update({
+            'Semantic_mIoU': averaged_semantic_metrics.get('miou', 0.0),
+            'Semantic_IoU': averaged_semantic_metrics.get('iou', 0.0),
+            'Semantic_F1': averaged_semantic_metrics.get('f1', 0.0),
+        })
+    if aux_metrics:
+        aux_metric_path = os.path.join(os.path.dirname(result_save_path_pos), 'aux_metrics.json')
+        with open(aux_metric_path, 'w', encoding='utf-8') as f:
+            json.dump(aux_metrics, f, indent=2)
+        print('Saved auxiliary metrics to %s' % aux_metric_path)
 
 

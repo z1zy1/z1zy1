@@ -4,6 +4,7 @@ logger:
     display_id: 9908
 model:
     enable_aux_mask: True
+    semantic_input_mode: none
     transformer_encoder:
         input_dim: 2048
         feat_dim: 1024
@@ -24,7 +25,7 @@ model:
         label_smoothing: 0.0
 
 data:
-    dataset: 'rcc_dataset_transformer_levir'
+    dataset: 'levir_mci'
     default_feature_dir: "./LEVIR-MCI-dataset/features"
     semantic_feature_dir: "./LEVIR-MCI-dataset/features"
     default_img_dir: "./LEVIR-MCI-dataset/images"
@@ -53,7 +54,7 @@ train:
     mask_warmup_steps: 0
     mask_loss_type: "bce_dice"
     mask_bce_dice_alpha: 0.5
-    use_feature_reweight: True
+    use_feature_reweight: False
     reweight_alpha: 0.2
     use_semantic_aux: True
     lambda_semantic: 0.005

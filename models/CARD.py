@@ -200,6 +200,90 @@ def semantic_gate_from_map(semantic_map, spatial_size, ignore_index=-1):
     return gate.flatten(2).transpose(1, 2)
 
 
+class SemanticCrossAttentionFusion(nn.Module):
+    def __init__(self, embed_dim, num_semantic_classes, num_heads=8, dropout=0.1, gamma_init=0.1, ignore_index=-1):
+        super().__init__()
+        self.embed_dim = int(embed_dim)
+        self.num_semantic_classes = max(1, int(num_semantic_classes))
+        self.ignore_index = int(ignore_index)
+        self.class_embedding = nn.Embedding(self.num_semantic_classes, self.embed_dim)
+        self.prob_projection = nn.Conv2d(self.num_semantic_classes, self.embed_dim, kernel_size=1)
+        self.diff_projection = nn.Linear(self.embed_dim * 3, self.embed_dim)
+        self.attention = nn.MultiheadAttention(self.embed_dim, int(num_heads), dropout=dropout, batch_first=True)
+        self.norm = nn.LayerNorm(self.embed_dim)
+        self.dropout = nn.Dropout(dropout)
+        self.gamma = nn.Parameter(torch.tensor(float(gamma_init)))
+        self.last_attention = None
+
+    @staticmethod
+    def _infer_spatial_size(num_tokens):
+        side = int(math.sqrt(num_tokens))
+        if side * side == num_tokens:
+            return side, side
+        return 1, int(num_tokens)
+
+    def _match_prob_channels(self, sem):
+        expected = self.num_semantic_classes
+        channels = sem.size(1)
+        if channels == expected:
+            return sem
+        if channels > expected:
+            return sem[:, :expected]
+        pad = sem.new_zeros(sem.size(0), expected - channels, sem.size(2), sem.size(3))
+        return torch.cat([sem, pad], dim=1)
+
+    def _encode_semantic(self, sem, spatial_size):
+        if sem is None:
+            return None
+        if sem.dim() == 4 and sem.size(1) == 1:
+            sem = sem[:, 0]
+        if sem.dim() == 3:
+            sem = sem.long()
+            valid = sem != self.ignore_index
+            sem = torch.where(valid, sem, torch.zeros_like(sem))
+            sem = sem.clamp(0, self.num_semantic_classes - 1)
+            feat = self.class_embedding(sem).permute(0, 3, 1, 2).contiguous()
+        elif sem.dim() == 4:
+            sem = sem.float()
+            sem = self._match_prob_channels(sem)
+            feat = self.prob_projection(sem)
+        else:
+            raise ValueError('SemanticCrossAttentionFusion expects semantic maps [B,H,W] or [B,C,H,W], got %s.' % (tuple(sem.shape),))
+        if feat.shape[-2:] != spatial_size:
+            feat = F.interpolate(feat, size=spatial_size, mode='bilinear', align_corners=False)
+        return feat.flatten(2).transpose(1, 2).contiguous()
+
+    def forward(self, diff_feat, sem_before, sem_after, spatial_size=None, detach_ratio=0.0):
+        input_was_4d = diff_feat.dim() == 4
+        if input_was_4d:
+            batch_size, channels, height, width = diff_feat.shape
+            spatial_size = spatial_size or (height, width)
+            query = diff_feat.flatten(2).transpose(1, 2).contiguous()
+        elif diff_feat.dim() == 3:
+            batch_size, num_tokens, channels = diff_feat.shape
+            spatial_size = spatial_size or self._infer_spatial_size(num_tokens)
+            query = diff_feat
+            height, width = spatial_size
+        else:
+            raise ValueError('SemanticCrossAttentionFusion expects diff_feat [B,N,D] or [B,D,H,W], got %s.' % (tuple(diff_feat.shape),))
+        if channels != self.embed_dim:
+            raise ValueError('SemanticCrossAttentionFusion embed dim mismatch: got %d expected %d.' % (channels, self.embed_dim))
+
+        sem_b_feat = self._encode_semantic(sem_before, spatial_size)
+        sem_a_feat = self._encode_semantic(sem_after, spatial_size)
+        if sem_b_feat is None or sem_a_feat is None:
+            return diff_feat
+        sem_diff_feat = torch.cat([sem_b_feat, sem_a_feat, torch.abs(sem_a_feat - sem_b_feat)], dim=-1)
+        sem_diff_feat = self.diff_projection(sem_diff_feat)
+        sem_diff_feat = partial_detach_feature(sem_diff_feat, float(detach_ratio))
+        sem_context, attn = self.attention(query, sem_diff_feat, sem_diff_feat, need_weights=True)
+        self.last_attention = attn
+        fused = self.norm(query + self.dropout(self.gamma * sem_context))
+        if input_was_4d:
+            return fused.transpose(1, 2).contiguous().view(batch_size, channels, height, width)
+        return fused
+
+
 class CARD(nn.Module):
 
     def __init__(self, cfg, temp=0.07):
@@ -219,6 +303,12 @@ class CARD(nn.Module):
         self.reweight_alpha = float(getattr(cfg.train, 'reweight_alpha', 0.2))
         self.detach_reweight_mask = bool(getattr(cfg.train, 'detach_reweight_mask', True))
         self.semantic_input_mode = str(getattr(cfg.model, 'semantic_input_mode', 'none')).lower()
+        self.use_semantic_cross_attention = bool(getattr(cfg.train, 'use_semantic_cross_attention', False)) or self.semantic_input_mode == 'cross_attention'
+        self.use_semantic_hard_gate = bool(getattr(cfg.train, 'use_semantic_hard_gate', False)) or self.semantic_input_mode == 'hard_gate'
+        if self.use_semantic_hard_gate:
+            self.semantic_input_mode = 'hard_gate'
+        elif self.use_semantic_cross_attention:
+            self.semantic_input_mode = 'cross_attention'
         self.num_mask_classes = int(getattr(cfg.model, 'num_mask_classes', getattr(cfg.data, 'num_mask_classes', 1)) or 1)
         self.num_semantic_classes = int(getattr(cfg.model, 'num_semantic_classes', getattr(cfg.data, 'num_semantic_classes', 0)) or 0)
         self.use_semantic_maps = bool(getattr(cfg.data, 'use_semantic_maps', False)) or self.semantic_input_mode in ('early_fusion', 'cross_attention', 'hard_gate')
@@ -286,10 +376,18 @@ class CARD(nn.Module):
         self.semantic_dense_head = None
         self.semantic_embedding = None
         self.semantic_cross = None
+        self.semantic_cross_fusion = None
         if self.use_semantic_maps and self.num_semantic_classes > 0:
             self.semantic_embedding = nn.Embedding(self.num_semantic_classes, self.embed_dim)
-            if self.semantic_input_mode == 'cross_attention':
-                self.semantic_cross = CrossTransformer(self.embed_dim, self.att_head)
+            if self.use_semantic_cross_attention:
+                self.semantic_cross_fusion = SemanticCrossAttentionFusion(
+                    self.embed_dim,
+                    self.num_semantic_classes,
+                    num_heads=int(getattr(cfg.model, 'semantic_fusion_heads', self.att_head)),
+                    dropout=float(getattr(cfg.model, 'semantic_fusion_dropout', 0.1)),
+                    gamma_init=float(getattr(cfg.model, 'semantic_fusion_gamma_init', 0.1)),
+                    ignore_index=int(getattr(cfg.train, 'semantic_ignore_index', -1)),
+                )
         if self.use_semantic_aux:
             if self.use_dense_semantic_aux:
                 out_classes = max(1, self.num_semantic_classes)
@@ -438,13 +536,21 @@ class CARD(nn.Module):
         caption_input = diff_features
         if semantic_tokens is not None and self.semantic_input_mode == 'early_fusion':
             caption_input = caption_input + semantic_tokens
-        elif semantic_tokens is not None and self.semantic_input_mode == 'cross_attention' and self.semantic_cross is not None:
-            caption_seq, _ = self.semantic_cross(
-                caption_input.permute(1, 0, 2),
-                semantic_tokens.permute(1, 0, 2),
+        elif self.use_semantic_cross_attention and self.semantic_cross_fusion is not None:
+            sem_before_used = semantic_before
+            sem_after_used = semantic_after
+            if (sem_before_used is None or sem_after_used is None) and semantic_diff is not None:
+                sem_before_used = torch.zeros_like(semantic_diff)
+                sem_after_used = semantic_diff
+            detach_ratio = self.semantic_detach_ratio if self.use_semantic_partial_detach else 0.0
+            caption_input = self.semantic_cross_fusion(
+                caption_input,
+                sem_before_used,
+                sem_after_used,
+                spatial_size=(H, W),
+                detach_ratio=detach_ratio,
             )
-            caption_input = caption_seq.permute(1, 0, 2)
-        elif self.semantic_input_mode == 'hard_gate':
+        elif self.use_semantic_hard_gate or self.semantic_input_mode == 'hard_gate':
             gate_tokens = semantic_gate_from_map(semantic_diff, (H, W))
             if gate_tokens is not None:
                 caption_input = caption_input * (1.0 + self.reweight_alpha * gate_tokens)
@@ -479,6 +585,8 @@ class CARD(nn.Module):
                 'semantic_branch_depends_on_decoder': 0.0,
                 'semantic_detach_ratio': self.semantic_detach_ratio if self.use_semantic_partial_detach else 0.0,
                 'feature_reweight_enabled': float(self.use_feature_reweight),
+                'semantic_cross_attention_enabled': float(self.use_semantic_cross_attention),
+                'semantic_hard_gate_enabled': float(self.use_semantic_hard_gate),
                 'semantic_input_mode_%s' % self.semantic_input_mode: 1.0,
             }
         if self.use_relation_aux:

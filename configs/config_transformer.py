@@ -28,9 +28,13 @@ __C.logger.display_port = 8097
 __C.model = AttrDict()
 __C.model.type = ''
 __C.model.enable_aux_mask = False
+__C.model.use_aux_mask = False
 __C.model.semantic_input_mode = 'none'
 __C.model.num_mask_classes = 1
 __C.model.num_semantic_classes = 0
+__C.model.semantic_fusion_heads = 8
+__C.model.semantic_fusion_dropout = 0.1
+__C.model.semantic_fusion_gamma_init = 0.1
 
 # Encoder
 __C.model.encoder = AttrDict()
@@ -194,6 +198,7 @@ __C.train.adapt_per_iter = 2
 __C.train.keep_rate = 0.95
 __C.train.grad_clip = 1.0
 __C.train.lambda_mask = 0.0
+__C.train.use_aux_mask = False
 __C.train.use_mask_conf_filter = False
 __C.train.mask_conf_threshold = 0.5
 __C.train.mask_ignore_index = -1
@@ -205,9 +210,12 @@ __C.train.mask_dice_include_background = False
 __C.train.use_weak_mask_prior = False
 __C.train.mask_alpha = 0.2
 __C.train.use_feature_reweight = False
+__C.train.use_semantic_cross_attention = False
+__C.train.use_semantic_hard_gate = False
 __C.train.reweight_alpha = 0.2
 __C.train.detach_reweight_mask = True
 __C.train.use_semantic_aux = False
+__C.train.use_aux_semantic = False
 __C.train.lambda_semantic = 0.05
 __C.train.use_semantic_warmup = False
 __C.train.semantic_warmup_start = 3000
@@ -228,6 +236,7 @@ __C.train.semantic_aux_dropout = 0.1
 __C.train.semantic_normalize_synonyms = True
 __C.train.use_semantic_detach = False
 __C.train.use_semantic_partial_detach = False
+__C.train.use_partial_detach = False
 __C.train.semantic_detach_ratio = 0.5
 __C.train.semantic_update_visual = True
 __C.train.use_relation_aux = False
@@ -243,6 +252,7 @@ __C.train.content_word_weight = 1.5
 __C.train.max_content_word_weight = 2.0
 __C.train.content_word_token_ids = []
 __C.train.paper_selection_mode = False
+__C.train.selection_strategy = 'spice_constrained_balanced'
 
 
 # --------------------------------------------------------------------------- #

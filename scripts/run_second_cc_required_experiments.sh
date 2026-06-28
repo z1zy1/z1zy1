@@ -14,11 +14,11 @@ FAIL_LOG="$EXP_ROOT/second_cc_required_failures.log"
 
 EXPERIMENTS=(
   second_cc_card_rgb_baseline
-  second_cc_card_semantic_aux
-  second_cc_card_semantic_crossattn
-  second_cc_card_semantic_hardgate
-  second_cc_ours_weak_coupled_final
-  second_cc_mmodalcc_comparison
+  second_cc_semantic_aux
+  second_cc_semantic_crossattn
+  second_cc_semantic_hard_gate
+  second_cc_wcsg_card_final
+  second_cc_mmodalcc_comparison_placeholder
 )
 
 usage() {
@@ -94,14 +94,14 @@ configure_second_env() {
   case "$exp" in
     second_cc_card_rgb_baseline)
       export BASE_CFG="configs/dynamic/transformer_second_cc_aug_baseline.yaml" MODEL_TYPE=card ;;
-    second_cc_card_semantic_aux)
+    second_cc_semantic_aux)
       export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=aux LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
-    second_cc_card_semantic_crossattn)
+    second_cc_semantic_crossattn)
       export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=cross_attention LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
-    second_cc_card_semantic_hardgate)
+    second_cc_semantic_hard_gate)
       export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=hard_gate LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
-    second_cc_ours_weak_coupled_final)
-      export BASE_CFG="configs/dynamic/transformer_second_cc_aug_sgc_card.yaml" MODEL_TYPE=sgc_card USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=weak_coupled USE_SEMANTIC_PARTIAL_DETACH=1 SEMANTIC_DETACH_RATIO="${USER_SEMANTIC_DETACH_RATIO:-0.5}" LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
+    second_cc_wcsg_card_final)
+      export BASE_CFG="configs/second_cc/wcsg_card_final.yaml" MODEL_TYPE=sgc_card ENABLE_AUX_MASK=0 USE_CHANGE_MASK=0 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=cross_attention USE_SEMANTIC_PARTIAL_DETACH=1 SEMANTIC_DETACH_RATIO="${USER_SEMANTIC_DETACH_RATIO:-0.5}" USE_FEATURE_REWEIGHT=0 LMASK=0.0 LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=ce_dice ;;
   esac
 }
 
@@ -112,8 +112,8 @@ train_script_for() {
 
 for exp in "${EXPERIMENTS[@]}"; do
   contains_exp "$exp" || continue
-  if [ "$exp" = "second_cc_mmodalcc_comparison" ]; then
-    run_or_log "external MModalCC $exp" bash scripts/run_second_cc_mmodalcc_comparison.sh || continue
+  if [ "$exp" = "second_cc_mmodalcc_comparison_placeholder" ]; then
+    run_or_log "external MModalCC $exp" bash scripts/train_second_cc_mmodalcc_comparison_placeholder.sh || continue
     continue
   fi
 
@@ -132,16 +132,15 @@ for exp in "${EXPERIMENTS[@]}"; do
     echo "Using existing eval CSV: $EXP_PATH/eval_snapshots.csv"
   fi
 
-  if [ "$OVERWRITE" -eq 1 ] || [ ! -f "$EXP_PATH/best_snapshot_for_paper.json" ]; then
-    ALLOW_NEG=()
-    if [ "$exp" = "second_cc_card_semantic_hardgate" ]; then ALLOW_NEG=(--allow_negative_ablation); fi
-    run_or_log "select best $exp" python scripts/select_best_snapshot_for_paper.py --exp_dir "$EXP_PATH" "${ALLOW_NEG[@]}" || continue
+  if [ "$OVERWRITE" -eq 1 ] || [ ! -f "$EXP_PATH/best_checkpoint.json" ]; then
+    run_or_log "select best $exp" python scripts/select_best_checkpoint.py --exp_dir "$EXP_PATH" --strategy spice_constrained_balanced || continue
   else
-    echo "Using existing paper selection: $EXP_PATH/best_snapshot_for_paper.json"
+    echo "Using existing paper selection: $EXP_PATH/best_checkpoint.json"
   fi
 
   if [ "$OVERWRITE" -eq 1 ] || [ ! -f "$EXP_PATH/test_paper_best_result.json" ]; then
-    run_or_log "test paper best $exp" bash scripts/test_specific_snapshot_sgc_card.sh --exp_dir "$EXP_PATH" --checkpoint "$EXP_PATH/best_for_paper.pth" --tag paper_best || continue
+    SELECTED_CHECKPOINT="$(head -n 1 "$EXP_PATH/best_checkpoint.txt")"
+    run_or_log "test paper best $exp" bash scripts/test_specific_snapshot_sgc_card.sh --exp_dir "$EXP_PATH" --checkpoint "$SELECTED_CHECKPOINT" --tag paper_best || continue
   else
     echo "Using existing paper-best test result: $EXP_PATH/test_paper_best_result.json"
   fi

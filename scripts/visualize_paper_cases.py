@@ -16,6 +16,7 @@ def parse_args():
     parser.add_argument('--caption_json', default=None, help='Dataset JSON with ground-truth captions/changeflag.')
     parser.add_argument('--split', default='test')
     parser.add_argument('--output_dir', default=None)
+    parser.add_argument('--exp_name', default=None)
     parser.add_argument('--num_cases', type=int, default=12)
     parser.add_argument('--group', choices=['all', 'change', 'nochange'], default='all')
     parser.add_argument('--seed', type=int, default=7)
@@ -64,13 +65,15 @@ def candidate_paths(dataset, data_root, split, filename):
             'after': os.path.join(base, 'B', filename),
             'aux': os.path.join(base, 'label_rgb', filename),
             'aux_fallback': os.path.join(base, 'label', filename),
+            'aux_label': 'GT mask',
         }
     base = os.path.join(data_root, split)
     return {
         'before': os.path.join(base, 'rgb', 'A', filename),
         'after': os.path.join(base, 'rgb', 'B', filename),
-        'aux': os.path.join(base, 'sem', 'B', filename),
-        'aux_fallback': os.path.join(data_root, 'pseudo_masks', split, filename),
+        'aux': os.path.join(base, 'sem', 'A', filename),
+        'aux_fallback': os.path.join(data_root, split, 'sem', 'B', filename),
+        'aux_label': 'Before semantic',
     }
 
 
@@ -111,7 +114,8 @@ def make_sheet(dataset, data_root, split, filename, generated, meta, output_path
     tile_size = (256, 256)
     images = []
     labels = []
-    for label, path in [('Before', before_path), ('After', after_path), ('Label/Semantic', aux_path)]:
+    aux_label = paths.get('aux_label', 'Label/Semantic')
+    for label, path in [('Before', before_path), ('After', after_path), (aux_label, aux_path)]:
         if path is None:
             img = Image.new('RGB', tile_size, (245, 245, 245))
         else:
@@ -163,7 +167,8 @@ def make_sheet(dataset, data_root, split, filename, generated, meta, output_path
 
 def main():
     args = parse_args()
-    output_dir = os.path.normpath(args.output_dir or os.path.join('experiments', 'paper_visualizations', args.dataset))
+    exp_name = args.exp_name or os.path.splitext(os.path.basename(args.result_json))[0]
+    output_dir = os.path.normpath(args.output_dir or os.path.join('visualizations', exp_name))
     results = load_results(args.result_json)
     meta = load_caption_meta(args.caption_json, args.split)
     selected = select_cases(results, meta, args.group, args.num_cases, args.seed)

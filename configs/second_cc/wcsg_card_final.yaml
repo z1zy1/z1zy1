@@ -1,0 +1,90 @@
+exp_name: 'second_cc_wcsg_card_final'
+gpu_id: [0]
+logger:
+    display_id: 9908
+model:
+    type: 'sgc_card'
+    enable_aux_mask: False
+    use_aux_mask: False
+    semantic_input_mode: cross_attention
+    num_mask_classes: 1
+    num_semantic_classes: 7
+    semantic_fusion_heads: 8
+    semantic_fusion_dropout: 0.1
+    semantic_fusion_gamma_init: 0.1
+    transformer_encoder:
+        input_dim: 2048
+        feat_dim: 1024
+        emb_dim: 512
+        att_dim: 512
+        att_head: 8
+        att_layer: 2
+        dim: 128
+    transformer_decoder:
+        input_dim: 2048
+        word_dim: 300
+        att_dim: 512
+        att_head: 8
+        att_layer: 2
+        vocab_size: 956
+        seq_length: 23
+        share_wd_cls_weight: False
+        label_smoothing: 0.0
+
+data:
+    dataset: 'second_cc'
+    default_feature_dir: './SECOND-CC-AUG/features'
+    semantic_feature_dir: './SECOND-CC-AUG/features'
+    default_img_dir: './SECOND-CC-AUG'
+    semantic_img_dir: './SECOND-CC-AUG'
+    default_phase: 'rgb/A'
+    semantic_phase: 'rgb/B'
+    semantic_map_root: './SECOND-CC-AUG'
+    semantic_before_phase: 'sem/A'
+    semantic_after_phase: 'sem/B'
+    pseudo_mask_root: ''
+    pseudo_mask_phase: ''
+    allow_missing_pseudo_mask: False
+    use_change_mask: False
+    mask_type: 'binary'
+    use_semantic_maps: True
+    num_semantic_classes: 7
+    eval_change_nochange_split: True
+    eval_anno_path: './SECOND-CC-AUG/second_cc_aug_captions_reformat.json'
+    caption_json: './SECOND-CC-AUG/SECOND-CC-AUG.json'
+    changeflag_json: './SECOND-CC-AUG/SECOND-CC-AUG.json'
+    splits_json: './SECOND-CC-AUG/splits.json'
+    vocab_json: './SECOND-CC-AUG/transformer_second_cc_aug_vocab.json'
+    h5_label_file: './SECOND-CC-AUG/transformer_second_cc_aug_labels.h5'
+    train:
+        batch_size: 32
+train:
+    max_iter: 10000
+    seed: 1111
+    snapshot_interval: 1000
+    grad_clip: -1.0
+    use_aux_mask: False
+    lambda_mask: 0.0
+    use_aux_semantic: True
+    use_semantic_aux: True
+    lambda_semantic: 0.005
+    semantic_loss_type: 'ce_dice'
+    semantic_ignore_index: -1
+    semantic_dice_include_background: False
+    use_semantic_cross_attention: True
+    use_semantic_hard_gate: False
+    use_feature_reweight: False
+    detach_reweight_mask: True
+    use_partial_detach: True
+    use_semantic_partial_detach: True
+    semantic_detach_ratio: 0.5
+    use_aux_warmup: True
+    aux_warmup_start_ratio: 0.30
+    aux_warmup_end_ratio: 0.70
+    selection_strategy: 'spice_constrained_balanced'
+    optim:
+        type: 'adam'
+        lr: 0.0002
+        weight_decay: 0.0
+        step_size: 17
+        gamma: 0.1

@@ -17,6 +17,12 @@ from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
 from utils.dataset_config import apply_dataset_cli_overrides
+from utils.experiment_tracking import (
+    append_jsonl,
+    save_resolved_config,
+    sync_wcsg_config_aliases,
+    write_single_row_csv,
+)
 from utils.logger import Logger
 from utils.semantic_label import build_content_word_token_ids
 from utils.semantic_warmup import get_effective_lambda_semantic
@@ -369,7 +375,12 @@ def apply_cli_overrides(args, cfg):
         cfg.model.type = args.model
         if args.model == 'card':
             cfg.model.enable_aux_mask = False
+            cfg.model.use_aux_mask = False
+            cfg.train.use_aux_mask = False
             cfg.train.use_semantic_aux = False
+            cfg.train.use_aux_semantic = False
+            cfg.train.use_semantic_cross_attention = False
+            cfg.train.use_semantic_hard_gate = False
             cfg.train.use_feature_reweight = False
             cfg.model.semantic_input_mode = 'none'
     if args.paper_selection_mode:
@@ -470,6 +481,12 @@ def apply_cli_overrides(args, cfg):
         cfg.train.lambda_semantic = args.lsem
     if args.use_feature_reweight:
         cfg.train.use_feature_reweight = True
+    if getattr(args, 'use_semantic_cross_attention', False):
+        cfg.train.use_semantic_cross_attention = True
+        cfg.model.semantic_input_mode = 'cross_attention'
+    if getattr(args, 'use_semantic_hard_gate', False):
+        cfg.train.use_semantic_hard_gate = True
+        cfg.model.semantic_input_mode = 'hard_gate'
     if args.reweight_alpha is not None:
         cfg.train.reweight_alpha = args.reweight_alpha
     if args.detach_reweight_mask:
@@ -591,6 +608,8 @@ parser.add_argument('--mask_alpha', type=float, default=None)
 parser.add_argument('--lambda_mask', type=float, default=None)
 parser.add_argument('--lmask', type=float, default=None)
 parser.add_argument('--use_feature_reweight', action='store_true')
+parser.add_argument('--use_semantic_cross_attention', action='store_true')
+parser.add_argument('--use_semantic_hard_gate', action='store_true')
 parser.add_argument('--reweight_alpha', type=float, default=None)
 parser.add_argument('--detach_reweight_mask', action='store_true')
 parser.add_argument('--mask_loss_type', type=str, default=None)
@@ -602,6 +621,7 @@ merge_cfg_from_file(args.cfg)
 if args.opts:
     merge_cfg_from_list(args.opts)
 apply_cli_overrides(args, cfg)
+sync_wcsg_config_aliases(cfg)
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -645,6 +665,16 @@ snapshot_file_format = '%s_checkpoint_%d.pt'
 
 train_logger = Logger(cfg, output_dir, is_train=True)
 val_logger = Logger(cfg, output_dir, is_train=False)
+tracking_info = save_resolved_config(output_dir, cfg, args=args, phase='train', log_path=train_logger.log_name)
+train_jsonl_path = os.path.join(output_dir, 'train_log.jsonl')
+open(train_jsonl_path, 'a', encoding='utf-8').close()
+val_metrics_csv_path = os.path.join(output_dir, 'val_metrics.csv')
+if not os.path.exists(val_metrics_csv_path):
+    write_single_row_csv(
+        val_metrics_csv_path,
+        {'iter': '', 'snapshot_path': '', 'Bleu_1': '', 'Bleu_2': '', 'Bleu_3': '', 'Bleu_4': '', 'METEOR': '', 'ROUGE_L': '', 'CIDEr': '', 'SPICE': '', 'balanced_score': '', 'ALL_ABOVE_BASELINE': ''},
+        fieldnames=['iter', 'snapshot_path', 'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE', 'balanced_score', 'ALL_ABOVE_BASELINE'],
+    )
 
 random.seed(cfg.train.seed)
 np.random.seed(cfg.train.seed)
@@ -686,10 +716,12 @@ if cfg.train.use_semantic_aux:
         if cfg.train.semantic_loss_type not in ('ce', 'ce_dice'):
             raise ValueError('Unknown semantic_loss_type: %s' % cfg.train.semantic_loss_type)
         if int(getattr(cfg.model, 'num_semantic_classes', 0) or 0) <= 0:
-            raise ValueError('Dense semantic auxiliary branch needs model.num_semantic_classes > 0.')
-        print('Semantic auxiliary branch enabled.')
-        print('Semantic supervision type: dense semantic map %s.' % cfg.train.semantic_loss_type)
-        print('Number of semantic dense classes: %d' % cfg.model.num_semantic_classes)
+            print('Warning: dense semantic auxiliary branch requested but model.num_semantic_classes <= 0; loss_semantic will be 0.')
+            cfg.train.use_semantic_aux = False
+        else:
+            print('Semantic auxiliary branch enabled.')
+            print('Semantic supervision type: dense semantic map %s.' % cfg.train.semantic_loss_type)
+            print('Number of semantic dense classes: %d' % cfg.model.num_semantic_classes)
     else:
         if num_semantic_tags <= 0:
             raise ValueError('Semantic auxiliary branch is enabled but no semantic tags were loaded.')
@@ -792,6 +824,8 @@ experiment_summary = [
     f'  use_weak_mask_prior: {cfg.train.use_weak_mask_prior}',
     f'  mask_alpha: {cfg.train.mask_alpha}',
     f'  use_feature_reweight: {cfg.train.use_feature_reweight}',
+    f'  use_semantic_cross_attention: {cfg.train.use_semantic_cross_attention}',
+    f'  use_semantic_hard_gate: {cfg.train.use_semantic_hard_gate}',
     f'  reweight_alpha: {cfg.train.reweight_alpha}',
     f'  pseudo_mask_root: {cfg.data.pseudo_mask_root}',
     f'  eval_anno_path: {cfg.data.eval_anno_path}',
@@ -1213,6 +1247,7 @@ while t < cfg.train.max_iter:
 
         if t % cfg.train.log_interval == 0:
             train_logger.print_current_stats(epoch, i, t, stats, iter_end_time)
+            append_jsonl(train_jsonl_path, {'epoch': epoch, 'iter': t, **stats})
             train_logger.plot_current_stats(
                 epoch,
                 float(i * batch_size) / train_size, stats, 'loss')
@@ -1329,6 +1364,14 @@ while t < cfg.train.max_iter:
                     val_stats['balanced_score'] = float(caption_metrics['balanced_score'])
                     val_stats['ALL_ABOVE_BASELINE'] = float(caption_metrics['all_above_baseline'])
                     update_best_training_checkpoints(output_dir, save_path, caption_metrics, best_training_records)
+                    csv_row = {'iter': t, 'snapshot_path': save_path}
+                    csv_row.update({key: val_stats.get(key, '') for key in ('Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE', 'balanced_score', 'ALL_ABOVE_BASELINE')})
+                    write_single_row_csv(
+                        val_metrics_csv_path,
+                        csv_row,
+                        fieldnames=['iter', 'snapshot_path', 'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE', 'balanced_score', 'ALL_ABOVE_BASELINE'],
+                        append=True,
+                    )
 
                 if val_stats:
                     val_logger.print_current_stats(epoch, 0, t, val_stats, test_iter_end_time)

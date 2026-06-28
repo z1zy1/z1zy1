@@ -14,6 +14,7 @@ from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
 from utils.dataset_config import apply_dataset_cli_overrides
+from utils.experiment_tracking import save_resolved_config, sync_wcsg_config_aliases, write_single_row_csv
 from utils.semantic_label import build_content_word_token_ids
 
 from utils.utils import AverageMeter, accuracy, set_mode, load_checkpoint, \
@@ -151,7 +152,7 @@ def load_change_detector_state_compat(model, state_dict):
     missing_keys = sorted(current_keys - state_keys)
     unexpected_keys = sorted(state_keys - current_keys)
     optional_prefixes = (
-        'semantic_head.', 'semantic_dense_head.', 'semantic_embedding.', 'semantic_cross.', 'aux_mask_head.'
+        'semantic_head.', 'semantic_dense_head.', 'semantic_embedding.', 'semantic_cross.', 'semantic_cross_fusion.', 'aux_mask_head.'
     )
     semantic_only = all(key.startswith(optional_prefixes) for key in missing_keys + unexpected_keys)
     if not missing_keys and not unexpected_keys:
@@ -183,7 +184,12 @@ def apply_cli_overrides(args, cfg):
         cfg.model.type = args.model
         if args.model == 'card':
             cfg.model.enable_aux_mask = False
+            cfg.model.use_aux_mask = False
+            cfg.train.use_aux_mask = False
             cfg.train.use_semantic_aux = False
+            cfg.train.use_aux_semantic = False
+            cfg.train.use_semantic_cross_attention = False
+            cfg.train.use_semantic_hard_gate = False
             cfg.train.use_feature_reweight = False
             cfg.model.semantic_input_mode = 'none'
     if args.use_aux_mask:
@@ -194,6 +200,12 @@ def apply_cli_overrides(args, cfg):
         cfg.train.use_semantic_partial_detach = True
     if args.use_feature_reweight:
         cfg.train.use_feature_reweight = True
+    if getattr(args, 'use_semantic_cross_attention', False):
+        cfg.train.use_semantic_cross_attention = True
+        cfg.model.semantic_input_mode = 'cross_attention'
+    if getattr(args, 'use_semantic_hard_gate', False):
+        cfg.train.use_semantic_hard_gate = True
+        cfg.model.semantic_input_mode = 'hard_gate'
     if args.reweight_alpha is not None:
         cfg.train.reweight_alpha = args.reweight_alpha
     if args.lmask is not None:
@@ -255,6 +267,8 @@ parser.add_argument('--semantic_detach_ratio', type=float, default=None)
 parser.add_argument('--lmask', type=float, default=None)
 parser.add_argument('--lsem', type=float, default=None)
 parser.add_argument('--use_feature_reweight', action='store_true')
+parser.add_argument('--use_semantic_cross_attention', action='store_true')
+parser.add_argument('--use_semantic_hard_gate', action='store_true')
 parser.add_argument('--reweight_alpha', type=float, default=None)
 parser.add_argument('--mask_loss_type', type=str, default=None)
 parser.add_argument('--semantic_loss_type', type=str, default=None)
@@ -271,6 +285,7 @@ merge_cfg_from_file(args.cfg)
 if args.opts:
     merge_cfg_from_list(args.opts)
 apply_cli_overrides(args, cfg)
+sync_wcsg_config_aliases(cfg)
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -292,6 +307,8 @@ exp_dir = cfg.exp_dir
 exp_name = cfg.exp_name
 
 output_dir = os.path.join(exp_dir, exp_name)
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
 
 if args.result_json is not None:
     result_save_path_pos = os.path.normpath(args.result_json)
@@ -330,6 +347,14 @@ elif args.snapshot is not None:
     snapshot_full_path = os.path.join(snapshot_dir, snapshot_file)
 else:
     raise ValueError('Either --snapshot, --snapshot_path, or --checkpoint must be provided.')
+save_resolved_config(output_dir, cfg, args=args, checkpoint_path=snapshot_full_path, phase=args.split, log_path=os.path.join(output_dir, 'eval_log.txt'))
+test_metrics_csv_path = os.path.join(output_dir, 'test_metrics.csv')
+if args.split == 'test' and not os.path.exists(test_metrics_csv_path):
+    write_single_row_csv(
+        test_metrics_csv_path,
+        {'checkpoint_path': '', 'Bleu_1': '', 'Bleu_2': '', 'Bleu_3': '', 'Bleu_4': '', 'METEOR': '', 'ROUGE_L': '', 'CIDEr': '', 'SPICE': '', 'Mask_Precision': '', 'Mask_Recall': '', 'Mask_F1': '', 'Mask_IoU': '', 'Mask_mIoU': ''},
+        fieldnames=['checkpoint_path', 'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE', 'Mask_Precision', 'Mask_Recall', 'Mask_F1', 'Mask_IoU', 'Mask_mIoU'],
+    )
 checkpoint = load_checkpoint(snapshot_full_path)
 change_detector_state = checkpoint['change_detector_state']
 speaker_state = checkpoint['speaker_state']

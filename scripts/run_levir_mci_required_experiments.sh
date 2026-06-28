@@ -14,13 +14,13 @@ FAIL_LOG="$EXP_ROOT/levir_mci_required_failures.log"
 
 EXPERIMENTS=(
   levir_mci_card_baseline
-  levir_mci_card_mask_loss
-  levir_mci_card_semantic_loss
+  levir_mci_card_mask
+  levir_mci_card_semantic
   levir_mci_card_mask_semantic
   levir_mci_card_mask_semantic_pd05
   levir_mci_card_mask_semantic_pd05_noreweight
   levir_mci_card_mask_semantic_pd05_reweight
-  levir_mci_ours_weak_coupled_final
+  levir_mci_wcsg_card_final
 )
 
 usage() {
@@ -89,15 +89,16 @@ configure_levir_env() {
   case "$exp" in
     levir_mci_card_baseline)
       export BASE_CFG="configs/dynamic/transformer_levir_mci_baseline.yaml" MODEL_TYPE=card USE_CHANGE_MASK=0 MASK_TYPE=binary ENABLE_AUX_MASK=0 USE_AUX_SEMANTIC=0 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=none LMASK=0.0 LSEM=0.0 ;;
-    levir_mci_card_mask_loss)
+    levir_mci_card_mask)
       export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=0 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=none LMASK="${USER_LMASK:-0.003}" LSEM=0.0 MASK_LOSS_TYPE=ce_dice ;;
-    levir_mci_card_semantic_loss)
+    levir_mci_card_semantic)
       export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=0 MASK_TYPE=binary ENABLE_AUX_MASK=0 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux LMASK=0.0 LSEM="${USER_LSEM:-0.005}" SEMANTIC_LOSS_TYPE=multilabel_bce ;;
     levir_mci_card_mask_semantic)
       export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux LMASK="${USER_LMASK:-0.003}" LSEM="${USER_LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce ;;
-    levir_mci_card_mask_semantic_pd05|levir_mci_card_mask_semantic_pd05_noreweight|levir_mci_ours_weak_coupled_final)
-      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux USE_SEMANTIC_PARTIAL_DETACH=1 LMASK="${USER_LMASK:-0.003}" LSEM="${USER_LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce
-      if [ "$exp" = "levir_mci_ours_weak_coupled_final" ]; then export SEMANTIC_INPUT_MODE=weak_coupled; fi ;;
+    levir_mci_card_mask_semantic_pd05|levir_mci_card_mask_semantic_pd05_noreweight)
+      export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux USE_SEMANTIC_PARTIAL_DETACH=1 LMASK="${USER_LMASK:-0.003}" LSEM="${USER_LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce ;;
+    levir_mci_wcsg_card_final)
+      export BASE_CFG="configs/levir_mci/wcsg_card_final.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux USE_SEMANTIC_PARTIAL_DETACH=1 USE_FEATURE_REWEIGHT=0 LMASK="${USER_LMASK:-0.003}" LSEM="${USER_LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce ;;
     levir_mci_card_mask_semantic_pd05_reweight)
       export BASE_CFG="configs/dynamic/transformer_levir_mci_sgc_card.yaml" MODEL_TYPE=sgc_card USE_CHANGE_MASK=1 MASK_TYPE=multiclass NUM_MASK_CLASSES=3 ENABLE_AUX_MASK=1 USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=0 SEMANTIC_INPUT_MODE=aux USE_SEMANTIC_PARTIAL_DETACH=1 USE_FEATURE_REWEIGHT=1 REWEIGHT_ALPHA="${USER_REWEIGHT_ALPHA:-0.2}" DETACH_REWEIGHT_MASK=1 LMASK="${USER_LMASK:-0.003}" LSEM="${USER_LSEM:-0.005}" MASK_LOSS_TYPE=ce_dice SEMANTIC_LOSS_TYPE=multilabel_bce ;;
   esac
@@ -125,14 +126,15 @@ for exp in "${EXPERIMENTS[@]}"; do
     echo "Using existing eval CSV: $EXP_PATH/eval_snapshots.csv"
   fi
 
-  if [ "$OVERWRITE" -eq 1 ] || [ ! -f "$EXP_PATH/best_snapshot_for_paper.json" ]; then
-    run_or_log "select best $exp" python scripts/select_best_snapshot_for_paper.py --exp_dir "$EXP_PATH" || continue
+  if [ "$OVERWRITE" -eq 1 ] || [ ! -f "$EXP_PATH/best_checkpoint.json" ]; then
+    run_or_log "select best $exp" python scripts/select_best_checkpoint.py --exp_dir "$EXP_PATH" --strategy spice_constrained_balanced || continue
   else
-    echo "Using existing paper selection: $EXP_PATH/best_snapshot_for_paper.json"
+    echo "Using existing paper selection: $EXP_PATH/best_checkpoint.json"
   fi
 
   if [ "$OVERWRITE" -eq 1 ] || [ ! -f "$EXP_PATH/test_paper_best_result.json" ]; then
-    run_or_log "test paper best $exp" bash scripts/test_specific_snapshot_sgc_card.sh --exp_dir "$EXP_PATH" --checkpoint "$EXP_PATH/best_for_paper.pth" --tag paper_best || continue
+    SELECTED_CHECKPOINT="$(head -n 1 "$EXP_PATH/best_checkpoint.txt")"
+    run_or_log "test paper best $exp" bash scripts/test_specific_snapshot_sgc_card.sh --exp_dir "$EXP_PATH" --checkpoint "$SELECTED_CHECKPOINT" --tag paper_best || continue
   else
     echo "Using existing paper-best test result: $EXP_PATH/test_paper_best_result.json"
   fi

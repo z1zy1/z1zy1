@@ -118,6 +118,40 @@ def normalize_id(value):
     return os.path.basename(str(value))
 
 
+def _caption_text_from_item(item):
+    values = []
+    for key in ('caption', 'sent', 'sentence', 'raw', 'description'):
+        if item.get(key):
+            values.append(str(item[key]))
+    for key in ('captions', 'sentences', 'references'):
+        value = item.get(key)
+        if isinstance(value, list):
+            for entry in value:
+                if isinstance(entry, dict):
+                    values.append(_caption_text_from_item(entry))
+                else:
+                    values.append(str(entry))
+    return ' '.join(value for value in values if value).lower()
+
+
+def _infer_changeflag_from_caption(text):
+    if not text:
+        return None
+    nochange_patterns = (
+        'no change', 'no changes', 'unchanged', 'same as', 'remain unchanged',
+        'remains unchanged', 'identical', 'no difference', 'without change',
+    )
+    if any(pattern in text for pattern in nochange_patterns):
+        return 0
+    change_patterns = (
+        'changed', 'change', 'new', 'appeared', 'disappeared', 'removed', 'added',
+        'replaced', 'expanded', 'increased', 'decreased', 'converted',
+    )
+    if any(pattern in text for pattern in change_patterns):
+        return 1
+    return None
+
+
 def load_changeflag_groups(path, split=None, valid_ids=None):
     if not path:
         raise ValueError('--changeflag_json is required when --eval_change_nochange_split is enabled.')
@@ -128,13 +162,13 @@ def load_changeflag_groups(path, split=None, valid_ids=None):
     valid_with_basename = set(valid) | {normalize_id(item) for item in valid}
     change_ids = []
     nochange_ids = []
+    inferred = 0
+    explicit = 0
     for item in items:
         if not isinstance(item, dict):
             continue
         item_split = item.get('split') or item.get('filepath')
         if split and item_split and str(item_split) != str(split):
-            continue
-        if 'changeflag' not in item:
             continue
         raw_id = item.get('filename') or item.get('image_id') or item.get('id') or item.get('imgid')
         if raw_id is None:
@@ -142,14 +176,26 @@ def load_changeflag_groups(path, split=None, valid_ids=None):
         image_id = normalize_id(raw_id)
         if valid_with_basename and image_id not in valid_with_basename and str(raw_id) not in valid_with_basename:
             continue
-        try:
-            flag = int(item.get('changeflag'))
-        except (TypeError, ValueError):
-            continue
+        flag = None
+        if 'changeflag' in item:
+            try:
+                flag = int(item.get('changeflag'))
+                explicit += 1
+            except (TypeError, ValueError):
+                flag = None
+        if flag is None:
+            flag = _infer_changeflag_from_caption(_caption_text_from_item(item))
+            if flag is not None:
+                inferred += 1
         if flag == 1:
             change_ids.append(image_id)
         elif flag == 0:
             nochange_ids.append(image_id)
+    if not change_ids and not nochange_ids:
+        print('WARNING: could not determine SECOND-CC change/no-change groups from %s.' % path)
+    elif inferred and not explicit:
+        print('WARNING: change/no-change groups inferred from captions; verify this heuristic before reporting final numbers.')
+    print('Change/no-change group sizes: change=%d no-change=%d' % (len(set(change_ids)), len(set(nochange_ids))))
     return {
         'change': sorted(set(change_ids)),
         'nochange': sorted(set(nochange_ids)),
@@ -195,18 +241,67 @@ def write_csv_row(path, row, append):
         writer.writerow({key: row.get(key, '') for key in fieldnames})
 
 
+def _write_metrics_csv(path, row):
+    os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
+    fieldnames = ['checkpoint_path', 'result_json', 'num_images'] + METRIC_COLUMNS + AUX_METRIC_COLUMNS
+    with open(path, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow({key: row.get(key, '') for key in fieldnames})
+
+
+def _write_correlation_csv(path, exp_name, metrics, aux_metrics):
+    os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
+    row = {
+        'exp_name': exp_name,
+        'mask_f1': aux_metrics.get('Mask_F1', ''),
+        'mask_iou': aux_metrics.get('Mask_IoU', ''),
+        'cider': metrics.get('CIDEr', ''),
+        'spice': metrics.get('SPICE', ''),
+        'b4': metrics.get('Bleu_4', ''),
+    }
+    with open(path, 'w', newline='', encoding='utf-8') as f:
+        fieldnames = ['exp_name', 'mask_f1', 'mask_iou', 'cider', 'spice', 'b4']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow(row)
+
+
+def _write_group_metric_csv(path, payload):
+    os.makedirs(os.path.dirname(path) or '.', exist_ok=True)
+    metrics = payload.get('metrics', {})
+    row = {
+        'group': payload.get('group', 'overall'),
+        'num_images': payload.get('num_images', ''),
+        'note': payload.get('note', ''),
+        **{metric: metrics.get(metric, '') for metric in METRIC_COLUMNS},
+    }
+    with open(path, 'w', newline='', encoding='utf-8') as f:
+        fieldnames = ['group', 'num_images'] + METRIC_COLUMNS + ['note']
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerow({key: row.get(key, '') for key in fieldnames})
+
+
 def write_group_outputs(output_dir, split_name, snapshot_path, overall_payload, group_payloads):
     os.makedirs(output_dir, exist_ok=True)
     overall_path = os.path.join(output_dir, '%s_overall_result.json' % split_name)
     with open(overall_path, 'w', encoding='utf-8') as f:
         json.dump(overall_payload, f, indent=2)
+    _write_group_metric_csv(os.path.join(output_dir, '%s_metrics_overall.csv' % split_name), {
+        'group': 'overall',
+        'num_images': len(load_result_ids(overall_payload['result_json'])) if overall_payload.get('result_json') else '',
+        'metrics': overall_payload.get('metrics', {}),
+        'note': '',
+    })
 
     rows = []
     for group_name, payload in group_payloads.items():
-        file_group_name = 'no-change' if group_name == 'nochange' else group_name
+        file_group_name = 'nochange' if group_name == 'nochange' else group_name
         path = os.path.join(output_dir, '%s_%s_result.json' % (split_name, file_group_name))
         with open(path, 'w', encoding='utf-8') as f:
             json.dump(payload, f, indent=2)
+        _write_group_metric_csv(os.path.join(output_dir, '%s_metrics_%s.csv' % (split_name, file_group_name)), payload)
         metrics = payload.get('metrics', {})
         rows.append({
             'group': group_name,
@@ -256,12 +351,14 @@ def main():
     metrics = load_metrics(args.anno, args.result_json)
     aux_metrics = load_aux_metrics(infer_aux_metrics_path(args.result_json, args.aux_metrics_json))
 
+    result_ids = load_result_ids(args.result_json)
     payload = {
         'snapshot_path': args.snapshot_path,
         'result_json': args.result_json,
         'metrics': metrics,
         'aux_metrics': aux_metrics,
         'baseline_name': args.baseline,
+        'num_images': len(result_ids),
     }
 
     if args.baseline == 'eval':
@@ -287,9 +384,14 @@ def main():
             'deltas': deltas,
             'ALL_TEST_METRICS_ABOVE_BASELINE': all_above(metrics, BASELINE_TEST),
         })
+        output_dir = os.path.dirname(args.output_json or '') or args.group_output_dir or os.path.dirname(args.result_json) or '.'
+        metric_row = {'checkpoint_path': args.snapshot_path, 'result_json': args.result_json, 'num_images': len(result_ids)}
+        metric_row.update(metrics)
+        metric_row.update(aux_metrics)
+        _write_metrics_csv(os.path.join(output_dir, 'test_metrics.csv'), metric_row)
+        _write_correlation_csv(os.path.join(output_dir, 'mask_caption_correlation.csv'), os.path.basename(output_dir), metrics, aux_metrics)
 
     if args.eval_change_nochange_split:
-        result_ids = load_result_ids(args.result_json)
         groups = load_changeflag_groups(args.changeflag_json, args.split, result_ids)
         group_payloads = {}
         for group_name, ids in groups.items():

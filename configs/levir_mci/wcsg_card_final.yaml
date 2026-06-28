@@ -1,0 +1,86 @@
+exp_name: 'levir_mci_wcsg_card_final'
+gpu_id: [0]
+logger:
+    display_id: 9908
+model:
+    type: 'sgc_card'
+    enable_aux_mask: True
+    use_aux_mask: True
+    semantic_input_mode: aux
+    num_mask_classes: 3
+    num_semantic_classes: 0
+    transformer_encoder:
+        input_dim: 2048
+        feat_dim: 1024
+        emb_dim: 512
+        att_dim: 512
+        att_head: 8
+        att_layer: 2
+        dim: 128
+    transformer_decoder:
+        input_dim: 2048
+        word_dim: 300
+        att_dim: 512
+        att_head: 8
+        att_layer: 2
+        vocab_size: 860
+        seq_length: 41
+        share_wd_cls_weight: False
+        label_smoothing: 0.0
+
+data:
+    dataset: 'levir_mci'
+    default_feature_dir: './LEVIR-MCI-dataset/features'
+    semantic_feature_dir: './LEVIR-MCI-dataset/features'
+    default_img_dir: './LEVIR-MCI-dataset/images'
+    semantic_img_dir: './LEVIR-MCI-dataset/images'
+    default_phase: 'A'
+    semantic_phase: 'B'
+    pseudo_mask_root: './LEVIR-MCI-dataset/images'
+    pseudo_mask_phase: 'label'
+    allow_missing_pseudo_mask: False
+    use_change_mask: True
+    mask_type: 'multiclass'
+    num_mask_classes: 3
+    use_semantic_maps: False
+    eval_anno_path: './LEVIR-MCI-dataset/levir_mci_captions_reformat.json'
+    splits_json: './LEVIR-MCI-dataset/splits.json'
+    vocab_json: './LEVIR-MCI-dataset/transformer_levir_mci_vocab.json'
+    h5_label_file: './LEVIR-MCI-dataset/transformer_levir_mci_labels.h5'
+    train:
+        batch_size: 32
+train:
+    max_iter: 10000
+    seed: 1111
+    snapshot_interval: 1000
+    grad_clip: -1.0
+    use_aux_mask: True
+    lambda_mask: 0.003
+    use_mask_conf_filter: False
+    mask_ignore_index: -1
+    mask_loss_type: 'ce_dice'
+    mask_bce_dice_alpha: 0.5
+    use_aux_semantic: True
+    use_semantic_aux: True
+    lambda_semantic: 0.005
+    semantic_loss_type: 'multilabel_bce'
+    semantic_tag_file: 'configs/semantic_tags/levir_cc_object_action_tags.txt'
+    semantic_aux_dropout: 0.1
+    semantic_normalize_synonyms: True
+    use_semantic_cross_attention: False
+    use_semantic_hard_gate: False
+    use_feature_reweight: False
+    detach_reweight_mask: True
+    use_partial_detach: True
+    use_semantic_partial_detach: True
+    semantic_detach_ratio: 0.5
+    use_aux_warmup: True
+    aux_warmup_start_ratio: 0.30
+    aux_warmup_end_ratio: 0.70
+    selection_strategy: 'spice_constrained_balanced'
+    optim:
+        type: 'adam'
+        lr: 0.0002
+        weight_decay: 0.0
+        step_size: 17
+        gamma: 0.1

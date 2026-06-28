@@ -209,7 +209,7 @@ class SemanticCrossAttentionFusion(nn.Module):
         self.class_embedding = nn.Embedding(self.num_semantic_classes, self.embed_dim)
         self.prob_projection = nn.Conv2d(self.num_semantic_classes, self.embed_dim, kernel_size=1)
         self.diff_projection = nn.Linear(self.embed_dim * 3, self.embed_dim)
-        self.attention = nn.MultiheadAttention(self.embed_dim, int(num_heads), dropout=dropout, batch_first=True)
+        self.attention = nn.MultiheadAttention(self.embed_dim, int(num_heads), dropout=dropout)
         self.norm = nn.LayerNorm(self.embed_dim)
         self.dropout = nn.Dropout(dropout)
         self.gamma = nn.Parameter(torch.tensor(float(gamma_init)))
@@ -276,7 +276,10 @@ class SemanticCrossAttentionFusion(nn.Module):
         sem_diff_feat = torch.cat([sem_b_feat, sem_a_feat, torch.abs(sem_a_feat - sem_b_feat)], dim=-1)
         sem_diff_feat = self.diff_projection(sem_diff_feat)
         sem_diff_feat = partial_detach_feature(sem_diff_feat, float(detach_ratio))
-        sem_context, attn = self.attention(query, sem_diff_feat, sem_diff_feat, need_weights=True)
+        query_t = query.transpose(0, 1).contiguous()
+        sem_diff_t = sem_diff_feat.transpose(0, 1).contiguous()
+        sem_context_t, attn = self.attention(query_t, sem_diff_t, sem_diff_t, need_weights=True)
+        sem_context = sem_context_t.transpose(0, 1).contiguous()
         self.last_attention = attn
         fused = self.norm(query + self.dropout(self.gamma * sem_context))
         if input_was_4d:

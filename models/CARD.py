@@ -238,19 +238,25 @@ class SemanticCrossAttentionFusion(nn.Module):
         if sem.dim() == 4 and sem.size(1) == 1:
             sem = sem[:, 0]
         if sem.dim() == 3:
+            # Class-id maps must be resized before embedding; embedding a 256x256
+            # map to 512 channels can allocate several GiB during SECOND-CC eval.
             sem = sem.long()
+            if sem.shape[-2:] != spatial_size:
+                sem = F.interpolate(
+                    sem.unsqueeze(1).float(), size=spatial_size, mode='nearest'
+                ).squeeze(1).long()
             valid = sem != self.ignore_index
             sem = torch.where(valid, sem, torch.zeros_like(sem))
             sem = sem.clamp(0, self.num_semantic_classes - 1)
             feat = self.class_embedding(sem).permute(0, 3, 1, 2).contiguous()
         elif sem.dim() == 4:
             sem = sem.float()
+            if sem.shape[-2:] != spatial_size:
+                sem = F.interpolate(sem, size=spatial_size, mode='bilinear', align_corners=False)
             sem = self._match_prob_channels(sem)
             feat = self.prob_projection(sem)
         else:
             raise ValueError('SemanticCrossAttentionFusion expects semantic maps [B,H,W] or [B,C,H,W], got %s.' % (tuple(sem.shape),))
-        if feat.shape[-2:] != spatial_size:
-            feat = F.interpolate(feat, size=spatial_size, mode='bilinear', align_corners=False)
         return feat.flatten(2).transpose(1, 2).contiguous()
 
     def forward(self, diff_feat, sem_before, sem_after, spatial_size=None, detach_ratio=0.0):

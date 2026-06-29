@@ -200,6 +200,12 @@ def apply_cli_overrides(args, cfg):
         cfg.train.use_semantic_partial_detach = True
     if args.use_feature_reweight:
         cfg.train.use_feature_reweight = True
+    if getattr(args, 'no_feature_reweight', False):
+        cfg.train.use_feature_reweight = False
+    if getattr(args, 'no_semantic_hard_gate', False):
+        cfg.train.use_semantic_hard_gate = False
+        if str(getattr(cfg.model, 'semantic_input_mode', 'none')).lower() == 'hard_gate':
+            cfg.model.semantic_input_mode = 'none'
     if getattr(args, 'use_semantic_cross_attention', False):
         cfg.train.use_semantic_cross_attention = True
         cfg.model.semantic_input_mode = 'cross_attention'
@@ -267,8 +273,10 @@ parser.add_argument('--semantic_detach_ratio', type=float, default=None)
 parser.add_argument('--lmask', type=float, default=None)
 parser.add_argument('--lsem', type=float, default=None)
 parser.add_argument('--use_feature_reweight', action='store_true')
+parser.add_argument('--no_feature_reweight', action='store_true')
 parser.add_argument('--use_semantic_cross_attention', action='store_true')
 parser.add_argument('--use_semantic_hard_gate', action='store_true')
+parser.add_argument('--no_semantic_hard_gate', action='store_true')
 parser.add_argument('--reweight_alpha', type=float, default=None)
 parser.add_argument('--mask_loss_type', type=str, default=None)
 parser.add_argument('--semantic_loss_type', type=str, default=None)
@@ -483,5 +491,6 @@ with torch.no_grad():
         with open(aux_metric_path, 'w', encoding='utf-8') as f:
             json.dump(aux_metrics, f, indent=2)
         print('Saved auxiliary metrics to %s' % aux_metric_path)
+
 
 

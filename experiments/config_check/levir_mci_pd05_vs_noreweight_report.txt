@@ -1,0 +1,111 @@
+# LEVIR-MCI pd05 / noreweight / final config check
+
+## levir_mci_card_mask_semantic_pd05
+exists: False
+resolved_config_exists: False
+config_hash: {}
+key_switches:
+{'data.dataset': None,
+ 'model.enable_aux_mask': None,
+ 'model.semantic_input_mode': None,
+ 'train.aux_warmup_end_ratio': None,
+ 'train.aux_warmup_start_ratio': None,
+ 'train.lambda_mask': None,
+ 'train.lambda_semantic': None,
+ 'train.selection_strategy': None,
+ 'train.semantic_detach_ratio': None,
+ 'train.use_aux_semantic': None,
+ 'train.use_feature_reweight': None,
+ 'train.use_partial_detach': None,
+ 'train.use_semantic_aux': None,
+ 'train.use_semantic_cross_attention': None,
+ 'train.use_semantic_hard_gate': None,
+ 'train.use_semantic_partial_detach': None}
+best_checkpoint_json_exists: False
+checkpoint: 
+checkpoint_sha256: 
+prediction_file: 
+prediction_sha256: 
+
+## levir_mci_card_mask_semantic_pd05_noreweight
+exists: False
+resolved_config_exists: False
+config_hash: {}
+key_switches:
+{'data.dataset': None,
+ 'model.enable_aux_mask': None,
+ 'model.semantic_input_mode': None,
+ 'train.aux_warmup_end_ratio': None,
+ 'train.aux_warmup_start_ratio': None,
+ 'train.lambda_mask': None,
+ 'train.lambda_semantic': None,
+ 'train.selection_strategy': None,
+ 'train.semantic_detach_ratio': None,
+ 'train.use_aux_semantic': None,
+ 'train.use_feature_reweight': None,
+ 'train.use_partial_detach': None,
+ 'train.use_semantic_aux': None,
+ 'train.use_semantic_cross_attention': None,
+ 'train.use_semantic_hard_gate': None,
+ 'train.use_semantic_partial_detach': None}
+best_checkpoint_json_exists: False
+checkpoint: 
+checkpoint_sha256: 
+prediction_file: 
+prediction_sha256: 
+
+## levir_mci_ours_weak_coupled_final
+exists: False
+resolved_config_exists: False
+config_hash: {}
+key_switches:
+{'data.dataset': None,
+ 'model.enable_aux_mask': None,
+ 'model.semantic_input_mode': None,
+ 'train.aux_warmup_end_ratio': None,
+ 'train.aux_warmup_start_ratio': None,
+ 'train.lambda_mask': None,
+ 'train.lambda_semantic': None,
+ 'train.selection_strategy': None,
+ 'train.semantic_detach_ratio': None,
+ 'train.use_aux_semantic': None,
+ 'train.use_feature_reweight': None,
+ 'train.use_partial_detach': None,
+ 'train.use_semantic_aux': None,
+ 'train.use_semantic_cross_attention': None,
+ 'train.use_semantic_hard_gate': None,
+ 'train.use_semantic_partial_detach': None}
+best_checkpoint_json_exists: False
+checkpoint: 
+checkpoint_sha256: 
+prediction_file: 
+prediction_sha256: 
+
+## Pairwise conclusions
+### levir_mci_card_mask_semantic_pd05 vs levir_mci_card_mask_semantic_pd05_noreweight
+same_full_config_hash: None
+same_comparable_config_hash: None
+same_checkpoint_path: 
+same_checkpoint_hash: 
+same_prediction_hash: 
+different_key_switches: {}
+resolved_config_diff: unavailable because at least one resolved_config.json is missing
+
+### levir_mci_card_mask_semantic_pd05 vs levir_mci_ours_weak_coupled_final
+same_full_config_hash: None
+same_comparable_config_hash: None
+same_checkpoint_path: 
+same_checkpoint_hash: 
+same_prediction_hash: 
+different_key_switches: {}
+resolved_config_diff: unavailable because at least one resolved_config.json is missing
+
+### levir_mci_card_mask_semantic_pd05_noreweight vs levir_mci_ours_weak_coupled_final
+same_full_config_hash: None
+same_comparable_config_hash: None
+same_checkpoint_path: 
+same_checkpoint_hash: 
+same_prediction_hash: 
+different_key_switches: {}
+resolved_config_diff: unavailable because at least one resolved_config.json is missing
+

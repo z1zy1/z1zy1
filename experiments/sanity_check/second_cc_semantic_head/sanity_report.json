@@ -1,0 +1,1001 @@
+{
+  "semantic_class_number": 7,
+  "ignore_index": -1,
+  "known_rgb_to_class": {
+    "(0, 0, 255)": 0,
+    "(80, 80, 255)": 0,
+    "(0, 128, 0)": 1,
+    "(0, 255, 0)": 1,
+    "(80, 208, 80)": 1,
+    "(80, 255, 80)": 1,
+    "(128, 0, 0)": 2,
+    "(255, 0, 0)": 2,
+    "(208, 80, 80)": 2,
+    "(128, 128, 128)": 3,
+    "(208, 208, 208)": 3,
+    "(255, 255, 255)": 4,
+    "(0, 0, 0)": 5
+  },
+  "uses_nearest_for_class_id_resize": true,
+  "semantic_map_resize_interpolation": "nearest for class-id maps/targets",
+  "map_inspection": {
+    "sample_count": 50,
+    "class_distribution_before": {
+      "0": 1626,
+      "1": 370882,
+      "2": 209076,
+      "3": 583822,
+      "4": 2111394
+    },
+    "class_distribution_after": {
+      "0": 21486,
+      "1": 716904,
+      "2": 224936,
+      "3": 202080,
+      "4": 2111394
+    },
+    "class_distribution_diff": {
+      "0": 2171186,
+      "1": 21486,
+      "2": 669128,
+      "3": 212920,
+      "4": 202080
+    },
+    "samples": [
+      {
+        "filename": "00003_0_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00003_0_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00003_0_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00003_0_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00003_0_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\000_00003_0_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00003_0_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00003_0_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00003_0_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00003_0_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00003_0_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\001_00003_0_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00003_1_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00003_1_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00003_1_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00003_1_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00003_1_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\002_00003_1_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00003_1_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00003_1_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00003_1_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00003_1_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00003_1_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\003_00003_1_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00003_2_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00003_2_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00003_2_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00003_2_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00003_2_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\004_00003_2_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00003_2_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00003_2_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00003_2_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00003_2_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00003_2_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\005_00003_2_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00003_3_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00003_3_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00003_3_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00003_3_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00003_3_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\006_00003_3_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00003_3_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00003_3_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00003_3_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00003_3_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00003_3_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\007_00003_3_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00011_1_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00011_1_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00011_1_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00011_1_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00011_1_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\008_00011_1_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00011_1_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00011_1_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00011_1_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00011_1_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00011_1_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\009_00011_1_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00011_2_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00011_2_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00011_2_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00011_2_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00011_2_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\010_00011_2_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00011_2_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00011_2_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00011_2_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00011_2_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00011_2_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\011_00011_2_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00013_1_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00013_1_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00013_1_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00013_1_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00013_1_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\012_00013_1_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00013_1_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00013_1_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00013_1_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00013_1_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00013_1_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\013_00013_1_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00013_2_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00013_2_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00013_2_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00013_2_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00013_2_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\014_00013_2_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00013_2_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00013_2_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00013_2_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00013_2_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00013_2_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\015_00013_2_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00013_ters_1_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00013_ters_1_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00013_ters_1_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00013_ters_1_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00013_ters_1_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\016_00013_ters_1_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00013_ters_1_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00013_ters_1_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00013_ters_1_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00013_ters_1_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00013_ters_1_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\017_00013_ters_1_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00015_1_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00015_1_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00015_1_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00015_1_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00015_1_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\018_00015_1_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00015_1_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00015_1_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00015_1_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00015_1_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00015_1_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\019_00015_1_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00015_2_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00015_2_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00015_2_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00015_2_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00015_2_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\020_00015_2_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00015_2_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00015_2_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00015_2_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00015_2_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00015_2_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\021_00015_2_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00015_3_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00015_3_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00015_3_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00015_3_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00015_3_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\022_00015_3_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00015_3_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00015_3_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00015_3_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00015_3_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00015_3_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\023_00015_3_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00016_1_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00016_1_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00016_1_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00016_1_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00016_1_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\024_00016_1_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00016_1_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00016_1_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00016_1_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00016_1_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00016_1_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\025_00016_1_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00016_3_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00016_3_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00016_3_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00016_3_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00016_3_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\026_00016_3_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00016_3_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00016_3_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00016_3_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00016_3_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00016_3_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\027_00016_3_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00017_0_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_0_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_0_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_0_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_0_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\028_00017_0_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": false
+      },
+      {
+        "filename": "00017_0_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_0_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_0_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_0_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_0_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\029_00017_0_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": false
+      },
+      {
+        "filename": "00017_1_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_1_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_1_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_1_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_1_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\030_00017_1_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": false
+      },
+      {
+        "filename": "00017_1_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_1_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_1_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_1_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_1_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\031_00017_1_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": false
+      },
+      {
+        "filename": "00017_2_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_2_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_2_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_2_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_2_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\032_00017_2_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00017_2_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_2_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_2_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_2_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_2_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\033_00017_2_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00017_3_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_3_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_3_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_3_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_3_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\034_00017_3_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00017_3_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_3_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_3_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_3_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_3_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\035_00017_3_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00017_ters_2_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_ters_2_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_ters_2_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_ters_2_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_ters_2_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\036_00017_ters_2_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00017_ters_2_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00017_ters_2_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00017_ters_2_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00017_ters_2_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00017_ters_2_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\037_00017_ters_2_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00018_1_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00018_1_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00018_1_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00018_1_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00018_1_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\038_00018_1_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00018_1_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00018_1_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00018_1_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00018_1_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00018_1_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\039_00018_1_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00018_2_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00018_2_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00018_2_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00018_2_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00018_2_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\040_00018_2_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00018_2_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00018_2_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00018_2_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00018_2_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00018_2_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\041_00018_2_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00018_ters_3_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00018_ters_3_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00018_ters_3_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00018_ters_3_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00018_ters_3_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\042_00018_ters_3_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00018_ters_3_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00018_ters_3_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00018_ters_3_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00018_ters_3_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00018_ters_3_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\043_00018_ters_3_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00020_0_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00020_0_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00020_0_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00020_0_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00020_0_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\044_00020_0_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00020_0_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00020_0_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00020_0_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00020_0_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00020_0_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\045_00020_0_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00020_2_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00020_2_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00020_2_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00020_2_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00020_2_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\046_00020_2_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00020_2_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00020_2_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00020_2_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00020_2_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00020_2_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\047_00020_2_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00020_3_0.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00020_3_0.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00020_3_0.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00020_3_0.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00020_3_0.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\048_00020_3_0.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      },
+      {
+        "filename": "00020_3_0_random_augment.png",
+        "split": "train",
+        "semantic_before_path": "SECOND-CC-AUG\\train\\sem\\A\\00020_3_0_random_augment.png",
+        "semantic_after_path": "SECOND-CC-AUG\\train\\sem\\B\\00020_3_0_random_augment.png",
+        "rgb_before_path": "SECOND-CC-AUG\\train\\rgb\\A\\00020_3_0_random_augment.png",
+        "rgb_after_path": "SECOND-CC-AUG\\train\\rgb\\B\\00020_3_0_random_augment.png",
+        "visualization": "experiments\\sanity_check\\second_cc_semantic_head\\visualizations\\049_00020_3_0_random_augment.png",
+        "visualization_error": "",
+        "before_shape": [
+          256,
+          256
+        ],
+        "after_shape": [
+          256,
+          256
+        ],
+        "diff_has_change": true
+      }
+    ]
+  },
+  "forward_check": {
+    "semantic_head_forward_ok": false,
+    "error": "PyTorch is not installed in this environment."
+  }
+}

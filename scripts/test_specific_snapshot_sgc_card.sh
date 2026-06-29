@@ -9,6 +9,7 @@ case "${OMP_NUM_THREADS:-}" in
   ''|*[!0-9]*|0) export OMP_NUM_THREADS=1 ;;
 esac
 PYTORCH_GPU="${PYTORCH_GPU:-0}"
+PYTHON="${PYTHON:-python}"
 
 EXP_PATH=""
 CHECKPOINT=""
@@ -119,7 +120,7 @@ EXP_NAME="$(basename "$EXP_PATH")"
 mkdir -p "$EXP_PATH"
 
 RESOLVED_CHECKPOINT="$(
-  EXP_PATH="$EXP_PATH" CHECKPOINT="$CHECKPOINT" TAG="$TAG" python -c '
+  EXP_PATH="$EXP_PATH" CHECKPOINT="$CHECKPOINT" TAG="$TAG" "$PYTHON" -c '
 import csv
 import glob
 import os
@@ -255,6 +256,8 @@ if [ -n "$SEMANTIC_INPUT_MODE" ]; then TEST_ARGS+=(--semantic_input_mode "$SEMAN
 if [ -n "$NUM_SEMANTIC_CLASSES" ]; then TEST_ARGS+=(--num_semantic_classes "$NUM_SEMANTIC_CLASSES"); fi
 if is_true "$EVAL_CHANGE_NOCHANGE_SPLIT"; then TEST_ARGS+=(--eval_change_nochange_split); fi
 if is_true "$PAPER_SELECTION_MODE"; then TEST_ARGS+=(--paper_selection_mode); fi
+if is_true "$USE_FEATURE_REWEIGHT"; then TEST_ARGS+=(--use_feature_reweight); else TEST_ARGS+=(--no_feature_reweight); fi
+if [ "$SEMANTIC_INPUT_MODE" = "hard_gate" ]; then TEST_ARGS+=(--use_semantic_hard_gate); else TEST_ARGS+=(--no_semantic_hard_gate); fi
 
 METRIC_ARGS=(
   --anno "$ANNO"
@@ -273,7 +276,7 @@ if is_true "$EVAL_CHANGE_NOCHANGE_SPLIT"; then
 fi
 
 echo "Using checkpoint: $RESOLVED_CHECKPOINT" | tee "$LOG_PATH"
-python test_card_spot.py \
+"$PYTHON" test_card_spot.py \
   "${TEST_ARGS[@]}" \
   --snapshot_path "$RESOLVED_CHECKPOINT" \
   --split test \
@@ -281,7 +284,7 @@ python test_card_spot.py \
   "${COMMON_OPTS[@]}" \
   2>&1 | tee -a "$LOG_PATH"
 
-python scripts/sgc_card_metrics.py "${METRIC_ARGS[@]}" 2>&1 | tee -a "$LOG_PATH"
+"$PYTHON" scripts/sgc_card_metrics.py "${METRIC_ARGS[@]}" 2>&1 | tee -a "$LOG_PATH"
 
 echo "Wrote:"
 echo "  $RESULT_METRICS_TXT"

@@ -1,0 +1,10 @@
+# SECOND-CC semantic head sanity check
+semantic_class_number: 7
+ignore_index: -1
+semantic_map_resize_interpolation: nearest for class-id targets; semantic embeddings may be bilinear-resized only after class IDs are embedded.
+uses_nearest_for_class_id_resize: True
+class_distribution_before: {0: 1626, 1: 370882, 2: 209076, 3: 583822, 4: 2111394}
+class_distribution_after: {0: 21486, 1: 716904, 2: 224936, 3: 202080, 4: 2111394}
+class_distribution_diff: {0: 2171186, 1: 21486, 2: 669128, 3: 212920, 4: 202080}
+visualization_dir: experiments\sanity_check\second_cc_semantic_head\visualizations
+forward_check: {'semantic_head_forward_ok': False, 'error': 'PyTorch is not installed in this environment.'}

@@ -9,6 +9,7 @@ case "${OMP_NUM_THREADS:-}" in
   ''|*[!0-9]*|0) export OMP_NUM_THREADS=1 ;;
 esac
 PYTORCH_GPU="${PYTORCH_GPU:-0}"
+PYTHON="${PYTHON:-python}"
 EXP_DIR="${EXP_DIR:-./experiments}"
 EXP_NAME="${EXP_NAME:?EXP_NAME is required}"
 DATASET="${DATASET:?DATASET is required}"
@@ -38,6 +39,9 @@ ENABLE_AUX_MASK="${ENABLE_AUX_MASK:-0}"
 USE_AUX_SEMANTIC="${USE_AUX_SEMANTIC:-0}"
 USE_SEMANTIC_PARTIAL_DETACH="${USE_SEMANTIC_PARTIAL_DETACH:-0}"
 USE_AUX_WARMUP="${USE_AUX_WARMUP:-1}"
+AUX_WARMUP_START_RATIO="${AUX_WARMUP_START_RATIO:-0.30}"
+AUX_WARMUP_END_RATIO="${AUX_WARMUP_END_RATIO:-0.70}"
+SELECTION_STRATEGY="${SELECTION_STRATEGY:-spice_constrained_balanced}"
 USE_FEATURE_REWEIGHT="${USE_FEATURE_REWEIGHT:-0}"
 DETACH_REWEIGHT_MASK="${DETACH_REWEIGHT_MASK:-1}"
 REWEIGHT_ALPHA="${REWEIGHT_ALPHA:-0.2}"
@@ -52,6 +56,8 @@ MAX_ITER="${MAX_ITER:-}"
 SNAPSHOT_INTERVAL="${SNAPSHOT_INTERVAL:-}"
 LOG_INTERVAL="${LOG_INTERVAL:-}"
 BATCH_SIZE="${BATCH_SIZE:-}"
+LR="${LR:-}"
+INIT_CHECKPOINT="${INIT_CHECKPOINT:-}"
 SEED="${SEED:-1111}"
 
 bool_word() {
@@ -90,6 +96,9 @@ COMMON_OPTS=(
   train.use_semantic_partial_detach "$(bool_word "$USE_SEMANTIC_PARTIAL_DETACH")"
   train.semantic_detach_ratio "$SEMANTIC_DETACH_RATIO"
   train.use_aux_warmup "$(bool_word "$USE_AUX_WARMUP")"
+  train.aux_warmup_start_ratio "$AUX_WARMUP_START_RATIO"
+  train.aux_warmup_end_ratio "$AUX_WARMUP_END_RATIO"
+  train.selection_strategy "$SELECTION_STRATEGY"
   train.use_feature_reweight "$(bool_word "$USE_FEATURE_REWEIGHT")"
   train.detach_reweight_mask "$(bool_word "$DETACH_REWEIGHT_MASK")"
   train.reweight_alpha "$REWEIGHT_ALPHA"
@@ -124,6 +133,12 @@ fi
 if [ -n "$BATCH_SIZE" ]; then
   COMMON_OPTS+=(data.train.batch_size "$BATCH_SIZE")
 fi
+if [ -n "$LR" ]; then
+  COMMON_OPTS+=(train.optim.lr "$LR")
+fi
+if [ -n "$INIT_CHECKPOINT" ]; then
+  COMMON_OPTS+=(train.init_checkpoint "$INIT_CHECKPOINT")
+fi
 if is_true "$PAPER_SELECTION_MODE"; then
   COMMON_OPTS+=(train.paper_selection_mode True)
 fi
@@ -139,8 +154,10 @@ if [ -n "$NUM_SEMANTIC_CLASSES" ]; then TRAIN_ARGS+=(--num_semantic_classes "$NU
 if is_true "$USE_AUX_SEMANTIC"; then TRAIN_ARGS+=(--use_aux_semantic); fi
 if is_true "$ENABLE_AUX_MASK"; then TRAIN_ARGS+=(--use_aux_mask); fi
 if is_true "$USE_SEMANTIC_PARTIAL_DETACH"; then TRAIN_ARGS+=(--use_semantic_partial_detach); fi
-if is_true "$USE_FEATURE_REWEIGHT"; then TRAIN_ARGS+=(--use_feature_reweight); fi
+if is_true "$USE_FEATURE_REWEIGHT"; then TRAIN_ARGS+=(--use_feature_reweight); else TRAIN_ARGS+=(--no_feature_reweight); fi
+TRAIN_ARGS+=(--no_semantic_hard_gate)
 if is_true "$DETACH_REWEIGHT_MASK"; then TRAIN_ARGS+=(--detach_reweight_mask); fi
+if [ -n "$INIT_CHECKPOINT" ]; then TRAIN_ARGS+=(--init_checkpoint "$INIT_CHECKPOINT"); fi
 if is_true "$PAPER_SELECTION_MODE"; then TRAIN_ARGS+=(--paper_selection_mode); fi
 
 {
@@ -149,5 +166,7 @@ if is_true "$PAPER_SELECTION_MODE"; then TRAIN_ARGS+=(--paper_selection_mode); f
   echo "data_root=$DATA_ROOT"
   echo "base_cfg=$BASE_CFG"
   echo "model=$MODEL_TYPE"
-  python train_card_spot.py "${TRAIN_ARGS[@]}" "${COMMON_OPTS[@]}"
+  "$PYTHON" train_card_spot.py "${TRAIN_ARGS[@]}" "${COMMON_OPTS[@]}"
 } 2>&1 | tee "$LOG_PATH"
+
+

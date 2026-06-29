@@ -9,6 +9,7 @@ case "${OMP_NUM_THREADS:-}" in
   ''|*[!0-9]*|0) export OMP_NUM_THREADS=1 ;;
 esac
 PYTORCH_GPU="${PYTORCH_GPU:-0}"
+PYTHON="${PYTHON:-python}"
 
 EXP_NAME="${EXP_NAME:-sgc_card_lm003_ls005_pd05_rw02_warmup}"
 EXP_DIR="${EXP_DIR:-./experiments}"
@@ -157,6 +158,8 @@ if [ -n "$SEMANTIC_INPUT_MODE" ]; then TEST_ARGS+=(--semantic_input_mode "$SEMAN
 if [ -n "$NUM_SEMANTIC_CLASSES" ]; then TEST_ARGS+=(--num_semantic_classes "$NUM_SEMANTIC_CLASSES"); fi
 if is_true "$EVAL_CHANGE_NOCHANGE_SPLIT"; then TEST_ARGS+=(--eval_change_nochange_split); fi
 if is_true "$PAPER_SELECTION_MODE"; then TEST_ARGS+=(--paper_selection_mode); fi
+if is_true "$USE_FEATURE_REWEIGHT"; then TEST_ARGS+=(--use_feature_reweight); else TEST_ARGS+=(--no_feature_reweight); fi
+if [ "$SEMANTIC_INPUT_MODE" = "hard_gate" ]; then TEST_ARGS+=(--use_semantic_hard_gate); else TEST_ARGS+=(--no_semantic_hard_gate); fi
 
 for snapshot in "${SNAPSHOTS[@]}"; do
   snapshot_name="$(basename "$snapshot")"
@@ -167,7 +170,7 @@ for snapshot in "${SNAPSHOTS[@]}"; do
 
   echo "========== eval validation snapshot $snapshot ==========" | tee -a "$LOG_PATH"
   if [ "$FORCE_INFER" = "1" ] || [ ! -f "$result_json" ]; then
-    python test_card_spot.py \
+    "$PYTHON" test_card_spot.py \
       "${TEST_ARGS[@]}" \
       --snapshot_path "$snapshot" \
       --split val \
@@ -195,7 +198,7 @@ for snapshot in "${SNAPSHOTS[@]}"; do
     METRIC_ARGS+=(--eval_change_nochange_split --changeflag_json "$CHANGEFLAG_JSON" --split val --group_output_dir "$result_dir")
   fi
 
-  python scripts/sgc_card_metrics.py "${METRIC_ARGS[@]}" 2>&1 | tee -a "$LOG_PATH"
+  "$PYTHON" scripts/sgc_card_metrics.py "${METRIC_ARGS[@]}" 2>&1 | tee -a "$LOG_PATH"
 done
 
 echo "Wrote validation snapshot CSV: $CSV_PATH"

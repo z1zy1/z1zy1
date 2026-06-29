@@ -9,19 +9,22 @@ import yaml
 
 
 KEY_SWITCHES = [
+    'dataset_name',
+    'exp_name',
     'use_aux_mask',
     'use_aux_semantic',
     'use_semantic_cross_attention',
-    'use_semantic_hard_gate',
-    'use_feature_reweight',
     'use_partial_detach',
     'semantic_detach_ratio',
+    'use_feature_reweight',
+    'use_semantic_hard_gate',
     'lambda_mask',
     'lambda_semantic',
+    'aux_warmup_start_ratio',
+    'aux_warmup_end_ratio',
+    'selection_strategy',
     'lambda_mask_warmup',
     'lambda_semantic_warmup',
-    'dataset_name',
-    'exp_name',
     'checkpoint_path',
 ]
 
@@ -95,6 +98,9 @@ def key_switch_summary(cfg, checkpoint_path=''):
         'semantic_detach_ratio': float(getattr(cfg.train, 'semantic_detach_ratio', 0.0)),
         'lambda_mask': float(getattr(cfg.train, 'lambda_mask', 0.0)),
         'lambda_semantic': float(getattr(cfg.train, 'lambda_semantic', 0.0)),
+        'aux_warmup_start_ratio': float(getattr(cfg.train, 'aux_warmup_start_ratio', 0.0)),
+        'aux_warmup_end_ratio': float(getattr(cfg.train, 'aux_warmup_end_ratio', 0.0)),
+        'selection_strategy': str(getattr(cfg.train, 'selection_strategy', 'spice_constrained_balanced')),
         'lambda_mask_warmup': bool(getattr(cfg.train, 'use_mask_warmup', False) or getattr(cfg.train, 'use_aux_warmup', False)),
         'lambda_semantic_warmup': bool(getattr(cfg.train, 'use_semantic_warmup', False) or getattr(cfg.train, 'use_aux_warmup', False)),
         'dataset_name': str(getattr(cfg.data, 'dataset', '')),
@@ -124,7 +130,7 @@ def warn_identical_comparable_config(output_dir, cfg, comparable_hash, log_path=
     other_names = sorted({item.get('exp_name') for item in records if item.get('exp_name') and item.get('exp_name') != exp_name})
     warning = None
     if other_names:
-        warning = 'WARNING: two experiments have identical resolved configs: %s and %s' % (exp_name, ', '.join(other_names))
+        warning = 'WARNING: different exp_name but identical resolved config: %s and %s' % (exp_name, ', '.join(other_names))
         print(warning)
         if log_path:
             _append_lines(log_path, [warning])

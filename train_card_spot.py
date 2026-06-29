@@ -26,7 +26,7 @@ from utils.experiment_tracking import (
 from utils.logger import Logger
 from utils.semantic_label import build_content_word_token_ids
 from utils.semantic_warmup import get_effective_lambda_semantic
-from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, \
+from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, load_checkpoint, \
                         LanguageModelCriterion, decode_sequence, decode_sequence_transformer, decode_beams, \
                         build_optimizer, coco_gen_format_save, one_hot_encode, \
                         EntropyLoss, LabelSmoothingLoss
@@ -369,6 +369,22 @@ def is_content_word_weighted_ce_enabled(cfg):
     )
 
 
+def load_pretrained_checkpoint_compat(change_detector, speaker, checkpoint_path):
+    if not checkpoint_path:
+        return
+    checkpoint = load_checkpoint(checkpoint_path)
+    change_state = checkpoint.get('change_detector_state') or checkpoint.get('change_detector')
+    speaker_state = checkpoint.get('speaker_state') or checkpoint.get('speaker')
+    if change_state is None or speaker_state is None:
+        raise KeyError('init checkpoint must contain change_detector_state and speaker_state: %s' % checkpoint_path)
+    change_result = change_detector.load_state_dict(change_state, strict=False)
+    speaker_result = speaker.load_state_dict(speaker_state, strict=False)
+    print('Loaded init_checkpoint: %s' % checkpoint_path)
+    if change_result.missing_keys or change_result.unexpected_keys:
+        print('Init checkpoint CARD compatibility: missing=%s unexpected=%s' % (change_result.missing_keys, change_result.unexpected_keys))
+    if speaker_result.missing_keys or speaker_result.unexpected_keys:
+        print('Init checkpoint speaker compatibility: missing=%s unexpected=%s' % (speaker_result.missing_keys, speaker_result.unexpected_keys))
+
 def apply_cli_overrides(args, cfg):
     apply_dataset_cli_overrides(args, cfg)
     if args.model is not None:
@@ -481,6 +497,14 @@ def apply_cli_overrides(args, cfg):
         cfg.train.lambda_semantic = args.lsem
     if args.use_feature_reweight:
         cfg.train.use_feature_reweight = True
+    if getattr(args, 'no_feature_reweight', False):
+        cfg.train.use_feature_reweight = False
+    if getattr(args, 'no_semantic_hard_gate', False):
+        cfg.train.use_semantic_hard_gate = False
+        if str(getattr(cfg.model, 'semantic_input_mode', 'none')).lower() == 'hard_gate':
+            cfg.model.semantic_input_mode = 'none'
+    if args.init_checkpoint is not None:
+        cfg.train.init_checkpoint = args.init_checkpoint
     if getattr(args, 'use_semantic_cross_attention', False):
         cfg.train.use_semantic_cross_attention = True
         cfg.model.semantic_input_mode = 'cross_attention'
@@ -608,8 +632,11 @@ parser.add_argument('--mask_alpha', type=float, default=None)
 parser.add_argument('--lambda_mask', type=float, default=None)
 parser.add_argument('--lmask', type=float, default=None)
 parser.add_argument('--use_feature_reweight', action='store_true')
+parser.add_argument('--no_feature_reweight', action='store_true')
 parser.add_argument('--use_semantic_cross_attention', action='store_true')
 parser.add_argument('--use_semantic_hard_gate', action='store_true')
+parser.add_argument('--no_semantic_hard_gate', action='store_true')
+parser.add_argument('--init_checkpoint', type=str, default=None)
 parser.add_argument('--reweight_alpha', type=float, default=None)
 parser.add_argument('--detach_reweight_mask', action='store_true')
 parser.add_argument('--mask_loss_type', type=str, default=None)
@@ -797,6 +824,10 @@ change_detector.to(device)
 speaker = DynamicSpeaker(cfg)
 speaker.to(device)
 
+init_checkpoint = str(getattr(cfg.train, 'init_checkpoint', '') or '')
+if init_checkpoint:
+    load_pretrained_checkpoint_compat(change_detector, speaker, init_checkpoint)
+
 print(change_detector)
 print(speaker)
 
@@ -842,6 +873,8 @@ experiment_summary = [
     f'  use_aux_warmup: {cfg.train.use_aux_warmup}',
     f'  aux_warmup_start_ratio: {cfg.train.aux_warmup_start_ratio}',
     f'  aux_warmup_end_ratio: {cfg.train.aux_warmup_end_ratio}',
+    f'  selection_strategy: {cfg.train.selection_strategy}',
+    f'  init_checkpoint: {cfg.train.init_checkpoint}',
     f'  semantic_decay_start_ratio: {cfg.train.semantic_decay_start_ratio}',
     f'  semantic_decay_final_ratio: {cfg.train.semantic_decay_final_ratio}',
     f'  semantic_late_start: {cfg.train.semantic_late_start}',
@@ -1381,3 +1414,5 @@ while t < cfg.train.max_iter:
         if t >= cfg.train.max_iter:
             break
     lr_scheduler.step()
+
+

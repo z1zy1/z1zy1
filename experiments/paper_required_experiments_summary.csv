@@ -1,0 +1,12 @@
+dataset,exp_name,method_group,status,config_hash,checkpoint,selection_strategy,Bleu_1,Bleu_2,Bleu_3,Bleu_4,METEOR,ROUGE_L,CIDEr,SPICE,Mask_Precision,Mask_Recall,Mask_F1,Mask_IoU,Mask_mIoU,IoU_road,IoU_building,Semantic_mIoU,Semantic_IoU,Semantic_F1,Change_Bleu_4,Change_CIDEr,Change_SPICE,NoChange_Bleu_4,NoChange_ROUGE_L,NoChange_SPICE,notes,timestamp
+levir_mci,levir_mci_weak_pd08_lm003_ls001_noreweight,levir_mci_weak_aux_pd_noreweight,failed,,,,,,,,,,,,,,,,,,,,,,,,,,,,Experiment directory missing; not run in this workspace.,2026-06-29 20:10:52
+levir_mci,levir_mci_weak_pd08_lm001_ls001_noreweight,levir_mci_weak_aux_pd_noreweight,failed,,,,,,,,,,,,,,,,,,,,,,,,,,,,Experiment directory missing; not run in this workspace.,2026-06-29 20:10:52
+levir_mci,levir_mci_weak_pd05_lm003_ls0005_noreweight,levir_mci_weak_aux_pd_noreweight,failed,,,,,,,,,,,,,,,,,,,,,,,,,,,,Experiment directory missing; not run in this workspace.,2026-06-29 20:10:53
+levir_mci,levir_mci_caption_finetune_from_weak_best,caption_finetune,failed,,,,,,,,,,,,,,,,,,,,,,,,,,,,Experiment directory missing; not run in this workspace.,2026-06-29 20:10:53
+second_cc,second_cc_crossattn_pd05_lsem0005,second_cc_cross_attention_partial_detach,failed,,,,,,,,,,,,,,,,,,,,,,,,,,,,Experiment directory missing; not run in this workspace.,2026-06-29 20:10:53
+second_cc,second_cc_crossattn_pd05_lsem001,second_cc_cross_attention_partial_detach,failed,,,,,,,,,,,,,,,,,,,,,,,,,,,,Experiment directory missing; not run in this workspace.,2026-06-29 20:10:53
+second_cc,second_cc_crossattn_pd08_lsem0005,second_cc_cross_attention_partial_detach,failed,,,,,,,,,,,,,,,,,,,,,,,,,,,,Experiment directory missing; not run in this workspace.,2026-06-29 20:10:54
+second_cc,second_cc_crossattn_pd08_lsem001,second_cc_cross_attention_partial_detach,failed,,,,,,,,,,,,,,,,,,,,,,,,,,,,Experiment directory missing; not run in this workspace.,2026-06-29 20:10:54
+second_cc,second_cc_mmodalcc_external_comparison,external_mmodalcc,pending_external,,,,,,,,,,,,,,,,,,,,,,,,,,,,MModalCC external result pending; not included in main comparison.,2026-06-29 20:10:54
+levir_mci,levir_mci_config_check_pd05_vs_noreweight,config_check,config_check_done,,,,,,,,,,,,,,,,,,,,,,,,,,,,experiments/config_check/levir_mci_pd05_vs_noreweight_report.txt,2026-06-29 20:11:05
+second_cc,second_cc_semantic_head_sanity_check,sanity_check,sanity_check_done,,,,,,,,,,,,,,,,,,,,,,,,,,,,experiments/sanity_check/second_cc_semantic_head/sanity_report.txt,2026-06-29 20:35:03

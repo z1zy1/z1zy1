@@ -253,6 +253,7 @@ __C.train.max_content_word_weight = 2.0
 __C.train.content_word_token_ids = []
 __C.train.paper_selection_mode = False
 __C.train.selection_strategy = 'spice_constrained_balanced'
+__C.train.init_checkpoint = ''
 
 
 # --------------------------------------------------------------------------- #
@@ -395,3 +396,4 @@ def _check_and_coerce_cfg_value_type(value_a, value_b, key, full_key):
             'key: {}'.format(type_b, type_a, value_b, value_a, full_key)
         )
     return value_a
+

@@ -1,5 +1,6 @@
 import os
 import sys
+import errno
 import json
 import argparse
 import time
@@ -273,6 +274,55 @@ def evaluate_caption_metrics_if_available(cfg, result_json_path):
     return metrics
 
 
+def _safe_update_best_checkpoint_alias(output_dir, snapshot_path, alias_name):
+    alias_path = os.path.join(output_dir, alias_name)
+    pointer_path = alias_path + '.txt'
+    os.makedirs(output_dir, exist_ok=True)
+    with open(pointer_path, 'w', encoding='utf-8') as f:
+        f.write(os.path.normpath(snapshot_path) + '\n')
+
+    if os.path.exists(alias_path):
+        try:
+            if os.path.samefile(alias_path, snapshot_path):
+                return
+        except OSError:
+            pass
+        try:
+            os.remove(alias_path)
+        except OSError as exc:
+            print('Warning: could not remove old checkpoint alias %s: %s' % (alias_path, exc))
+            return
+
+    try:
+        os.link(snapshot_path, alias_path)
+        return
+    except OSError as link_exc:
+        try:
+            rel_snapshot = os.path.relpath(snapshot_path, os.path.dirname(alias_path))
+            os.symlink(rel_snapshot, alias_path)
+            return
+        except OSError as symlink_exc:
+            try:
+                shutil.copy2(snapshot_path, alias_path)
+            except OSError as copy_exc:
+                if getattr(copy_exc, 'errno', None) == errno.ENOSPC:
+                    print(
+                        'Warning: no space left to copy %s; kept pointer file %s instead.'
+                        % (alias_name, pointer_path)
+                    )
+                else:
+                    print(
+                        'Warning: could not create checkpoint alias %s via hardlink (%s), symlink (%s), or copy (%s). '
+                        'Kept pointer file %s.'
+                        % (alias_name, link_exc, symlink_exc, copy_exc, pointer_path)
+                    )
+                try:
+                    if os.path.exists(alias_path):
+                        os.remove(alias_path)
+                except OSError:
+                    pass
+
+
 def update_best_training_checkpoints(output_dir, snapshot_path, metrics, best_records):
     if metrics is None:
         return
@@ -280,12 +330,12 @@ def update_best_training_checkpoints(output_dir, snapshot_path, metrics, best_re
     cider = float(metrics.get('CIDEr', -float('inf')))
     if cider > best_records['cider']['score']:
         best_records['cider'] = {'score': cider, 'snapshot': snapshot_path}
-        shutil.copy2(snapshot_path, os.path.join(output_dir, 'best_cider.pth'))
+        _safe_update_best_checkpoint_alias(output_dir, snapshot_path, 'best_cider.pth')
 
     spice = float(metrics.get('SPICE', -float('inf')))
     if spice > best_records['spice']['score']:
         best_records['spice'] = {'score': spice, 'snapshot': snapshot_path}
-        shutil.copy2(snapshot_path, os.path.join(output_dir, 'best_spice.pth'))
+        _safe_update_best_checkpoint_alias(output_dir, snapshot_path, 'best_spice.pth')
 
     balanced_score = float(metrics.get('balanced_score', -float('inf')))
     all_above = bool(metrics.get('all_above_baseline', False))
@@ -300,12 +350,11 @@ def update_best_training_checkpoints(output_dir, snapshot_path, metrics, best_re
             'snapshot': snapshot_path,
             'all_above_baseline': all_above,
         }
-        shutil.copy2(snapshot_path, os.path.join(output_dir, 'best_balanced.pth'))
+        _safe_update_best_checkpoint_alias(output_dir, snapshot_path, 'best_balanced.pth')
 
     record_path = os.path.join(output_dir, 'best_training_checkpoints.json')
     with open(record_path, 'w', encoding='utf-8') as f:
         json.dump(best_records, f, indent=2)
-
 
 def get_warmup_lambda(target_lambda, global_step, warmup_steps):
     if target_lambda <= 0:

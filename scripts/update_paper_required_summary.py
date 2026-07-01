@@ -43,6 +43,26 @@ SUMMARY_COLUMNS = [
     'timestamp',
 ]
 
+GROUP_METRIC_COLUMNS = {
+    'change': {
+        'Bleu_4': 'Change_Bleu_4',
+        'CIDEr': 'Change_CIDEr',
+        'SPICE': 'Change_SPICE',
+    },
+    'nochange': {
+        'Bleu_4': 'NoChange_Bleu_4',
+        'ROUGE_L': 'NoChange_ROUGE_L',
+        'SPICE': 'NoChange_SPICE',
+    },
+}
+
+GROUP_RESULT_BASENAMES = {
+    'test_change_result.json',
+    'test_nochange_result.json',
+    'val_change_result.json',
+    'val_nochange_result.json',
+}
+
 ALIASES = {
     'BLEU_1': 'Bleu_1',
     'BLEU_2': 'Bleu_2',
@@ -75,6 +95,8 @@ def parse_args():
     parser.add_argument('--status', default=None)
     parser.add_argument('--notes', default='')
     parser.add_argument('--test_metrics', default=None)
+    parser.add_argument('--test_metrics_change', default=None)
+    parser.add_argument('--test_metrics_nochange', default=None)
     parser.add_argument('--test_result_json', default=None)
     parser.add_argument('--best_checkpoint_json', default=None)
     parser.add_argument('--config_hash', default=None)
@@ -87,14 +109,14 @@ def parse_args():
 def load_json(path):
     if not path or not os.path.exists(path):
         return None
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding='utf-8-sig') as f:
         return json.load(f)
 
 
 def read_csv_rows(path):
     if not os.path.exists(path):
         return [], []
-    with open(path, newline='', encoding='utf-8') as f:
+    with open(path, newline='', encoding='utf-8-sig') as f:
         reader = csv.DictReader(f)
         return list(reader), list(reader.fieldnames or [])
 
@@ -140,7 +162,7 @@ def read_config_hash(exp_dir):
     if not path or not os.path.exists(path):
         return ''
     values = {}
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding='utf-8-sig') as f:
         for line in f:
             if '=' in line:
                 key, value = line.strip().split('=', 1)
@@ -185,7 +207,7 @@ def infer_method_group(exp_name, explicit):
         return 'config_check'
     if 'sanity' in exp_name:
         return 'sanity_check'
-    if exp_name.endswith('finetune_from_weak_best'):
+    if exp_name.endswith('finetune_from_weak_best') or exp_name.startswith('levir_mci_short_'):
         return 'caption_finetune'
     if exp_name.startswith('levir_mci_weak'):
         return 'levir_mci_weak_aux_pd_noreweight'
@@ -201,11 +223,23 @@ def load_best_checkpoint(path):
     return payload
 
 
-def read_metrics_csv(path):
+def read_metrics_csv(path, group=None):
     if not path or not os.path.exists(path):
         return {}
     rows, _ = read_csv_rows(path)
-    return dict(rows[-1]) if rows else {}
+    if not rows:
+        return {}
+    selected = None
+    if group:
+        wanted = str(group).lower()
+        for row in rows:
+            row_group = str(row.get('group', '')).lower().replace('-', '')
+            if row_group == wanted:
+                selected = row
+                break
+    else:
+        selected = rows[-1]
+    return normalize_metrics(dict(selected or {}))
 
 
 def load_test_payload(path):
@@ -213,35 +247,112 @@ def load_test_payload(path):
     return payload if isinstance(payload, dict) else {}
 
 
-def update_from_group_payload(row, payload):
-    groups = payload.get('group_metrics', {}) if isinstance(payload, dict) else {}
-    change = groups.get('change', {}).get('metrics', {}) if isinstance(groups.get('change'), dict) else {}
-    nochange = groups.get('nochange', {}).get('metrics', {}) if isinstance(groups.get('nochange'), dict) else {}
-    if change:
-        row['Change_Bleu_4'] = change.get('Bleu_4', row.get('Change_Bleu_4', ''))
-        row['Change_CIDEr'] = change.get('CIDEr', row.get('Change_CIDEr', ''))
-        row['Change_SPICE'] = change.get('SPICE', row.get('Change_SPICE', ''))
-    if nochange:
-        row['NoChange_Bleu_4'] = nochange.get('Bleu_4', row.get('NoChange_Bleu_4', ''))
-        row['NoChange_ROUGE_L'] = nochange.get('ROUGE_L', row.get('NoChange_ROUGE_L', ''))
-        row['NoChange_SPICE'] = nochange.get('SPICE', row.get('NoChange_SPICE', ''))
+def metrics_from_payload(path, group=None):
+    payload = load_test_payload(path)
+    if not payload:
+        return {}, {}
+    payload_group = str(payload.get('group', '')).lower().replace('-', '')
+    if group:
+        if payload_group != group:
+            return {}, payload
+    elif payload_group in GROUP_METRIC_COLUMNS:
+        return {}, payload
+    metrics = normalize_metrics(payload.get('metrics', {}))
+    if not group:
+        metrics.update(normalize_metrics(payload.get('aux_metrics', {})))
+    return metrics, payload
 
 
-def update_from_group_csv(row, exp_dir):
+def first_metrics_source(sources):
+    for source_type, path, group in sources:
+        if not path or not os.path.exists(path):
+            continue
+        if source_type == 'csv':
+            metrics = read_metrics_csv(path, group=group)
+            payload = {}
+        elif source_type == 'json':
+            metrics, payload = metrics_from_payload(path, group=group)
+        else:
+            raise ValueError('Unknown metrics source type: %s' % source_type)
+        if metrics:
+            return metrics, payload, path
+    return {}, {}, ''
+
+
+def non_group_test_result_jsons(exp_dir):
     if not exp_dir:
-        return
-    change_csv = os.path.join(exp_dir, 'test_metrics_change.csv')
-    nochange_csv = os.path.join(exp_dir, 'test_metrics_nochange.csv')
-    change = read_metrics_csv(change_csv)
-    nochange = read_metrics_csv(nochange_csv)
-    if change:
-        row['Change_Bleu_4'] = change.get('Bleu_4', row.get('Change_Bleu_4', ''))
-        row['Change_CIDEr'] = change.get('CIDEr', row.get('Change_CIDEr', ''))
-        row['Change_SPICE'] = change.get('SPICE', row.get('Change_SPICE', ''))
-    if nochange:
-        row['NoChange_Bleu_4'] = nochange.get('Bleu_4', row.get('NoChange_Bleu_4', ''))
-        row['NoChange_ROUGE_L'] = nochange.get('ROUGE_L', row.get('NoChange_ROUGE_L', ''))
-        row['NoChange_SPICE'] = nochange.get('SPICE', row.get('NoChange_SPICE', ''))
+        return []
+    paths = []
+    for path in glob.glob(os.path.join(exp_dir, 'test_*_result.json')):
+        name = os.path.basename(path)
+        if name in GROUP_RESULT_BASENAMES:
+            continue
+        paths.append(path)
+    return sorted(paths, key=lambda item: os.path.getmtime(item), reverse=True)
+
+
+def validate_overall_metrics_path(path):
+    if not path:
+        return path
+    name = os.path.basename(path).lower()
+    if '_change' in name or '_nochange' in name or '_no_change' in name:
+        raise ValueError('Refusing to read grouped metrics as overall metrics: %s' % path)
+    return path
+
+
+def overall_metric_sources(exp_dir, args):
+    sources = []
+    if args.test_metrics:
+        sources.append(('csv', validate_overall_metrics_path(args.test_metrics), None))
+    if exp_dir:
+        sources.extend([
+            ('csv', os.path.join(exp_dir, 'test_metrics.csv'), None),
+            ('csv', os.path.join(exp_dir, 'test_metrics_overall.csv'), None),
+            ('json', os.path.join(exp_dir, 'test_overall_result.json'), None),
+            ('json', os.path.join(exp_dir, 'test_paper_best_result.json'), None),
+        ])
+    if args.test_result_json:
+        sources.append(('json', args.test_result_json, None))
+    for path in non_group_test_result_jsons(exp_dir):
+        sources.append(('json', path, None))
+    return sources
+
+
+def group_metric_sources(exp_dir, group, args):
+    file_group = 'nochange' if group == 'nochange' else group
+    explicit = args.test_metrics_nochange if group == 'nochange' else args.test_metrics_change
+    sources = []
+    if explicit:
+        sources.append(('csv', explicit, None))
+    if not exp_dir:
+        return sources
+    sources.extend([
+        ('csv', os.path.join(exp_dir, 'test_metrics_%s.csv' % file_group), None),
+        ('json', os.path.join(exp_dir, 'test_%s_result.json' % file_group), group),
+        ('csv', os.path.join(exp_dir, 'test_group_summary.csv'), group),
+    ])
+    return sources
+
+
+def update_group_metrics(row, group, metrics):
+    for metric_name, summary_column in GROUP_METRIC_COLUMNS[group].items():
+        value = metrics.get(metric_name, '')
+        if value not in (None, ''):
+            row[summary_column] = value
+
+
+def merge_summary_rows(existing, incoming):
+    merged = dict(existing)
+    for key, value in incoming.items():
+        if value not in (None, ''):
+            merged[key] = value
+        elif key not in merged:
+            merged[key] = ''
+    return merged
+
+
+def has_core_caption_metrics(metrics):
+    return any(metrics.get(key) not in (None, '') for key in CAPTION_COLUMNS)
 
 
 def apply_key_value_overrides(row, pairs):
@@ -266,9 +377,6 @@ def main():
     dataset = infer_dataset(exp_name, args.dataset, resolved)
     best_path = args.best_checkpoint_json or (os.path.join(exp_dir, 'best_checkpoint.json') if exp_dir else None)
     best = load_best_checkpoint(best_path)
-    test_csv = args.test_metrics or (os.path.join(exp_dir, 'test_metrics.csv') if exp_dir else None)
-    test_json = args.test_result_json or latest_glob([os.path.join(exp_dir, 'test_*_result.json')]) if exp_dir else args.test_result_json
-
     row = {key: '' for key in SUMMARY_COLUMNS}
     row.update({
         'dataset': dataset,
@@ -282,20 +390,17 @@ def main():
         'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
     })
 
-    metrics = normalize_metrics(read_metrics_csv(test_csv))
-    payload = load_test_payload(test_json)
-    if payload:
-        metrics.update(normalize_metrics(payload.get('metrics', {})))
-        metrics.update(normalize_metrics(payload.get('aux_metrics', {})))
-        if not row['checkpoint']:
-            row['checkpoint'] = payload.get('snapshot_path', '')
-        update_from_group_payload(row, payload)
-    update_from_group_csv(row, exp_dir)
+    metrics, payload, _ = first_metrics_source(overall_metric_sources(exp_dir, args))
+    if payload and not row['checkpoint']:
+        row['checkpoint'] = payload.get('snapshot_path', '')
     row.update(metrics)
-    if not metrics and args.status is None and exp_dir:
+    for group in ('change', 'nochange'):
+        group_metrics, _, _ = first_metrics_source(group_metric_sources(exp_dir, group, args))
+        update_group_metrics(row, group, group_metrics)
+    apply_key_value_overrides(row, args.sets)
+    if not has_core_caption_metrics(row) and args.status in (None, 'done') and exp_dir:
         row['status'] = 'failed'
         row['notes'] = (row['notes'] + '; ' if row['notes'] else '') + 'No test metrics found.'
-    apply_key_value_overrides(row, args.sets)
 
     existing_rows, existing_fields = read_csv_rows(args.summary_csv)
     fieldnames = []
@@ -306,8 +411,7 @@ def main():
     updated = False
     for index, existing in enumerate(existing_rows):
         if row_key(existing) == exp_name:
-            merged = dict(existing)
-            merged.update(row)
+            merged = merge_summary_rows(existing, row)
             if 'experiment' in existing_fields and not merged.get('experiment'):
                 merged['experiment'] = exp_name
             existing_rows[index] = merged

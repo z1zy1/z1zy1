@@ -1,0 +1,12 @@
+Summary consistency report
+summary_csv: experiments/paper_required_experiments_summary.csv
+rows: 11
+columns: 33
+issues: 0
+warnings: 0
+
+[issues]
+- none
+
+[warnings]
+- none

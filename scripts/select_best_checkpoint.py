@@ -14,6 +14,18 @@ DEFAULT_BASELINE = {
     'CIDEr': 1.2299,
     'SPICE': 0.2607,
 }
+DEFAULT_BASELINE_BY_DATASET = {
+    'levir_mci': {
+        'Bleu_4': 0.562,
+        'CIDEr': 1.338,
+        'SPICE': 0.336,
+    },
+    'second_cc': {
+        'Bleu_4': 0.2837,
+        'CIDEr': 0.7793,
+        'SPICE': 0.2541,
+    },
+}
 DEFAULT_BASELINE_EXPERIMENTS = {
     'levir_mci': 'levir_mci_card_baseline',
     'second_cc': 'second_cc_card_rgb_baseline',
@@ -43,12 +55,12 @@ def to_float(value, default=0.0):
 
 
 def load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding='utf-8-sig') as f:
         return json.load(f)
 
 
 def load_first_csv_row(path):
-    with open(path, newline='', encoding='utf-8') as f:
+    with open(path, newline='', encoding='utf-8-sig') as f:
         rows = list(csv.DictReader(f))
     return rows[0] if rows else {}
 
@@ -66,7 +78,7 @@ def load_summary_baseline(summary_csv, dataset_name='', baseline_exp_name=None):
         return {}, ''
     dataset_name = str(dataset_name or '').lower()
     target_exp = baseline_exp_name or DEFAULT_BASELINE_EXPERIMENTS.get(dataset_name)
-    with open(summary_csv, newline='', encoding='utf-8') as f:
+    with open(summary_csv, newline='', encoding='utf-8-sig') as f:
         rows = list(csv.DictReader(f))
     candidates = []
     for row in rows:
@@ -86,8 +98,10 @@ def load_summary_baseline(summary_csv, dataset_name='', baseline_exp_name=None):
 
 
 def load_baseline(path=None, dataset_name='', summary_csv=None, baseline_exp_name=None):
+    dataset_key = str(dataset_name or '').lower()
     result = dict(DEFAULT_BASELINE)
-    source = 'built_in_default'
+    result.update(DEFAULT_BASELINE_BY_DATASET.get(dataset_key, {}))
+    source = 'built_in_dataset:%s' % dataset_key if dataset_key in DEFAULT_BASELINE_BY_DATASET else 'built_in_default'
     if path:
         if not os.path.exists(path):
             raise FileNotFoundError('Baseline metrics file does not exist: %s' % path)
@@ -159,7 +173,7 @@ def load_rows(metrics_path, exp_dir):
         payload = load_json(metrics_path)
         raw_rows = payload if isinstance(payload, list) else payload.get('checkpoints', payload.get('rows', []))
     else:
-        with open(metrics_path, newline='', encoding='utf-8') as f:
+        with open(metrics_path, newline='', encoding='utf-8-sig') as f:
             raw_rows = list(csv.DictReader(f))
     rows = []
     for raw in raw_rows:

@@ -1,0 +1,54 @@
+LEVIR-MCI fine-tune step audit
+experiments: 2
+
+[per experiment]
+
+- exp_dir: experiments\levir_mci_short_caption_ft_500_lr01
+  exists: False
+  config_hash: {}
+  init_checkpoint: 
+  finetune_steps: 
+  max_iter: 
+  total_steps: 
+  max_epochs: 
+  save_interval: 
+  eval_interval: 
+  snapshot_interval: 
+  train_log_last_step: None
+  actual_step_count: None
+  checkpoint_count: 0
+  checkpoints: <none>
+  selected_best_checkpoint: <none>
+  val_metrics_file: <none>
+  val_metrics_checkpoints: <none>
+
+- exp_dir: experiments\levir_mci_short_caption_ft_1000_lr01
+  exists: False
+  config_hash: {}
+  init_checkpoint: 
+  finetune_steps: 
+  max_iter: 
+  total_steps: 
+  max_epochs: 
+  save_interval: 
+  eval_interval: 
+  snapshot_interval: 
+  train_log_last_step: None
+  actual_step_count: None
+  checkpoint_count: 0
+  checkpoints: <none>
+  selected_best_checkpoint: <none>
+  val_metrics_file: <none>
+  val_metrics_checkpoints: <none>
+
+[same selected checkpoint]
+- none
+
+[resolved config diff]
+- no resolved_config differences found, or configs are missing
+
+[diagnosis]
+- levir_mci_short_caption_ft_500_lr01: no saved checkpoint files found in this workspace.
+- levir_mci_short_caption_ft_500_lr01: no val_metrics/eval_snapshots rows found in this workspace.
+- levir_mci_short_caption_ft_1000_lr01: no saved checkpoint files found in this workspace.
+- levir_mci_short_caption_ft_1000_lr01: no val_metrics/eval_snapshots rows found in this workspace.

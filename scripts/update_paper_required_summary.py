@@ -207,8 +207,14 @@ def infer_method_group(exp_name, explicit):
         return 'config_check'
     if 'sanity' in exp_name:
         return 'sanity_check'
-    if exp_name.endswith('finetune_from_weak_best') or exp_name.startswith('levir_mci_short_'):
+    if exp_name.endswith('finetune_from_weak_best') or exp_name.startswith('levir_mci_short_') or exp_name.startswith('levir_mci_ultrashort_'):
         return 'caption_finetune'
+    if 'reselect' in exp_name:
+        if exp_name.startswith('levir_mci'):
+            return 'levir_mci_checkpoint_reselect'
+        if exp_name.startswith('second_cc'):
+            return 'second_cc_checkpoint_reselect'
+        return 'checkpoint_reselect'
     if exp_name.startswith('levir_mci_weak'):
         return 'levir_mci_weak_aux_pd_noreweight'
     if exp_name.startswith('second_cc_crossattn'):

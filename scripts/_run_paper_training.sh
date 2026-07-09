@@ -55,6 +55,9 @@ ALLOW_MISSING_PSEUDO_MASK="${ALLOW_MISSING_PSEUDO_MASK:-0}"
 PAPER_SELECTION_MODE="${PAPER_SELECTION_MODE:-1}"
 MAX_ITER="${MAX_ITER:-}"
 SNAPSHOT_INTERVAL="${SNAPSHOT_INTERVAL:-}"
+FINETUNE_STEPS="${FINETUNE_STEPS:-}"
+SAVE_INTERVAL="${SAVE_INTERVAL:-}"
+EVAL_INTERVAL="${EVAL_INTERVAL:-}"
 LOG_INTERVAL="${LOG_INTERVAL:-}"
 BATCH_SIZE="${BATCH_SIZE:-}"
 LR="${LR:-}"
@@ -130,6 +133,15 @@ if [ -n "$MAX_ITER" ]; then
 fi
 if [ -n "$SNAPSHOT_INTERVAL" ]; then
   COMMON_OPTS+=(train.snapshot_interval "$SNAPSHOT_INTERVAL")
+fi
+if [ -n "$FINETUNE_STEPS" ]; then
+  COMMON_OPTS+=(train.finetune_steps "$FINETUNE_STEPS")
+fi
+if [ -n "$SAVE_INTERVAL" ]; then
+  COMMON_OPTS+=(train.save_interval "$SAVE_INTERVAL")
+fi
+if [ -n "$EVAL_INTERVAL" ]; then
+  COMMON_OPTS+=(train.eval_interval "$EVAL_INTERVAL")
 fi
 if [ -n "$LOG_INTERVAL" ]; then
   COMMON_OPTS+=(train.log_interval "$LOG_INTERVAL")

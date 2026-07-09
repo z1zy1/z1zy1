@@ -572,8 +572,63 @@ def apply_cli_overrides(args, cfg):
         cfg.train.mask_warmup_steps = args.mask_warmup_steps
         if args.mask_warmup_steps > 0:
             cfg.train.use_mask_warmup = True
+    if args.max_iter is not None:
+        cfg.train.max_iter = args.max_iter
+    if args.snapshot_interval is not None:
+        cfg.train.snapshot_interval = args.snapshot_interval
+    if args.finetune_steps is not None:
+        cfg.train.finetune_steps = args.finetune_steps
+    if args.save_interval is not None:
+        cfg.train.save_interval = args.save_interval
+    if args.eval_interval is not None:
+        cfg.train.eval_interval = args.eval_interval
     if getattr(cfg.train, 'use_content_word_weighted_ce', False):
         cfg.train.use_content_word_weight = True
+
+
+def _positive_int(value, default=0):
+    try:
+        value = int(value)
+    except (TypeError, ValueError):
+        return default
+    return value if value > 0 else default
+
+
+def apply_train_step_aliases(cfg):
+    """Normalize fine-tune step aliases before tracking and training."""
+    finetune_steps = _positive_int(getattr(cfg.train, 'finetune_steps', 0))
+    total_steps = _positive_int(getattr(cfg.train, 'total_steps', 0))
+    if finetune_steps:
+        cfg.train.max_iter = finetune_steps
+        cfg.train.total_steps = finetune_steps
+    elif total_steps:
+        cfg.train.max_iter = total_steps
+        cfg.train.total_steps = total_steps
+    else:
+        cfg.train.total_steps = int(cfg.train.max_iter)
+
+    save_interval = _positive_int(getattr(cfg.train, 'save_interval', 0))
+    eval_interval = _positive_int(getattr(cfg.train, 'eval_interval', 0))
+    snapshot_interval = _positive_int(getattr(cfg.train, 'snapshot_interval', 0), default=int(cfg.train.max_iter))
+    if save_interval and eval_interval and save_interval != eval_interval:
+        print(
+            'Warning: train.save_interval (%d) and train.eval_interval (%d) differ; '
+            'this training loop saves and evaluates the same snapshots, so using the smaller interval.'
+            % (save_interval, eval_interval)
+        )
+        snapshot_interval = min(save_interval, eval_interval)
+    elif save_interval:
+        snapshot_interval = save_interval
+    elif eval_interval:
+        snapshot_interval = eval_interval
+    cfg.train.snapshot_interval = snapshot_interval
+    cfg.train.save_interval = save_interval or snapshot_interval
+    cfg.train.eval_interval = eval_interval or snapshot_interval
+
+    if int(cfg.train.max_iter) <= 0:
+        raise ValueError('train.max_iter must be positive after applying finetune_steps/total_steps aliases.')
+    if int(cfg.train.snapshot_interval) <= 0:
+        raise ValueError('train.snapshot_interval must be positive after applying save/eval interval aliases.')
 
 
 def unpack_batch(batch):
@@ -691,6 +746,11 @@ parser.add_argument('--detach_reweight_mask', action='store_true')
 parser.add_argument('--mask_loss_type', type=str, default=None)
 parser.add_argument('--semantic_loss_type', type=str, default=None)
 parser.add_argument('--mask_warmup_steps', type=int, default=None)
+parser.add_argument('--max_iter', type=int, default=None)
+parser.add_argument('--snapshot_interval', type=int, default=None)
+parser.add_argument('--finetune_steps', type=int, default=None)
+parser.add_argument('--save_interval', type=int, default=None)
+parser.add_argument('--eval_interval', type=int, default=None)
 parser.add_argument('opts', nargs=argparse.REMAINDER)
 args = parser.parse_args()
 merge_cfg_from_file(args.cfg)
@@ -698,6 +758,7 @@ if args.opts:
     merge_cfg_from_list(args.opts)
 apply_cli_overrides(args, cfg)
 sync_wcsg_config_aliases(cfg)
+apply_train_step_aliases(cfg)
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -924,6 +985,11 @@ experiment_summary = [
     f'  aux_warmup_end_ratio: {cfg.train.aux_warmup_end_ratio}',
     f'  selection_strategy: {cfg.train.selection_strategy}',
     f'  init_checkpoint: {cfg.train.init_checkpoint}',
+    f'  finetune_steps: {cfg.train.finetune_steps}',
+    f'  max_iter: {cfg.train.max_iter}',
+    f'  save_interval: {cfg.train.save_interval}',
+    f'  eval_interval: {cfg.train.eval_interval}',
+    f'  snapshot_interval: {cfg.train.snapshot_interval}',
     f'  semantic_decay_start_ratio: {cfg.train.semantic_decay_start_ratio}',
     f'  semantic_decay_final_ratio: {cfg.train.semantic_decay_final_ratio}',
     f'  semantic_late_start: {cfg.train.semantic_late_start}',
@@ -1334,7 +1400,7 @@ while t < cfg.train.max_iter:
                 epoch,
                 float(i * batch_size) / train_size, stats, 'loss')
 
-        if t % cfg.train.snapshot_interval == 0:
+        if t % cfg.train.snapshot_interval == 0 or t >= cfg.train.max_iter:
             speaker_state = speaker.state_dict()
             chg_det_state = change_detector.state_dict()
             checkpoint = {

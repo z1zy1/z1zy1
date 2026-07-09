@@ -39,7 +39,10 @@ def parse_args():
     parser.add_argument('--baseline_metrics', default=None, help='Baseline metrics JSON/CSV/TXT. If omitted, uses the built-in validation baseline.')
     parser.add_argument('--summary_csv', default=os.path.join('experiments', 'paper_required_experiments_summary.csv'), help='Optional paper summary CSV used to infer dataset baseline metrics.')
     parser.add_argument('--baseline_exp_name', default=None, help='Optional baseline experiment row name in --summary_csv.')
-    parser.add_argument('--strategy', default='spice_constrained_balanced', choices=['best_cider', 'best_spice', 'balanced', 'spice_constrained_balanced'])
+    parser.add_argument('--strategy', default='spice_constrained_balanced', choices=['best_cider', 'best_spice', 'balanced', 'spice_constrained_balanced', 'strict_spice_constrained_balanced', 'strict_spice'])
+    parser.add_argument('--strict_bleu4', type=float, default=0.562, help='BLEU-4 threshold for strict LEVIR-MCI reselect.')
+    parser.add_argument('--strict_cider', type=float, default=1.338, help='CIDEr threshold for strict LEVIR-MCI reselect.')
+    parser.add_argument('--strict_spice', type=float, default=0.336, help='SPICE threshold for strict LEVIR-MCI reselect.')
     parser.add_argument('--output_json', default=None)
     parser.add_argument('--output_txt', default=None)
     return parser.parse_args()
@@ -201,7 +204,7 @@ def add_balanced_scores(rows):
         row['balanced_score'] = sum(0.25 * norms[metric][id(row)] for metric in METRICS)
 
 
-def select_rows(rows, baseline, strategy):
+def select_rows(rows, baseline, strategy, strict_thresholds=None):
     add_balanced_scores(rows)
     relaxed = False
     candidates = rows
@@ -210,7 +213,17 @@ def select_rows(rows, baseline, strategy):
     elif strategy == 'best_spice':
         key = lambda row: to_float(row['metrics'].get('SPICE'))
     else:
-        if strategy == 'spice_constrained_balanced':
+        if strategy in ('strict_spice', 'strict_spice_constrained_balanced'):
+            strict_thresholds = strict_thresholds or {}
+            candidates = [
+                row for row in rows
+                if to_float(row['metrics'].get('SPICE')) >= to_float(strict_thresholds.get('SPICE'))
+                and to_float(row['metrics'].get('CIDEr')) >= to_float(strict_thresholds.get('CIDEr'))
+                and to_float(row['metrics'].get('Bleu_4')) >= to_float(strict_thresholds.get('Bleu_4'))
+            ]
+            if not candidates:
+                return None, [], False
+        elif strategy == 'spice_constrained_balanced':
             candidates = [
                 row for row in rows
                 if to_float(row['metrics'].get('SPICE')) >= to_float(baseline.get('SPICE'))
@@ -289,7 +302,43 @@ def main():
         summary_csv=args.summary_csv,
         baseline_exp_name=args.baseline_exp_name,
     )
-    best, candidates, relaxed = select_rows(rows, baseline, args.strategy)
+    strict_thresholds = {
+        'Bleu_4': args.strict_bleu4,
+        'CIDEr': args.strict_cider,
+        'SPICE': args.strict_spice,
+    }
+    best, candidates, relaxed = select_rows(rows, baseline, args.strategy, strict_thresholds=strict_thresholds)
+    if best is None:
+        payload = {
+            'exp_name': infer_exp_name(exp_dir, resolved),
+            'dataset_name': dataset_name,
+            'selected_checkpoint': '',
+            'selected_checkpoint_path': '',
+            'selected_epoch_or_step': '',
+            'selected_epoch': '',
+            'selected_step': '',
+            'selection_strategy': args.strategy,
+            'status': 'no_valid_checkpoint',
+            'failure_reason': 'no_checkpoint_satisfies_strict_constraints',
+            'notes': 'no checkpoint satisfies strict SPICE/CIDEr/BLEU constraints',
+            'strict_constraints': strict_thresholds,
+            'baseline_metrics': baseline,
+            'baseline_source': baseline_source,
+            'selected_val_metrics': {},
+            'selected_metrics': {},
+            'balanced_score': None,
+            'metrics_file': metrics_path,
+            'candidate_count': 0,
+            'all_candidate_count': len(rows),
+        }
+        os.makedirs(os.path.dirname(output_json) or '.', exist_ok=True)
+        with open(output_json, 'w', encoding='utf-8') as f:
+            json.dump(payload, f, indent=2, ensure_ascii=False)
+        with open(output_txt, 'w', encoding='utf-8') as f:
+            f.write('no_checkpoint_satisfies_strict_constraints\n')
+            f.write(json.dumps(payload, indent=2, ensure_ascii=False) + '\n')
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
+        return
     epoch_or_step = selected_epoch_or_step(best)
     payload = {
         'exp_name': infer_exp_name(exp_dir, resolved),
@@ -300,7 +349,9 @@ def main():
         'selected_epoch': best.get('epoch', ''),
         'selected_step': best.get('step', best.get('iter', '')),
         'selection_strategy': args.strategy,
+        'status': 'done',
         'constraints_relaxed': relaxed,
+        'strict_constraints': strict_thresholds if args.strategy in ('strict_spice', 'strict_spice_constrained_balanced') else {},
         'baseline_metrics': baseline,
         'baseline_source': baseline_source,
         'selected_val_metrics': best['metrics'],

@@ -145,14 +145,20 @@ def infer_dataset(exp_name):
 
 
 def infer_method_group(exp_name):
-    if exp_name.startswith('levir_mci_short_') or exp_name.endswith('finetune_from_weak_best'):
+    if 'external' in exp_name or 'mmodalcc' in exp_name.lower():
+        return 'external_comparison'
+    if 'reselect' in exp_name:
+        if exp_name.startswith('levir_mci'):
+            return 'levir_mci_checkpoint_reselect'
+        if exp_name.startswith('second_cc'):
+            return 'second_cc_checkpoint_reselect'
+        return 'checkpoint_reselect'
+    if exp_name.startswith('levir_mci_short_') or exp_name.startswith('levir_mci_ultrashort_') or exp_name.endswith('finetune_from_weak_best'):
         return 'caption_finetune'
     if exp_name.startswith('levir_mci_weak'):
         return 'levir_mci_weak_aux_pd_noreweight'
     if exp_name.startswith('second_cc_crossattn'):
         return 'second_cc_cross_attention_partial_detach'
-    if 'external' in exp_name or 'mmodalcc' in exp_name.lower():
-        return 'external_comparison'
     return 'reimplemented'
 
 

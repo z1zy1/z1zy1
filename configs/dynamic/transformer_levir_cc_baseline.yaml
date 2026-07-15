@@ -42,7 +42,13 @@ train:
     max_iter: 10000
     snapshot_interval: 1000
     grad_clip: -1.0
-    lambda_mask: 0.05
+    lambda_mask: 0.0
+    use_feature_reweight: False
+    use_semantic_aux: False
+    lambda_semantic: 0.0
+    use_content_word_weight: False
+    use_content_word_weighted_ce: False
+    normalize_content_word_weights: False
     use_mask_conf_filter: False
     mask_conf_threshold: 0.5
     use_mask_warmup: False

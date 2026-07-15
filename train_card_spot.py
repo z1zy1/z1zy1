@@ -534,6 +534,8 @@ def apply_cli_overrides(args, cfg):
         cfg.train.content_word_weight = args.content_word_weight
     if args.max_content_word_weight is not None:
         cfg.train.max_content_word_weight = args.max_content_word_weight
+    if args.normalize_content_word_weights:
+        cfg.train.normalize_content_word_weights = True
     if args.use_weak_mask_prior:
         cfg.train.use_weak_mask_prior = True
     if args.mask_alpha is not None:
@@ -731,6 +733,7 @@ parser.add_argument('--semantic_threshold', type=float, default=None)
 parser.add_argument('--use_content_word_weight', action='store_true')
 parser.add_argument('--content_word_weight', type=float, default=None)
 parser.add_argument('--max_content_word_weight', type=float, default=None)
+parser.add_argument('--normalize_content_word_weights', action='store_true')
 parser.add_argument('--use_weak_mask_prior', action='store_true')
 parser.add_argument('--mask_alpha', type=float, default=None)
 parser.add_argument('--lambda_mask', type=float, default=None)
@@ -1012,6 +1015,7 @@ experiment_summary = [
     f'  use_content_word_weighted_ce: {cfg.train.use_content_word_weighted_ce}',
     f'  content_word_weight: {cfg.train.content_word_weight}',
     f'  max_content_word_weight: {cfg.train.max_content_word_weight}',
+    f'  normalize_content_word_weights: {cfg.train.normalize_content_word_weights}',
     f'  content_word_token_count: {len(cfg.train.content_word_token_ids)}',
 ]
 for line in experiment_summary:

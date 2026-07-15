@@ -161,6 +161,7 @@ class DynamicSpeaker(nn.Module):
             or getattr(cfg.train, 'use_content_word_weighted_ce', False)
         )
         self.content_word_weight = min(cfg.train.content_word_weight, cfg.train.max_content_word_weight)
+        self.normalize_content_word_weights = bool(getattr(cfg.train, 'normalize_content_word_weights', False))
         self.content_word_token_ids = [int(x) for x in getattr(cfg.train, 'content_word_token_ids', [])]
 
 
@@ -218,7 +219,10 @@ class DynamicSpeaker(nn.Module):
         weights = torch.ones_like(token_loss)
         weights = weights.masked_fill(content_mask & valid_mask, float(self.content_word_weight))
         token_loss = token_loss * weights * valid_mask.float()
-        return token_loss.sum() / valid_count
+        denominator = valid_count
+        if self.normalize_content_word_weights:
+            denominator = (weights * valid_mask.float()).sum().clamp_min(1.0)
+        return token_loss.sum() / denominator
 
     def sample(
             self,

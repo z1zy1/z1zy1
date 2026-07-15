@@ -35,6 +35,7 @@ __C.model.num_semantic_classes = 0
 __C.model.semantic_fusion_heads = 8
 __C.model.semantic_fusion_dropout = 0.1
 __C.model.semantic_fusion_gamma_init = 0.1
+__C.model.semantic_fusion_gamma_max = 0.0
 
 # Encoder
 __C.model.encoder = AttrDict()
@@ -255,6 +256,7 @@ __C.train.use_content_word_weight = False
 __C.train.use_content_word_weighted_ce = False
 __C.train.content_word_weight = 1.5
 __C.train.max_content_word_weight = 2.0
+__C.train.normalize_content_word_weights = False
 __C.train.content_word_token_ids = []
 __C.train.paper_selection_mode = False
 __C.train.selection_strategy = 'spice_constrained_balanced'

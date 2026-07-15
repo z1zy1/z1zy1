@@ -18,13 +18,14 @@ BASE_CFG="${BASE_CFG:?BASE_CFG is required}"
 
 if [ -z "${DATA_ROOT:-}" ]; then
   case "$DATASET" in
+    levir_cc) DATA_ROOT="${LEVIR_CC_ROOT:-}" ;;
     levir_mci) DATA_ROOT="${LEVIR_MCI_ROOT:-}" ;;
     second_cc) DATA_ROOT="${SECOND_CC_ROOT:-}" ;;
     *) DATA_ROOT="" ;;
   esac
 fi
 if [ -z "$DATA_ROOT" ]; then
-  echo "DATA_ROOT is empty. Set DATA_ROOT, LEVIR_MCI_ROOT, or SECOND_CC_ROOT." >&2
+  echo "DATA_ROOT is empty. Set DATA_ROOT or the matching LEVIR_CC_ROOT/LEVIR_MCI_ROOT/SECOND_CC_ROOT." >&2
   exit 2
 fi
 
@@ -49,6 +50,10 @@ LMASK="${LMASK:-0.0}"
 LSEM="${LSEM:-0.0}"
 SEMANTIC_DETACH_RATIO="${SEMANTIC_DETACH_RATIO:-0.5}"
 SEMANTIC_FUSION_GAMMA_INIT="${SEMANTIC_FUSION_GAMMA_INIT:-}"
+SEMANTIC_FUSION_GAMMA_MAX="${SEMANTIC_FUSION_GAMMA_MAX:-}"
+USE_CONTENT_WORD_WEIGHT="${USE_CONTENT_WORD_WEIGHT:-}"
+CONTENT_WORD_WEIGHT="${CONTENT_WORD_WEIGHT:-}"
+NORMALIZE_CONTENT_WORD_WEIGHTS="${NORMALIZE_CONTENT_WORD_WEIGHTS:-}"
 MASK_LOSS_TYPE="${MASK_LOSS_TYPE:-}"
 SEMANTIC_LOSS_TYPE="${SEMANTIC_LOSS_TYPE:-}"
 ALLOW_MISSING_PSEUDO_MASK="${ALLOW_MISSING_PSEUDO_MASK:-0}"
@@ -113,8 +118,21 @@ COMMON_OPTS=(
   model.semantic_input_mode "$SEMANTIC_INPUT_MODE"
 )
 
+if [ -n "$USE_CONTENT_WORD_WEIGHT" ]; then
+  COMMON_OPTS+=(train.use_content_word_weight "$(bool_word "$USE_CONTENT_WORD_WEIGHT")")
+fi
+if [ -n "$NORMALIZE_CONTENT_WORD_WEIGHTS" ]; then
+  COMMON_OPTS+=(train.normalize_content_word_weights "$(bool_word "$NORMALIZE_CONTENT_WORD_WEIGHTS")")
+fi
+
 if [ -n "$SEMANTIC_FUSION_GAMMA_INIT" ]; then
   COMMON_OPTS+=(model.semantic_fusion_gamma_init "$SEMANTIC_FUSION_GAMMA_INIT")
+fi
+if [ -n "$SEMANTIC_FUSION_GAMMA_MAX" ]; then
+  COMMON_OPTS+=(model.semantic_fusion_gamma_max "$SEMANTIC_FUSION_GAMMA_MAX")
+fi
+if [ -n "$CONTENT_WORD_WEIGHT" ]; then
+  COMMON_OPTS+=(train.content_word_weight "$CONTENT_WORD_WEIGHT")
 fi
 if [ -n "$NUM_MASK_CLASSES" ]; then
   COMMON_OPTS+=(data.num_mask_classes "$NUM_MASK_CLASSES" model.num_mask_classes "$NUM_MASK_CLASSES")
@@ -170,6 +188,8 @@ if [ -n "$NUM_SEMANTIC_CLASSES" ]; then TRAIN_ARGS+=(--num_semantic_classes "$NU
 if is_true "$USE_AUX_SEMANTIC"; then TRAIN_ARGS+=(--use_aux_semantic); fi
 if is_true "$ENABLE_AUX_MASK"; then TRAIN_ARGS+=(--use_aux_mask); fi
 if is_true "$USE_SEMANTIC_PARTIAL_DETACH"; then TRAIN_ARGS+=(--use_semantic_partial_detach); fi
+if [ -n "$USE_CONTENT_WORD_WEIGHT" ] && is_true "$USE_CONTENT_WORD_WEIGHT"; then TRAIN_ARGS+=(--use_content_word_weight); fi
+if [ -n "$NORMALIZE_CONTENT_WORD_WEIGHTS" ] && is_true "$NORMALIZE_CONTENT_WORD_WEIGHTS"; then TRAIN_ARGS+=(--normalize_content_word_weights); fi
 if is_true "$USE_FEATURE_REWEIGHT"; then TRAIN_ARGS+=(--use_feature_reweight); else TRAIN_ARGS+=(--no_feature_reweight); fi
 TRAIN_ARGS+=(--no_semantic_hard_gate)
 if is_true "$DETACH_REWEIGHT_MASK"; then TRAIN_ARGS+=(--detach_reweight_mask); fi
@@ -184,5 +204,3 @@ if is_true "$PAPER_SELECTION_MODE"; then TRAIN_ARGS+=(--paper_selection_mode); f
   echo "model=$MODEL_TYPE"
   "$PYTHON" train_card_spot.py "${TRAIN_ARGS[@]}" "${COMMON_OPTS[@]}"
 } 2>&1 | tee "$LOG_PATH"
-
-

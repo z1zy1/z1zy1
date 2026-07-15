@@ -16,6 +16,7 @@ KEY_SWITCHES = [
     'use_semantic_cross_attention',
     'use_partial_detach',
     'semantic_detach_ratio',
+    'semantic_fusion_gamma_max',
     'use_feature_reweight',
     'use_semantic_hard_gate',
     'lambda_mask',
@@ -30,6 +31,9 @@ KEY_SWITCHES = [
     'save_interval',
     'eval_interval',
     'snapshot_interval',
+    'use_content_word_weight',
+    'content_word_weight',
+    'normalize_content_word_weights',
     'lambda_mask_warmup',
     'lambda_semantic_warmup',
     'checkpoint_path',
@@ -95,6 +99,7 @@ def stable_hash(payload):
 
 def key_switch_summary(cfg, checkpoint_path=''):
     semantic_mode = str(getattr(cfg.model, 'semantic_input_mode', 'none')).lower()
+    train_optim = getattr(cfg.train, 'optim', None)
     return {
         'use_aux_mask': bool(getattr(cfg.model, 'enable_aux_mask', False)),
         'use_aux_semantic': bool(getattr(cfg.train, 'use_semantic_aux', False)),
@@ -103,18 +108,25 @@ def key_switch_summary(cfg, checkpoint_path=''):
         'use_feature_reweight': bool(getattr(cfg.train, 'use_feature_reweight', False)),
         'use_partial_detach': bool(getattr(cfg.train, 'use_semantic_partial_detach', False)),
         'semantic_detach_ratio': float(getattr(cfg.train, 'semantic_detach_ratio', 0.0)),
+        'semantic_fusion_gamma_max': float(getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0)),
         'lambda_mask': float(getattr(cfg.train, 'lambda_mask', 0.0)),
         'lambda_semantic': float(getattr(cfg.train, 'lambda_semantic', 0.0)),
         'aux_warmup_start_ratio': float(getattr(cfg.train, 'aux_warmup_start_ratio', 0.0)),
         'aux_warmup_end_ratio': float(getattr(cfg.train, 'aux_warmup_end_ratio', 0.0)),
         'selection_strategy': str(getattr(cfg.train, 'selection_strategy', 'spice_constrained_balanced')),
         'init_checkpoint': str(getattr(cfg.train, 'init_checkpoint', '') or ''),
-        'learning_rate': float(getattr(cfg.train.optim, 'lr', 0.0)),
+        'learning_rate': float(getattr(train_optim, 'lr', 0.0)),
         'finetune_steps': int(getattr(cfg.train, 'finetune_steps', 0) or 0),
         'max_iter': int(getattr(cfg.train, 'max_iter', 0) or 0),
         'save_interval': int(getattr(cfg.train, 'save_interval', 0) or 0),
         'eval_interval': int(getattr(cfg.train, 'eval_interval', 0) or 0),
         'snapshot_interval': int(getattr(cfg.train, 'snapshot_interval', 0) or 0),
+        'use_content_word_weight': bool(
+            getattr(cfg.train, 'use_content_word_weight', False)
+            or getattr(cfg.train, 'use_content_word_weighted_ce', False)
+        ),
+        'content_word_weight': float(getattr(cfg.train, 'content_word_weight', 1.0)),
+        'normalize_content_word_weights': bool(getattr(cfg.train, 'normalize_content_word_weights', False)),
         'lambda_mask_warmup': bool(getattr(cfg.train, 'use_mask_warmup', False) or getattr(cfg.train, 'use_aux_warmup', False)),
         'lambda_semantic_warmup': bool(getattr(cfg.train, 'use_semantic_warmup', False) or getattr(cfg.train, 'use_aux_warmup', False)),
         'dataset_name': str(getattr(cfg.data, 'dataset', '')),

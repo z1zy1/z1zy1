@@ -9,6 +9,7 @@ import re
 METRICS = ['Bleu_4', 'METEOR', 'CIDEr', 'SPICE']
 ALL_METRICS = ['Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE']
 STRICT_METRICS = ['Bleu_4', 'CIDEr', 'SPICE']
+DEFAULT_PROTECTED_METRICS = ['Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr']
 STRICT_STRATEGIES = {'strict_spice', 'strict_spice_constrained_balanced', 'strict_nearest_balanced'}
 DEFAULT_BASELINE = {
     'Bleu_4': 0.4375,
@@ -42,13 +43,20 @@ def parse_args():
     parser.add_argument('--baseline_metrics', default=None, help='Baseline metrics JSON/CSV/TXT. If omitted, uses the built-in validation baseline.')
     parser.add_argument('--summary_csv', default=os.path.join('experiments', 'paper_required_experiments_summary.csv'), help='Optional paper summary CSV used to infer dataset baseline metrics.')
     parser.add_argument('--baseline_exp_name', default=None, help='Optional baseline experiment row name in --summary_csv.')
-    parser.add_argument('--strategy', default='spice_constrained_balanced', choices=['best_cider', 'best_spice', 'balanced', 'spice_constrained_balanced', 'strict_spice_constrained_balanced', 'strict_spice', 'strict_nearest_balanced'])
+    parser.add_argument('--strategy', default='spice_constrained_balanced', choices=['best_cider', 'best_spice', 'balanced', 'spice_constrained_balanced', 'strict_spice_constrained_balanced', 'strict_spice', 'strict_nearest_balanced', 'val_baseline_pareto'])
+    parser.add_argument('--protected_metrics', default=','.join(DEFAULT_PROTECTED_METRICS), help='Comma-separated validation metrics that may not fall below baseline-tolerance.')
+    parser.add_argument('--baseline_tolerance', type=float, default=0.0, help='Uniform non-negative validation baseline tolerance.')
     parser.add_argument('--strict_bleu4', type=float, default=0.562, help='BLEU-4 threshold for strict LEVIR-MCI reselect.')
     parser.add_argument('--strict_cider', type=float, default=1.338, help='CIDEr threshold for strict LEVIR-MCI reselect.')
     parser.add_argument('--strict_spice', type=float, default=0.336, help='SPICE threshold for strict LEVIR-MCI reselect.')
     parser.add_argument('--output_json', default=None)
     parser.add_argument('--output_txt', default=None)
-    return parser.parse_args()
+    args = parser.parse_args()
+    if args.strategy == 'val_baseline_pareto' and not args.baseline_metrics:
+        parser.error('--baseline_metrics is required for val_baseline_pareto; summary/test thresholds are never used.')
+    if args.baseline_tolerance < 0:
+        parser.error('--baseline_tolerance must be non-negative.')
+    return args
 
 
 def to_float(value, default=0.0):
@@ -73,8 +81,9 @@ def load_first_csv_row(path):
 
 def metric_dict_from_payload(payload):
     if isinstance(payload, dict):
-        if 'metrics' in payload and isinstance(payload['metrics'], dict):
-            return {key: to_float(value) for key, value in payload['metrics'].items() if key in ALL_METRICS}
+        for field in ('metrics', 'selected_val_metrics', 'selected_metrics'):
+            if field in payload and isinstance(payload[field], dict):
+                return {key: to_float(value) for key, value in payload[field].items() if key in ALL_METRICS}
         return {key: to_float(value) for key, value in payload.items() if key in ALL_METRICS}
     return {}
 
@@ -103,10 +112,11 @@ def load_summary_baseline(summary_csv, dataset_name='', baseline_exp_name=None):
     return {}, ''
 
 
-def load_baseline(path=None, dataset_name='', summary_csv=None, baseline_exp_name=None):
+def load_baseline(path=None, dataset_name='', summary_csv=None, baseline_exp_name=None, explicit_only=False):
     dataset_key = str(dataset_name or '').lower()
-    result = dict(DEFAULT_BASELINE)
-    result.update(DEFAULT_BASELINE_BY_DATASET.get(dataset_key, {}))
+    result = {} if explicit_only else dict(DEFAULT_BASELINE)
+    if not explicit_only:
+        result.update(DEFAULT_BASELINE_BY_DATASET.get(dataset_key, {}))
     source = 'built_in_dataset:%s' % dataset_key if dataset_key in DEFAULT_BASELINE_BY_DATASET else 'built_in_default'
     if path:
         if not os.path.exists(path):
@@ -115,7 +125,8 @@ def load_baseline(path=None, dataset_name='', summary_csv=None, baseline_exp_nam
     if path and path.lower().endswith('.json'):
         baseline = metric_dict_from_payload(load_json(path))
     elif path:
-        baseline = {key: to_float(load_first_csv_row(path).get(key)) for key in ALL_METRICS}
+        raw = load_first_csv_row(path)
+        baseline = {key: to_float(raw.get(key)) for key in ALL_METRICS if raw.get(key) not in (None, '')}
     else:
         baseline, inferred_source = load_summary_baseline(summary_csv, dataset_name, baseline_exp_name)
         if inferred_source:
@@ -228,6 +239,81 @@ def add_strict_constraint_scores(rows, strict_thresholds):
         row['threshold_shortfall'] = shortfall
         row['constraint_violation_count'] = violation_count
         row['normalized_threshold_shortfall'] = normalized_shortfall
+
+
+def parse_protected_metrics(value):
+    metrics = []
+    for item in str(value or '').split(','):
+        metric = item.strip()
+        if metric and metric not in metrics:
+            metrics.append(metric)
+    unknown = [metric for metric in metrics if metric not in ALL_METRICS or metric == 'SPICE']
+    if unknown:
+        raise ValueError('Unknown/invalid protected metrics: %s' % ', '.join(unknown))
+    if not metrics:
+        raise ValueError('--protected_metrics must contain at least one metric.')
+    return metrics
+
+
+def pareto_front(rows, metrics):
+    front = []
+    for candidate in rows:
+        dominated = False
+        for other in rows:
+            if other is candidate:
+                continue
+            at_least_as_good = all(
+                to_float(other['metrics'].get(metric), -float('inf'))
+                >= to_float(candidate['metrics'].get(metric), -float('inf'))
+                for metric in metrics
+            )
+            strictly_better = any(
+                to_float(other['metrics'].get(metric), -float('inf'))
+                > to_float(candidate['metrics'].get(metric), -float('inf'))
+                for metric in metrics
+            )
+            if at_least_as_good and strictly_better:
+                dominated = True
+                break
+        if not dominated:
+            front.append(candidate)
+    return front
+
+
+def select_val_baseline_pareto(rows, baseline, protected_metrics, tolerance):
+    add_balanced_scores(rows)
+    feasible = []
+    required_candidate_metrics = list(protected_metrics) + ['SPICE']
+    for row in rows:
+        if any(metric not in row['metrics'] for metric in required_candidate_metrics):
+            continue
+        deltas = {
+            metric: to_float(row['metrics'].get(metric)) - to_float(baseline.get(metric))
+            for metric in required_candidate_metrics
+        }
+        row['baseline_deltas'] = deltas
+        row['protected_relative_margins'] = {
+            metric: deltas[metric] / max(abs(to_float(baseline.get(metric))), 1e-12)
+            for metric in protected_metrics
+        }
+        row['min_protected_relative_margin'] = min(row['protected_relative_margins'].values())
+        row['spice_gain'] = deltas['SPICE']
+        if all(deltas[metric] >= -tolerance for metric in protected_metrics):
+            feasible.append(row)
+    if not feasible:
+        return None, [], []
+    front = pareto_front(feasible, list(protected_metrics) + ['SPICE'])
+    best = sorted(
+        front,
+        key=lambda row: (
+            row['spice_gain'],
+            row['min_protected_relative_margin'],
+            row['balanced_score'],
+            to_float(row['metrics'].get('CIDEr')),
+        ),
+        reverse=True,
+    )[0]
+    return best, feasible, front
 
 
 def select_rows(rows, baseline, strategy, strict_thresholds=None):
@@ -343,19 +429,46 @@ def main():
 
     resolved = load_resolved_config(exp_dir)
     dataset_name = infer_dataset_name_from_exp_dir(exp_dir, resolved)
+    protected_metrics = parse_protected_metrics(args.protected_metrics)
     baseline, baseline_source = load_baseline(
         args.baseline_metrics,
         dataset_name=dataset_name,
         summary_csv=args.summary_csv,
         baseline_exp_name=args.baseline_exp_name,
+        explicit_only=args.strategy == 'val_baseline_pareto',
     )
+    if args.strategy == 'val_baseline_pareto':
+        missing = [metric for metric in protected_metrics + ['SPICE'] if metric not in baseline]
+        if missing:
+            raise ValueError('Baseline metrics file is missing required metrics: %s' % ', '.join(missing))
     strict_thresholds = {
         'Bleu_4': args.strict_bleu4,
         'CIDEr': args.strict_cider,
         'SPICE': args.strict_spice,
     }
-    best, candidates, relaxed = select_rows(rows, baseline, args.strategy, strict_thresholds=strict_thresholds)
+    pareto = []
+    if args.strategy == 'val_baseline_pareto':
+        best, candidates, pareto = select_val_baseline_pareto(
+            rows,
+            baseline,
+            protected_metrics,
+            args.baseline_tolerance,
+        )
+        relaxed = False
+    else:
+        best, candidates, relaxed = select_rows(
+            rows,
+            baseline,
+            args.strategy,
+            strict_thresholds=strict_thresholds,
+        )
     if best is None:
+        is_val_pareto = args.strategy == 'val_baseline_pareto'
+        failure_reason = (
+            'no_checkpoint_preserves_validation_baseline'
+            if is_val_pareto
+            else 'no_checkpoint_satisfies_strict_constraints'
+        )
         payload = {
             'exp_name': infer_exp_name(exp_dir, resolved),
             'dataset_name': dataset_name,
@@ -366,11 +479,17 @@ def main():
             'selected_step': '',
             'selection_strategy': args.strategy,
             'status': 'no_valid_checkpoint',
-            'failure_reason': 'no_checkpoint_satisfies_strict_constraints',
-            'notes': 'no checkpoint satisfies strict SPICE/CIDEr/BLEU constraints',
+            'failure_reason': failure_reason,
+            'notes': failure_reason,
             'strict_constraints': strict_thresholds,
             'baseline_metrics': baseline,
             'baseline_source': baseline_source,
+            'protected_metrics': protected_metrics if is_val_pareto else [],
+            'baseline_tolerance': args.baseline_tolerance if is_val_pareto else None,
+            'selected_metric_deltas': {},
+            'pareto_front_count': 0,
+            'feasible_candidate_count': 0,
+            'selection_uses_test_metrics': False if is_val_pareto else None,
             'selected_val_metrics': {},
             'selected_metrics': {},
             'balanced_score': None,
@@ -384,7 +503,7 @@ def main():
         with open(output_json, 'w', encoding='utf-8') as f:
             json.dump(payload, f, indent=2, ensure_ascii=False)
         with open(output_txt, 'w', encoding='utf-8') as f:
-            f.write('no_checkpoint_satisfies_strict_constraints\n')
+            f.write(failure_reason + '\n')
             f.write(json.dumps(payload, indent=2, ensure_ascii=False) + '\n')
         print(json.dumps(payload, indent=2, ensure_ascii=False))
         return
@@ -414,6 +533,15 @@ def main():
         'normalized_threshold_shortfall': best.get('normalized_threshold_shortfall'),
         'baseline_metrics': baseline,
         'baseline_source': baseline_source,
+        'protected_metrics': protected_metrics if args.strategy == 'val_baseline_pareto' else [],
+        'baseline_tolerance': args.baseline_tolerance if args.strategy == 'val_baseline_pareto' else None,
+        'selected_metric_deltas': best.get('baseline_deltas', {}),
+        'protected_relative_margins': best.get('protected_relative_margins', {}),
+        'min_protected_relative_margin': best.get('min_protected_relative_margin'),
+        'spice_gain': best.get('spice_gain'),
+        'pareto_front_count': len(pareto),
+        'feasible_candidate_count': len(candidates) if args.strategy == 'val_baseline_pareto' else None,
+        'selection_uses_test_metrics': False if args.strategy == 'val_baseline_pareto' else None,
         'selected_source_exp_dir': best.get('source_exp_dir', exp_dir),
         'selected_source_exp_name': best.get('source_exp_name', infer_exp_name(exp_dir, resolved)),
         'selected_val_metrics': best['metrics'],

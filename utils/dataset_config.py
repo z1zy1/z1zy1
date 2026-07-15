@@ -2,6 +2,8 @@ import os
 
 
 DATASET_ALIASES = {
+    'levir_cc': 'rcc_dataset_transformer_levir',
+    'levir-cc': 'rcc_dataset_transformer_levir',
     'levir_mci': 'rcc_dataset_transformer_levir',
     'levir-mci': 'rcc_dataset_transformer_levir',
     'second_cc': 'rcc_dataset_transformer_levir',
@@ -19,6 +21,24 @@ def _norm(path):
 
 def _join(*parts):
     return _norm(os.path.join(*parts))
+
+
+def _configure_levir_cc(cfg, root, feature_root):
+    root = _norm(root)
+    cfg.data.data_root = root
+    cfg.data.default_feature_dir = _norm(feature_root or _join(root, 'features'))
+    cfg.data.semantic_feature_dir = _norm(feature_root or _join(root, 'features'))
+    cfg.data.default_img_dir = _join(root, 'images')
+    cfg.data.semantic_img_dir = _join(root, 'images')
+    cfg.data.default_phase = 'A'
+    cfg.data.semantic_phase = 'B'
+    cfg.data.pseudo_mask_root = _join(root, 'pseudo_masks')
+    cfg.data.caption_json = _join(root, 'LevirCCcaptions.json')
+    cfg.data.changeflag_json = cfg.data.caption_json
+    cfg.data.eval_anno_path = _join(root, 'levir_cc_captions_reformat.json')
+    cfg.data.splits_json = _join(root, 'splits.json')
+    cfg.data.vocab_json = _join(root, 'transformer_levir_vocab.json')
+    cfg.data.h5_label_file = _join(root, 'transformer_levir_labels.h5')
 
 
 def _configure_levir_mci(cfg, root, feature_root):
@@ -95,7 +115,9 @@ def apply_dataset_cli_overrides(args, cfg):
         cfg.data.dataset = 'second_cc'
 
     if data_root:
-        if cfg.data.dataset in ('levir_mci', 'levir-mci'):
+        if cfg.data.dataset in ('levir_cc', 'levir-cc'):
+            pass
+        elif cfg.data.dataset in ('levir_mci', 'levir-mci'):
             levir_mci_root = data_root
         elif cfg.data.dataset in ('second_cc', 'second-cc'):
             second_cc_root = data_root
@@ -103,7 +125,10 @@ def apply_dataset_cli_overrides(args, cfg):
             cfg.data.data_root = _norm(data_root)
 
     should_rewrite_layout = dataset is not None or data_root or levir_mci_root or second_cc_root or feature_root
-    if cfg.data.dataset in ('levir_mci', 'levir-mci') and should_rewrite_layout:
+    if cfg.data.dataset in ('levir_cc', 'levir-cc') and should_rewrite_layout:
+        cfg.data.dataset = 'levir_cc'
+        _configure_levir_cc(cfg, data_root or './Levir-CC', feature_root)
+    elif cfg.data.dataset in ('levir_mci', 'levir-mci') and should_rewrite_layout:
         cfg.data.dataset = 'levir_mci'
         _configure_levir_mci(cfg, levir_mci_root or _infer_levir_mci_root(cfg), feature_root)
     elif cfg.data.dataset in ('second_cc', 'second-cc') and should_rewrite_layout:

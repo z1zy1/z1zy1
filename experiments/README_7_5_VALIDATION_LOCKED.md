@@ -63,3 +63,9 @@ bash scripts/run_7_5_followup_test_locked.sh
 ```
 
 The locked test restores the selected source experiment's resolved model/data configuration, including `model.semantic_fusion_gamma_max`; content-word weighting is training-only. It does not test every candidate. Existing results are skipped unless `--force` is supplied. Dedicated 7.5 failure logs are append-only, so older user logs are not overwritten.
+
+New source runs are locked through `resolved_config.json`. Legacy source runs
+created before resolved-config tracking are locked through the complete
+post-merge `cfg.json` written by training. If an older manifest points to a
+missing source config, rerun `run_7_5_followup_reselect.sh --force` before test;
+do not reuse values that were derived while the source config was absent.

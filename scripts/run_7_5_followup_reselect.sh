@@ -140,6 +140,9 @@ import json
 import os
 import sys
 
+sys.path.insert(0, os.path.join(os.getcwd(), 'scripts'))
+from resolve_experiment_config import resolve_experiment_config
+
 root, output, levir_cc_base, levir_mci_base, second_cc_base = sys.argv[1:]
 targets = {
     'levir_cc': 'levir_cc_7_5_val_pareto_locked',
@@ -174,12 +177,12 @@ for dataset, target in targets.items():
         raise SystemExit('Locked checkpoint missing: %s' % checkpoint)
     source_dir = selection.get('selected_source_exp_dir', '')
     source_name = selection.get('selected_source_exp_name', '')
-    resolved_path = os.path.join(source_dir, 'resolved_config.json')
-    resolved = (
-        json.load(open(resolved_path, encoding='utf-8-sig'))
-        if os.path.isfile(resolved_path)
-        else {}
-    )
+    if not source_dir or not os.path.isdir(source_dir):
+        raise SystemExit('Selected source experiment is missing: %s' % source_dir)
+    try:
+        source_config_path, resolved, source_config_artifact = resolve_experiment_config(source_dir)
+    except (FileNotFoundError, ValueError) as exc:
+        raise SystemExit(str(exc))
     locked[dataset] = {
         'target_exp': target,
         'selection_json': os.path.normpath(selection_path),
@@ -190,7 +193,9 @@ for dataset, target in targets.items():
         'selected_is_baseline': source_name == baseline_names[dataset],
         'selected_val_metrics': selection.get('selected_val_metrics', {}),
         'selected_metric_deltas': selection.get('selected_metric_deltas', {}),
-        'source_resolved_config': os.path.normpath(resolved_path),
+        'source_config': os.path.normpath(source_config_path),
+        'source_config_artifact': source_config_artifact,
+        'source_resolved_config': os.path.normpath(source_config_path),
         'semantic_fusion_gamma_max': resolved.get('model', {}).get(
             'semantic_fusion_gamma_max',
             0.0,

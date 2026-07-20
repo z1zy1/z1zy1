@@ -448,8 +448,10 @@ def audit_levir_cc_init_provenance(exp_root):
     audit_levir_cc_source_paths(
         checkpoint, source_dir, source_config, source_name, expected_name)
     config = load_json(source_config)
-    audit_levir_cc_source_config(config)
-    audit_levir_cc_source_checkpoint(checkpoint, config)
+    audit_levir_cc_source_config(config, allow_registered_legacy=True)
+    audit_levir_cc_source_checkpoint(
+        checkpoint, config, allow_registered_legacy=True
+    )
     entry = load_json(manifest_path)['datasets']['levir_cc']
     selection_path = canonical(entry['selection_json'])
     return {

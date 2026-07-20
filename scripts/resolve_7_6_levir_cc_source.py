@@ -191,7 +191,7 @@ def audit_paths(checkpoint, source_dir, source_config, source_name, expected_nam
         raise FileNotFoundError('LEVIR-CC source config is missing: %s' % source_config)
 
 
-def audit_config(config):
+def audit_config(config, allow_registered_legacy=False):
     expected = {
         'model.enable_aux_mask': True,
         'model.semantic_input_mode': 'none',
@@ -211,6 +211,14 @@ def audit_config(config):
         'data.allow_missing_pseudo_mask': True,
     }
     for path, expected_value in expected.items():
+        if (
+            allow_registered_legacy
+            and path == 'model.semantic_input_mode'
+            and dotted(config, path) in (None, '')
+        ):
+            # The registered 7.5 source predates explicit tracking of this
+            # switch. Its missing value is the historical default ``none``.
+            continue
         require_equal(config, path, expected_value, 'LEVIR-CC source config')
     # This registered legacy run predates explicit model.type tracking. Its
     # complete SGC signature and state dictionaries are audited below.
@@ -222,7 +230,7 @@ def audit_config(config):
         raise ValueError('Unexpected data.dataset in legacy LEVIR-CC source config.')
 
 
-def audit_checkpoint(checkpoint, config):
+def audit_checkpoint(checkpoint, config, allow_registered_legacy=False):
     try:
         import torch
     except ImportError as exc:
@@ -245,7 +253,15 @@ def audit_checkpoint(checkpoint, config):
         'train.use_semantic_partial_detach', 'train.semantic_detach_ratio',
         'train.use_feature_reweight', 'train.reweight_alpha',
     ):
-        if dotted(model_cfg, path) != dotted(config, path):
+        checkpoint_value = dotted(model_cfg, path)
+        config_value = dotted(config, path)
+        if allow_registered_legacy and path == 'model.type':
+            checkpoint_value = checkpoint_value or 'sgc_card'
+            config_value = config_value or 'sgc_card'
+        if allow_registered_legacy and path == 'model.semantic_input_mode':
+            checkpoint_value = checkpoint_value or 'none'
+            config_value = config_value or 'none'
+        if checkpoint_value != config_value:
             raise ValueError('Checkpoint model_cfg disagrees with source config at %s.' % path)
 
 
@@ -266,8 +282,11 @@ def main():
     checkpoint, source_dir, source_name, source_config = resolved
     audit_paths(checkpoint, source_dir, source_config, source_name, args.expected_source_exp)
     config = load_json(source_config)
-    audit_config(config)
-    audit_checkpoint(checkpoint, config)
+    registered_legacy = source_name == 'sgc_card_lm003_ls005_pd05_rw02_warmup'
+    audit_config(config, allow_registered_legacy=registered_legacy)
+    audit_checkpoint(
+        checkpoint, config, allow_registered_legacy=registered_legacy
+    )
     print(checkpoint)
     print(source_config)
     print(source_dir)

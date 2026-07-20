@@ -12,9 +12,46 @@ from build_7_6_locked_manifest import (
     audit_vocab_file,
     directory_inventory,
 )
+from resolve_7_6_levir_cc_source import audit_config as audit_levir_cc_source_config
 
 
 METRICS = ['Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE']
+
+
+def legacy_levir_cc_config():
+    return {
+        'data': {
+            'dataset': 'rcc_dataset_transformer_levir',
+            'allow_missing_pseudo_mask': True,
+        },
+        'model': {'enable_aux_mask': True},
+        'train': {
+            'use_semantic_aux': True,
+            'use_semantic_partial_detach': True,
+            'semantic_detach_ratio': 0.5,
+            'use_feature_reweight': True,
+            'detach_reweight_mask': True,
+            'reweight_alpha': 0.2,
+            'use_aux_warmup': True,
+            'aux_warmup_start_ratio': 0.30,
+            'aux_warmup_end_ratio': 0.70,
+            'lambda_mask': 0.003,
+            'lambda_semantic': 0.005,
+            'mask_loss_type': 'bce_dice',
+            'semantic_loss_type': 'multilabel_bce',
+        },
+    }
+
+
+class RegisteredLegacyLevirSourceTest(unittest.TestCase):
+    def test_registered_legacy_may_omit_semantic_input_mode(self):
+        audit_levir_cc_source_config(
+            legacy_levir_cc_config(), allow_registered_legacy=True
+        )
+
+    def test_missing_semantic_input_mode_is_not_globally_accepted(self):
+        with self.assertRaisesRegex(ValueError, 'semantic_input_mode'):
+            audit_levir_cc_source_config(legacy_levir_cc_config())
 
 
 def values(spice=0.30, **updates):

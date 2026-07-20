@@ -5,6 +5,7 @@ import json
 import math
 import os
 import re
+import statistics
 
 
 METRICS = ['Bleu_4', 'METEOR', 'CIDEr', 'SPICE']
@@ -12,7 +13,8 @@ ALL_METRICS = ['Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CID
 STRICT_METRICS = ['Bleu_4', 'CIDEr', 'SPICE']
 DEFAULT_PROTECTED_METRICS = ['Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr']
 STRICT_STRATEGIES = {'strict_spice', 'strict_spice_constrained_balanced', 'strict_nearest_balanced'}
-VALIDATION_ONLY_STRATEGIES = {'validation_best_cider', 'val_baseline_pareto'}
+BASELINE_VALIDATION_STRATEGIES = {'val_baseline_pareto', 'val_baseline_stable_window'}
+VALIDATION_ONLY_STRATEGIES = {'validation_best_cider'} | BASELINE_VALIDATION_STRATEGIES
 DEFAULT_BASELINE = {
     'Bleu_4': 0.4375,
     'METEOR': 0.3377,
@@ -45,19 +47,29 @@ def parse_args():
     parser.add_argument('--baseline_metrics', default=None, help='Baseline metrics JSON/CSV/TXT. If omitted, uses the built-in validation baseline.')
     parser.add_argument('--summary_csv', default=os.path.join('experiments', 'paper_required_experiments_summary.csv'), help='Optional paper summary CSV used to infer dataset baseline metrics.')
     parser.add_argument('--baseline_exp_name', default=None, help='Optional baseline experiment row name in --summary_csv.')
-    parser.add_argument('--strategy', default='spice_constrained_balanced', choices=['best_cider', 'validation_best_cider', 'best_spice', 'balanced', 'spice_constrained_balanced', 'strict_spice_constrained_balanced', 'strict_spice', 'strict_nearest_balanced', 'val_baseline_pareto'])
+    parser.add_argument('--strategy', default='spice_constrained_balanced', choices=['best_cider', 'validation_best_cider', 'best_spice', 'balanced', 'spice_constrained_balanced', 'strict_spice_constrained_balanced', 'strict_spice', 'strict_nearest_balanced', 'val_baseline_pareto', 'val_baseline_stable_window'])
     parser.add_argument('--protected_metrics', default=','.join(DEFAULT_PROTECTED_METRICS), help='Comma-separated validation metrics that may not fall below baseline-tolerance.')
     parser.add_argument('--baseline_tolerance', type=float, default=0.0, help='Uniform non-negative validation baseline tolerance.')
+    parser.add_argument('--min_spice_gain', type=float, default=None, help='Optional minimum selected validation SPICE gain over the explicit baseline.')
+    parser.add_argument('--require_audited_validation_baseline', action='store_true', help='Require validation-only CARD baseline provenance metadata (recommended for locked workflows).')
+    parser.add_argument('--stability_window', type=int, default=3, help='Odd validation window size for val_baseline_stable_window (default: 3).')
+    parser.add_argument('--expected_step_gap', type=int, default=0, help='Required adjacent validation step gap for val_baseline_stable_window.')
     parser.add_argument('--strict_bleu4', type=float, default=0.562, help='BLEU-4 threshold for strict LEVIR-MCI reselect.')
     parser.add_argument('--strict_cider', type=float, default=1.338, help='CIDEr threshold for strict LEVIR-MCI reselect.')
     parser.add_argument('--strict_spice', type=float, default=0.336, help='SPICE threshold for strict LEVIR-MCI reselect.')
     parser.add_argument('--output_json', default=None)
     parser.add_argument('--output_txt', default=None)
     args = parser.parse_args()
-    if args.strategy == 'val_baseline_pareto' and not args.baseline_metrics:
-        parser.error('--baseline_metrics is required for val_baseline_pareto; summary/test thresholds are never used.')
-    if args.baseline_tolerance < 0:
-        parser.error('--baseline_tolerance must be non-negative.')
+    if args.strategy in BASELINE_VALIDATION_STRATEGIES and not args.baseline_metrics:
+        parser.error('--baseline_metrics is required for %s; summary/test thresholds are never used.' % args.strategy)
+    if not math.isfinite(args.baseline_tolerance) or args.baseline_tolerance < 0:
+        parser.error('--baseline_tolerance must be finite and non-negative.')
+    if args.min_spice_gain is not None and not math.isfinite(args.min_spice_gain):
+        parser.error('--min_spice_gain must be finite when provided.')
+    if args.stability_window < 3 or args.stability_window % 2 == 0:
+        parser.error('--stability_window must be an odd integer >= 3.')
+    if args.strategy == 'val_baseline_stable_window' and args.expected_step_gap <= 0:
+        parser.error('--expected_step_gap must be provided and positive for val_baseline_stable_window.')
     return args
 
 
@@ -81,12 +93,44 @@ def load_first_csv_row(path):
     return rows[0] if rows else {}
 
 
-def metric_dict_from_payload(payload):
+def strict_finite_float(value):
+    if isinstance(value, bool):
+        raise ValueError('boolean is not a validation metric')
+    numeric = float(value)
+    if not math.isfinite(numeric):
+        raise ValueError('validation metric is not finite')
+    return numeric
+
+
+def metric_dict_from_payload(payload, strict_finite=False):
     if isinstance(payload, dict):
-        for field in ('metrics', 'selected_val_metrics', 'selected_metrics'):
-            if field in payload and isinstance(payload[field], dict):
-                return {key: to_float(value) for key, value in payload[field].items() if key in ALL_METRICS}
-        return {key: to_float(value) for key, value in payload.items() if key in ALL_METRICS}
+        containers = [
+            payload[field]
+            for field in ('metrics', 'selected_val_metrics', 'selected_metrics')
+            if isinstance(payload.get(field), dict)
+        ]
+        containers = containers or [payload]
+
+        def parse_container(source):
+            parsed = {}
+            for key, value in source.items():
+                if key not in ALL_METRICS:
+                    continue
+                if strict_finite:
+                    try:
+                        parsed[key] = strict_finite_float(value)
+                    except (TypeError, ValueError) as exc:
+                        raise ValueError('Invalid validation baseline metric %s: %s' % (key, exc))
+                else:
+                    parsed[key] = to_float(value)
+            return parsed
+
+        result = parse_container(containers[0])
+        if strict_finite:
+            for other in containers[1:]:
+                if parse_container(other) != result:
+                    raise ValueError('Validation baseline artifact contains conflicting metric containers.')
+        return result
     return {}
 
 
@@ -114,7 +158,9 @@ def load_summary_baseline(summary_csv, dataset_name='', baseline_exp_name=None):
     return {}, ''
 
 
-def load_baseline(path=None, dataset_name='', summary_csv=None, baseline_exp_name=None, explicit_only=False):
+def load_baseline(path=None, dataset_name='', summary_csv=None, baseline_exp_name=None,
+                  explicit_only=False, strict_finite=False,
+                  require_validation_artifact=False):
     dataset_key = str(dataset_name or '').lower()
     result = {} if explicit_only else dict(DEFAULT_BASELINE)
     if not explicit_only:
@@ -125,10 +171,46 @@ def load_baseline(path=None, dataset_name='', summary_csv=None, baseline_exp_nam
             raise FileNotFoundError('Baseline metrics file does not exist: %s' % path)
         source = path
     if path and path.lower().endswith('.json'):
-        baseline = metric_dict_from_payload(load_json(path))
+        payload = load_json(path)
+        if require_validation_artifact:
+            if not isinstance(payload, dict):
+                raise ValueError('Validation baseline artifact must be a JSON object: %s' % path)
+            required = {
+                'status': 'done',
+                'selection_uses_test_metrics': False,
+                'selection_metric_split': 'validation',
+            }
+            invalid = [key for key, expected in required.items() if payload.get(key) != expected]
+            if invalid:
+                raise ValueError(
+                    'Baseline artifact is not an audited validation-only selection (%s): %s'
+                    % (', '.join(invalid), path)
+                )
+            strategy = payload.get('selection_strategy')
+            if strategy != 'validation_best_cider':
+                raise ValueError('CARD baseline artifact must use validation_best_cider: %s' % path)
+            identity = ' '.join(str(payload.get(key, '')) for key in (
+                'exp_name', 'selected_source_exp_name', 'candidate_exp_dirs'))
+            if 'baseline' not in identity.lower():
+                raise ValueError('Baseline artifact does not identify a baseline experiment: %s' % path)
+            if 'test' in os.path.basename(path).lower():
+                raise ValueError('Test result JSON cannot be used as validation baseline: %s' % path)
+        baseline = metric_dict_from_payload(payload, strict_finite=strict_finite)
     elif path:
         raw = load_first_csv_row(path)
-        baseline = {key: to_float(raw.get(key)) for key in ALL_METRICS if raw.get(key) not in (None, '')}
+        baseline = {}
+        for key in ALL_METRICS:
+            if raw.get(key) in (None, ''):
+                continue
+            if require_validation_artifact:
+                raise ValueError('Audited validation baseline must be a JSON selection artifact: %s' % path)
+            if strict_finite:
+                try:
+                    baseline[key] = strict_finite_float(raw.get(key))
+                except (TypeError, ValueError) as exc:
+                    raise ValueError('Invalid validation baseline metric %s: %s' % (key, exc))
+            else:
+                baseline[key] = to_float(raw.get(key))
     else:
         baseline, inferred_source = load_summary_baseline(summary_csv, dataset_name, baseline_exp_name)
         if inferred_source:
@@ -198,7 +280,16 @@ def load_rows(metrics_path, exp_dir):
     for raw in raw_rows:
         row = dict(raw)
         row['checkpoint_path'] = resolve_checkpoint(row.get('checkpoint_path') or row.get('snapshot_path'), exp_dir, row)
-        row['metrics'] = {key: to_float(row.get(key)) for key in ALL_METRICS if row.get(key) not in (None, '')}
+        row['metrics'] = {}
+        row['invalid_metrics'] = {}
+        for key in ALL_METRICS:
+            raw_value = row.get(key)
+            if raw_value in (None, ''):
+                continue
+            try:
+                row['metrics'][key] = strict_finite_float(raw_value)
+            except (TypeError, ValueError) as exc:
+                row['invalid_metrics'][key] = str(exc)
         row['source_exp_dir'] = os.path.normpath(exp_dir)
         row['source_exp_name'] = os.path.basename(os.path.normpath(exp_dir))
         row['metrics_path'] = os.path.normpath(metrics_path)
@@ -282,12 +373,15 @@ def pareto_front(rows, metrics):
     return front
 
 
-def select_val_baseline_pareto(rows, baseline, protected_metrics, tolerance):
+def select_val_baseline_pareto(rows, baseline, protected_metrics, tolerance,
+                               min_spice_gain=None):
     add_balanced_scores(rows)
     feasible = []
     required_candidate_metrics = list(protected_metrics) + ['SPICE']
     for row in rows:
-        if any(metric not in row['metrics'] for metric in required_candidate_metrics):
+        if not has_complete_finite_metrics(row):
+            continue
+        if not os.path.isfile(row.get('checkpoint_path', '')):
             continue
         deltas = {
             metric: to_float(row['metrics'].get(metric)) - to_float(baseline.get(metric))
@@ -300,7 +394,8 @@ def select_val_baseline_pareto(rows, baseline, protected_metrics, tolerance):
         }
         row['min_protected_relative_margin'] = min(row['protected_relative_margins'].values())
         row['spice_gain'] = deltas['SPICE']
-        if all(deltas[metric] >= -tolerance for metric in protected_metrics):
+        spice_ok = min_spice_gain is None or deltas['SPICE'] >= min_spice_gain
+        if all(deltas[metric] >= -tolerance for metric in protected_metrics) and spice_ok:
             feasible.append(row)
     if not feasible:
         return None, [], []
@@ -318,22 +413,161 @@ def select_val_baseline_pareto(rows, baseline, protected_metrics, tolerance):
     return best, feasible, front
 
 
+def has_complete_finite_metrics(row):
+    metrics = row.get('metrics', {})
+    for metric in ALL_METRICS:
+        if metric not in metrics:
+            return False
+        try:
+            if not math.isfinite(float(metrics[metric])):
+                return False
+        except (TypeError, ValueError):
+            return False
+    return True
+
+
+def numeric_step(row):
+    value = selected_epoch_or_step(row)
+    try:
+        numeric = float(value)
+    except (TypeError, ValueError):
+        return None
+    if not math.isfinite(numeric) or not numeric.is_integer():
+        return None
+    return int(numeric)
+
+
+def metric_aggregates(rows):
+    mean = {}
+    std = {}
+    worst = {}
+    for metric in ALL_METRICS:
+        values = [float(row['metrics'][metric]) for row in rows]
+        mean[metric] = statistics.mean(values)
+        std[metric] = statistics.stdev(values) if len(values) > 1 else 0.0
+        worst[metric] = min(values)
+    return mean, std, worst
+
+
+def select_val_baseline_stable_window(rows, baseline, protected_metrics, tolerance,
+                                      window_size, expected_step_gap,
+                                      min_spice_gain=None):
+    '''Select the centre checkpoint of the strongest safe contiguous validation window.
+
+    A window never crosses experiment boundaries. Its checkpoint steps must be
+    adjacent at the explicitly required validation interval, every
+    member must contain all eight finite metrics, and every member (not merely
+    the mean) must preserve all protected baseline metrics.
+    '''
+    add_balanced_scores(rows)
+    by_source = {}
+    for row in rows:
+        if not has_complete_finite_metrics(row):
+            continue
+        if not os.path.isfile(row.get('checkpoint_path', '')):
+            continue
+        step = numeric_step(row)
+        if step is None:
+            continue
+        row['_numeric_step'] = step
+        by_source.setdefault(row.get('source_exp_dir', ''), []).append(row)
+
+    stable_windows = []
+    for source, source_rows in by_source.items():
+        source_rows = sorted(source_rows, key=lambda row: row['_numeric_step'])
+        steps = [row['_numeric_step'] for row in source_rows]
+        if len(steps) != len(set(steps)):
+            raise ValueError('Duplicate validation checkpoint steps in %s.' % source)
+        if len(steps) < window_size:
+            continue
+        for start in range(0, len(source_rows) - window_size + 1):
+            members = source_rows[start:start + window_size]
+            member_steps = [row['_numeric_step'] for row in members]
+            member_gaps = [right - left for left, right in zip(member_steps, member_steps[1:])]
+            if any(gap != expected_step_gap for gap in member_gaps):
+                continue
+            member_deltas = []
+            safe = True
+            for member in members:
+                deltas = {
+                    metric: float(member['metrics'][metric]) - float(baseline[metric])
+                    for metric in protected_metrics + ['SPICE']
+                }
+                member_deltas.append(deltas)
+                if any(deltas[metric] < -tolerance for metric in protected_metrics):
+                    safe = False
+                    break
+                if min_spice_gain is not None and deltas['SPICE'] < min_spice_gain:
+                    safe = False
+                    break
+            if not safe:
+                continue
+            mean, std, worst = metric_aggregates(members)
+            centre = dict(members[window_size // 2])
+            centre_deltas = {
+                metric: float(centre['metrics'][metric]) - float(baseline[metric])
+                for metric in protected_metrics + ['SPICE']
+            }
+            if min_spice_gain is not None:
+                if centre_deltas['SPICE'] < min_spice_gain:
+                    continue
+                if mean['SPICE'] - float(baseline['SPICE']) < min_spice_gain:
+                    continue
+            centre['baseline_deltas'] = centre_deltas
+            centre['protected_relative_margins'] = {
+                metric: centre_deltas[metric] / max(abs(float(baseline[metric])), 1e-12)
+                for metric in protected_metrics
+            }
+            centre['min_protected_relative_margin'] = min(
+                centre['protected_relative_margins'].values()
+            )
+            centre['spice_gain'] = centre_deltas['SPICE']
+            window_relative_margins = [
+                deltas[metric] / max(abs(float(baseline[metric])), 1e-12)
+                for deltas in member_deltas
+                for metric in protected_metrics
+            ]
+            centre['stability_window'] = {
+                'size': window_size,
+                'source_exp_dir': source,
+                'source_exp_name': centre.get('source_exp_name', os.path.basename(source)),
+                'expected_step_gap': expected_step_gap,
+                'member_steps': member_steps,
+                'member_checkpoints': [member['checkpoint_path'] for member in members],
+                'member_metrics': [member['metrics'] for member in members],
+                'member_metric_deltas': member_deltas,
+                'metric_mean': mean,
+                'metric_sample_std': std,
+                'metric_worst': worst,
+                'all_members_complete_finite': True,
+                'all_members_preserve_validation_baseline': True,
+                'all_members_preserve_spice_gain': True,
+                'min_protected_relative_margin': min(window_relative_margins),
+            }
+            stable_windows.append(centre)
+
+    if not stable_windows:
+        return None, []
+    best = sorted(
+        stable_windows,
+        key=lambda row: (
+            row['stability_window']['metric_mean']['SPICE'],
+            row['stability_window']['min_protected_relative_margin'],
+            row['stability_window']['metric_worst']['SPICE'],
+            row['stability_window']['metric_mean']['CIDEr'],
+            -row['stability_window']['metric_sample_std']['SPICE'],
+            float(row['metrics']['SPICE']),
+        ),
+        reverse=True,
+    )[0]
+    return best, stable_windows
+
+
 def select_rows(rows, baseline, strategy, strict_thresholds=None):
     add_balanced_scores(rows)
     relaxed = False
     candidates = rows
     if strategy == 'validation_best_cider':
-        def has_complete_finite_metrics(row):
-            for metric in ALL_METRICS:
-                raw = row.get(metric)
-                if raw in (None, ''):
-                    return False
-                try:
-                    if not math.isfinite(float(raw)):
-                        return False
-                except (TypeError, ValueError):
-                    return False
-            return True
         candidates = [row for row in rows if has_complete_finite_metrics(row)]
         if not candidates:
             return None, [], False
@@ -456,9 +690,11 @@ def main():
             dataset_name=dataset_name,
             summary_csv=args.summary_csv,
             baseline_exp_name=args.baseline_exp_name,
-            explicit_only=args.strategy == 'val_baseline_pareto',
+            explicit_only=args.strategy in BASELINE_VALIDATION_STRATEGIES,
+            strict_finite=args.strategy in BASELINE_VALIDATION_STRATEGIES,
+            require_validation_artifact=args.require_audited_validation_baseline,
         )
-    if args.strategy == 'val_baseline_pareto':
+    if args.strategy in BASELINE_VALIDATION_STRATEGIES:
         missing = [metric for metric in protected_metrics + ['SPICE'] if metric not in baseline]
         if missing:
             raise ValueError('Baseline metrics file is missing required metrics: %s' % ', '.join(missing))
@@ -468,13 +704,27 @@ def main():
         'SPICE': args.strict_spice,
     }
     pareto = []
+    stable_windows = []
     if args.strategy == 'val_baseline_pareto':
         best, candidates, pareto = select_val_baseline_pareto(
             rows,
             baseline,
             protected_metrics,
             args.baseline_tolerance,
+            args.min_spice_gain,
         )
+        relaxed = False
+    elif args.strategy == 'val_baseline_stable_window':
+        best, stable_windows = select_val_baseline_stable_window(
+            rows,
+            baseline,
+            protected_metrics,
+            args.baseline_tolerance,
+            args.stability_window,
+            args.expected_step_gap,
+            args.min_spice_gain,
+        )
+        candidates = stable_windows
         relaxed = False
     else:
         best, candidates, relaxed = select_rows(
@@ -485,8 +735,11 @@ def main():
         )
     if best is None:
         is_val_pareto = args.strategy == 'val_baseline_pareto'
+        is_val_baseline = args.strategy in BASELINE_VALIDATION_STRATEGIES
         if args.strategy == 'validation_best_cider':
             failure_reason = 'no_checkpoint_with_complete_validation_metrics'
+        elif args.strategy == 'val_baseline_stable_window':
+            failure_reason = 'no_stable_validation_window_preserves_baseline'
         elif is_val_pareto:
             failure_reason = 'no_checkpoint_preserves_validation_baseline'
         else:
@@ -506,10 +759,15 @@ def main():
             'strict_constraints': strict_thresholds,
             'baseline_metrics': baseline,
             'baseline_source': baseline_source,
-            'protected_metrics': protected_metrics if is_val_pareto else [],
-            'baseline_tolerance': args.baseline_tolerance if is_val_pareto else None,
+            'protected_metrics': protected_metrics if is_val_baseline else [],
+            'baseline_tolerance': args.baseline_tolerance if is_val_baseline else None,
+            'min_spice_gain': args.min_spice_gain if is_val_baseline else None,
             'selected_metric_deltas': {},
             'pareto_front_count': 0,
+            'stable_window_count': 0,
+            'stability_window_size': args.stability_window if args.strategy == 'val_baseline_stable_window' else None,
+            'expected_step_gap': args.expected_step_gap if args.strategy == 'val_baseline_stable_window' else None,
+            'stability_window': {},
             'feasible_candidate_count': 0,
             'selection_uses_test_metrics': False if args.strategy in VALIDATION_ONLY_STRATEGIES else None,
             'selection_metric_split': 'validation' if args.strategy in VALIDATION_ONLY_STRATEGIES else None,
@@ -556,14 +814,19 @@ def main():
         'normalized_threshold_shortfall': best.get('normalized_threshold_shortfall'),
         'baseline_metrics': baseline,
         'baseline_source': baseline_source,
-        'protected_metrics': protected_metrics if args.strategy == 'val_baseline_pareto' else [],
-        'baseline_tolerance': args.baseline_tolerance if args.strategy == 'val_baseline_pareto' else None,
+        'protected_metrics': protected_metrics if args.strategy in BASELINE_VALIDATION_STRATEGIES else [],
+        'baseline_tolerance': args.baseline_tolerance if args.strategy in BASELINE_VALIDATION_STRATEGIES else None,
+        'min_spice_gain': args.min_spice_gain if args.strategy in BASELINE_VALIDATION_STRATEGIES else None,
         'selected_metric_deltas': best.get('baseline_deltas', {}),
         'protected_relative_margins': best.get('protected_relative_margins', {}),
         'min_protected_relative_margin': best.get('min_protected_relative_margin'),
         'spice_gain': best.get('spice_gain'),
         'pareto_front_count': len(pareto),
-        'feasible_candidate_count': len(candidates) if args.strategy == 'val_baseline_pareto' else None,
+        'stable_window_count': len(stable_windows),
+        'stability_window_size': args.stability_window if args.strategy == 'val_baseline_stable_window' else None,
+        'expected_step_gap': args.expected_step_gap if args.strategy == 'val_baseline_stable_window' else None,
+        'stability_window': best.get('stability_window', {}),
+        'feasible_candidate_count': len(candidates) if args.strategy in BASELINE_VALIDATION_STRATEGIES else None,
         'selection_uses_test_metrics': False if args.strategy in VALIDATION_ONLY_STRATEGIES else None,
         'selection_metric_split': 'validation' if args.strategy in VALIDATION_ONLY_STRATEGIES else None,
         'selected_source_exp_dir': best.get('source_exp_dir', exp_dir),

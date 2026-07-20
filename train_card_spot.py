@@ -420,7 +420,7 @@ def is_content_word_weighted_ce_enabled(cfg):
 
 def load_pretrained_checkpoint_compat(change_detector, speaker, checkpoint_path):
     if not checkpoint_path:
-        return
+        return None, None
     checkpoint = load_checkpoint(checkpoint_path)
     change_state = checkpoint.get('change_detector_state') or checkpoint.get('change_detector')
     speaker_state = checkpoint.get('speaker_state') or checkpoint.get('speaker')
@@ -433,6 +433,7 @@ def load_pretrained_checkpoint_compat(change_detector, speaker, checkpoint_path)
         print('Init checkpoint CARD compatibility: missing=%s unexpected=%s' % (change_result.missing_keys, change_result.unexpected_keys))
     if speaker_result.missing_keys or speaker_result.unexpected_keys:
         print('Init checkpoint speaker compatibility: missing=%s unexpected=%s' % (speaker_result.missing_keys, speaker_result.unexpected_keys))
+    return change_result, speaker_result
 
 def apply_cli_overrides(args, cfg):
     apply_dataset_cli_overrides(args, cfg)
@@ -480,6 +481,8 @@ def apply_cli_overrides(args, cfg):
         cfg.train.semantic_update_visual = False
     if args.seed is not None:
         cfg.train.seed = args.seed
+    if args.finetune_decoder_only:
+        cfg.train.finetune_decoder_only = True
     if args.debug_semantic_detach:
         cfg.train.use_semantic_aux = True
         cfg.train.use_semantic_detach = True
@@ -711,6 +714,7 @@ parser.add_argument('--semantic_update_visual', action='store_true')
 parser.add_argument('--no_semantic_update_visual', action='store_true')
 parser.add_argument('--debug_semantic_detach', action='store_true')
 parser.add_argument('--seed', type=int, default=None)
+parser.add_argument('--finetune_decoder_only', action='store_true')
 parser.add_argument('--lambda_obj', type=float, default=None)
 parser.add_argument('--lambda_act', type=float, default=None)
 parser.add_argument('--lambda_rel', type=float, default=None)
@@ -937,9 +941,31 @@ change_detector.to(device)
 speaker = DynamicSpeaker(cfg)
 speaker.to(device)
 
+finetune_decoder_only = bool(getattr(cfg.train, 'finetune_decoder_only', False))
 init_checkpoint = str(getattr(cfg.train, 'init_checkpoint', '') or '')
+if finetune_decoder_only and not init_checkpoint:
+    raise ValueError('train.finetune_decoder_only requires train.init_checkpoint')
 if init_checkpoint:
-    load_pretrained_checkpoint_compat(change_detector, speaker, init_checkpoint)
+    change_load, speaker_load = load_pretrained_checkpoint_compat(
+        change_detector, speaker, init_checkpoint
+    )
+    if finetune_decoder_only:
+        mismatches = {
+            'change_detector_missing': list(change_load.missing_keys),
+            'change_detector_unexpected': list(change_load.unexpected_keys),
+            'speaker_missing': list(speaker_load.missing_keys),
+            'speaker_unexpected': list(speaker_load.unexpected_keys),
+        }
+        if any(mismatches.values()):
+            raise ValueError(
+                'Decoder-only fine-tuning requires an architecture-exact init checkpoint: %s'
+                % mismatches
+            )
+
+if finetune_decoder_only:
+    set_requires_grad(change_detector.parameters(), False)
+    set_requires_grad(speaker.parameters(), True)
+    print('Decoder-only fine-tuning enabled: CARD/change detector is frozen in eval mode.')
 
 print(change_detector)
 print(speaker)
@@ -989,6 +1015,7 @@ experiment_summary = [
     f'  selection_strategy: {cfg.train.selection_strategy}',
     f'  init_checkpoint: {cfg.train.init_checkpoint}',
     f'  finetune_steps: {cfg.train.finetune_steps}',
+    f'  finetune_decoder_only: {finetune_decoder_only}',
     f'  max_iter: {cfg.train.max_iter}',
     f'  save_interval: {cfg.train.save_interval}',
     f'  eval_interval: {cfg.train.eval_interval}',
@@ -1027,7 +1054,13 @@ with open(os.path.join(output_dir, 'model_print'), 'w') as f:
     for line in experiment_summary:
         print(line, file=f)
 
-all_params = list(change_detector.parameters()) + list(speaker.parameters())
+all_params = [
+    parameter
+    for parameter in list(change_detector.parameters()) + list(speaker.parameters())
+    if parameter.requires_grad
+]
+if not all_params:
+    raise ValueError('No trainable parameters remain after applying fine-tune freeze settings.')
 optimizer = build_optimizer(all_params, cfg)
 lr_scheduler = torch.optim.lr_scheduler.StepLR(
     optimizer,
@@ -1046,7 +1079,11 @@ best_training_records = {
     'balanced': {'score': -float('inf'), 'snapshot': None, 'all_above_baseline': False},
 }
 
-set_mode('train', [change_detector, speaker])
+if finetune_decoder_only:
+    set_mode('eval', [change_detector])
+    set_mode('train', [speaker])
+else:
+    set_mode('train', [change_detector, speaker])
 
 while t < cfg.train.max_iter:
     epoch += 1
@@ -1360,7 +1397,17 @@ while t < cfg.train.max_iter:
             stats['relation_pos_count'] = relation_pos_count
 
         #results, sample_logprobs = model(d_feats, q_feats, labels, cfg=cfg, mode='sample')
-        if cfg.train.use_semantic_partial_detach and weighted_semantic_loss is not None:
+        if finetune_decoder_only:
+            # Auxiliary heads belong to the frozen change detector. Keep their
+            # losses for monitoring, but backpropagate only the loss containing
+            # the trainable speaker path; a standalone frozen auxiliary loss
+            # has no grad_fn and would fail on backward().
+            main_loss.backward()
+            decoder_grad_after_main = grad_norm(speaker.parameters())
+            stats['decoder_grad_norm_after_main_loss'] = decoder_grad_after_main
+            stats['decoder_grad_norm_after_semantic_loss'] = decoder_grad_after_main
+            stats['caption_decoder_grad_from_semantic_blocked'] = 1.0
+        elif cfg.train.use_semantic_partial_detach and weighted_semantic_loss is not None:
             main_loss.backward(retain_graph=True)
             decoder_grad_after_main = grad_norm(speaker.parameters())
             speaker_requires_grad = set_requires_grad(speaker.parameters(), False)
@@ -1528,7 +1575,11 @@ while t < cfg.train.max_iter:
                 if val_stats:
                     val_logger.print_current_stats(epoch, 0, t, val_stats, test_iter_end_time)
 
-            set_mode('train', [change_detector, speaker])
+            if finetune_decoder_only:
+                set_mode('eval', [change_detector])
+                set_mode('train', [speaker])
+            else:
+                set_mode('train', [change_detector, speaker])
 
         if t >= cfg.train.max_iter:
             break

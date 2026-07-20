@@ -28,6 +28,7 @@ class WCSGSmokeTest(unittest.TestCase):
         summary = key_switch_summary(cfg)
         self.assertEqual(summary['learning_rate'], 0.0)
         self.assertEqual(summary['dataset_name'], 'levir_cc')
+        self.assertIs(summary['finetune_decoder_only'], False)
 
     @unittest.skipUnless(torch is not None, 'PyTorch is required for model shape smoke tests.')
     def test_semantic_cross_attention_fusion_class_id_shape(self):

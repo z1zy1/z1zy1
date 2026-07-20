@@ -43,8 +43,23 @@ class ValidationBaselineParetoSelectorTest(unittest.TestCase):
 
     def write_baseline(self, root, payload=None):
         path = os.path.join(root, 'baseline.json')
+        default_payload = {
+            'status': 'done',
+            'selection_strategy': 'validation_best_cider',
+            'selection_uses_test_metrics': False,
+            'selection_metric_split': 'validation',
+            'exp_name': 'card_test_baseline',
+            'selected_val_metrics': metrics(),
+        }
+        if payload is not None:
+            if any(key in payload for key in ('metrics', 'selected_metrics', 'selected_val_metrics')):
+                for key in ('metrics', 'selected_metrics', 'selected_val_metrics'):
+                    default_payload.pop(key, None)
+                default_payload.update(payload)
+            else:
+                default_payload['selected_val_metrics'] = payload
         with open(path, 'w', encoding='utf-8') as f:
-            json.dump(payload or {'selected_val_metrics': metrics()}, f)
+            json.dump(default_payload, f)
         return path
 
     def run_selector(self, root, baseline=None):

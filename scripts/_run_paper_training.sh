@@ -61,6 +61,7 @@ PAPER_SELECTION_MODE="${PAPER_SELECTION_MODE:-1}"
 MAX_ITER="${MAX_ITER:-}"
 SNAPSHOT_INTERVAL="${SNAPSHOT_INTERVAL:-}"
 FINETUNE_STEPS="${FINETUNE_STEPS:-}"
+FINETUNE_DECODER_ONLY="${FINETUNE_DECODER_ONLY:-0}"
 SAVE_INTERVAL="${SAVE_INTERVAL:-}"
 EVAL_INTERVAL="${EVAL_INTERVAL:-}"
 LOG_INTERVAL="${LOG_INTERVAL:-}"
@@ -98,6 +99,7 @@ COMMON_OPTS=(
   exp_name "$EXP_NAME"
   gpu_id "[$PYTORCH_GPU]"
   train.seed "$SEED"
+  train.finetune_decoder_only "$(bool_word "$FINETUNE_DECODER_ONLY")"
   model.enable_aux_mask "$(bool_word "$ENABLE_AUX_MASK")"
   train.use_semantic_aux "$(bool_word "$USE_AUX_SEMANTIC")"
   train.lambda_mask "$LMASK"
@@ -194,6 +196,7 @@ if is_true "$USE_FEATURE_REWEIGHT"; then TRAIN_ARGS+=(--use_feature_reweight); e
 TRAIN_ARGS+=(--no_semantic_hard_gate)
 if is_true "$DETACH_REWEIGHT_MASK"; then TRAIN_ARGS+=(--detach_reweight_mask); fi
 if [ -n "$INIT_CHECKPOINT" ]; then TRAIN_ARGS+=(--init_checkpoint "$INIT_CHECKPOINT"); fi
+if is_true "$FINETUNE_DECODER_ONLY"; then TRAIN_ARGS+=(--finetune_decoder_only); fi
 if is_true "$PAPER_SELECTION_MODE"; then TRAIN_ARGS+=(--paper_selection_mode); fi
 
 {
@@ -202,5 +205,6 @@ if is_true "$PAPER_SELECTION_MODE"; then TRAIN_ARGS+=(--paper_selection_mode); f
   echo "data_root=$DATA_ROOT"
   echo "base_cfg=$BASE_CFG"
   echo "model=$MODEL_TYPE"
+  echo "finetune_decoder_only=$(bool_word "$FINETUNE_DECODER_ONLY")"
   "$PYTHON" train_card_spot.py "${TRAIN_ARGS[@]}" "${COMMON_OPTS[@]}"
 } 2>&1 | tee "$LOG_PATH"

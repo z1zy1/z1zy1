@@ -116,6 +116,7 @@ class LockedBaselineTest(unittest.TestCase):
             },
             'train': {
                 'init_checkpoint': '', 'start_from': None, 'finetune_steps': 0,
+                'finetune_decoder_only': False,
                 'max_iter': 10000, 'total_steps': 10000, 'snapshot_interval': 1000,
                 'save_interval': 1000, 'eval_interval': 1000, 'seed': 1111,
                 'lambda_mask': 0.0, 'lambda_semantic': 0.0,
@@ -172,6 +173,18 @@ class LockedBaselineTest(unittest.TestCase):
             (exp_dir / 'resolved_config.json').write_text(json.dumps(cfg), encoding='utf-8')
             with self.assertRaisesRegex(ValueError, 'use_content_word_weight'):
                 manifest_tool.build_entry(str(exp_root), 'levir_mci', exp_dir.name)
+
+    def test_manifest_rejects_decoder_only_finetune_as_original_card(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            exp_root = root / 'experiments'
+            exp_dir, _, cfg = self.make_experiment(
+                exp_root, 'levir_cc', manifest_tool.DEFAULT_EXPERIMENTS['levir_cc']
+            )
+            cfg['train']['finetune_decoder_only'] = True
+            (exp_dir / 'resolved_config.json').write_text(json.dumps(cfg), encoding='utf-8')
+            with self.assertRaisesRegex(ValueError, 'finetune_decoder_only'):
+                manifest_tool.build_entry(str(exp_root), 'levir_cc', exp_dir.name)
 
     def test_manifest_rejects_non_adam_optimizer(self):
         with tempfile.TemporaryDirectory() as temporary:

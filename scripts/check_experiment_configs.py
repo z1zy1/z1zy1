@@ -23,6 +23,7 @@ KEY_SWITCHES = [
     'train.aux_warmup_start_ratio',
     'train.aux_warmup_end_ratio',
     'train.selection_strategy',
+    'train.finetune_decoder_only',
     'model.semantic_input_mode',
 ]
 

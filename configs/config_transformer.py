@@ -177,6 +177,7 @@ __C.train.snapshot_interval = 1000
 __C.train.save_interval = 0
 __C.train.eval_interval = 0
 __C.train.finetune_steps = 0
+__C.train.finetune_decoder_only = False
 __C.train.start_from = None
 __C.train.max_iter = 10000
 __C.train.total_steps = 0

@@ -102,7 +102,7 @@ def audit_resolved_config(path, dataset):
         'train.use_weak_mask_prior', 'train.use_aux_warmup',
         'train.use_mask_conf_filter', 'train.use_mask_warmup',
         'train.use_semantic_warmup', 'train.semantic_late_start',
-        'train.paper_selection_mode',
+        'train.paper_selection_mode', 'train.finetune_decoder_only',
     ):
         require_false(cfg, dotted)
     for dotted in (

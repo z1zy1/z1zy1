@@ -13,6 +13,9 @@ cfg = __C
 __C.exp_dir = './experiments'
 __C.exp_name = ''
 __C.gpu_id= [0]
+__C.experiment_group = ''
+__C.description = ''
+__C.tags = []
 
 # --------------------------------------------------------------------------- #
 # logger options
@@ -117,6 +120,7 @@ __C.data = AttrDict()
 __C.data.dataset = 'rcc_dataset'
 __C.data.data_root = ''
 __C.data.num_workers = 8
+__C.data.seed_workers = False
 __C.data.default_feature_dir = './data/features'
 __C.data.semantic_feature_dir = './data/sc_features'
 __C.data.nonsemantic_feature_dir = './data/nsc_features'
@@ -183,6 +187,8 @@ __C.train.max_iter = 10000
 __C.train.total_steps = 0
 __C.train.max_epochs = 0
 __C.train.seed = 1111
+__C.train.deterministic = None
+__C.train.benchmark = None
 __C.train.log_interval = 50
 __C.train.scheduled_sampling_start = 1000000
 __C.train.scheduled_sampling_increase_every = 5

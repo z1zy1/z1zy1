@@ -10,7 +10,6 @@ import torch
 torch.backends.cudnn.enabled = False
 import torch.nn as nn
 import torch.nn.functional as F
-import random
 
 from configs.config_transformer import cfg, merge_cfg_from_file
 from configs.config_transformer import merge_cfg_from_list
@@ -18,13 +17,17 @@ from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
 from utils.dataset_config import apply_dataset_cli_overrides
+from utils.config_validation import validate_resolved_config
+from utils.checkpointing import split_model_states
 from utils.experiment_tracking import (
     append_jsonl,
     save_resolved_config,
     sync_wcsg_config_aliases,
     write_single_row_csv,
 )
+from utils.experiment_runtime import RunStateManager, StructuredMetricLogger
 from utils.logger import Logger
+from utils.seed import seed_everything
 from utils.semantic_label import build_content_word_token_ids
 from utils.semantic_warmup import get_effective_lambda_semantic
 from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, load_checkpoint, \
@@ -422,10 +425,7 @@ def load_pretrained_checkpoint_compat(change_detector, speaker, checkpoint_path)
     if not checkpoint_path:
         return None, None
     checkpoint = load_checkpoint(checkpoint_path)
-    change_state = checkpoint.get('change_detector_state') or checkpoint.get('change_detector')
-    speaker_state = checkpoint.get('speaker_state') or checkpoint.get('speaker')
-    if change_state is None or speaker_state is None:
-        raise KeyError('init checkpoint must contain change_detector_state and speaker_state: %s' % checkpoint_path)
+    change_state, speaker_state = split_model_states(checkpoint)
     change_result = change_detector.load_state_dict(change_state, strict=False)
     speaker_result = speaker.load_state_dict(speaker_state, strict=False)
     print('Loaded init_checkpoint: %s' % checkpoint_path)
@@ -766,6 +766,7 @@ if args.opts:
 apply_cli_overrides(args, cfg)
 sync_wcsg_config_aliases(cfg)
 apply_train_step_aliases(cfg)
+validate_resolved_config(cfg, phase='train')
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -810,6 +811,16 @@ snapshot_file_format = '%s_checkpoint_%d.pt'
 train_logger = Logger(cfg, output_dir, is_train=True)
 val_logger = Logger(cfg, output_dir, is_train=False)
 tracking_info = save_resolved_config(output_dir, cfg, args=args, phase='train', log_path=train_logger.log_name)
+structured_metrics = StructuredMetricLogger(output_dir)
+run_state = RunStateManager(
+    output_dir,
+    experiment_name=exp_name,
+    dataset=str(cfg.data.dataset),
+    seed=int(cfg.train.seed),
+)
+run_state.install_failure_hooks()
+run_state.start()
+training_wall_start = time.time()
 train_jsonl_path = os.path.join(output_dir, 'train_log.jsonl')
 open(train_jsonl_path, 'a', encoding='utf-8').close()
 val_metrics_csv_path = os.path.join(output_dir, 'val_metrics.csv')
@@ -820,11 +831,11 @@ if not os.path.exists(val_metrics_csv_path):
         fieldnames=['iter', 'snapshot_path', 'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE', 'balanced_score', 'ALL_ABOVE_BASELINE'],
     )
 
-random.seed(cfg.train.seed)
-np.random.seed(cfg.train.seed)
-torch.manual_seed(cfg.train.seed)
-if use_cuda:
-    torch.cuda.manual_seed_all(cfg.train.seed)
+seed_info = seed_everything(
+    cfg.train.seed,
+    deterministic=getattr(cfg.train, 'deterministic', None),
+    benchmark=getattr(cfg.train, 'benchmark', None),
+)
 
 if not cfg.model.enable_aux_mask:
     experiment_mode = 'baseline'
@@ -1061,6 +1072,29 @@ all_params = [
 ]
 if not all_params:
     raise ValueError('No trainable parameters remain after applying fine-tune freeze settings.')
+total_parameter_count = sum(
+    parameter.numel()
+    for parameter in list(change_detector.parameters()) + list(speaker.parameters())
+)
+trainable_parameter_count = sum(parameter.numel() for parameter in all_params)
+with open(os.path.join(output_dir, 'model_summary.txt'), 'w', encoding='utf-8') as f:
+    f.write('total_parameters=%d\n' % total_parameter_count)
+    f.write('trainable_parameters=%d\n' % trainable_parameter_count)
+    f.write('device=%s\n' % device)
+    f.write('seed=%d\n' % int(cfg.train.seed))
+    f.write('seed_info=%s\n' % json.dumps(seed_info, ensure_ascii=False, sort_keys=True))
+    f.write('\nCARD\n%s\n\nDynamicSpeaker\n%s\n' % (change_detector, speaker))
+run_state.update(
+    experiment_group=str(getattr(cfg, 'experiment_group', '') or ''),
+    description=str(getattr(cfg, 'description', '') or ''),
+    tags=list(getattr(cfg, 'tags', []) or []),
+    model_name=str(getattr(cfg.model, 'type', '') or 'card'),
+    train_samples=train_size,
+    val_samples=val_size,
+    total_parameters=total_parameter_count,
+    trainable_parameters=trainable_parameter_count,
+    device=str(device),
+)
 optimizer = build_optimizer(all_params, cfg)
 lr_scheduler = torch.optim.lr_scheduler.StepLR(
     optimizer,
@@ -1447,6 +1481,14 @@ while t < cfg.train.max_iter:
         if t % cfg.train.log_interval == 0:
             train_logger.print_current_stats(epoch, i, t, stats, iter_end_time)
             append_jsonl(train_jsonl_path, {'epoch': epoch, 'iter': t, **stats})
+            structured_metrics.log(
+                'train',
+                stats,
+                epoch=epoch,
+                global_step=t,
+                step=i,
+                duration_seconds=iter_end_time,
+            )
             train_logger.plot_current_stats(
                 epoch,
                 float(i * batch_size) / train_size, stats, 'loss')
@@ -1574,6 +1616,14 @@ while t < cfg.train.max_iter:
 
                 if val_stats:
                     val_logger.print_current_stats(epoch, 0, t, val_stats, test_iter_end_time)
+                    structured_metrics.log(
+                        'val',
+                        val_stats,
+                        epoch=epoch,
+                        global_step=t,
+                        step=0,
+                        duration_seconds=test_iter_end_time,
+                    )
 
             if finetune_decoder_only:
                 set_mode('eval', [change_detector])
@@ -1584,5 +1634,14 @@ while t < cfg.train.max_iter:
         if t >= cfg.train.max_iter:
             break
     lr_scheduler.step()
+
+run_state.complete(
+    final_epoch=epoch,
+    final_global_step=t,
+    total_training_seconds=time.time() - training_wall_start,
+    checkpoint_selection_deferred=True,
+    selection_metric=str(cfg.train.selection_strategy),
+    training_best_records=best_training_records,
+)
 
 

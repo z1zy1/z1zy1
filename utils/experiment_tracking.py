@@ -2,15 +2,22 @@ import csv
 import hashlib
 import json
 import os
+import shutil
+import subprocess
 import sys
 import time
 
 import yaml
 
+from utils.experiment_runtime import write_reproducibility_artifacts
+
 
 KEY_SWITCHES = [
     'dataset_name',
     'exp_name',
+    'experiment_group',
+    'seed',
+    'seed_workers',
     'use_aux_mask',
     'use_aux_semantic',
     'use_semantic_cross_attention',
@@ -38,6 +45,8 @@ KEY_SWITCHES = [
     'lambda_mask_warmup',
     'lambda_semantic_warmup',
     'checkpoint_path',
+    'deterministic',
+    'benchmark',
 ]
 
 
@@ -87,6 +96,9 @@ def comparable_config_dict(cfg):
     plain = cfg_to_plain(cfg)
     plain.pop('exp_name', None)
     plain.pop('exp_dir', None)
+    plain.pop('experiment_group', None)
+    plain.pop('description', None)
+    plain.pop('tags', None)
     if 'logger' in plain and isinstance(plain['logger'], dict):
         # Display windows do not affect the model/loss/eval path.
         plain['logger'].pop('display_id', None)
@@ -133,7 +145,12 @@ def key_switch_summary(cfg, checkpoint_path=''):
         'lambda_semantic_warmup': bool(getattr(cfg.train, 'use_semantic_warmup', False) or getattr(cfg.train, 'use_aux_warmup', False)),
         'dataset_name': str(getattr(cfg.data, 'dataset', '')),
         'exp_name': str(getattr(cfg, 'exp_name', '')),
+        'experiment_group': str(getattr(cfg, 'experiment_group', '') or ''),
+        'seed': int(getattr(cfg.train, 'seed', 0)),
+        'seed_workers': bool(getattr(cfg.data, 'seed_workers', False)),
         'checkpoint_path': checkpoint_path or '',
+        'deterministic': getattr(cfg.train, 'deterministic', None),
+        'benchmark': getattr(cfg.train, 'benchmark', None),
     }
 
 
@@ -188,6 +205,8 @@ def save_resolved_config(output_dir, cfg, args=None, checkpoint_path='', phase='
         json.dump(plain, f, indent=2, ensure_ascii=False)
     with open(os.path.join(output_dir, 'resolved_config.yaml'), 'w', encoding='utf-8') as f:
         yaml.safe_dump(plain, f, allow_unicode=True, sort_keys=True)
+    with open(os.path.join(output_dir, 'config_resolved.yaml'), 'w', encoding='utf-8') as f:
+        yaml.safe_dump(plain, f, allow_unicode=True, sort_keys=True)
     with open(os.path.join(output_dir, 'config_hash.txt'), 'w', encoding='utf-8') as f:
         f.write('full_config_hash=%s\n' % full_hash)
         f.write('comparable_config_hash=%s\n' % comparable_hash)
@@ -203,6 +222,28 @@ def save_resolved_config(output_dir, cfg, args=None, checkpoint_path='', phase='
                 args_dict = {}
             for key in sorted(args_dict):
                 f.write('%s=%s\n' % (key, args_dict[key]))
+
+    original_cfg = getattr(args, 'cfg', None) if args is not None else None
+    original_target = os.path.join(output_dir, 'config_original.yaml')
+    if original_cfg and os.path.isfile(original_cfg) and (phase == 'train' or not os.path.exists(original_target)):
+        shutil.copyfile(original_cfg, original_target)
+
+    command = subprocess.list2cmdline([sys.executable] + sys.argv)
+    command_path = os.path.join(output_dir, 'command.txt')
+    if phase == 'train' or not os.path.exists(command_path):
+        reproducibility = write_reproducibility_artifacts(
+            output_dir,
+            project_root=os.path.abspath(os.curdir),
+            command=command,
+        )
+    else:
+        reproducibility = {
+            'environment': None,
+            'git': None,
+            'command': command,
+        }
+        with open(os.path.join(output_dir, 'command_%s.txt' % phase), 'w', encoding='utf-8') as f:
+            f.write(command + '\n')
 
     lines = ['Resolved WCSG-CARD key switches:']
     summary = key_switch_summary(cfg, checkpoint_path=checkpoint_path)
@@ -222,6 +263,7 @@ def save_resolved_config(output_dir, cfg, args=None, checkpoint_path='', phase='
         'comparable_config_hash': comparable_hash,
         'key_switches': summary,
         'warning': warning,
+        'reproducibility': reproducibility,
     }
 
 

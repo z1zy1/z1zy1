@@ -1,9 +1,18 @@
-import numpy as np
 import os
 import time
-import visdom
+import numpy as np
 
-class Logger():
+from utils.experiment_runtime import create_stage_logger
+
+try:
+    import visdom
+except ModuleNotFoundError:
+    visdom = None
+
+
+class Logger:
+    """Backward-compatible logger backed by the standard logging package."""
+
     def __init__(self, cfg, output_dir, is_train=True):
         if is_train:
             self.display_id = cfg.logger.display_id
@@ -14,19 +23,29 @@ class Logger():
         self.output_dir = output_dir
         self.is_train = is_train
         self.cfg = cfg
-        self.vis = visdom.Visdom(port=cfg.logger.display_port)
         if is_train:
             self.log_name = os.path.join(output_dir, 'train_log.txt')
-            with open(self.log_name, 'a') as log_file:
-                now = time.strftime("%c")
-                log_file.write('========== Training Log (%s) ==========\n' % now)
+            stage = 'train'
         else:
             self.log_name = os.path.join(output_dir, 'eval_log.txt')
-            with open(self.log_name, 'a') as log_file:
-                now = time.strftime("%c")
-                log_file.write('========== Evaluation Log (%s) ==========\n' % now)
+            stage = 'val'
+        self.logger = create_stage_logger(
+            output_dir,
+            stage,
+            additional_log_paths=(self.log_name,),
+        )
+        self.vis = visdom.Visdom(port=cfg.logger.display_port) if visdom is not None else None
+        self.logger.info(
+            '========== %s Log (%s) ==========',
+            'Training' if is_train else 'Evaluation',
+            time.strftime('%c'),
+        )
+        if self.vis is None:
+            self.logger.warning('Visdom is not installed; scalar plotting is disabled.')
 
     def plot_current_stats(self, epoch, counter_ratio, stats, which_plot):
+        if self.vis is None:
+            return
         if which_plot == 'acc':
             accs = {}
             for k, v in stats.items():
@@ -75,10 +94,20 @@ class Logger():
                 win=self.display_id + 1)
 
     def print_current_stats(self, epoch, i, total_i, stats, t):
-        message = '[Epoch: %d Iters: %d, Total Iters:%d, Time: %.3f] ' % (epoch, i, total_i, t)
+        message = 'epoch=%d step=%d global_step=%d duration=%.3f ' % (epoch, i, total_i, t)
         for k, v in stats.items():
-            message += '%s: %.4f ' % (k, v)
-        print(message)
-        with open(self.log_name, 'a') as log_file:
-            log_file.write('%s\n' % message)
+            try:
+                message += '%s=%.4f ' % (k, float(v))
+            except (TypeError, ValueError):
+                message += '%s=%s ' % (k, v)
+        self.logger.info(message.rstrip())
+
+    def info(self, message, *args):
+        self.logger.info(message, *args)
+
+    def warning(self, message, *args):
+        self.logger.warning(message, *args)
+
+    def exception(self, message, *args):
+        self.logger.exception(message, *args)
 

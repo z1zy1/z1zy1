@@ -14,7 +14,16 @@ from datasets.datasets import create_dataset
 from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
 from utils.dataset_config import apply_dataset_cli_overrides
+from utils.config_validation import validate_resolved_config
+from utils.checkpointing import split_model_states
 from utils.experiment_tracking import save_resolved_config, sync_wcsg_config_aliases, write_single_row_csv
+from utils.experiment_runtime import (
+    StructuredMetricLogger,
+    create_stage_logger,
+    install_error_hook,
+    timestamp,
+    update_run_summary,
+)
 from utils.semantic_label import build_content_word_token_ids
 
 from utils.utils import AverageMeter, accuracy, set_mode, load_checkpoint, \
@@ -294,6 +303,7 @@ if args.opts:
     merge_cfg_from_list(args.opts)
 apply_cli_overrides(args, cfg)
 sync_wcsg_config_aliases(cfg)
+validate_resolved_config(cfg, phase=args.split)
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -317,6 +327,8 @@ exp_name = cfg.exp_name
 output_dir = os.path.join(exp_dir, exp_name)
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
+install_error_hook(output_dir)
+stage_logger = create_stage_logger(output_dir, args.split)
 
 if args.result_json is not None:
     result_save_path_pos = os.path.normpath(args.result_json)
@@ -356,6 +368,7 @@ elif args.snapshot is not None:
 else:
     raise ValueError('Either --snapshot, --snapshot_path, or --checkpoint must be provided.')
 save_resolved_config(output_dir, cfg, args=args, checkpoint_path=snapshot_full_path, phase=args.split, log_path=os.path.join(output_dir, 'eval_log.txt'))
+structured_metrics = StructuredMetricLogger(output_dir)
 test_metrics_csv_path = os.path.join(output_dir, 'test_metrics.csv')
 if args.split == 'test' and not os.path.exists(test_metrics_csv_path):
     write_single_row_csv(
@@ -364,8 +377,8 @@ if args.split == 'test' and not os.path.exists(test_metrics_csv_path):
         fieldnames=['checkpoint_path', 'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE', 'Mask_Precision', 'Mask_Recall', 'Mask_F1', 'Mask_IoU', 'Mask_mIoU'],
     )
 checkpoint = load_checkpoint(snapshot_full_path)
-change_detector_state = checkpoint['change_detector_state']
-speaker_state = checkpoint['speaker_state']
+change_detector_state, speaker_state = split_model_states(checkpoint)
+stage_logger.info('Loaded checkpoint for %s inference: %s', args.split, snapshot_full_path)
 
 # Data loading part
 train_dataset, train_loader = create_dataset(cfg, 'train')
@@ -462,9 +475,9 @@ with torch.no_grad():
             image_num = image_id.split('.')[0]
 
     test_iter_end_time = time.time() - test_iter_start_time
-    print('%s inference took %.4f seconds' % (args.split, test_iter_end_time))
+    stage_logger.info('%s inference took %.4f seconds', args.split, test_iter_end_time)
     coco_gen_format_save(result_sents_pos, result_save_path_pos)
-    print('Saved captions to %s' % result_save_path_pos)
+    stage_logger.info('Saved captions to %s', result_save_path_pos)
     aux_metrics = {}
     averaged_mask_metrics = average_metric_list(mask_metric_items)
     if averaged_mask_metrics:
@@ -490,7 +503,22 @@ with torch.no_grad():
         aux_metric_path = os.path.join(os.path.dirname(result_save_path_pos), 'aux_metrics.json')
         with open(aux_metric_path, 'w', encoding='utf-8') as f:
             json.dump(aux_metrics, f, indent=2)
-        print('Saved auxiliary metrics to %s' % aux_metric_path)
+        stage_logger.info('Saved auxiliary metrics to %s', aux_metric_path)
+    structured_metrics.log(
+        args.split,
+        dict(aux_metrics, prediction_count=len(result_sents_pos)),
+        global_step=args.snapshot,
+        duration_seconds=test_iter_end_time,
+    )
+    update_run_summary(
+        output_dir,
+        **{
+            '%s_inference_completed' % args.split: True,
+            '%s_inference_end_time' % args.split: timestamp(),
+            '%s_checkpoint' % args.split: snapshot_full_path,
+            '%s_prediction_file' % args.split: result_save_path_pos,
+        }
+    )
 
 
 

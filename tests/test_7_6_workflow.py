@@ -8,6 +8,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'scripts'))
 from build_7_6_locked_manifest import (
+    audit_selected_method,
     audit_speaker_vocab_shapes,
     audit_vocab_file,
     directory_inventory,
@@ -52,6 +53,13 @@ class RegisteredLegacyLevirSourceTest(unittest.TestCase):
     def test_missing_semantic_input_mode_is_not_globally_accepted(self):
         with self.assertRaisesRegex(ValueError, 'semantic_input_mode'):
             audit_levir_cc_source_config(legacy_levir_cc_config())
+
+    def test_registered_legacy_may_be_selected_without_semantic_input_mode(self):
+        audit_selected_method(
+            legacy_levir_cc_config(),
+            'levir_cc',
+            'sgc_card_lm003_ls005_pd05_rw02_warmup',
+        )
 
 
 def values(spice=0.30, **updates):

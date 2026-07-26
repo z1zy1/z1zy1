@@ -566,7 +566,9 @@ def audit_selected_method(resolved, dataset, source_name):
         compatibility_view = copy.deepcopy(resolved)
         compatibility_view.setdefault('data', {})['dataset'] = 'levir_cc'
         compatibility_view.setdefault('model', {})['type'] = 'sgc_card'
-        audit_levir_cc_source_config(compatibility_view)
+        audit_levir_cc_source_config(
+            compatibility_view, allow_registered_legacy=True
+        )
     elif dataset == 'levir_cc' and source_name.startswith('levir_cc_decft_'):
         audit_levir_cc_source_config(resolved)
         match = re.fullmatch(r'levir_cc_decft_cw(100|101|102)_s(10|20)_lr(5e7|1e6)', source_name)

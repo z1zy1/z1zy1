@@ -8,6 +8,7 @@ import unittest
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'scripts'))
 from build_7_6_locked_manifest import (
+    audit_data,
     audit_selected_method,
     audit_speaker_vocab_shapes,
     audit_vocab_file,
@@ -240,6 +241,45 @@ class FakeTensor:
 
 
 class VocabularyCheckpointAuditTest(unittest.TestCase):
+    def test_second_cc_split_first_semantic_layout_is_audited(self):
+        with tempfile.TemporaryDirectory() as parent:
+            root = os.path.join(parent, 'SECOND-CC-AUG')
+            features = os.path.join(root, 'features')
+            os.makedirs(features)
+            with open(os.path.join(features, 'feature.npy'), 'wb') as handle:
+                handle.write(b'feature')
+            json_files = {
+                'second_cc_aug_captions_reformat.json': {},
+                'transformer_second_cc_aug_vocab.json': {'change': 0},
+                'splits.json': {},
+                'SECOND-CC-AUG.json': {},
+            }
+            for name, payload in json_files.items():
+                with open(os.path.join(root, name), 'w', encoding='utf-8') as handle:
+                    json.dump(payload, handle)
+            with open(os.path.join(root, 'transformer_second_cc_aug_labels.h5'), 'wb') as handle:
+                handle.write(b'h5')
+            for split in ('train', 'val', 'test'):
+                for phase in ('A', 'B'):
+                    directory = os.path.join(root, split, 'sem', phase)
+                    os.makedirs(directory)
+                    with open(os.path.join(directory, 'sample.png'), 'wb') as handle:
+                        handle.write(b'semantic')
+            resolved = {'data': {
+                'dataset': 'second_cc', 'use_semantic_maps': True,
+                'eval_anno_path': os.path.join(root, 'second_cc_aug_captions_reformat.json'),
+                'vocab_json': os.path.join(root, 'transformer_second_cc_aug_vocab.json'),
+                'h5_label_file': os.path.join(root, 'transformer_second_cc_aug_labels.h5'),
+                'splits_json': os.path.join(root, 'splits.json'),
+                'default_feature_dir': features, 'semantic_feature_dir': features,
+                'semantic_map_root': root,
+                'semantic_before_phase': os.path.join('sem', 'A'),
+                'semantic_after_phase': os.path.join('sem', 'B'),
+            }, 'model': {'transformer_decoder': {'vocab_size': 1}},
+                'train': {'use_semantic_aux': False}}
+            audit = audit_data(resolved, root, parent)
+            self.assertEqual(len(audit['semantic_map_directories']), 6)
+
     def test_vocab_indices_and_speaker_dimensions_must_agree(self):
         with tempfile.TemporaryDirectory() as root:
             path = os.path.join(root, 'vocab.json')

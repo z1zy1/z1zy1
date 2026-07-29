@@ -408,12 +408,32 @@ def audit_data(resolved, expected_root, project_dir):
             raise ValueError('Semantic map root is missing/outside dataset root.')
         for phase_key in ('semantic_before_phase', 'semantic_after_phase'):
             phase = str(data.get(phase_key) or '')
-            phase_path = canonical(os.path.join(semantic_root, phase))
-            if not phase or not is_within(phase_path, expected_root):
-                raise ValueError('data.%s is missing/outside dataset root.' % phase_key)
-            inventory = directory_inventory(phase_path)
-            inventory['role'] = 'data.semantic_map_root/%s' % phase_key
-            semantic_map_dirs.append(inventory)
+            seen_phase_paths = set()
+            for split in ('train', 'val', 'test'):
+                candidates = (
+                    ('split_first', os.path.join(semantic_root, split, phase)),
+                    ('phase_first', os.path.join(semantic_root, phase, split)),
+                    ('shared', os.path.join(semantic_root, phase)),
+                )
+                match = next(
+                    ((layout, canonical(path)) for layout, path in candidates
+                     if phase and os.path.isdir(path)), None
+                )
+                if match is None:
+                    raise FileNotFoundError(
+                        'Semantic directory missing for split %s phase %s.' % (split, phase)
+                    )
+                layout, phase_path = match
+                if not is_within(phase_path, expected_root):
+                    raise ValueError('data.%s is outside dataset root.' % phase_key)
+                if phase_path in seen_phase_paths:
+                    continue
+                seen_phase_paths.add(phase_path)
+                inventory = directory_inventory(phase_path)
+                inventory['role'] = 'data.semantic_map_root/%s/%s/%s' % (
+                    phase_key, layout, split
+                )
+                semantic_map_dirs.append(inventory)
     changeflag_name = {
         'levir_mci': 'LevirCCcaptions.json',
         'second_cc': 'SECOND-CC-AUG.json',

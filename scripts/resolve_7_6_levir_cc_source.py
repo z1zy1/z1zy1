@@ -9,6 +9,14 @@ import os
 import sys
 
 
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+if PROJECT_ROOT not in sys.path:
+    # Historical checkpoints pickle configuration objects as
+    # ``utils.attr_dict.AttrDict``. When this file is executed directly,
+    # Python otherwise exposes only ``scripts/`` on the import path.
+    sys.path.insert(0, PROJECT_ROOT)
+
+
 METRICS = (
     'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4',
     'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE',

@@ -45,6 +45,19 @@ def legacy_levir_cc_config():
 
 
 class RegisteredLegacyLevirSourceTest(unittest.TestCase):
+    def test_resolver_exposes_project_root_for_legacy_checkpoint_unpickle(self):
+        script = os.path.abspath('scripts/resolve_7_6_levir_cc_source.py')
+        code = (
+            'import runpy; runpy.run_path(%r); '
+            'from utils.attr_dict import AttrDict; assert AttrDict' % script
+        )
+        result = subprocess.run(
+            [sys.executable, '-I', '-c', code],
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
     def test_registered_legacy_may_omit_semantic_input_mode(self):
         audit_levir_cc_source_config(
             legacy_levir_cc_config(), allow_registered_legacy=True

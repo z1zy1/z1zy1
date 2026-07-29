@@ -210,14 +210,21 @@ def audit_config(config, allow_registered_legacy=False):
         'train.semantic_loss_type': 'multilabel_bce',
         'data.allow_missing_pseudo_mask': True,
     }
+    registered_legacy_defaults = {
+        'model.semantic_input_mode': 'none',
+        'train.detach_reweight_mask': True,
+    }
     for path, expected_value in expected.items():
         if (
             allow_registered_legacy
-            and path == 'model.semantic_input_mode'
+            and path in registered_legacy_defaults
             and dotted(config, path) in (None, '')
+            and expected_value == registered_legacy_defaults[path]
         ):
-            # The registered 7.5 source predates explicit tracking of this
-            # switch. Its missing value is the historical default ``none``.
+            # The registered 7.5 source predates explicit tracking of these
+            # switches. Their missing values equal the historical defaults
+            # used by that run; this compatibility is intentionally scoped
+            # to the registered source experiment only.
             continue
         require_equal(config, path, expected_value, 'LEVIR-CC source config')
     # This registered legacy run predates explicit model.type tracking. Its

@@ -54,6 +54,18 @@ class RegisteredLegacyLevirSourceTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'semantic_input_mode'):
             audit_levir_cc_source_config(legacy_levir_cc_config())
 
+    def test_registered_legacy_may_omit_detach_reweight_mask(self):
+        config = legacy_levir_cc_config()
+        del config['train']['detach_reweight_mask']
+        audit_levir_cc_source_config(config, allow_registered_legacy=True)
+
+    def test_missing_detach_reweight_mask_is_not_globally_accepted(self):
+        config = legacy_levir_cc_config()
+        del config['train']['detach_reweight_mask']
+        config['model']['semantic_input_mode'] = 'none'
+        with self.assertRaisesRegex(ValueError, 'detach_reweight_mask'):
+            audit_levir_cc_source_config(config)
+
     def test_registered_legacy_may_be_selected_without_semantic_input_mode(self):
         audit_selected_method(
             legacy_levir_cc_config(),

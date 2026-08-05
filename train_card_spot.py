@@ -18,7 +18,7 @@ from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
 from utils.dataset_config import apply_dataset_cli_overrides
 from utils.config_validation import validate_resolved_config
-from utils.checkpointing import split_model_states
+from utils.checkpointing import filter_compatible_state_dict, split_model_states
 from utils.experiment_tracking import (
     append_jsonl,
     save_resolved_config,
@@ -426,8 +426,24 @@ def load_pretrained_checkpoint_compat(change_detector, speaker, checkpoint_path)
         return None, None
     checkpoint = load_checkpoint(checkpoint_path)
     change_state, speaker_state = split_model_states(checkpoint)
-    change_result = change_detector.load_state_dict(change_state, strict=False)
-    speaker_result = speaker.load_state_dict(speaker_state, strict=False)
+
+    def load_matching(module, source_state, label):
+        compatible, skipped_unknown, skipped_shape = filter_compatible_state_dict(
+            source_state, module.state_dict()
+        )
+        result = module.load_state_dict(compatible, strict=False)
+        print(
+            'Init checkpoint %s: loaded=%d skipped_unknown=%d skipped_shape=%d'
+            % (label, len(compatible), len(skipped_unknown), len(skipped_shape))
+        )
+        if skipped_unknown:
+            print('Init checkpoint %s unknown keys: %s' % (label, skipped_unknown))
+        if skipped_shape:
+            print('Init checkpoint %s shape mismatches: %s' % (label, skipped_shape))
+        return result
+
+    change_result = load_matching(change_detector, change_state, 'CARD')
+    speaker_result = load_matching(speaker, speaker_state, 'speaker')
     print('Loaded init_checkpoint: %s' % checkpoint_path)
     if change_result.missing_keys or change_result.unexpected_keys:
         print('Init checkpoint CARD compatibility: missing=%s unexpected=%s' % (change_result.missing_keys, change_result.unexpected_keys))
@@ -1643,5 +1659,4 @@ run_state.complete(
     selection_metric=str(cfg.train.selection_strategy),
     training_best_records=best_training_records,
 )
-
 

@@ -6,7 +6,7 @@ canonical fields without changing existing checkpoint bytes or defaults.
 
 from __future__ import annotations
 
-from typing import Dict, Mapping, Optional, Tuple
+from typing import Dict, List, Mapping, Optional, Tuple
 
 
 MODEL_STATE_KEYS = ('model_state_dict', 'change_detector_state', 'change_detector')
@@ -58,6 +58,32 @@ def strip_module_prefix(state_dict: Mapping[str, object]) -> Dict[str, object]:
         (str(key)[7:] if str(key).startswith('module.') else str(key)): value
         for key, value in state_dict.items()
     }
+
+
+def filter_compatible_state_dict(
+    source_state: Mapping[str, object], target_state: Mapping[str, object],
+) -> Tuple[Dict[str, object], List[str], Dict[str, Tuple[Tuple[int, ...], Tuple[int, ...]]]]:
+    """Keep source tensors which can be loaded into a target module exactly.
+
+    Cross-dataset transfer can retain the visual trunk while target-specific
+    decoder, mask, or semantic heads have different tensor shapes. PyTorch's
+    ``strict=False`` still rejects those shape conflicts, so they must be
+    filtered before loading.
+    """
+    compatible = {}
+    missing_target_keys = []
+    shape_mismatches = {}
+    for key, value in source_state.items():
+        if key not in target_state:
+            missing_target_keys.append(str(key))
+            continue
+        source_shape = tuple(getattr(value, 'shape', ()))
+        target_shape = tuple(getattr(target_state[key], 'shape', ()))
+        if source_shape != target_shape:
+            shape_mismatches[str(key)] = (source_shape, target_shape)
+            continue
+        compatible[str(key)] = value
+    return compatible, sorted(missing_target_keys), dict(sorted(shape_mismatches.items()))
 
 
 def load_checkpoint_file(path: str, map_location: Optional[str] = 'cpu') -> Dict[str, object]:

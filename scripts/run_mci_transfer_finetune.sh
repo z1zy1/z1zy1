@@ -15,6 +15,9 @@ LEVIR_CC_ROOT="${LEVIR_CC_ROOT:-./Levir-CC}"
 SECOND_CC_ROOT="${SECOND_CC_ROOT:-./SECOND-CC-AUG}"
 LEVIR_CC_BASELINE_VAL_METRICS="${LEVIR_CC_BASELINE_VAL_METRICS:-$EXP_ROOT/card_levir_cc_baseline/baseline_best_checkpoint.json}"
 SECOND_CC_BASELINE_VAL_METRICS="${SECOND_CC_BASELINE_VAL_METRICS:-$EXP_ROOT/second_cc_card_rgb_baseline/baseline_best_checkpoint.json}"
+SECOND_CC_EXP_PREFIX="${SECOND_CC_EXP_PREFIX:-second_cc_mci_xattn_lsem0}"
+SECOND_CC_LR="${SECOND_CC_LR:-0.0001}"
+SECOND_CC_SEMANTIC_DETACH_RATIO="${SECOND_CC_SEMANTIC_DETACH_RATIO:-0.5}"
 SEEDS="${SEEDS:-1111 2222 3333}"
 ONLY_DATASET=""
 ONLY_SEED=""
@@ -36,6 +39,10 @@ Options:
   --skip_train            Select existing target runs without training.
   --skip_select           Train only; do not select a checkpoint.
   --dry_run, --dry-run    Print training and selection commands only.
+
+SECOND-CC defaults can be overridden with SECOND_CC_EXP_PREFIX,
+SECOND_CC_LR, and SECOND_CC_SEMANTIC_DETACH_RATIO. For the full recommended
+matrix, use scripts/run_second_cc_mci_crossattn_matrix.sh.
 EOF
 }
 
@@ -101,18 +108,20 @@ configure_levir_cc() {
 configure_second_cc() {
   local seed="$1"
   clear_exp_env
-  export EXP_DIR="$EXP_ROOT" EXP_NAME="second_cc_mci_init_seed${seed}"
+  export EXP_DIR="$EXP_ROOT" EXP_NAME="${SECOND_CC_EXP_PREFIX}_seed${seed}"
   export DATASET=second_cc DATA_ROOT="$SECOND_CC_ROOT" FEATURE_ROOT="$SECOND_CC_ROOT/features"
   export BASE_CFG=configs/dynamic/transformer_second_cc_aug_sgc_card.yaml MODEL_TYPE=sgc_card
-  # SECOND-CC owns its 956-token decoder and 7-class semantic head; incompatible
-  # MCI tensors are deliberately reinitialized by the compatible-state loader.
+  # SECOND-CC has semantic maps and strong spatial/registration noise. Use them
+  # as a cross-attention input, but do not force an incompatible MCI semantic
+  # head to optimize an auxiliary loss. The decoder/semantic heads that do not
+  # match the MCI checkpoint are deliberately reinitialized by the loader.
   export USE_CHANGE_MASK=0 MASK_TYPE=binary ENABLE_AUX_MASK=0
-  export USE_AUX_SEMANTIC=1 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=aux NUM_SEMANTIC_CLASSES=7
-  export USE_SEMANTIC_PARTIAL_DETACH=0 SEMANTIC_DETACH_RATIO=0.5
+  export USE_AUX_SEMANTIC=0 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=cross_attention NUM_SEMANTIC_CLASSES=7
+  export USE_SEMANTIC_PARTIAL_DETACH=1 SEMANTIC_DETACH_RATIO="$SECOND_CC_SEMANTIC_DETACH_RATIO"
   export USE_FEATURE_REWEIGHT=0 DETACH_REWEIGHT_MASK=1 REWEIGHT_ALPHA=0.2
-  export ALLOW_MISSING_PSEUDO_MASK=0 LMASK=0.0 LSEM=0.005
-  export SEMANTIC_LOSS_TYPE=ce_dice USE_AUX_WARMUP=1 AUX_WARMUP_START_RATIO=0.30 AUX_WARMUP_END_RATIO=0.70
-  export INIT_CHECKPOINT="$MCI_INIT_CHECKPOINT" SEED="$seed" LR=0.0002 MAX_ITER=10000
+  export ALLOW_MISSING_PSEUDO_MASK=0 LMASK=0.0 LSEM=0.0
+  export USE_AUX_WARMUP=0 AUX_WARMUP_START_RATIO=0.30 AUX_WARMUP_END_RATIO=0.70
+  export INIT_CHECKPOINT="$MCI_INIT_CHECKPOINT" SEED="$seed" LR="$SECOND_CC_LR" MAX_ITER=10000
   export SAVE_INTERVAL=1000 EVAL_INTERVAL=1000 SNAPSHOT_INTERVAL=1000 LOG_INTERVAL=100
   export FINETUNE_DECODER_ONLY=0 PAPER_SELECTION_MODE=1 SELECTION_STRATEGY=val_baseline_pareto
   BASELINE_METRICS="$SECOND_CC_BASELINE_VAL_METRICS"

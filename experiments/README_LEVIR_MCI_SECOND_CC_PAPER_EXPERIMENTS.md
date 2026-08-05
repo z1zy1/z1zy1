@@ -94,3 +94,22 @@ python scripts/visualize_paper_cases.py \
 ## MModalCC
 
 MModalCC 结果不会被伪造。汇总脚本只会在用户提供 `external_results/second_cc_mmodalcc_results.csv` 时读取外部结果；如果该文件不存在，对应行会标记为 `source=N/A` 和 `status=missing_external_results`。
+
+## MCI-initialized SECOND-CC cross-attention transfer
+
+The recommended SECOND-CC transfer uses semantic maps through cross-attention,
+without an auxiliary semantic loss or feature reweighting. It also audits the
+existing LEVIR-MCI and LEVIR-CC validation locks before running, so a target
+configuration cannot silently replace a previously accepted result.
+
+Run the full training and validation-selection matrix with:
+
+```bash
+bash scripts/run_second_cc_mci_crossattn_matrix.sh
+```
+
+The matrix covers MCI initialization at partial-detach ratios 0.5 and 0.7,
+learning rates `1e-4` and `2e-4`, plus a scratch cross-attention control. A
+candidate is accepted only when Bleu_1--Bleu_4, METEOR, ROUGE_L, CIDEr, and
+SPICE are all strictly above the audited SECOND-CC validation baseline. Test
+inference remains a separate locked step.

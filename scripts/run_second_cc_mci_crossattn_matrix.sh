@@ -211,6 +211,11 @@ select_one() {
 
 mkdir -p "$EXP_ROOT"
 if [ "$DRY_RUN" -eq 0 ]; then
+  "$PYTHON" -c 'import torch, yaml' || {
+    echo "Training Python is missing required packages: $PYTHON" >&2
+    echo 'Set PYTHON to the project environment before running the matrix.' >&2
+    exit 2
+  }
   audit_existing_guards
 fi
 

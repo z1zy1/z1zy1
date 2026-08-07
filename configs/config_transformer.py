@@ -206,6 +206,10 @@ __C.train.optim.weight_decay = 5e-4
 __C.train.optim.step_size = 15 # decay lr after how many epochs
 __C.train.optim.gamma = 0.1 # decay rate
 __C.train.optim.epsilon = 1e-08
+__C.train.optim.scheduler = 'step'
+__C.train.optim.warmup_steps = 0
+__C.train.optim.min_lr_ratio = 0.0
+__C.train.optim.pretrained_lr_scale = 1.0
 __C.train.hallucinate_per_iter = 2
 __C.train.adapt_per_iter = 2
 __C.train.keep_rate = 0.95
@@ -410,4 +414,3 @@ def _check_and_coerce_cfg_value_type(value_a, value_b, key, full_key):
             'key: {}'.format(type_b, type_a, value_b, value_a, full_key)
         )
     return value_a
-

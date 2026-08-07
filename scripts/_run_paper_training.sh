@@ -67,6 +67,10 @@ EVAL_INTERVAL="${EVAL_INTERVAL:-}"
 LOG_INTERVAL="${LOG_INTERVAL:-}"
 BATCH_SIZE="${BATCH_SIZE:-}"
 LR="${LR:-}"
+LR_SCHEDULER="${LR_SCHEDULER:-}"
+LR_WARMUP_STEPS="${LR_WARMUP_STEPS:-}"
+MIN_LR_RATIO="${MIN_LR_RATIO:-}"
+PRETRAINED_LR_SCALE="${PRETRAINED_LR_SCALE:-}"
 INIT_CHECKPOINT="${INIT_CHECKPOINT:-}"
 SEED="${SEED:-1111}"
 
@@ -171,6 +175,18 @@ if [ -n "$BATCH_SIZE" ]; then
 fi
 if [ -n "$LR" ]; then
   COMMON_OPTS+=(train.optim.lr "$LR")
+fi
+if [ -n "$LR_SCHEDULER" ]; then
+  COMMON_OPTS+=(train.optim.scheduler "$LR_SCHEDULER")
+fi
+if [ -n "$LR_WARMUP_STEPS" ]; then
+  COMMON_OPTS+=(train.optim.warmup_steps "$LR_WARMUP_STEPS")
+fi
+if [ -n "$MIN_LR_RATIO" ]; then
+  COMMON_OPTS+=(train.optim.min_lr_ratio "$MIN_LR_RATIO")
+fi
+if [ -n "$PRETRAINED_LR_SCALE" ]; then
+  COMMON_OPTS+=(train.optim.pretrained_lr_scale "$PRETRAINED_LR_SCALE")
 fi
 if [ -n "$INIT_CHECKPOINT" ]; then
   COMMON_OPTS+=(train.init_checkpoint "$INIT_CHECKPOINT")

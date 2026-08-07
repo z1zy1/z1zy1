@@ -32,7 +32,7 @@ from utils.semantic_label import build_content_word_token_ids
 from utils.semantic_warmup import get_effective_lambda_semantic
 from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, load_checkpoint, \
                         LanguageModelCriterion, decode_sequence, decode_sequence_transformer, decode_beams, \
-                        build_optimizer, coco_gen_format_save, one_hot_encode, \
+                        build_optimizer, build_lr_scheduler, build_transfer_parameter_groups, coco_gen_format_save, one_hot_encode, \
                         EntropyLoss, LabelSmoothingLoss
 
 from utils.vis_utils import visualize_att
@@ -988,6 +988,9 @@ if init_checkpoint:
                 'Decoder-only fine-tuning requires an architecture-exact init checkpoint: %s'
                 % mismatches
             )
+else:
+    change_load = None
+    speaker_load = None
 
 if finetune_decoder_only:
     set_requires_grad(change_detector.parameters(), False)
@@ -1040,6 +1043,10 @@ experiment_summary = [
     f'  aux_warmup_start_ratio: {cfg.train.aux_warmup_start_ratio}',
     f'  aux_warmup_end_ratio: {cfg.train.aux_warmup_end_ratio}',
     f'  selection_strategy: {cfg.train.selection_strategy}',
+    f'  lr_scheduler: {cfg.train.optim.scheduler}',
+    f'  lr_warmup_steps: {cfg.train.optim.warmup_steps}',
+    f'  min_lr_ratio: {cfg.train.optim.min_lr_ratio}',
+    f'  pretrained_lr_scale: {cfg.train.optim.pretrained_lr_scale}',
     f'  init_checkpoint: {cfg.train.init_checkpoint}',
     f'  finetune_steps: {cfg.train.finetune_steps}',
     f'  finetune_decoder_only: {finetune_decoder_only}',
@@ -1111,11 +1118,17 @@ run_state.update(
     trainable_parameters=trainable_parameter_count,
     device=str(device),
 )
-optimizer = build_optimizer(all_params, cfg)
-lr_scheduler = torch.optim.lr_scheduler.StepLR(
-    optimizer,
-    step_size=cfg.train.optim.step_size,
-    gamma=cfg.train.optim.gamma)
+optimizer_params, lr_group_summary = build_transfer_parameter_groups(
+    change_detector,
+    speaker,
+    cfg,
+    init_checkpoint,
+    change_missing=change_load.missing_keys if change_load is not None else (),
+    speaker_missing=speaker_load.missing_keys if speaker_load is not None else (),
+)
+optimizer = build_optimizer(optimizer_params, cfg)
+lr_scheduler, scheduler_step_per_iteration = build_lr_scheduler(optimizer, cfg)
+print('LR parameter groups: %s' % json.dumps(lr_group_summary, sort_keys=True))
 semantic_loss_func = nn.BCEWithLogitsLoss() if cfg.train.use_semantic_aux else None
 relation_loss_func = nn.BCEWithLogitsLoss() if cfg.train.use_relation_aux else None
 
@@ -1373,6 +1386,10 @@ while t < cfg.train.max_iter:
         stats = {}
 
         stats['lr'] = optimizer.param_groups[0]['lr']
+        for param_group in optimizer.param_groups:
+            group_name = param_group.get('group_name')
+            if group_name:
+                stats['lr_' + group_name] = param_group['lr']
         stats['aux_progress'] = aux_progress
         stats['cap_loss'] = cap_loss_val
         stats['loss_cap'] = cap_loss_val
@@ -1489,6 +1506,8 @@ while t < cfg.train.max_iter:
             nn.utils.clip_grad_norm_(speaker.parameters(), cfg.train.grad_clip)
 
         optimizer.step()
+        if scheduler_step_per_iteration:
+            lr_scheduler.step()
 
         iter_end_time = time.time() - iter_start_time
 
@@ -1649,7 +1668,8 @@ while t < cfg.train.max_iter:
 
         if t >= cfg.train.max_iter:
             break
-    lr_scheduler.step()
+    if not scheduler_step_per_iteration:
+        lr_scheduler.step()
 
 run_state.complete(
     final_epoch=epoch,
@@ -1659,4 +1679,3 @@ run_state.complete(
     selection_metric=str(cfg.train.selection_strategy),
     training_best_records=best_training_records,
 )
-

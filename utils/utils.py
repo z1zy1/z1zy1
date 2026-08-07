@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 import json
+import math
 
 class LabelSmoothingLoss(nn.Module):
     """
@@ -183,6 +184,84 @@ def build_optimizer(params, cfg):
                           cfg.train.optim.epsilon, weight_decay=cfg.train.optim.weight_decay)
     else:
         raise Exception("bad option for optimizer: {}".format(cfg.train.optim.type))
+
+
+def build_lr_scheduler(optimizer, cfg):
+    """Build the configured scheduler and return (scheduler, step_per_iteration)."""
+    scheduler_name = str(getattr(cfg.train.optim, 'scheduler', 'step')).lower()
+    if scheduler_name == 'step':
+        scheduler = optim.lr_scheduler.StepLR(
+            optimizer,
+            step_size=cfg.train.optim.step_size,
+            gamma=cfg.train.optim.gamma,
+        )
+        return scheduler, False
+    if scheduler_name != 'warmup_cosine':
+        raise ValueError('Unknown train.optim.scheduler: %s' % scheduler_name)
+
+    max_iter = int(cfg.train.max_iter)
+    warmup_steps = int(getattr(cfg.train.optim, 'warmup_steps', 0))
+    min_lr_ratio = float(getattr(cfg.train.optim, 'min_lr_ratio', 0.0))
+    if max_iter <= 0:
+        raise ValueError('train.max_iter must be positive for warmup_cosine.')
+    if warmup_steps < 0 or warmup_steps >= max_iter:
+        raise ValueError('train.optim.warmup_steps must be in [0, max_iter).')
+    if not 0.0 <= min_lr_ratio <= 1.0:
+        raise ValueError('train.optim.min_lr_ratio must be in [0, 1].')
+
+    def lr_factor(step):
+        # LambdaLR evaluates step=0 at construction, before the first update.
+        if warmup_steps > 0 and step < warmup_steps:
+            return float(step + 1) / float(warmup_steps)
+        decay_updates = max_iter - warmup_steps
+        if decay_updates <= 1:
+            progress = 1.0
+        else:
+            progress = min(
+                1.0,
+                max(0.0, float(step - warmup_steps) / float(decay_updates - 1)),
+            )
+        cosine = 0.5 * (1.0 + math.cos(math.pi * progress))
+        return min_lr_ratio + (1.0 - min_lr_ratio) * cosine
+
+    return optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lr_factor), True
+
+
+def build_transfer_parameter_groups(change_detector, speaker, cfg, init_checkpoint,
+                                    change_missing=(), speaker_missing=()):
+    """Use a lower LR for parameters loaded from a transfer checkpoint."""
+    base_lr = float(cfg.train.optim.lr)
+    pretrained_scale = float(getattr(cfg.train.optim, 'pretrained_lr_scale', 1.0))
+    if not 0.0 < pretrained_scale <= 1.0:
+        raise ValueError('train.optim.pretrained_lr_scale must be in (0, 1].')
+
+    named = []
+    named.extend(('change_detector.' + name, parameter) for name, parameter in change_detector.named_parameters())
+    named.extend(('speaker.' + name, parameter) for name, parameter in speaker.named_parameters())
+    named = [(name, parameter) for name, parameter in named if parameter.requires_grad]
+    if not init_checkpoint or pretrained_scale == 1.0:
+        return [parameter for _, parameter in named], {
+            'pretrained_parameters': 0,
+            'target_parameters': sum(parameter.numel() for _, parameter in named),
+        }
+
+    missing = {'change_detector.' + name for name in change_missing}
+    missing.update('speaker.' + name for name in speaker_missing)
+    pretrained = [parameter for name, parameter in named if name not in missing]
+    target = [parameter for name, parameter in named if name in missing]
+    if not pretrained or not target:
+        raise ValueError(
+            'Transfer LR grouping requires both loaded and newly initialized trainable parameters; '
+            'got loaded=%d target=%d.' % (len(pretrained), len(target))
+        )
+    groups = [
+        {'params': pretrained, 'lr': base_lr * pretrained_scale, 'group_name': 'pretrained'},
+        {'params': target, 'lr': base_lr, 'group_name': 'target'},
+    ]
+    return groups, {
+        'pretrained_parameters': sum(parameter.numel() for parameter in pretrained),
+        'target_parameters': sum(parameter.numel() for parameter in target),
+    }
     
 ################################################################################
 # Language related util functions

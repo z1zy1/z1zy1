@@ -36,6 +36,34 @@ def validate_resolved_config(cfg, *, phase='train'):
             'model.semantic_input_mode=%r is invalid; expected one of %s.'
             % (semantic_mode, sorted(SEMANTIC_INPUT_MODES))
         )
+    if semantic_mode in ('early_fusion', 'cross_attention', 'hard_gate'):
+        if int(getattr(cfg.data, 'num_semantic_classes', 0) or 0) <= 0:
+            raise ValueError(
+                'data.num_semantic_classes must be positive for semantic input mode %r.'
+                % semantic_mode
+            )
+    if bool(getattr(cfg.data, 'semantic_diff_only', False)) and not str(
+        getattr(cfg.data, 'semantic_diff_root', '') or ''
+    ).strip():
+        raise ValueError('data.semantic_diff_root is required when semantic_diff_only=True.')
+    unknown_class = int(getattr(cfg.data, 'semantic_unknown_change_class', 0))
+    semantic_classes = int(getattr(cfg.data, 'num_semantic_classes', 0) or 0)
+    if bool(getattr(cfg.data, 'semantic_diff_binary', False)) and not (
+        0 <= unknown_class < semantic_classes
+    ):
+        raise ValueError(
+            'data.semantic_unknown_change_class must be in [0, num_semantic_classes) '
+            'for binary semantic difference maps.'
+        )
+    _finite_number(
+        getattr(cfg.model, 'semantic_fusion_gamma_init', 0.1),
+        'model.semantic_fusion_gamma_init',
+    )
+    _finite_number(
+        getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0),
+        'model.semantic_fusion_gamma_max',
+        minimum=0.0,
+    )
     _finite_number(
         getattr(cfg.train, 'semantic_detach_ratio', 0.0),
         'train.semantic_detach_ratio',

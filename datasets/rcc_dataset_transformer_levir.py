@@ -162,6 +162,10 @@ class RCCDataset(Dataset):
         self.semantic_before_phase = getattr(cfg.data, 'semantic_before_phase', '') or 'sem/A'
         self.semantic_after_phase = getattr(cfg.data, 'semantic_after_phase', '') or 'sem/B'
         self.semantic_diff_root = getattr(cfg.data, 'semantic_diff_root', '')
+        self.semantic_diff_phase = getattr(cfg.data, 'semantic_diff_phase', '')
+        self.semantic_diff_only = _as_bool(getattr(cfg.data, 'semantic_diff_only', False))
+        self.semantic_diff_binary = _as_bool(getattr(cfg.data, 'semantic_diff_binary', False))
+        self.semantic_unknown_change_class = int(getattr(cfg.data, 'semantic_unknown_change_class', 6))
         self.num_semantic_classes = int(getattr(cfg.data, 'num_semantic_classes', getattr(cfg.model, 'num_semantic_classes', 0)) or 0)
         if self.dataset_name == 'second_cc' and self.use_semantic_maps and self.num_semantic_classes <= 0:
             self.num_semantic_classes = 7
@@ -437,19 +441,47 @@ class RCCDataset(Dataset):
             class_map = self._load_mask_class(path)
         return torch.from_numpy(class_map.astype(np.int64))
 
+    def _load_semantic_diff_map(self, path):
+        if not self.semantic_diff_binary:
+            return self._load_semantic_map(path)
+        arr = _load_image_or_array(path)
+        if arr is None:
+            return None
+        if arr.ndim == 3:
+            arr = np.any(arr[..., :3] > 0, axis=-1)
+        else:
+            arr = arr > 0
+        class_map = np.zeros(arr.shape, dtype=np.int64)
+        class_map[arr] = self.semantic_unknown_change_class
+        return torch.from_numpy(class_map)
+
+    def _resolve_semantic_diff_path(self, split_name, filename):
+        if not self.semantic_diff_root:
+            return None
+        return _first_existing(
+            _candidate_paths(self.semantic_diff_root, split_name, self.semantic_diff_phase, filename)
+        )
+
     def _load_semantic_pair(self, split_name, filename):
         if not self.use_semantic_maps:
             return None, None, None
+        diff_path = self._resolve_semantic_diff_path(split_name, filename)
+        diff = self._load_semantic_diff_map(diff_path) if diff_path else None
+        if self.semantic_diff_only:
+            if diff is None:
+                raise FileNotFoundError(
+                    'semantic_diff_only=True but no difference map was found for %s '
+                    '(root=%s, phase=%s, split=%s).'
+                    % (filename, self.semantic_diff_root, self.semantic_diff_phase, split_name)
+                )
+            return None, None, diff
         before_path = self._resolve_semantic_path(split_name, self.semantic_before_phase, filename)
         after_path = self._resolve_semantic_path(split_name, self.semantic_after_phase, filename)
         before = self._load_semantic_map(before_path) if before_path else None
         after = self._load_semantic_map(after_path) if after_path else None
         if before is None or after is None:
-            return before, after, None
-        diff_path = _first_existing(_candidate_paths(self.semantic_diff_root, split_name, '', filename)) if self.semantic_diff_root else None
-        if diff_path:
-            diff = self._load_semantic_map(diff_path)
-        else:
+            return before, after, diff
+        if diff is None:
             valid = before != int(getattr(self.cfg.train, 'semantic_ignore_index', -1))
             valid = valid & (after != int(getattr(self.cfg.train, 'semantic_ignore_index', -1)))
             changed = (before != after) & valid

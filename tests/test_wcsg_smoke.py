@@ -41,6 +41,15 @@ class WCSGSmokeTest(unittest.TestCase):
         self.assertEqual(tuple(out.shape), tuple(diff.shape))
 
     @unittest.skipUnless(torch is not None, 'PyTorch is required for model shape smoke tests.')
+    def test_semantic_cross_attention_fusion_diff_only_shape(self):
+        from models.CARD import SemanticCrossAttentionFusion
+        fusion = SemanticCrossAttentionFusion(embed_dim=16, num_semantic_classes=7, num_heads=4, gamma_init=0.01)
+        diff = torch.randn(2, 49, 16)
+        semantic_diff = torch.randint(0, 7, (2, 14, 14))
+        out = fusion(diff, semantic_diff=semantic_diff, spatial_size=(7, 7), detach_ratio=0.5)
+        self.assertEqual(tuple(out.shape), tuple(diff.shape))
+
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model shape smoke tests.')
     def test_semantic_cross_attention_fusion_probability_map_shape(self):
         from models.CARD import SemanticCrossAttentionFusion
         fusion = SemanticCrossAttentionFusion(embed_dim=16, num_semantic_classes=8, num_heads=4, gamma_init=0.1)

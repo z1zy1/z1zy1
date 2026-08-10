@@ -151,6 +151,17 @@ def apply_dataset_cli_overrides(args, cfg):
     if getattr(args, 'num_semantic_classes', None) is not None:
         cfg.data.num_semantic_classes = args.num_semantic_classes
         cfg.model.num_semantic_classes = args.num_semantic_classes
+    for name in (
+        'semantic_map_root', 'semantic_before_phase', 'semantic_after_phase',
+        'semantic_diff_root', 'semantic_diff_phase',
+    ):
+        value = getattr(args, name, None)
+        if value is not None:
+            setattr(cfg.data, name, _norm(value) if name.endswith('_root') else value)
+    if getattr(args, 'semantic_diff_only', False):
+        cfg.data.semantic_diff_only = True
+    if getattr(args, 'semantic_diff_binary', False):
+        cfg.data.semantic_diff_binary = True
 
 
 def feature_extraction_command(cfg, batch_size=64):

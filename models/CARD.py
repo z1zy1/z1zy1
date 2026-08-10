@@ -261,7 +261,8 @@ class SemanticCrossAttentionFusion(nn.Module):
             raise ValueError('SemanticCrossAttentionFusion expects semantic maps [B,H,W] or [B,C,H,W], got %s.' % (tuple(sem.shape),))
         return feat.flatten(2).transpose(1, 2).contiguous()
 
-    def forward(self, diff_feat, sem_before, sem_after, spatial_size=None, detach_ratio=0.0):
+    def forward(self, diff_feat, sem_before=None, sem_after=None, spatial_size=None,
+                detach_ratio=0.0, semantic_diff=None):
         input_was_4d = diff_feat.dim() == 4
         if input_was_4d:
             batch_size, channels, height, width = diff_feat.shape
@@ -277,6 +278,12 @@ class SemanticCrossAttentionFusion(nn.Module):
         if channels != self.embed_dim:
             raise ValueError('SemanticCrossAttentionFusion embed dim mismatch: got %d expected %d.' % (channels, self.embed_dim))
 
+        # Some datasets expose only a dense change-semantic map. Treat class 0
+        # as the unchanged reference and preserve the same adapter path instead
+        # of requiring dataset-specific fusion modules.
+        if (sem_before is None or sem_after is None) and semantic_diff is not None:
+            sem_before = torch.zeros_like(semantic_diff)
+            sem_after = semantic_diff
         sem_b_feat = self._encode_semantic(sem_before, spatial_size)
         sem_a_feat = self._encode_semantic(sem_after, spatial_size)
         if sem_b_feat is None or sem_a_feat is None:
@@ -552,16 +559,12 @@ class CARD(nn.Module):
         if semantic_tokens is not None and self.semantic_input_mode == 'early_fusion':
             caption_input = caption_input + semantic_tokens
         elif self.use_semantic_cross_attention and self.semantic_cross_fusion is not None:
-            sem_before_used = semantic_before
-            sem_after_used = semantic_after
-            if (sem_before_used is None or sem_after_used is None) and semantic_diff is not None:
-                sem_before_used = torch.zeros_like(semantic_diff)
-                sem_after_used = semantic_diff
             detach_ratio = self.semantic_detach_ratio if self.use_semantic_partial_detach else 0.0
             caption_input = self.semantic_cross_fusion(
                 caption_input,
-                sem_before_used,
-                sem_after_used,
+                semantic_before,
+                semantic_after,
+                semantic_diff=semantic_diff,
                 spatial_size=(H, W),
                 detach_ratio=detach_ratio,
             )
@@ -631,4 +634,3 @@ class AddSpatialInfo(nn.Module):
         coord_map = self._create_coord(img_feat)
         img_feat_aug = torch.cat([img_feat, coord_map], dim=1)
         return img_feat_aug
-

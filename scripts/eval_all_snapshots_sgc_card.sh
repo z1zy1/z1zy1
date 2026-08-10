@@ -29,6 +29,14 @@ NUM_MASK_CLASSES="${NUM_MASK_CLASSES:-}"
 USE_SEMANTIC_MAPS="${USE_SEMANTIC_MAPS:-0}"
 SEMANTIC_INPUT_MODE="${SEMANTIC_INPUT_MODE:-none}"
 NUM_SEMANTIC_CLASSES="${NUM_SEMANTIC_CLASSES:-}"
+SEMANTIC_MAP_ROOT="${SEMANTIC_MAP_ROOT:-}"
+SEMANTIC_BEFORE_PHASE="${SEMANTIC_BEFORE_PHASE:-}"
+SEMANTIC_AFTER_PHASE="${SEMANTIC_AFTER_PHASE:-}"
+SEMANTIC_DIFF_ROOT="${SEMANTIC_DIFF_ROOT:-}"
+SEMANTIC_DIFF_PHASE="${SEMANTIC_DIFF_PHASE:-}"
+SEMANTIC_DIFF_ONLY="${SEMANTIC_DIFF_ONLY:-0}"
+SEMANTIC_DIFF_BINARY="${SEMANTIC_DIFF_BINARY:-0}"
+SEMANTIC_UNKNOWN_CHANGE_CLASS="${SEMANTIC_UNKNOWN_CHANGE_CLASS:-6}"
 ENABLE_AUX_MASK="${ENABLE_AUX_MASK:-1}"
 USE_AUX_SEMANTIC="${USE_AUX_SEMANTIC:-1}"
 USE_SEMANTIC_PARTIAL_DETACH="${USE_SEMANTIC_PARTIAL_DETACH:-1}"
@@ -128,6 +136,9 @@ COMMON_OPTS=(
   data.mask_type "$MASK_TYPE"
   data.use_semantic_maps "$USE_SEMANTIC_MAPS_BOOL"
   model.semantic_input_mode "$SEMANTIC_INPUT_MODE"
+  data.semantic_diff_only "$(bool_word "$SEMANTIC_DIFF_ONLY")"
+  data.semantic_diff_binary "$(bool_word "$SEMANTIC_DIFF_BINARY")"
+  data.semantic_unknown_change_class "$SEMANTIC_UNKNOWN_CHANGE_CLASS"
 )
 
 if [ -n "$NUM_MASK_CLASSES" ]; then
@@ -136,6 +147,11 @@ fi
 if [ -n "$NUM_SEMANTIC_CLASSES" ]; then
   COMMON_OPTS+=(data.num_semantic_classes "$NUM_SEMANTIC_CLASSES" model.num_semantic_classes "$NUM_SEMANTIC_CLASSES")
 fi
+if [ -n "$SEMANTIC_MAP_ROOT" ]; then COMMON_OPTS+=(data.semantic_map_root "$SEMANTIC_MAP_ROOT"); fi
+if [ -n "$SEMANTIC_BEFORE_PHASE" ]; then COMMON_OPTS+=(data.semantic_before_phase "$SEMANTIC_BEFORE_PHASE"); fi
+if [ -n "$SEMANTIC_AFTER_PHASE" ]; then COMMON_OPTS+=(data.semantic_after_phase "$SEMANTIC_AFTER_PHASE"); fi
+if [ -n "$SEMANTIC_DIFF_ROOT" ]; then COMMON_OPTS+=(data.semantic_diff_root "$SEMANTIC_DIFF_ROOT"); fi
+if [ -n "$SEMANTIC_DIFF_PHASE" ]; then COMMON_OPTS+=(data.semantic_diff_phase "$SEMANTIC_DIFF_PHASE"); fi
 if [ -n "$MASK_LOSS_TYPE" ]; then
   COMMON_OPTS+=(train.mask_loss_type "$MASK_LOSS_TYPE")
 fi
@@ -156,6 +172,13 @@ if [ -n "$NUM_MASK_CLASSES" ]; then TEST_ARGS+=(--num_mask_classes "$NUM_MASK_CL
 if is_true "$USE_SEMANTIC_MAPS"; then TEST_ARGS+=(--use_semantic_maps); fi
 if [ -n "$SEMANTIC_INPUT_MODE" ]; then TEST_ARGS+=(--semantic_input_mode "$SEMANTIC_INPUT_MODE"); fi
 if [ -n "$NUM_SEMANTIC_CLASSES" ]; then TEST_ARGS+=(--num_semantic_classes "$NUM_SEMANTIC_CLASSES"); fi
+if [ -n "$SEMANTIC_MAP_ROOT" ]; then TEST_ARGS+=(--semantic_map_root "$SEMANTIC_MAP_ROOT"); fi
+if [ -n "$SEMANTIC_BEFORE_PHASE" ]; then TEST_ARGS+=(--semantic_before_phase "$SEMANTIC_BEFORE_PHASE"); fi
+if [ -n "$SEMANTIC_AFTER_PHASE" ]; then TEST_ARGS+=(--semantic_after_phase "$SEMANTIC_AFTER_PHASE"); fi
+if [ -n "$SEMANTIC_DIFF_ROOT" ]; then TEST_ARGS+=(--semantic_diff_root "$SEMANTIC_DIFF_ROOT"); fi
+if [ -n "$SEMANTIC_DIFF_PHASE" ]; then TEST_ARGS+=(--semantic_diff_phase "$SEMANTIC_DIFF_PHASE"); fi
+if is_true "$SEMANTIC_DIFF_ONLY"; then TEST_ARGS+=(--semantic_diff_only); fi
+if is_true "$SEMANTIC_DIFF_BINARY"; then TEST_ARGS+=(--semantic_diff_binary); fi
 if is_true "$EVAL_CHANGE_NOCHANGE_SPLIT"; then TEST_ARGS+=(--eval_change_nochange_split); fi
 if is_true "$PAPER_SELECTION_MODE"; then TEST_ARGS+=(--paper_selection_mode); fi
 if is_true "$USE_FEATURE_REWEIGHT"; then TEST_ARGS+=(--use_feature_reweight); else TEST_ARGS+=(--no_feature_reweight); fi

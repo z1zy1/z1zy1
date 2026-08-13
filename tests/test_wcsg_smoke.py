@@ -140,6 +140,39 @@ class WCSGSmokeTest(unittest.TestCase):
         self.assertEqual(set(legacy.state_dict()), set(identity_residual.state_dict()))
         identity_residual.load_state_dict(legacy.state_dict())
 
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
+    def test_sparse_change_tokens_use_fallback_for_empty_maps(self):
+        from models.CARD import SemanticCrossAttentionFusion
+
+        fusion = SemanticCrossAttentionFusion(
+            8, 4, num_heads=2, dropout=0.0, gamma_init=0.1,
+            use_sparse_change_tokens=True, use_reliability_gate=True,
+        )
+        fusion.eval()
+        diff = torch.randn(2, 4, 8)
+        unchanged = torch.zeros(2, 2, 2, dtype=torch.long)
+        output = fusion(diff, semantic_diff=unchanged, spatial_size=(2, 2))
+        self.assertEqual(tuple(output.shape), tuple(diff.shape))
+        self.assertTrue(torch.equal(fusion.last_change_coverage, torch.zeros(2, 1)))
+        self.assertTrue(torch.isfinite(fusion.last_reliability_gate).all())
+        self.assertTrue(torch.all(fusion.last_reliability_gate > 0))
+        self.assertTrue(torch.all(fusion.last_reliability_gate < 1))
+
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
+    def test_sparse_change_tokens_measure_pairwise_transitions(self):
+        from models.CARD import SemanticCrossAttentionFusion
+
+        fusion = SemanticCrossAttentionFusion(
+            8, 4, num_heads=2, dropout=0.0, gamma_init=0.1,
+            use_sparse_change_tokens=True,
+        )
+        fusion.eval()
+        diff = torch.randn(1, 4, 8)
+        before = torch.tensor([[[0, 1], [2, 3]]])
+        after = torch.tensor([[[0, 1], [3, 3]]])
+        fusion(diff, before, after, spatial_size=(2, 2))
+        self.assertTrue(torch.allclose(fusion.last_change_coverage, torch.tensor([[0.25]])))
+
     @unittest.skipUnless(torch is not None, 'PyTorch is required for loss tests.')
     def test_normalized_content_word_weighted_ce_exact_denominator(self):
         import torch.nn as nn

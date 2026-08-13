@@ -25,6 +25,8 @@
 
 当前锁定结果使用 `semantic_fusion_norm_mode=legacy_post_norm`。审计发现该实现即使在 `gamma=0` 时仍执行 `LayerNorm(query)`，因此不是严格恒等残差；而锁定 checkpoint 的实际 gamma 仅约 0.016-0.025。`context_pre_norm` 将归一化移到语义 context 分支，使 `gamma=0` 时输出严格等于原 CARD 特征。它目前只是针对 LEVIR-CC 退化的待验证结构假设，必须先做验证集驱动的小规模消融，再按 scratch 三 seed 锁定协议复验，不能据此改写现有结果。
 
+新增的 V1 候选为 **reliability-gated sparse RSACA**：只把变化位置提供给语义 cross-attention 的 K/V，并为无变化样本加入一个可学习回退 token；连续可靠性门控以视觉变化摘要、稀疏语义摘要和变化覆盖率缩放语义残差。成对语义图按 `before != after` 判定变化，diff-only 输入按非零类别判定变化。该规则在三数据集共享，保留锁定 RSACA 的其余训练设置。V1 尚无验证或锁定测试结果，不能进入主结果表或改变当前论文结论。完整入口：`bash scripts/run_reliability_sparse_rsaca_v1.sh --stage all`；候选筛选阶段仅可运行 `preflight`、`train` 和 `select`。
+
 主实验必须从 scratch 分别训练 CARD 与 RSACA，避免用 MCI 初始化混淆结构增益。固定 3 个 seed（1111、2222、3333），形成 `3 datasets x 2 models x 3 seeds = 18` 次主实验。MCI-transfer 结果只能作为独立迁移实验。
 
 验收标准：每个数据集的主要指标均值不低于 CARD；至少 BLEU-4、CIDEr、SPICE 的方向一致；报告每 seed、均值、样本标准差；checkpoint 只能根据验证集选择，测试集仅运行一次锁定评估。

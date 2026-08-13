@@ -74,6 +74,10 @@ def validate_resolved_config(cfg, *, phase='train'):
             % (fusion_norm_mode, sorted(SEMANTIC_FUSION_NORM_MODES))
         )
     _finite_number(
+        getattr(cfg.model, 'semantic_fusion_reliability_gate_bias', -1.5),
+        'model.semantic_fusion_reliability_gate_bias',
+    )
+    _finite_number(
         getattr(cfg.train, 'semantic_detach_ratio', 0.0),
         'train.semantic_detach_ratio',
         minimum=0.0,

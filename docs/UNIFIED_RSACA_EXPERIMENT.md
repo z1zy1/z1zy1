@@ -40,3 +40,26 @@ bash scripts/run_unified_rsaca_experiments.sh --stage train --dataset levir_cc -
 
 This candidate is not part of the locked paper claim until it passes validation
 screening and the complete scratch multi-seed protocol.
+
+## Reliability-gated sparse V1 candidate
+
+`scripts/run_reliability_sparse_rsaca_v1.sh` is a separate, full-process
+candidate runner. It preserves the locked RSACA training schedule, semantic
+sources, normalization mode, residual scale, and partial detach setting, while
+adding two shared mechanisms:
+
+* only changed semantic locations are available as cross-attention K/V tokens;
+  a learned fallback token handles samples without a valid changed location;
+* a learned continuous reliability gate uses visual change summary, sparse
+  semantic summary, and semantic change coverage to scale the residual.
+
+For paired inputs, a change is `before != after`; for diff-only inputs it is a
+non-zero diff class. This is a single rule across all datasets, not a
+dataset-specific module. The full scratch matrix is:
+
+```bash
+bash scripts/run_reliability_sparse_rsaca_v1.sh --stage all
+```
+
+Start with `--stage preflight` or one validation-only training run; do not run
+the locked test stage while choosing V1 hyperparameters.

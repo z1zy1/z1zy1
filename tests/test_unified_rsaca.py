@@ -38,3 +38,16 @@ def test_unified_summary_script_is_executable():
         cwd=ROOT, check=True, capture_output=True, text=True,
     )
     assert '--run_root' in result.stdout
+
+
+def test_reliability_sparse_v1_runner_dry_run_is_isolated_and_enabled():
+    result = subprocess.run(
+        [
+            'bash', 'scripts/run_reliability_sparse_rsaca_v1.sh',
+            '--stage', 'train', '--dataset', 'levir_cc', '--seed', '1111', '--dry-run',
+        ],
+        cwd=ROOT, check=True, capture_output=True, text=True,
+    )
+    assert 'reliability_sparse_rsaca_v1' in result.stdout
+    assert 'SEMANTIC_FUSION_SPARSE_CHANGE_TOKENS=1' in result.stdout
+    assert 'SEMANTIC_FUSION_RELIABILITY_GATE=1' in result.stdout

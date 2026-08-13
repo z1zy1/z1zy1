@@ -24,6 +24,7 @@ KEY_SWITCHES = [
     'use_partial_detach',
     'semantic_detach_ratio',
     'semantic_fusion_gamma_max',
+    'semantic_fusion_norm_mode',
     'use_feature_reweight',
     'use_semantic_hard_gate',
     'lambda_mask',
@@ -122,6 +123,9 @@ def key_switch_summary(cfg, checkpoint_path=''):
         'use_partial_detach': bool(getattr(cfg.train, 'use_semantic_partial_detach', False)),
         'semantic_detach_ratio': float(getattr(cfg.train, 'semantic_detach_ratio', 0.0)),
         'semantic_fusion_gamma_max': float(getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0)),
+        'semantic_fusion_norm_mode': str(
+            getattr(cfg.model, 'semantic_fusion_norm_mode', 'legacy_post_norm')
+        ),
         'lambda_mask': float(getattr(cfg.train, 'lambda_mask', 0.0)),
         'lambda_semantic': float(getattr(cfg.train, 'lambda_semantic', 0.0)),
         'aux_warmup_start_ratio': float(getattr(cfg.train, 'aux_warmup_start_ratio', 0.0)),
@@ -201,17 +205,23 @@ def save_resolved_config(output_dir, cfg, args=None, checkpoint_path='', phase='
     full_hash = stable_hash(plain)
     comparable_hash = stable_hash(comparable_config_dict(cfg))
 
-    with open(os.path.join(output_dir, 'resolved_config.json'), 'w', encoding='utf-8') as f:
+    # The training config is the canonical experiment definition. Evaluating in
+    # the same directory must not replace it with split/test-time overrides.
+    canonical_config_path = os.path.join(output_dir, 'resolved_config.json')
+    use_canonical_names = phase == 'train' or not os.path.exists(canonical_config_path)
+    artifact_suffix = '' if use_canonical_names else '_%s' % str(phase).replace(os.sep, '_')
+
+    with open(os.path.join(output_dir, 'resolved_config%s.json' % artifact_suffix), 'w', encoding='utf-8') as f:
         json.dump(plain, f, indent=2, ensure_ascii=False)
-    with open(os.path.join(output_dir, 'resolved_config.yaml'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(output_dir, 'resolved_config%s.yaml' % artifact_suffix), 'w', encoding='utf-8') as f:
         yaml.safe_dump(plain, f, allow_unicode=True, sort_keys=True)
-    with open(os.path.join(output_dir, 'config_resolved.yaml'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(output_dir, 'config_resolved%s.yaml' % artifact_suffix), 'w', encoding='utf-8') as f:
         yaml.safe_dump(plain, f, allow_unicode=True, sort_keys=True)
-    with open(os.path.join(output_dir, 'config_hash.txt'), 'w', encoding='utf-8') as f:
+    with open(os.path.join(output_dir, 'config_hash%s.txt' % artifact_suffix), 'w', encoding='utf-8') as f:
         f.write('full_config_hash=%s\n' % full_hash)
         f.write('comparable_config_hash=%s\n' % comparable_hash)
 
-    args_path = os.path.join(output_dir, 'args.txt')
+    args_path = os.path.join(output_dir, 'args%s.txt' % artifact_suffix)
     with open(args_path, 'w', encoding='utf-8') as f:
         f.write('phase=%s\n' % phase)
         f.write('argv=%s\n' % ' '.join(sys.argv))

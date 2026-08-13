@@ -88,6 +88,12 @@ class ConfigAndDatasetFactoryTest(unittest.TestCase):
         self.assertEqual(module, 'datasets.rcc_dataset_transformer_levir')
         with self.assertRaisesRegex(ValueError, 'Unknown dataset'):
             resolve_dataset_module('not_registered')
+        cfg = minimal_config('.')
+        cfg.train.max_iter = 1
+        cfg.train.snapshot_interval = 1
+        cfg.model.semantic_fusion_norm_mode = 'not_a_mode'
+        with self.assertRaisesRegex(ValueError, 'semantic_fusion_norm_mode'):
+            validate_resolved_config(cfg, phase='train')
         first = minimal_config('.', exp_name='first')
         first.experiment_group = 'paper'
         first.description = 'first note'
@@ -197,6 +203,24 @@ class RuntimeArtifactsTest(unittest.TestCase):
             for handler in readable_logger.handlers:
                 handler.close()
             readable_logger.handlers.clear()
+
+    def test_evaluation_does_not_overwrite_training_config(self):
+        with tempfile.TemporaryDirectory() as output:
+            train_cfg = minimal_config(output, seed=2222)
+            save_resolved_config(output, train_cfg, phase='train')
+
+            test_cfg = minimal_config(output, seed=1111)
+            test_cfg.train.selection_strategy = 'test_runtime'
+            save_resolved_config(output, test_cfg, phase='test')
+
+            with open(os.path.join(output, 'resolved_config.json'), encoding='utf-8') as handle:
+                canonical = json.load(handle)
+            with open(os.path.join(output, 'resolved_config_test.json'), encoding='utf-8') as handle:
+                test_runtime = json.load(handle)
+            self.assertEqual(canonical['train']['seed'], 2222)
+            self.assertEqual(test_runtime['train']['seed'], 1111)
+            self.assertTrue(os.path.exists(os.path.join(output, 'args_test.txt')))
+            self.assertTrue(os.path.exists(os.path.join(output, 'config_hash_test.txt')))
 
 
 class ToolEntryTest(unittest.TestCase):

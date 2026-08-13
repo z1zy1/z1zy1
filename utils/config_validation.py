@@ -8,6 +8,7 @@ import math
 SEMANTIC_INPUT_MODES = {
     'none', 'aux', 'early_fusion', 'cross_attention', 'hard_gate', 'weak_coupled',
 }
+SEMANTIC_FUSION_NORM_MODES = {'legacy_post_norm', 'context_pre_norm'}
 
 
 def _finite_number(value, path, *, minimum=None, maximum=None):
@@ -64,6 +65,14 @@ def validate_resolved_config(cfg, *, phase='train'):
         'model.semantic_fusion_gamma_max',
         minimum=0.0,
     )
+    fusion_norm_mode = str(
+        getattr(cfg.model, 'semantic_fusion_norm_mode', 'legacy_post_norm')
+    ).lower()
+    if fusion_norm_mode not in SEMANTIC_FUSION_NORM_MODES:
+        raise ValueError(
+            'model.semantic_fusion_norm_mode=%r is invalid; expected one of %s.'
+            % (fusion_norm_mode, sorted(SEMANTIC_FUSION_NORM_MODES))
+        )
     _finite_number(
         getattr(cfg.train, 'semantic_detach_ratio', 0.0),
         'train.semantic_detach_ratio',

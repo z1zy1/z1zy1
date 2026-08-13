@@ -70,6 +70,7 @@ configure_case() {
   export NUM_SEMANTIC_CLASSES=7 USE_SEMANTIC_PARTIAL_DETACH=1 SEMANTIC_DETACH_RATIO=0.5
   export USE_FEATURE_REWEIGHT=0 DETACH_REWEIGHT_MASK=1 LMASK=0 LSEM=0
   export SEMANTIC_FUSION_GAMMA_INIT=0.01 SEMANTIC_FUSION_GAMMA_MAX=0.5
+  export SEMANTIC_FUSION_NORM_MODE="${SEMANTIC_FUSION_NORM_MODE:-legacy_post_norm}"
   export SEMANTIC_DIFF_ONLY=0 SEMANTIC_DIFF_BINARY=0 SEMANTIC_UNKNOWN_CHANGE_CLASS=6
   export SEMANTIC_MAP_ROOT= SEMANTIC_BEFORE_PHASE= SEMANTIC_AFTER_PHASE=
   export SEMANTIC_DIFF_ROOT= SEMANTIC_DIFF_PHASE=
@@ -153,7 +154,7 @@ matrix() {
     for seed in $SEEDS; do
       [ -z "$ONLY_SEED" ] || [ "$ONLY_SEED" = "$seed" ] || continue
       configure_case "$dataset" "$seed"
-      echo "========== RSACA ${STAGE}: dataset=${dataset} seed=${seed} =========="
+      echo "========== RSACA ${STAGE}: dataset=${dataset} seed=${seed} run_root=${RUN_ROOT} norm_mode=${SEMANTIC_FUSION_NORM_MODE} =========="
       "$action"
     done
   done

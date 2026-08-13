@@ -114,6 +114,32 @@ class WCSGSmokeTest(unittest.TestCase):
             )
         )
 
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
+    def test_context_pre_norm_is_identity_at_zero_gamma(self):
+        from models.CARD import SemanticCrossAttentionFusion
+
+        fusion = SemanticCrossAttentionFusion(
+            8, 4, num_heads=2, dropout=0.0, gamma_init=0.0,
+            norm_mode='context_pre_norm',
+        )
+        fusion.eval()
+        diff = torch.randn(2, 4, 8)
+        before = torch.randint(0, 4, (2, 2, 2))
+        after = torch.randint(0, 4, (2, 2, 2))
+        output = fusion(diff, before, after, spatial_size=(2, 2))
+        self.assertTrue(torch.equal(output, diff))
+
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
+    def test_fusion_norm_modes_keep_state_dict_compatible(self):
+        from models.CARD import SemanticCrossAttentionFusion
+
+        legacy = SemanticCrossAttentionFusion(8, 4, num_heads=2)
+        identity_residual = SemanticCrossAttentionFusion(
+            8, 4, num_heads=2, norm_mode='context_pre_norm'
+        )
+        self.assertEqual(set(legacy.state_dict()), set(identity_residual.state_dict()))
+        identity_residual.load_state_dict(legacy.state_dict())
+
     @unittest.skipUnless(torch is not None, 'PyTorch is required for loss tests.')
     def test_normalized_content_word_weighted_ce_exact_denominator(self):
         import torch.nn as nn

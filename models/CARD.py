@@ -202,7 +202,8 @@ def semantic_gate_from_map(semantic_map, spatial_size, ignore_index=-1):
 
 class SemanticCrossAttentionFusion(nn.Module):
     def __init__(self, embed_dim, num_semantic_classes, num_heads=8, dropout=0.1,
-                 gamma_init=0.1, gamma_max=0.0, ignore_index=-1):
+                 gamma_init=0.1, gamma_max=0.0, ignore_index=-1,
+                 norm_mode='legacy_post_norm'):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_semantic_classes = max(1, int(num_semantic_classes))
@@ -215,6 +216,9 @@ class SemanticCrossAttentionFusion(nn.Module):
         self.dropout = nn.Dropout(dropout)
         self.gamma = nn.Parameter(torch.tensor(float(gamma_init)))
         self.gamma_max = max(0.0, float(gamma_max))
+        self.norm_mode = str(norm_mode).lower()
+        if self.norm_mode not in ('legacy_post_norm', 'context_pre_norm'):
+            raise ValueError('Unknown semantic fusion norm mode: %s.' % self.norm_mode)
         self.last_attention = None
 
     @staticmethod
@@ -299,7 +303,10 @@ class SemanticCrossAttentionFusion(nn.Module):
         effective_gamma = self.gamma
         if self.gamma_max > 0:
             effective_gamma = torch.clamp(self.gamma, min=-self.gamma_max, max=self.gamma_max)
-        fused = self.norm(query + self.dropout(effective_gamma * sem_context))
+        if self.norm_mode == 'context_pre_norm':
+            fused = query + self.dropout(effective_gamma * self.norm(sem_context))
+        else:
+            fused = self.norm(query + self.dropout(effective_gamma * sem_context))
         if input_was_4d:
             return fused.transpose(1, 2).contiguous().view(batch_size, channels, height, width)
         return fused
@@ -409,6 +416,7 @@ class CARD(nn.Module):
                     gamma_init=float(getattr(cfg.model, 'semantic_fusion_gamma_init', 0.1)),
                     gamma_max=float(getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0)),
                     ignore_index=int(getattr(cfg.train, 'semantic_ignore_index', -1)),
+                    norm_mode=str(getattr(cfg.model, 'semantic_fusion_norm_mode', 'legacy_post_norm')),
                 )
         if self.use_semantic_aux:
             if self.use_dense_semantic_aux:

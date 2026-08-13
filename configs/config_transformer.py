@@ -39,6 +39,7 @@ __C.model.semantic_fusion_heads = 8
 __C.model.semantic_fusion_dropout = 0.1
 __C.model.semantic_fusion_gamma_init = 0.1
 __C.model.semantic_fusion_gamma_max = 0.0
+__C.model.semantic_fusion_norm_mode = 'legacy_post_norm'
 
 # Encoder
 __C.model.encoder = AttrDict()

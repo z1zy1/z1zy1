@@ -69,8 +69,10 @@ configure_case() {
   export USE_AUX_SEMANTIC=0 USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=cross_attention
   export NUM_SEMANTIC_CLASSES=7 USE_SEMANTIC_PARTIAL_DETACH=1 SEMANTIC_DETACH_RATIO=0.5
   export USE_FEATURE_REWEIGHT=0 DETACH_REWEIGHT_MASK=1 LMASK=0 LSEM=0
-  export SEMANTIC_FUSION_GAMMA_INIT=0.01 SEMANTIC_FUSION_GAMMA_MAX=0.5
+  export SEMANTIC_FUSION_GAMMA_INIT="${SEMANTIC_FUSION_GAMMA_INIT:-0.01}"
+  export SEMANTIC_FUSION_GAMMA_MAX="${SEMANTIC_FUSION_GAMMA_MAX:-0.5}"
   export SEMANTIC_FUSION_NORM_MODE="${SEMANTIC_FUSION_NORM_MODE:-legacy_post_norm}"
+  export SEMANTIC_FUSION_GLOBAL_TOKEN_MODE="${SEMANTIC_FUSION_GLOBAL_TOKEN_MODE:-all_mean}"
   export SEMANTIC_DIFF_ONLY=0 SEMANTIC_DIFF_BINARY=0 SEMANTIC_UNKNOWN_CHANGE_CLASS=6
   export SEMANTIC_MAP_ROOT= SEMANTIC_BEFORE_PHASE= SEMANTIC_AFTER_PHASE=
   export SEMANTIC_DIFF_ROOT= SEMANTIC_DIFF_PHASE=
@@ -97,7 +99,10 @@ configure_case() {
       export ALLOW_MISSING_PSEUDO_MASK=0 ANNO="$DATA_ROOT/second_cc_aug_captions_reformat.json"
       ;;
   esac
-  export PAPER_SELECTION_MODE=1 SELECTION_STRATEGY=val_baseline_stable_window
+  # Keep the recorded config and the actual validation selector consistent.
+  export PAPER_SELECTION_MODE=1
+  export SELECTION_STRATEGY="${SELECTION_STRATEGY:-paper_balanced}"
+  export SELECTION_METRIC="${SELECTION_METRIC:-paper_balanced}"
 }
 
 selected_checkpoint() {
@@ -113,6 +118,11 @@ preflight() {
     --levir_cc_root "${LEVIR_CC_ROOT:-./Levir-CC}" \
     --levir_mci_root "${LEVIR_MCI_ROOT:-./LEVIR-MCI-dataset}" \
     --second_cc_root "${SECOND_CC_ROOT:-./SECOND-CC-AUG}"
+  run_or_print "$PYTHON" scripts/audit_unified_semantic_inputs.py \
+    --levir_cc_root "${LEVIR_CC_ROOT:-./Levir-CC}" \
+    --levir_mci_root "${LEVIR_MCI_ROOT:-./LEVIR-MCI-dataset}" \
+    --second_cc_root "${SECOND_CC_ROOT:-./SECOND-CC-AUG}" \
+    --output "$RUN_ROOT/semantic_input_audit.json"
 }
 
 train_one() {
@@ -132,6 +142,7 @@ select_one() {
   [ -s "$output" ] && { echo "Skipping validation selection: $output"; return; }
   run_or_print "$PYTHON" scripts/select_best_snapshot_for_paper.py \
     --exp_dir "$exp_path" --csv "$exp_path/val_metrics.csv" \
+    --metric "$SELECTION_METRIC" \
     --output_json "$output" --copy_path "$exp_path/best_for_paper.pth"
 }
 
@@ -154,7 +165,7 @@ matrix() {
     for seed in $SEEDS; do
       [ -z "$ONLY_SEED" ] || [ "$ONLY_SEED" = "$seed" ] || continue
       configure_case "$dataset" "$seed"
-      echo "========== RSACA ${STAGE}: dataset=${dataset} seed=${seed} run_root=${RUN_ROOT} norm_mode=${SEMANTIC_FUSION_NORM_MODE} =========="
+      echo "========== RSACA ${STAGE}: dataset=${dataset} seed=${seed} run_root=${RUN_ROOT} norm_mode=${SEMANTIC_FUSION_NORM_MODE} selection=${SELECTION_METRIC} =========="
       "$action"
     done
   done

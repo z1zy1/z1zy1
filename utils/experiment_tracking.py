@@ -29,6 +29,7 @@ KEY_SWITCHES = [
     'semantic_fusion_reliability_gate',
     'semantic_fusion_reliability_gate_bias',
     'semantic_fusion_global_token',
+    'semantic_fusion_global_token_mode',
     'semantic_fusion_gate_whole_adapter',
     'use_feature_reweight',
     'use_semantic_hard_gate',
@@ -142,6 +143,9 @@ def key_switch_summary(cfg, checkpoint_path=''):
         ),
         'semantic_fusion_global_token': bool(
             getattr(cfg.model, 'semantic_fusion_global_token', False)
+        ),
+        'semantic_fusion_global_token_mode': str(
+            getattr(cfg.model, 'semantic_fusion_global_token_mode', 'all_mean')
         ),
         'semantic_fusion_gate_whole_adapter': bool(
             getattr(cfg.model, 'semantic_fusion_gate_whole_adapter', False)

@@ -205,7 +205,8 @@ class SemanticCrossAttentionFusion(nn.Module):
                  gamma_init=0.1, gamma_max=0.0, ignore_index=-1,
                  norm_mode='legacy_post_norm', use_sparse_change_tokens=False,
                  use_reliability_gate=False, reliability_gate_bias=-1.5,
-                 use_global_semantic_token=False, gate_whole_adapter=False):
+                 use_global_semantic_token=False, global_token_mode='all_mean',
+                 gate_whole_adapter=False):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_semantic_classes = max(1, int(num_semantic_classes))
@@ -222,9 +223,12 @@ class SemanticCrossAttentionFusion(nn.Module):
         self.use_sparse_change_tokens = bool(use_sparse_change_tokens)
         self.use_reliability_gate = bool(use_reliability_gate)
         self.use_global_semantic_token = bool(use_global_semantic_token)
+        self.global_token_mode = str(global_token_mode).lower()
         self.gate_whole_adapter = bool(gate_whole_adapter)
         if self.norm_mode not in ('legacy_post_norm', 'context_pre_norm'):
             raise ValueError('Unknown semantic fusion norm mode: %s.' % self.norm_mode)
+        if self.global_token_mode not in ('all_mean', 'changed_mean'):
+            raise ValueError('Unknown semantic global token mode: %s.' % self.global_token_mode)
         # These parameters are activated only by the V1 adapter switches.
         self.fallback_token = nn.Parameter(torch.zeros(1, 1, self.embed_dim)) if self.use_sparse_change_tokens else None
         if self.use_reliability_gate:
@@ -326,9 +330,14 @@ class SemanticCrossAttentionFusion(nn.Module):
         key_values = [sem_diff_feat]
         padding_masks = [~change_mask]
         if self.use_global_semantic_token:
-            # Retain an input-conditioned summary of the complete semantic map
-            # so sparse selection does not discard useful background/context.
-            global_token = sem_diff_feat.mean(dim=1, keepdim=True)
+            # Preserve context without letting the unchanged background dilute
+            # the signal from the semantic locations selected by sparse attention.
+            if self.global_token_mode == 'changed_mean':
+                weights = change_mask.unsqueeze(-1).float()
+                global_token = (sem_diff_feat * weights).sum(dim=1, keepdim=True)
+                global_token = global_token / change_mask.sum(dim=1, keepdim=True).clamp_min(1).unsqueeze(-1).float()
+            else:
+                global_token = sem_diff_feat.mean(dim=1, keepdim=True)
             key_values.append(global_token)
             padding_masks.append(torch.zeros(batch_size, 1, dtype=torch.bool, device=query.device))
         key_values.append(fallback)
@@ -543,6 +552,9 @@ class CARD(nn.Module):
                 ),
                 use_global_semantic_token=bool(
                     getattr(cfg.model, 'semantic_fusion_global_token', False)
+                ),
+                global_token_mode=str(
+                    getattr(cfg.model, 'semantic_fusion_global_token_mode', 'all_mean')
                 ),
                 gate_whole_adapter=bool(
                     getattr(cfg.model, 'semantic_fusion_gate_whole_adapter', False)

@@ -77,3 +77,16 @@ information discarded by sparse masking.
 Its outputs are isolated under
 `experiments/reliability_sparse_rsaca_v1_whole_gate`; the candidate still must
 be screened on validation metrics before any locked test stage.
+
+## Pre-norm changed-token follow-up
+
+The next isolated candidate is
+`scripts/run_reliability_sparse_rsaca_v1_prenorm_changed_global.sh`. It keeps
+the whole-adapter reliability gate, switches to `context_pre_norm`, limits
+`gamma_max` to `0.1`, initializes the reliability gate conservatively, and
+uses a global token pooled from changed semantic locations only. The runner
+also records a sampled semantic-input audit before training and passes the
+explicit validation selection metric to the selector.
+
+Its default output root is
+`experiments/reliability_sparse_rsaca_v1_prenorm_changed_global`.

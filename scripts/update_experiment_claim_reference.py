@@ -15,6 +15,8 @@ SOURCE_FILES = [
     'experiments/7_6_locked_test_summary.json',
     'experiments/second_cc_current_mci_test_summary.json',
 ]
+FOLLOWUP_SUMMARY = 'experiments/reliability_sparse_rsaca_v1_whole_gate_retry/summary.json'
+V1_SUMMARY = 'experiments/reliability_sparse_rsaca_v1/summary.json'
 
 EXPERIMENT_NOTES = {
     'levir_mci_card_baseline': 'LEVIR-MCI 的审计基线；所有该数据集改进实验应与它比较。',
@@ -87,6 +89,45 @@ def unified_conclusion_lines(unified):
     ]
 
 
+def followup_candidate_lines():
+    summary = load(FOLLOWUP_SUMMARY, required=False)
+    if summary is None:
+        whole_line = (
+            'V1 whole-adapter 候选 `run_reliability_sparse_rsaca_v1_whole_gate.sh` 将门控作用于完整 RSACA 适配器，并加入输入相关全局语义 token；无变化样本的门控被强制为零。该候选尚无锁定结果，不能进入主结果表。'
+        )
+    else:
+        datasets = summary.get('datasets', {})
+        cc = datasets.get('levir_cc', {})
+        mci = datasets.get('levir_mci', {})
+        second = datasets.get('second_cc', {})
+        whole_line = (
+            'V1 whole-adapter 候选已完成独立三数据集三 seed 锁定测试，但总体验收仍为 `acceptance_passed=false`：'
+            'LEVIR-CC 的 B4/CIDEr 均值仍低于 CARD（%s、%s），而 LEVIR-MCI 与 SECOND-CC 的均值 8/8 指标提升。'
+            '该结果是候选证据，不能改写统一主张。'
+            % (fmt(cc.get('delta', {}).get('Bleu_4'), True), fmt(cc.get('delta', {}).get('CIDEr'), True))
+        )
+    return [
+        whole_line,
+        '新增待验证候选 `run_reliability_sparse_rsaca_v1_prenorm_changed_global.sh` 使用 `context_pre_norm`、`gamma_max=0.1`、gate bias `-2.5` 和 changed-only global token；其输出目录独立，锁定测试前必须先完成验证集筛选。',
+    ]
+
+
+def v1_candidate_line():
+    summary = load(V1_SUMMARY, required=False)
+    if summary is None:
+        return 'V1 reliability-gated sparse RSACA 尚无锁定结果，不能进入主结果表。'
+    cc = summary.get('datasets', {}).get('levir_cc', {})
+    return (
+        'V1 reliability-gated sparse RSACA 已完成三数据集三 seed 锁定测试，但总体验收为 `%s`；'
+        'LEVIR-CC B4/CIDEr 均值变化为 %s/%s，不能作为三数据集统一有效的证据。'
+        % (
+            summary.get('acceptance_passed', False),
+            fmt(cc.get('delta', {}).get('Bleu_4'), True),
+            fmt(cc.get('delta', {}).get('CIDEr'), True),
+        )
+    )
+
+
 def main():
     baseline_payload = load('experiments/card_baseline_test_summary.json')
     paper_rows = load('experiments/paper_required_experiments_summary.json')
@@ -96,6 +137,10 @@ def main():
     source_paths = [os.path.join(ROOT, path) for path in SOURCE_FILES]
     if unified is not None:
         source_paths.append(os.path.join(ROOT, 'experiments/unified_rsaca/summary.json'))
+    if os.path.exists(os.path.join(ROOT, FOLLOWUP_SUMMARY)):
+        source_paths.append(os.path.join(ROOT, FOLLOWUP_SUMMARY))
+    if os.path.exists(os.path.join(ROOT, V1_SUMMARY)):
+        source_paths.append(os.path.join(ROOT, V1_SUMMARY))
     source_snapshot = datetime.fromtimestamp(max(os.path.getmtime(path) for path in source_paths), timezone.utc)
     baselines = {row['dataset']: {metric: row[metric] for metric in METRICS}
                  for row in baseline_payload['results']}
@@ -112,8 +157,9 @@ def main():
         '## 3. 实现原主张的建议', '',
         '统一候选采用 **CARD + Residual Semantic Cross-Attention Adapter（RSACA）**：残差 cross-attention、`gamma_init=0.01`、`gamma_max=0.5`、partial detach `0.5`；关闭 auxiliary mask loss、semantic caption loss、hard gate 和 feature reweight。SECOND-CC 使用成对语义图；LEVIR-CC 与 LEVIR-MCI 使用显式标记的 diff-only 语义图接口。', '',
         '当前锁定结果使用 `semantic_fusion_norm_mode=legacy_post_norm`。审计发现该实现即使在 `gamma=0` 时仍执行 `LayerNorm(query)`，因此不是严格恒等残差；而锁定 checkpoint 的实际 gamma 仅约 0.016-0.025。`context_pre_norm` 将归一化移到语义 context 分支，使 `gamma=0` 时输出严格等于原 CARD 特征。它目前只是针对 LEVIR-CC 退化的待验证结构假设，必须先做验证集驱动的小规模消融，再按 scratch 三 seed 锁定协议复验，不能据此改写现有结果。', '',
-        '新增的 V1 候选为 **reliability-gated sparse RSACA**：只把变化位置提供给语义 cross-attention 的 K/V，并为无变化样本加入一个可学习回退 token；连续可靠性门控以视觉变化摘要、稀疏语义摘要和变化覆盖率缩放语义残差。成对语义图按 `before != after` 判定变化，diff-only 输入按非零类别判定变化。该规则在三数据集共享，保留锁定 RSACA 的其余训练设置。V1 尚无验证或锁定测试结果，不能进入主结果表或改变当前论文结论。完整入口：`bash scripts/run_reliability_sparse_rsaca_v1.sh --stage all`；候选筛选阶段仅可运行 `preflight`、`train` 和 `select`。', '',
-        'V1 后续候选 `run_reliability_sparse_rsaca_v1_whole_gate.sh` 将门控作用于完整 RSACA 适配器，并加入输入相关全局语义 token；无变化样本的门控被强制为零，以严格保留 CARD 表示。该候选使用独立输出目录，尚无结果，不能进入主结果表。', '',
+        '新增的 V1 候选为 **reliability-gated sparse RSACA**：只把变化位置提供给语义 cross-attention 的 K/V，并为无变化样本加入一个可学习回退 token；连续可靠性门控以视觉变化摘要、稀疏语义摘要和变化覆盖率缩放语义残差。成对语义图按 `before != after` 判定变化，diff-only 输入按非零类别判定变化。该规则在三数据集共享，保留锁定 RSACA 的其余训练设置。完整入口：`bash scripts/run_reliability_sparse_rsaca_v1.sh --stage all`；候选筛选阶段仅可运行 `preflight`、`train` 和 `select`。', '',
+        v1_candidate_line(), '',
+        *followup_candidate_lines(), '',
         '主实验必须从 scratch 分别训练 CARD 与 RSACA，避免用 MCI 初始化混淆结构增益。固定 3 个 seed（1111、2222、3333），形成 `3 datasets x 2 models x 3 seeds = 18` 次主实验。MCI-transfer 结果只能作为独立迁移实验。', '',
         '验收标准：每个数据集的主要指标均值不低于 CARD；至少 BLEU-4、CIDEr、SPICE 的方向一致；报告每 seed、均值、样本标准差；checkpoint 只能根据验证集选择，测试集仅运行一次锁定评估。', '',
         '完整统一实验入口：`bash scripts/run_unified_rsaca_experiments.sh --stage all`。', '',

@@ -69,6 +69,21 @@ def test_reliability_sparse_whole_adapter_runner_dry_run_is_enabled():
     assert 'SEMANTIC_FUSION_GATE_WHOLE_ADAPTER=1' in result.stdout
 
 
+def test_reliability_sparse_prenorm_changed_global_runner_dry_run_is_enabled():
+    result = subprocess.run(
+        [
+            'bash', 'scripts/run_reliability_sparse_rsaca_v1_prenorm_changed_global.sh',
+            '--stage', 'train', '--dataset', 'levir_cc', '--seed', '1111', '--dry-run',
+        ],
+        cwd=ROOT, check=True, capture_output=True, text=True,
+    )
+    assert 'reliability_sparse_rsaca_v1_prenorm_changed_global' in result.stdout
+    assert 'norm=context_pre_norm' in result.stdout
+    assert 'global_token=changed_mean' in result.stdout
+    assert 'gamma_max=0.1' in result.stdout
+    assert 'gate_bias=-2.5' in result.stdout
+
+
 def test_paper_selector_accepts_uppercase_validation_flag():
     with tempfile.TemporaryDirectory() as root:
         snapshots = os.path.join(root, 'snapshots')

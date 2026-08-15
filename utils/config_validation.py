@@ -9,6 +9,7 @@ SEMANTIC_INPUT_MODES = {
     'none', 'aux', 'early_fusion', 'cross_attention', 'hard_gate', 'weak_coupled',
 }
 SEMANTIC_FUSION_NORM_MODES = {'legacy_post_norm', 'context_pre_norm'}
+SEMANTIC_FUSION_GLOBAL_TOKEN_MODES = {'all_mean', 'changed_mean'}
 
 
 def _finite_number(value, path, *, minimum=None, maximum=None):
@@ -72,6 +73,14 @@ def validate_resolved_config(cfg, *, phase='train'):
         raise ValueError(
             'model.semantic_fusion_norm_mode=%r is invalid; expected one of %s.'
             % (fusion_norm_mode, sorted(SEMANTIC_FUSION_NORM_MODES))
+        )
+    global_token_mode = str(
+        getattr(cfg.model, 'semantic_fusion_global_token_mode', 'all_mean')
+    ).lower()
+    if global_token_mode not in SEMANTIC_FUSION_GLOBAL_TOKEN_MODES:
+        raise ValueError(
+            'model.semantic_fusion_global_token_mode=%r is invalid; expected one of %s.'
+            % (global_token_mode, sorted(SEMANTIC_FUSION_GLOBAL_TOKEN_MODES))
         )
     _finite_number(
         getattr(cfg.model, 'semantic_fusion_reliability_gate_bias', -1.5),

@@ -2,7 +2,7 @@
 
 > 本文档是模型实现、实验设计和论文结论的统一语义来源。修改 CARD/RSACA、数据输入、训练协议、选点策略、测试结果或论文主张后，必须运行 `python scripts/update_experiment_claim_reference.py` 并复核结论。
 
-结果快照时间：`2026-08-12 11:09:44 UTC`
+结果快照时间：`2026-08-15 12:58:18 UTC`
 
 ## 1. 原始论文主张
 
@@ -25,9 +25,12 @@
 
 当前锁定结果使用 `semantic_fusion_norm_mode=legacy_post_norm`。审计发现该实现即使在 `gamma=0` 时仍执行 `LayerNorm(query)`，因此不是严格恒等残差；而锁定 checkpoint 的实际 gamma 仅约 0.016-0.025。`context_pre_norm` 将归一化移到语义 context 分支，使 `gamma=0` 时输出严格等于原 CARD 特征。它目前只是针对 LEVIR-CC 退化的待验证结构假设，必须先做验证集驱动的小规模消融，再按 scratch 三 seed 锁定协议复验，不能据此改写现有结果。
 
-新增的 V1 候选为 **reliability-gated sparse RSACA**：只把变化位置提供给语义 cross-attention 的 K/V，并为无变化样本加入一个可学习回退 token；连续可靠性门控以视觉变化摘要、稀疏语义摘要和变化覆盖率缩放语义残差。成对语义图按 `before != after` 判定变化，diff-only 输入按非零类别判定变化。该规则在三数据集共享，保留锁定 RSACA 的其余训练设置。V1 尚无验证或锁定测试结果，不能进入主结果表或改变当前论文结论。完整入口：`bash scripts/run_reliability_sparse_rsaca_v1.sh --stage all`；候选筛选阶段仅可运行 `preflight`、`train` 和 `select`。
+新增的 V1 候选为 **reliability-gated sparse RSACA**：只把变化位置提供给语义 cross-attention 的 K/V，并为无变化样本加入一个可学习回退 token；连续可靠性门控以视觉变化摘要、稀疏语义摘要和变化覆盖率缩放语义残差。成对语义图按 `before != after` 判定变化，diff-only 输入按非零类别判定变化。该规则在三数据集共享，保留锁定 RSACA 的其余训练设置。完整入口：`bash scripts/run_reliability_sparse_rsaca_v1.sh --stage all`；候选筛选阶段仅可运行 `preflight`、`train` 和 `select`。
 
-V1 后续候选 `run_reliability_sparse_rsaca_v1_whole_gate.sh` 将门控作用于完整 RSACA 适配器，并加入输入相关全局语义 token；无变化样本的门控被强制为零，以严格保留 CARD 表示。该候选使用独立输出目录，尚无结果，不能进入主结果表。
+V1 reliability-gated sparse RSACA 已完成三数据集三 seed 锁定测试，但总体验收为 `False`；LEVIR-CC B4/CIDEr 均值变化为 -0.0506/-0.0038，不能作为三数据集统一有效的证据。
+
+V1 whole-adapter 候选已完成独立三数据集三 seed 锁定测试，但总体验收仍为 `acceptance_passed=false`：LEVIR-CC 的 B4/CIDEr 均值仍低于 CARD（-0.0200、-0.0004），而 LEVIR-MCI 与 SECOND-CC 的均值 8/8 指标提升。该结果是候选证据，不能改写统一主张。
+新增待验证候选 `run_reliability_sparse_rsaca_v1_prenorm_changed_global.sh` 使用 `context_pre_norm`、`gamma_max=0.1`、gate bias `-2.5` 和 changed-only global token；其输出目录独立，锁定测试前必须先完成验证集筛选。
 
 主实验必须从 scratch 分别训练 CARD 与 RSACA，避免用 MCI 初始化混淆结构增益。固定 3 个 seed（1111、2222、3333），形成 `3 datasets x 2 models x 3 seeds = 18` 次主实验。MCI-transfer 结果只能作为独立迁移实验。
 

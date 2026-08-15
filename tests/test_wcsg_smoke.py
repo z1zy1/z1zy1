@@ -204,6 +204,30 @@ class WCSGSmokeTest(unittest.TestCase):
         fusion(diff, semantic_diff=semantic_diff, spatial_size=(2, 2))
         self.assertEqual(tuple(fusion.last_attention.shape), (1, 4, 6))
 
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
+    def test_changed_mean_global_token_excludes_unchanged_background(self):
+        from models.CARD import SemanticCrossAttentionFusion
+
+        torch.manual_seed(19)
+        all_mean = SemanticCrossAttentionFusion(
+            8, 7, num_heads=2, dropout=0.0, gamma_init=0.1,
+            use_sparse_change_tokens=True, use_global_semantic_token=True,
+            global_token_mode='all_mean',
+        )
+        changed_mean = SemanticCrossAttentionFusion(
+            8, 7, num_heads=2, dropout=0.0, gamma_init=0.1,
+            use_sparse_change_tokens=True, use_global_semantic_token=True,
+            global_token_mode='changed_mean',
+        )
+        changed_mean.load_state_dict(all_mean.state_dict())
+        all_mean.eval()
+        changed_mean.eval()
+        diff = torch.randn(1, 4, 8)
+        semantic_diff = torch.tensor([[[0, 6], [0, 0]]])
+        all_output = all_mean(diff, semantic_diff=semantic_diff, spatial_size=(2, 2))
+        changed_output = changed_mean(diff, semantic_diff=semantic_diff, spatial_size=(2, 2))
+        self.assertFalse(torch.allclose(all_output, changed_output))
+
     @unittest.skipUnless(torch is not None, 'PyTorch is required for loss tests.')
     def test_normalized_content_word_weighted_ce_exact_denominator(self):
         import torch.nn as nn

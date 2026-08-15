@@ -43,6 +43,8 @@ __C.model.semantic_fusion_norm_mode = 'legacy_post_norm'
 __C.model.semantic_fusion_sparse_change_tokens = False
 __C.model.semantic_fusion_reliability_gate = False
 __C.model.semantic_fusion_reliability_gate_bias = -1.5
+__C.model.semantic_fusion_global_token = False
+__C.model.semantic_fusion_gate_whole_adapter = False
 
 # Encoder
 __C.model.encoder = AttrDict()

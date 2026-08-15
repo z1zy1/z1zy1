@@ -63,3 +63,17 @@ bash scripts/run_reliability_sparse_rsaca_v1.sh --stage all
 
 Start with `--stage preflight` or one validation-only training run; do not run
 the locked test stage while choosing V1 hyperparameters.
+
+## Whole-adapter gate follow-up
+
+After the first sparse V1 run, the follow-up
+`scripts/run_reliability_sparse_rsaca_v1_whole_gate.sh` applies the learned
+reliability coefficient to the complete RSACA adapter output rather than only
+the semantic residual. This makes an unreliable sample able to return to the
+original CARD visual representation. It also appends an input-conditioned
+global semantic token to the changed-token K/V set, preserving contextual
+information discarded by sparse masking.
+
+Its outputs are isolated under
+`experiments/reliability_sparse_rsaca_v1_whole_gate`; the candidate still must
+be screened on validation metrics before any locked test stage.

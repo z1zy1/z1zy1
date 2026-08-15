@@ -44,6 +44,14 @@ def parse_bool(value):
     return str(value).strip().lower() in ('1', 'true', 't', 'yes', 'y')
 
 
+def case_insensitive_value(row, name, default=''):
+    wanted = str(name).lower()
+    for key, value in row.items():
+        if str(key).lower() == wanted:
+            return value
+    return default
+
+
 def checkpoint_number(path):
     matches = re.findall(r'(\d+)', os.path.basename(path or ''))
     return matches[-1] if matches else None
@@ -133,7 +141,11 @@ def load_rows(csv_path, exp_dir, metric):
         row['caption_score'] = caption_score(row)
         row['aux_tiebreak'] = aux_tiebreak(row)
         row['negative_ablation'] = is_negative_ablation(exp_dir, row['snapshot_path'])
-        row['all_above_baseline'] = parse_bool(row.get('all_above_baseline'))
+        # Training metrics historically emitted ALL_ABOVE_BASELINE while the
+        # selector expected lowercase. Accept either spelling for auditability.
+        row['all_above_baseline'] = parse_bool(
+            case_insensitive_value(row, 'all_above_baseline')
+        )
         normalized.append(row)
     return normalized
 

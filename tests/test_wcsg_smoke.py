@@ -155,8 +155,7 @@ class WCSGSmokeTest(unittest.TestCase):
         self.assertEqual(tuple(output.shape), tuple(diff.shape))
         self.assertTrue(torch.equal(fusion.last_change_coverage, torch.zeros(2, 1)))
         self.assertTrue(torch.isfinite(fusion.last_reliability_gate).all())
-        self.assertTrue(torch.all(fusion.last_reliability_gate > 0))
-        self.assertTrue(torch.all(fusion.last_reliability_gate < 1))
+        self.assertTrue(torch.equal(fusion.last_reliability_gate, torch.zeros(2, 1)))
 
     @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
     def test_sparse_change_tokens_measure_pairwise_transitions(self):
@@ -172,6 +171,38 @@ class WCSGSmokeTest(unittest.TestCase):
         after = torch.tensor([[[0, 1], [3, 3]]])
         fusion(diff, before, after, spatial_size=(2, 2))
         self.assertTrue(torch.allclose(fusion.last_change_coverage, torch.tensor([[0.25]])))
+
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
+    def test_whole_adapter_gate_can_restore_visual_query(self):
+        from models.CARD import SemanticCrossAttentionFusion
+
+        fusion = SemanticCrossAttentionFusion(
+            8, 4, num_heads=2, dropout=0.0, gamma_init=0.2,
+            use_sparse_change_tokens=True, use_reliability_gate=True,
+            use_global_semantic_token=True, gate_whole_adapter=True,
+        )
+        with torch.no_grad():
+            fusion.reliability_gate[-1].weight.zero_()
+            fusion.reliability_gate[-1].bias.fill_(-100.0)
+        fusion.eval()
+        diff = torch.randn(2, 4, 8)
+        semantic_diff = torch.tensor([[[0, 1], [0, 0]], [[2, 0], [0, 0]]])
+        output = fusion(diff, semantic_diff=semantic_diff, spatial_size=(2, 2))
+        self.assertTrue(torch.allclose(output, diff, atol=1e-5, rtol=1e-5))
+
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
+    def test_global_semantic_token_is_available_to_attention(self):
+        from models.CARD import SemanticCrossAttentionFusion
+
+        fusion = SemanticCrossAttentionFusion(
+            8, 4, num_heads=2, dropout=0.0, gamma_init=0.1,
+            use_sparse_change_tokens=True, use_global_semantic_token=True,
+        )
+        fusion.eval()
+        diff = torch.randn(1, 4, 8)
+        semantic_diff = torch.tensor([[[0, 1], [0, 0]]])
+        fusion(diff, semantic_diff=semantic_diff, spatial_size=(2, 2))
+        self.assertEqual(tuple(fusion.last_attention.shape), (1, 4, 6))
 
     @unittest.skipUnless(torch is not None, 'PyTorch is required for loss tests.')
     def test_normalized_content_word_weighted_ce_exact_denominator(self):

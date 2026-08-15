@@ -204,7 +204,8 @@ class SemanticCrossAttentionFusion(nn.Module):
     def __init__(self, embed_dim, num_semantic_classes, num_heads=8, dropout=0.1,
                  gamma_init=0.1, gamma_max=0.0, ignore_index=-1,
                  norm_mode='legacy_post_norm', use_sparse_change_tokens=False,
-                 use_reliability_gate=False, reliability_gate_bias=-1.5):
+                 use_reliability_gate=False, reliability_gate_bias=-1.5,
+                 use_global_semantic_token=False, gate_whole_adapter=False):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_semantic_classes = max(1, int(num_semantic_classes))
@@ -220,6 +221,8 @@ class SemanticCrossAttentionFusion(nn.Module):
         self.norm_mode = str(norm_mode).lower()
         self.use_sparse_change_tokens = bool(use_sparse_change_tokens)
         self.use_reliability_gate = bool(use_reliability_gate)
+        self.use_global_semantic_token = bool(use_global_semantic_token)
+        self.gate_whole_adapter = bool(gate_whole_adapter)
         if self.norm_mode not in ('legacy_post_norm', 'context_pre_norm'):
             raise ValueError('Unknown semantic fusion norm mode: %s.' % self.norm_mode)
         # These parameters are activated only by the V1 adapter switches.
@@ -320,11 +323,18 @@ class SemanticCrossAttentionFusion(nn.Module):
         # key_padding_mask excludes every unchanged semantic location.
         batch_size = query.size(0)
         fallback = self.fallback_token.expand(batch_size, -1, -1)
-        key_value = torch.cat([sem_diff_feat, fallback], dim=1)
-        padding_mask = torch.cat([
-            ~change_mask,
-            torch.zeros(batch_size, 1, dtype=torch.bool, device=query.device),
-        ], dim=1)
+        key_values = [sem_diff_feat]
+        padding_masks = [~change_mask]
+        if self.use_global_semantic_token:
+            # Retain an input-conditioned summary of the complete semantic map
+            # so sparse selection does not discard useful background/context.
+            global_token = sem_diff_feat.mean(dim=1, keepdim=True)
+            key_values.append(global_token)
+            padding_masks.append(torch.zeros(batch_size, 1, dtype=torch.bool, device=query.device))
+        key_values.append(fallback)
+        padding_masks.append(torch.zeros(batch_size, 1, dtype=torch.bool, device=query.device))
+        key_value = torch.cat(key_values, dim=1)
+        padding_mask = torch.cat(padding_masks, dim=1)
         query_t = query.transpose(0, 1).contiguous()
         key_value_t = key_value.transpose(0, 1).contiguous()
         sem_context_t, attn = self.attention(
@@ -391,17 +401,27 @@ class SemanticCrossAttentionFusion(nn.Module):
             reliability = torch.sigmoid(
                 self.reliability_gate(torch.cat([visual_summary, semantic_summary, coverage], dim=-1))
             )
+            # A sample with no changed semantic location must retain the CARD
+            # representation, regardless of the learned gate bias.
+            reliability = reliability * (coverage > 0).float()
         self.last_reliability_gate = reliability.detach()
         reliability_scale = reliability.view(batch_size, 1, 1)
-        residual = effective_gamma * reliability_scale * sem_context
-        if self.norm_mode == 'context_pre_norm':
-            # Keep gamma outside LayerNorm so gamma=0 remains a strict identity
-            # even after LayerNorm learns a non-zero affine bias.
-            fused = query + self.dropout(
-                effective_gamma * reliability_scale * self.norm(sem_context)
-            )
+        if self.gate_whole_adapter:
+            if self.norm_mode == 'context_pre_norm':
+                adapter = query + self.dropout(effective_gamma * self.norm(sem_context))
+            else:
+                adapter = self.norm(query + self.dropout(effective_gamma * sem_context))
+            fused = query + reliability_scale * (adapter - query)
         else:
-            fused = self.norm(query + self.dropout(residual))
+            residual = effective_gamma * reliability_scale * sem_context
+            if self.norm_mode == 'context_pre_norm':
+                # Keep gamma outside LayerNorm so gamma=0 remains a strict identity
+                # even after LayerNorm learns a non-zero affine bias.
+                fused = query + self.dropout(
+                    effective_gamma * reliability_scale * self.norm(sem_context)
+                )
+            else:
+                fused = self.norm(query + self.dropout(residual))
         if input_was_4d:
             return fused.transpose(1, 2).contiguous().view(batch_size, channels, height, width)
         return fused
@@ -520,6 +540,12 @@ class CARD(nn.Module):
                 ),
                 reliability_gate_bias=float(
                     getattr(cfg.model, 'semantic_fusion_reliability_gate_bias', -1.5)
+                ),
+                use_global_semantic_token=bool(
+                    getattr(cfg.model, 'semantic_fusion_global_token', False)
+                ),
+                gate_whole_adapter=bool(
+                    getattr(cfg.model, 'semantic_fusion_gate_whole_adapter', False)
                 ),
             )
         if self.use_semantic_aux:

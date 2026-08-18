@@ -27,7 +27,11 @@ def parse_args():
     parser.add_argument('--output_json', default=None)
     parser.add_argument('--copy_path', default=None)
     parser.add_argument('--allow_negative_ablation', action='store_true')
-    parser.add_argument('--metric', default='paper_balanced', choices=['paper_balanced', 'CIDEr', 'Bleu_4', 'SPICE', 'METEOR'])
+    parser.add_argument(
+        '--metric',
+        default='paper_balanced',
+        choices=['paper_balanced', 'paper_balanced_no_spice', 'CIDEr', 'Bleu_4', 'SPICE', 'METEOR'],
+    )
     return parser.parse_args()
 
 
@@ -122,8 +126,17 @@ def aux_tiebreak(row):
 
 
 def score_row(row, metric):
-    if metric != 'paper_balanced':
+    if metric not in ('paper_balanced', 'paper_balanced_no_spice'):
         return to_float(row.get(metric), -float('inf'))
+    if metric == 'paper_balanced_no_spice':
+        # Keep checkpoint selection validation-only while avoiding a noisy
+        # SPICE term for the current seven-metric acceptance protocol.
+        return (
+            0.35 * (to_float(row.get('CIDEr')) / CAPTION_BASELINE['CIDEr'])
+            + 0.25 * (to_float(row.get('Bleu_4')) / CAPTION_BASELINE['Bleu_4'])
+            + 0.20 * (to_float(row.get('METEOR')) / CAPTION_BASELINE['METEOR'])
+            + 0.20 * (to_float(row.get('ROUGE_L')) / CAPTION_BASELINE['ROUGE_L'])
+        )
     return caption_score(row) + 0.03 * aux_tiebreak(row)
 
 

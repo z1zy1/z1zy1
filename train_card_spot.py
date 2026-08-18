@@ -674,6 +674,7 @@ def unpack_batch(batch):
         'semantic_diff': batch[13] if len(batch) > 13 else None,
         'changeflag': batch[14] if len(batch) > 14 else None,
         'image_id': batch[15] if len(batch) > 15 else None,
+        'semantic_confidence': batch[16] if len(batch) > 16 else None,
     }
     return data
 
@@ -1186,6 +1187,7 @@ while t < cfg.train.max_iter:
         semantic_before = batch_data.get('semantic_before')
         semantic_after = batch_data.get('semantic_after')
         semantic_diff = batch_data.get('semantic_diff')
+        semantic_confidence = batch_data.get('semantic_confidence')
 
         batch_size = d_feats.size(0)
         labels = labels.squeeze(1)
@@ -1207,11 +1209,22 @@ while t < cfg.train.max_iter:
         semantic_before = move_optional_tensor(semantic_before, device, dtype=torch.long)
         semantic_after = move_optional_tensor(semantic_after, device, dtype=torch.long)
         semantic_diff = move_optional_tensor(semantic_diff, device, dtype=torch.long)
+        semantic_confidence = move_optional_tensor(semantic_confidence, device, dtype=torch.float32)
+
+        if hasattr(change_detector, 'set_global_step'):
+            change_detector.set_global_step(t)
         semantic_targets = move_semantic_targets_to_device(semantic_targets, device)
 
         optimizer.zero_grad()
 
-        change_outputs = change_detector(d_feats, sc_feats, semantic_before=semantic_before, semantic_after=semantic_after, semantic_diff=semantic_diff)
+        change_outputs = change_detector(
+            d_feats,
+            sc_feats,
+            semantic_before=semantic_before,
+            semantic_after=semantic_after,
+            semantic_diff=semantic_diff,
+            semantic_confidence=semantic_confidence,
+        )
         encoder_output, con_loss, ind_loss, _, _, mask_pred, semantic_logits, relation_aux_logits = unpack_change_detector_output(change_outputs)
 
         loss_pos, _, att_pos = speaker._forward(encoder_output,
@@ -1582,6 +1595,7 @@ while t < cfg.train.max_iter:
                     semantic_before = val_data.get('semantic_before')
                     semantic_after = val_data.get('semantic_after')
                     semantic_diff = val_data.get('semantic_diff')
+                    semantic_confidence = val_data.get('semantic_confidence')
 
                     val_batch_size = d_feats.size(0)
 
@@ -1591,10 +1605,20 @@ while t < cfg.train.max_iter:
                     semantic_before = move_optional_tensor(semantic_before, device, dtype=torch.long)
                     semantic_after = move_optional_tensor(semantic_after, device, dtype=torch.long)
                     semantic_diff = move_optional_tensor(semantic_diff, device, dtype=torch.long)
+                    semantic_confidence = move_optional_tensor(semantic_confidence, device, dtype=torch.float32)
+                    if hasattr(change_detector, 'set_global_step'):
+                        change_detector.set_global_step(t)
                     semantic_targets = move_semantic_targets_to_device(semantic_targets, device)
 
 
-                    change_outputs = change_detector(d_feats, sc_feats, semantic_before=semantic_before, semantic_after=semantic_after, semantic_diff=semantic_diff)
+                    change_outputs = change_detector(
+                        d_feats,
+                        sc_feats,
+                        semantic_before=semantic_before,
+                        semantic_after=semantic_after,
+                        semantic_diff=semantic_diff,
+                        semantic_confidence=semantic_confidence,
+                    )
                     encoder_output, _, _, att1, att2, _, _, relation_aux_logits = unpack_change_detector_output(change_outputs)
                     if cfg.train.use_relation_aux:
                         if relation_aux_logits is None or semantic_targets is None:

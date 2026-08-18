@@ -142,6 +142,13 @@ COMMON_OPTS=(
   data.semantic_unknown_change_class "$SEMANTIC_UNKNOWN_CHANGE_CLASS"
 )
 
+if [ -n "${SEMANTIC_DIFF_CONFIDENCE_ROOT:-}" ]; then
+  COMMON_OPTS+=(data.semantic_diff_confidence_root "$SEMANTIC_DIFF_CONFIDENCE_ROOT")
+fi
+if [ -n "${SEMANTIC_DIFF_CONFIDENCE_PHASE:-}" ]; then
+  COMMON_OPTS+=(data.semantic_diff_confidence_phase "$SEMANTIC_DIFF_CONFIDENCE_PHASE")
+fi
+
 if [ -n "$USE_CONTENT_WORD_WEIGHT" ]; then
   COMMON_OPTS+=(train.use_content_word_weight "$(bool_word "$USE_CONTENT_WORD_WEIGHT")")
 fi
@@ -175,6 +182,15 @@ if [ -n "$SEMANTIC_FUSION_GLOBAL_TOKEN_MODE" ]; then
 fi
 if [ -n "$SEMANTIC_FUSION_GATE_WHOLE_ADAPTER" ]; then
   COMMON_OPTS+=(model.semantic_fusion_gate_whole_adapter "$(bool_word "$SEMANTIC_FUSION_GATE_WHOLE_ADAPTER")")
+fi
+if [ -n "${SEMANTIC_FUSION_VISUAL_CONSISTENCY_GATE:-}" ]; then
+  COMMON_OPTS+=(model.semantic_fusion_visual_consistency_gate "$(bool_word "$SEMANTIC_FUSION_VISUAL_CONSISTENCY_GATE")")
+fi
+if [ -n "${SEMANTIC_FUSION_VISUAL_FALLBACK:-}" ]; then
+  COMMON_OPTS+=(model.semantic_fusion_visual_fallback "$(bool_word "$SEMANTIC_FUSION_VISUAL_FALLBACK")")
+fi
+if [ -n "${SEMANTIC_FUSION_WARMUP_STEPS:-}" ]; then
+  COMMON_OPTS+=(model.semantic_fusion_warmup_steps "$SEMANTIC_FUSION_WARMUP_STEPS")
 fi
 if [ -n "$CONTENT_WORD_WEIGHT" ]; then
   COMMON_OPTS+=(train.content_word_weight "$CONTENT_WORD_WEIGHT")

@@ -54,6 +54,7 @@ def unpack_batch(batch):
         'semantic_diff': batch[13] if len(batch) > 13 else None,
         'changeflag': batch[14] if len(batch) > 14 else None,
         'image_id': batch[15] if len(batch) > 15 else None,
+        'semantic_confidence': batch[16] if len(batch) > 16 else None,
     }
 
 
@@ -430,6 +431,7 @@ with torch.no_grad():
         semantic_before = batch_data.get('semantic_before')
         semantic_after = batch_data.get('semantic_after')
         semantic_diff = batch_data.get('semantic_diff')
+        semantic_confidence = batch_data.get('semantic_confidence')
         d_img_paths = batch_data.get('image_before')
         image_ids = batch_data.get('image_id')
 
@@ -442,6 +444,9 @@ with torch.no_grad():
         semantic_before = move_optional_tensor(semantic_before, device)
         semantic_after = move_optional_tensor(semantic_after, device)
         semantic_diff = move_optional_tensor(semantic_diff, device)
+        semantic_confidence = move_optional_tensor(semantic_confidence, device, dtype=torch.float32)
+        if hasattr(change_detector, 'set_global_step'):
+            change_detector.set_global_step(int(getattr(cfg.train, 'total_steps', 10000)))
 
         change_outputs = change_detector(
             d_feats,
@@ -449,6 +454,7 @@ with torch.no_grad():
             semantic_before=semantic_before,
             semantic_after=semantic_after,
             semantic_diff=semantic_diff,
+            semantic_confidence=semantic_confidence,
         )
         encoder_output, _, _, _, _, mask_pred, semantic_logits, _ = unpack_change_detector_output(change_outputs)
 
@@ -526,5 +532,4 @@ with torch.no_grad():
             '%s_prediction_file' % args.split: result_save_path_pos,
         }
     )
-
 

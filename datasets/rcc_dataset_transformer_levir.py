@@ -163,6 +163,8 @@ class RCCDataset(Dataset):
         self.semantic_after_phase = getattr(cfg.data, 'semantic_after_phase', '') or 'sem/B'
         self.semantic_diff_root = getattr(cfg.data, 'semantic_diff_root', '')
         self.semantic_diff_phase = getattr(cfg.data, 'semantic_diff_phase', '')
+        self.semantic_diff_confidence_root = getattr(cfg.data, 'semantic_diff_confidence_root', '')
+        self.semantic_diff_confidence_phase = getattr(cfg.data, 'semantic_diff_confidence_phase', '')
         self.semantic_diff_only = _as_bool(getattr(cfg.data, 'semantic_diff_only', False))
         self.semantic_diff_binary = _as_bool(getattr(cfg.data, 'semantic_diff_binary', False))
         self.semantic_unknown_change_class = int(getattr(cfg.data, 'semantic_unknown_change_class', 6))
@@ -455,6 +457,27 @@ class RCCDataset(Dataset):
         class_map[arr] = self.semantic_unknown_change_class
         return torch.from_numpy(class_map)
 
+    def _load_semantic_confidence(self, path):
+        """Load an optional source-model probability map in [0, 1]."""
+        if not path:
+            return None
+        arr = _load_image_or_array(path)
+        if arr is None:
+            return None
+        arr = np.asarray(arr)
+        if arr.ndim == 3:
+            if arr.shape[-1] in (1, 3, 4):
+                arr = arr[..., :3].mean(axis=-1)
+            elif arr.shape[0] in (1, 3, 4):
+                arr = arr[:3].mean(axis=0)
+            else:
+                arr = arr.mean(axis=-1)
+        arr = arr.astype(np.float32)
+        if arr.size and float(np.nanmax(arr)) > 1.0:
+            arr = arr / 255.0
+        arr = np.nan_to_num(arr, nan=0.0, posinf=1.0, neginf=0.0)
+        return torch.from_numpy(np.clip(arr, 0.0, 1.0))
+
     def _resolve_semantic_diff_path(self, split_name, filename):
         if not self.semantic_diff_root:
             return None
@@ -464,9 +487,18 @@ class RCCDataset(Dataset):
 
     def _load_semantic_pair(self, split_name, filename):
         if not self.use_semantic_maps:
-            return None, None, None
+            return None, None, None, None
         diff_path = self._resolve_semantic_diff_path(split_name, filename)
         diff = self._load_semantic_diff_map(diff_path) if diff_path else None
+        confidence = None
+        if self.semantic_diff_confidence_root:
+            confidence_path = _first_existing(_candidate_paths(
+                self.semantic_diff_confidence_root,
+                split_name,
+                self.semantic_diff_confidence_phase,
+                filename,
+            ))
+            confidence = self._load_semantic_confidence(confidence_path)
         if self.semantic_diff_only:
             if diff is None:
                 raise FileNotFoundError(
@@ -474,13 +506,13 @@ class RCCDataset(Dataset):
                     '(root=%s, phase=%s, split=%s).'
                     % (filename, self.semantic_diff_root, self.semantic_diff_phase, split_name)
                 )
-            return None, None, diff
+            return None, None, diff, confidence
         before_path = self._resolve_semantic_path(split_name, self.semantic_before_phase, filename)
         after_path = self._resolve_semantic_path(split_name, self.semantic_after_phase, filename)
         before = self._load_semantic_map(before_path) if before_path else None
         after = self._load_semantic_map(after_path) if after_path else None
         if before is None or after is None:
-            return before, after, diff
+            return before, after, diff, confidence
         if diff is None:
             valid = before != int(getattr(self.cfg.train, 'semantic_ignore_index', -1))
             valid = valid & (after != int(getattr(self.cfg.train, 'semantic_ignore_index', -1)))
@@ -488,7 +520,7 @@ class RCCDataset(Dataset):
             diff = torch.zeros_like(after, dtype=torch.long)
             diff[changed] = after[changed].long() + 1
             diff[~valid] = int(getattr(self.cfg.train, 'semantic_ignore_index', -1))
-        return before, after, diff
+        return before, after, diff, confidence
 
     def _decode_reference_caption(self, token_ids):
         words = []
@@ -607,7 +639,7 @@ class RCCDataset(Dataset):
                 else:
                     pseudo_mask = torch.full((1, d_feature.shape[-2], d_feature.shape[-1]), float(self.mask_ignore_index), dtype=torch.float32)
 
-        semantic_before, semantic_after, semantic_diff = self._load_semantic_pair(split_name, filename)
+        semantic_before, semantic_after, semantic_diff, semantic_confidence = self._load_semantic_pair(split_name, filename)
         semantic_dense = None
         if self.use_dense_semantic_aux:
             if self.use_semantic_maps:
@@ -681,6 +713,7 @@ class RCCDataset(Dataset):
                 'semantic_before': semantic_before,
                 'semantic_after': semantic_after,
                 'semantic_diff': semantic_diff,
+                'semantic_confidence': semantic_confidence,
                 'changeflag': int(changeflag),
                 'image_id': filename,
                 'split': split_name,
@@ -705,6 +738,7 @@ class RCCDataset(Dataset):
             semantic_diff,
             int(changeflag),
             filename,
+            semantic_confidence,
         )
 
     def get_vocab_size(self):

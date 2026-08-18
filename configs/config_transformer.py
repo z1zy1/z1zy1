@@ -46,6 +46,9 @@ __C.model.semantic_fusion_reliability_gate_bias = -1.5
 __C.model.semantic_fusion_global_token = False
 __C.model.semantic_fusion_global_token_mode = 'all_mean'
 __C.model.semantic_fusion_gate_whole_adapter = False
+__C.model.semantic_fusion_visual_consistency_gate = False
+__C.model.semantic_fusion_visual_fallback = False
+__C.model.semantic_fusion_warmup_steps = 0
 
 # Encoder
 __C.model.encoder = AttrDict()
@@ -149,6 +152,12 @@ __C.data.semantic_map_root = ''
 __C.data.semantic_before_phase = ''
 __C.data.semantic_after_phase = ''
 __C.data.semantic_diff_root = ''
+__C.data.semantic_diff_phase = ''
+__C.data.semantic_diff_only = False
+__C.data.semantic_diff_binary = False
+__C.data.semantic_diff_confidence_root = ''
+__C.data.semantic_diff_confidence_phase = ''
+__C.data.semantic_unknown_change_class = 6
 __C.data.num_semantic_classes = 0
 __C.data.eval_change_nochange_split = False
 __C.data.caption_json = ''

@@ -31,6 +31,13 @@ KEY_SWITCHES = [
     'semantic_fusion_global_token',
     'semantic_fusion_global_token_mode',
     'semantic_fusion_gate_whole_adapter',
+    'semantic_fusion_visual_consistency_gate',
+    'semantic_fusion_visual_fallback',
+    'semantic_fusion_warmup_steps',
+    'semantic_diff_only',
+    'semantic_diff_binary',
+    'semantic_diff_confidence_root',
+    'semantic_diff_confidence_phase',
     'use_feature_reweight',
     'use_semantic_hard_gate',
     'lambda_mask',
@@ -149,6 +156,23 @@ def key_switch_summary(cfg, checkpoint_path=''):
         ),
         'semantic_fusion_gate_whole_adapter': bool(
             getattr(cfg.model, 'semantic_fusion_gate_whole_adapter', False)
+        ),
+        'semantic_fusion_visual_consistency_gate': bool(
+            getattr(cfg.model, 'semantic_fusion_visual_consistency_gate', False)
+        ),
+        'semantic_fusion_visual_fallback': bool(
+            getattr(cfg.model, 'semantic_fusion_visual_fallback', False)
+        ),
+        'semantic_fusion_warmup_steps': int(
+            getattr(cfg.model, 'semantic_fusion_warmup_steps', 0) or 0
+        ),
+        'semantic_diff_only': bool(getattr(cfg.data, 'semantic_diff_only', False)),
+        'semantic_diff_binary': bool(getattr(cfg.data, 'semantic_diff_binary', False)),
+        'semantic_diff_confidence_root': str(
+            getattr(cfg.data, 'semantic_diff_confidence_root', '') or ''
+        ),
+        'semantic_diff_confidence_phase': str(
+            getattr(cfg.data, 'semantic_diff_confidence_phase', '') or ''
         ),
         'lambda_mask': float(getattr(cfg.train, 'lambda_mask', 0.0)),
         'lambda_semantic': float(getattr(cfg.train, 'lambda_semantic', 0.0)),

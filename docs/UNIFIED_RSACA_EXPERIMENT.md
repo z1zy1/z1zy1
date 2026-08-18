@@ -88,5 +88,15 @@ uses a global token pooled from changed semantic locations only. The runner
 also records a sampled semantic-input audit before training and passes the
 explicit validation selection metric to the selector.
 
+The noise-aware follow-up also supports an optional
+`data.semantic_diff_confidence_root` containing source-model probability maps.
+When present, changed tokens and the `changed_mean` token are confidence
+weighted. The gate receives semantic quality and visual-semantic agreement,
+and a capped visual fallback remains available when a pseudo-mask misses a
+change. `context_pre_norm` fusion can be linearly warmed up with
+`model.semantic_fusion_warmup_steps`. The recommended candidate uses
+`paper_balanced_no_spice` for validation checkpoint selection; SPICE is still
+reported at test time but does not select the checkpoint.
+
 Its default output root is
 `experiments/reliability_sparse_rsaca_v1_prenorm_changed_global`.

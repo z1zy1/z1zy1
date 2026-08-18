@@ -206,7 +206,8 @@ class SemanticCrossAttentionFusion(nn.Module):
                  norm_mode='legacy_post_norm', use_sparse_change_tokens=False,
                  use_reliability_gate=False, reliability_gate_bias=-1.5,
                  use_global_semantic_token=False, global_token_mode='all_mean',
-                 gate_whole_adapter=False):
+                 gate_whole_adapter=False, use_visual_consistency_gate=False,
+                 use_visual_fallback=False, fusion_warmup_steps=0):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_semantic_classes = max(1, int(num_semantic_classes))
@@ -225,6 +226,9 @@ class SemanticCrossAttentionFusion(nn.Module):
         self.use_global_semantic_token = bool(use_global_semantic_token)
         self.global_token_mode = str(global_token_mode).lower()
         self.gate_whole_adapter = bool(gate_whole_adapter)
+        self.use_visual_consistency_gate = bool(use_visual_consistency_gate)
+        self.use_visual_fallback = bool(use_visual_fallback)
+        self.fusion_warmup_steps = max(0, int(fusion_warmup_steps))
         if self.norm_mode not in ('legacy_post_norm', 'context_pre_norm'):
             raise ValueError('Unknown semantic fusion norm mode: %s.' % self.norm_mode)
         if self.global_token_mode not in ('all_mean', 'changed_mean'):
@@ -232,8 +236,12 @@ class SemanticCrossAttentionFusion(nn.Module):
         # These parameters are activated only by the V1 adapter switches.
         self.fallback_token = nn.Parameter(torch.zeros(1, 1, self.embed_dim)) if self.use_sparse_change_tokens else None
         if self.use_reliability_gate:
+            gate_input_dim = self.embed_dim * 2 + 1
+            if self.use_visual_consistency_gate:
+                # coverage, confidence quality and visual-semantic agreement
+                gate_input_dim += 2
             self.reliability_gate = nn.Sequential(
-                nn.Linear(self.embed_dim * 2 + 1, self.embed_dim),
+                nn.Linear(gate_input_dim, self.embed_dim),
                 nn.ReLU(inplace=True),
                 nn.Linear(self.embed_dim, 1),
             )
@@ -243,6 +251,7 @@ class SemanticCrossAttentionFusion(nn.Module):
         self.last_attention = None
         self.last_reliability_gate = None
         self.last_change_coverage = None
+        self.last_semantic_quality = None
 
     @staticmethod
     def _infer_spatial_size(num_tokens):
@@ -322,20 +331,27 @@ class SemanticCrossAttentionFusion(nn.Module):
             changed = before_ids != after_ids
         return (valid & changed).flatten(1)
 
-    def _sparse_semantic_context(self, query, sem_diff_feat, change_mask):
+    def _sparse_semantic_context(self, query, sem_diff_feat, change_mask, change_weights=None):
         # A learned fallback keeps attention well-defined for no-change images;
         # key_padding_mask excludes every unchanged semantic location.
         batch_size = query.size(0)
+        if change_weights is None:
+            change_weights = change_mask.float()
+        else:
+            change_weights = change_weights.float() * change_mask.float()
         fallback = self.fallback_token.expand(batch_size, -1, -1)
-        key_values = [sem_diff_feat]
+        # Confidence scales changed tokens without changing the unchanged-token
+        # padding rule. A hard mask alone cannot distinguish a noisy pseudo-mask
+        # pixel from a reliable semantic label.
+        key_values = [sem_diff_feat * change_weights.unsqueeze(-1)]
         padding_masks = [~change_mask]
         if self.use_global_semantic_token:
             # Preserve context without letting the unchanged background dilute
             # the signal from the semantic locations selected by sparse attention.
             if self.global_token_mode == 'changed_mean':
-                weights = change_mask.unsqueeze(-1).float()
+                weights = change_weights.unsqueeze(-1)
                 global_token = (sem_diff_feat * weights).sum(dim=1, keepdim=True)
-                global_token = global_token / change_mask.sum(dim=1, keepdim=True).clamp_min(1).unsqueeze(-1).float()
+                global_token = global_token / change_weights.sum(dim=1, keepdim=True).clamp_min(1).unsqueeze(-1)
             else:
                 global_token = sem_diff_feat.mean(dim=1, keepdim=True)
             key_values.append(global_token)
@@ -350,14 +366,16 @@ class SemanticCrossAttentionFusion(nn.Module):
             query_t, key_value_t, key_value_t,
             key_padding_mask=padding_mask, need_weights=True,
         )
-        coverage = change_mask.float().mean(dim=1, keepdim=True)
+        coverage = change_weights.mean(dim=1, keepdim=True)
         semantic_summary = (
-            sem_diff_feat * change_mask.unsqueeze(-1).float()
+            sem_diff_feat * change_weights.unsqueeze(-1)
         ).sum(dim=1) / change_mask.sum(dim=1, keepdim=True).clamp_min(1).float()
-        return sem_context_t.transpose(0, 1).contiguous(), attn, coverage, semantic_summary
+        quality = change_weights.sum(dim=1, keepdim=True) / change_mask.float().sum(dim=1, keepdim=True).clamp_min(1.0)
+        return sem_context_t.transpose(0, 1).contiguous(), attn, coverage, semantic_summary, quality
 
     def forward(self, diff_feat, sem_before=None, sem_after=None, spatial_size=None,
-                detach_ratio=0.0, semantic_diff=None):
+                detach_ratio=0.0, semantic_diff=None, semantic_confidence=None,
+                global_step=None):
         input_was_4d = diff_feat.dim() == 4
         if input_was_4d:
             batch_size, channels, height, width = diff_feat.shape
@@ -387,10 +405,26 @@ class SemanticCrossAttentionFusion(nn.Module):
         sem_diff_feat = torch.cat([sem_b_feat, sem_a_feat, torch.abs(sem_a_feat - sem_b_feat)], dim=-1)
         sem_diff_feat = self.diff_projection(sem_diff_feat)
         sem_diff_feat = partial_detach_feature(sem_diff_feat, float(detach_ratio))
+        confidence = None
+        if semantic_confidence is not None:
+            confidence = semantic_confidence.float()
+            if confidence.dim() == 3:
+                confidence = confidence.unsqueeze(1)
+            if confidence.dim() != 4:
+                raise ValueError(
+                    'semantic_confidence expects [B,H,W] or [B,1,H,W], got %s.'
+                    % (tuple(confidence.shape),)
+                )
+            confidence = F.interpolate(confidence, size=spatial_size, mode='bilinear', align_corners=False)
+            confidence = confidence[:, 0].clamp(0.0, 1.0).flatten(1)
         if self.use_sparse_change_tokens:
             change_mask = self._change_token_mask(sem_before, sem_after, spatial_size, diff_only)
-            sem_context, attn, coverage, semantic_summary = self._sparse_semantic_context(
-                query, sem_diff_feat, change_mask
+            if confidence is None:
+                change_weights = change_mask.float()
+            else:
+                change_weights = confidence * change_mask.float()
+            sem_context, attn, coverage, semantic_summary, semantic_quality = self._sparse_semantic_context(
+                query, sem_diff_feat, change_mask, change_weights=change_weights
             )
         else:
             query_t = query.transpose(0, 1).contiguous()
@@ -399,20 +433,40 @@ class SemanticCrossAttentionFusion(nn.Module):
             sem_context = sem_context_t.transpose(0, 1).contiguous()
             coverage = query.new_ones(batch_size, 1)
             semantic_summary = sem_diff_feat.mean(dim=1)
+            semantic_quality = query.new_ones(batch_size, 1)
         self.last_attention = attn
         self.last_change_coverage = coverage.detach()
+        self.last_semantic_quality = semantic_quality.detach()
         effective_gamma = self.gamma
         if self.gamma_max > 0:
             effective_gamma = torch.clamp(self.gamma, min=-self.gamma_max, max=self.gamma_max)
+        if self.fusion_warmup_steps > 0:
+            step = self.fusion_warmup_steps if global_step is None else max(0, int(global_step))
+            effective_gamma = effective_gamma * min(1.0, float(step) / float(self.fusion_warmup_steps))
         reliability = query.new_ones(batch_size, 1)
         if self.reliability_gate is not None:
             visual_summary = query.mean(dim=1)
-            reliability = torch.sigmoid(
-                self.reliability_gate(torch.cat([visual_summary, semantic_summary, coverage], dim=-1))
-            )
-            # A sample with no changed semantic location must retain the CARD
-            # representation, regardless of the learned gate bias.
-            reliability = reliability * (coverage > 0).float()
+            gate_inputs = [visual_summary, semantic_summary, coverage]
+            visual_consistency = query.new_zeros(batch_size, 1)
+            if self.use_visual_consistency_gate:
+                visual_consistency = F.cosine_similarity(
+                    visual_summary, semantic_summary, dim=-1, eps=1e-6
+                ).unsqueeze(-1)
+                visual_consistency = (visual_consistency + 1.0) * 0.5
+                gate_inputs.extend([semantic_quality, visual_consistency])
+            semantic_reliability = torch.sigmoid(self.reliability_gate(torch.cat(gate_inputs, dim=-1)))
+            if self.use_visual_fallback:
+                visual_fallback = torch.sigmoid(visual_summary.mean(dim=-1, keepdim=True))
+                # Do not force the adapter off merely because a noisy pseudo-mask
+                # missed a change. The visual fallback is deliberately capped.
+                reliability = semantic_reliability * semantic_quality + (
+                    0.25 * visual_fallback * (1.0 - semantic_quality)
+                )
+            else:
+                # Preserve the legacy sparse-gate contract for existing configs:
+                # an empty semantic map disables the adapter unless the explicit
+                # visual fallback switch is enabled.
+                reliability = semantic_reliability * (coverage > 0).float()
         self.last_reliability_gate = reliability.detach()
         reliability_scale = reliability.view(batch_size, 1, 1)
         if self.gate_whole_adapter:
@@ -441,6 +495,7 @@ class CARD(nn.Module):
     def __init__(self, cfg, temp=0.07):
         super().__init__()
         self.cfg = cfg
+        self.global_step = 0
         self.enable_aux_mask = cfg.model.enable_aux_mask
         self.use_semantic_aux = bool(cfg.train.use_semantic_aux)
         self.use_semantic_detach = bool(getattr(cfg.train, 'use_semantic_detach', False))
@@ -538,28 +593,37 @@ class CARD(nn.Module):
                     num_heads=int(getattr(cfg.model, 'semantic_fusion_heads', self.att_head)),
                     dropout=float(getattr(cfg.model, 'semantic_fusion_dropout', 0.1)),
                     gamma_init=float(getattr(cfg.model, 'semantic_fusion_gamma_init', 0.1)),
-                gamma_max=float(getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0)),
-                ignore_index=int(getattr(cfg.train, 'semantic_ignore_index', -1)),
-                norm_mode=str(getattr(cfg.model, 'semantic_fusion_norm_mode', 'legacy_post_norm')),
-                use_sparse_change_tokens=bool(
-                    getattr(cfg.model, 'semantic_fusion_sparse_change_tokens', False)
-                ),
-                use_reliability_gate=bool(
-                    getattr(cfg.model, 'semantic_fusion_reliability_gate', False)
-                ),
-                reliability_gate_bias=float(
-                    getattr(cfg.model, 'semantic_fusion_reliability_gate_bias', -1.5)
-                ),
-                use_global_semantic_token=bool(
-                    getattr(cfg.model, 'semantic_fusion_global_token', False)
-                ),
-                global_token_mode=str(
-                    getattr(cfg.model, 'semantic_fusion_global_token_mode', 'all_mean')
-                ),
-                gate_whole_adapter=bool(
-                    getattr(cfg.model, 'semantic_fusion_gate_whole_adapter', False)
-                ),
-            )
+                    gamma_max=float(getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0)),
+                    ignore_index=int(getattr(cfg.train, 'semantic_ignore_index', -1)),
+                    norm_mode=str(getattr(cfg.model, 'semantic_fusion_norm_mode', 'legacy_post_norm')),
+                    use_sparse_change_tokens=bool(
+                        getattr(cfg.model, 'semantic_fusion_sparse_change_tokens', False)
+                    ),
+                    use_reliability_gate=bool(
+                        getattr(cfg.model, 'semantic_fusion_reliability_gate', False)
+                    ),
+                    reliability_gate_bias=float(
+                        getattr(cfg.model, 'semantic_fusion_reliability_gate_bias', -1.5)
+                    ),
+                    use_global_semantic_token=bool(
+                        getattr(cfg.model, 'semantic_fusion_global_token', False)
+                    ),
+                    global_token_mode=str(
+                        getattr(cfg.model, 'semantic_fusion_global_token_mode', 'all_mean')
+                    ),
+                    gate_whole_adapter=bool(
+                        getattr(cfg.model, 'semantic_fusion_gate_whole_adapter', False)
+                    ),
+                    use_visual_consistency_gate=bool(
+                        getattr(cfg.model, 'semantic_fusion_visual_consistency_gate', False)
+                    ),
+                    use_visual_fallback=bool(
+                        getattr(cfg.model, 'semantic_fusion_visual_fallback', False)
+                    ),
+                    fusion_warmup_steps=int(
+                        getattr(cfg.model, 'semantic_fusion_warmup_steps', 0)
+                    ),
+                )
         if self.use_semantic_aux:
             if self.use_dense_semantic_aux:
                 out_classes = max(1, self.num_semantic_classes)
@@ -583,6 +647,9 @@ class CARD(nn.Module):
 
         self._reset_parameters()
 
+    def set_global_step(self, global_step):
+        self.global_step = max(0, int(global_step))
+
     def _reset_parameters(self):
         """Initiate parameters in the transformer model."""
         for p in self.parameters():
@@ -598,7 +665,8 @@ class CARD(nn.Module):
         pairwise_distances_ = self.pairwise_distances(x)
         return torch.exp(-pairwise_distances_ / sigma)
 
-    def forward(self, input_1, input_2, semantic_before=None, semantic_after=None, semantic_diff=None):
+    def forward(self, input_1, input_2, semantic_before=None, semantic_after=None,
+                semantic_diff=None, semantic_confidence=None):
         self.semantic_detach_debug = {}
         with torch.no_grad():
             self.temp.clamp_(0.001, 0.5)
@@ -715,8 +783,10 @@ class CARD(nn.Module):
                 semantic_before,
                 semantic_after,
                 semantic_diff=semantic_diff,
+                semantic_confidence=semantic_confidence,
                 spatial_size=(H, W),
                 detach_ratio=detach_ratio,
+                global_step=self.global_step,
             )
         elif self.use_semantic_hard_gate or self.semantic_input_mode == 'hard_gate':
             gate_tokens = semantic_gate_from_map(semantic_diff, (H, W))

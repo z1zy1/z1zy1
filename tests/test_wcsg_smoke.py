@@ -228,6 +228,53 @@ class WCSGSmokeTest(unittest.TestCase):
         changed_output = changed_mean(diff, semantic_diff=semantic_diff, spatial_size=(2, 2))
         self.assertFalse(torch.allclose(all_output, changed_output))
 
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
+    def test_confidence_weighted_sparse_fusion_tracks_semantic_quality(self):
+        from models.CARD import SemanticCrossAttentionFusion
+
+        fusion = SemanticCrossAttentionFusion(
+            8, 7, num_heads=2, dropout=0.0, gamma_init=0.1,
+            use_sparse_change_tokens=True, use_global_semantic_token=True,
+            global_token_mode='changed_mean', use_reliability_gate=True,
+            use_visual_consistency_gate=True, use_visual_fallback=True,
+        )
+        fusion.eval()
+        diff = torch.randn(2, 4, 8)
+        semantic_diff = torch.tensor([[[0, 6], [0, 6]], [[0, 0], [0, 0]]])
+        confidence = torch.tensor([[[0.8, 0.8], [0.8, 0.8]], [[0.0, 0.0], [0.0, 0.0]]])
+        output = fusion(
+            diff, semantic_diff=semantic_diff, semantic_confidence=confidence,
+            spatial_size=(2, 2), global_step=10,
+        )
+        self.assertEqual(tuple(output.shape), tuple(diff.shape))
+        self.assertTrue(torch.allclose(fusion.last_semantic_quality, torch.tensor([[0.8], [0.0]])))
+        self.assertTrue(torch.isfinite(fusion.last_reliability_gate).all())
+
+    @unittest.skipUnless(torch is not None, 'PyTorch is required for model tests.')
+    def test_fusion_warmup_is_identity_at_step_zero(self):
+        from models.CARD import SemanticCrossAttentionFusion
+
+        fusion = SemanticCrossAttentionFusion(
+            8, 7, num_heads=2, dropout=0.0, gamma_init=0.2,
+            norm_mode='context_pre_norm', fusion_warmup_steps=10,
+        )
+        fusion.eval()
+        diff = torch.randn(1, 4, 8)
+        before = torch.zeros(1, 2, 2, dtype=torch.long)
+        after = torch.ones(1, 2, 2, dtype=torch.long)
+        fusion(diff, before, after, spatial_size=(2, 2), global_step=0)
+        self.assertTrue(torch.equal(fusion(diff, before, after, spatial_size=(2, 2), global_step=0), diff))
+
+    def test_no_spice_snapshot_score_ignores_spice(self):
+        from scripts.select_best_snapshot_for_paper import score_row
+
+        row = {'CIDEr': 1.0, 'Bleu_4': 0.4, 'METEOR': 0.3, 'ROUGE_L': 0.7, 'SPICE': 0.1}
+        changed_spice = dict(row, SPICE=0.9)
+        self.assertEqual(
+            score_row(row, 'paper_balanced_no_spice'),
+            score_row(changed_spice, 'paper_balanced_no_spice'),
+        )
+
     @unittest.skipUnless(torch is not None, 'PyTorch is required for loss tests.')
     def test_normalized_content_word_weighted_ce_exact_denominator(self):
         import torch.nn as nn

@@ -98,5 +98,16 @@ change. `context_pre_norm` fusion can be linearly warmed up with
 `paper_balanced_no_spice` for validation checkpoint selection; SPICE is still
 reported at test time but does not select the checkpoint.
 
+For LEVIR-CC pseudo-mask regeneration, use
+`scripts/generate_levir_ensemble_masks.sh` with official LEVIR checkpoints
+from ChangeFormerV6 and BIT. The script writes separate probability maps,
+then produces a consensus `pseudo_masks`, agreement-aware
+`pseudo_confidence`, and `pseudo_uncertainty` tree. It validates one output
+per input image before replacing the active masks and preserves the previous
+tree as a timestamped backup. The old externally generated masks must not be
+deleted until both detectors finish successfully; the resulting ensemble is
+still an exploratory semantic-input change until a new locked seed matrix is
+completed.
+
 Its default output root is
 `experiments/reliability_sparse_rsaca_v1_prenorm_changed_global`.

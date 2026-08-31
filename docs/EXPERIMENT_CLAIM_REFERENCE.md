@@ -31,6 +31,7 @@ V1 reliability-gated sparse RSACA 已完成三数据集三 seed 锁定测试，�
 
 V1 whole-adapter 候选已完成独立三数据集三 seed 锁定测试，但总体验收仍为 `acceptance_passed=false`：LEVIR-CC 的 B4/CIDEr 均值仍低于 CARD（-0.0200、-0.0004），而 LEVIR-MCI 与 SECOND-CC 的均值 8/8 指标提升。该结果是候选证据，不能改写统一主张。
 新增待验证候选 `run_reliability_sparse_rsaca_v1_prenorm_changed_global.sh` 使用 `context_pre_norm`、`gamma_max=0.1`、gate bias `-2.5` 和 changed-only global token；其输出目录独立，锁定测试前必须先完成验证集筛选。
+新增待验证 LEVIR-CC V2 候选 `run_reliability_sparse_rsaca_v2_detached_gate.sh` 保留 pre-norm changed-global 核心，仅在 reliability MLP 的视觉/语义摘要输入上使用 detach，以阻断门控对 CARD 特征分支的反向塑形；它显式关闭 confidence、visual gate、fallback 和 warmup。该设计尚无验证或锁定结果，不能作为性能增益证据。
 本次 V1 实现还支持可选的 `data.semantic_diff_confidence_root`：置信度会对变化位置的 K/V 和 changed-mean global token 加权；视觉一致性门控、低置信度 visual fallback 与 fusion warmup 默认关闭，仅由 V1 候选显式开启。当前 `pseudo_masks` 是二值外部模型输出，尚未提供可验证的逐像素概率，因此不能把该置信度路径或 fallback 设计宣称为已验证的性能增益。
 V1 的验证选点新增 `paper_balanced_no_spice`，只在验证集上按 CIDEr、BLEU-4、METEOR、ROUGE-L 加权，暂时忽略 SPICE；这只是选择协议调整，不能替代三数据集多 seed 锁定测试。
 LEVIR-CC 掩码重生成入口为 `scripts/generate_levir_ensemble_masks.sh`：ChangeFormerV6 与 BIT 的概率图通过一致性规则融合，并同时输出 confidence/uncertainty；替换前保留旧 `pseudo_masks` 备份。由于当前环境尚无两模型完整推理结果，该输入替换不能写成已验证的性能增益。

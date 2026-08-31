@@ -207,7 +207,8 @@ class SemanticCrossAttentionFusion(nn.Module):
                  use_reliability_gate=False, reliability_gate_bias=-1.5,
                  use_global_semantic_token=False, global_token_mode='all_mean',
                  gate_whole_adapter=False, use_visual_consistency_gate=False,
-                 use_visual_fallback=False, fusion_warmup_steps=0):
+                 use_visual_fallback=False, fusion_warmup_steps=0,
+                 detach_reliability_inputs=False):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_semantic_classes = max(1, int(num_semantic_classes))
@@ -226,6 +227,7 @@ class SemanticCrossAttentionFusion(nn.Module):
         self.use_global_semantic_token = bool(use_global_semantic_token)
         self.global_token_mode = str(global_token_mode).lower()
         self.gate_whole_adapter = bool(gate_whole_adapter)
+        self.detach_reliability_inputs = bool(detach_reliability_inputs)
         self.use_visual_consistency_gate = bool(use_visual_consistency_gate)
         self.use_visual_fallback = bool(use_visual_fallback)
         self.fusion_warmup_steps = max(0, int(fusion_warmup_steps))
@@ -446,17 +448,26 @@ class SemanticCrossAttentionFusion(nn.Module):
         reliability = query.new_ones(batch_size, 1)
         if self.reliability_gate is not None:
             visual_summary = query.mean(dim=1)
-            gate_inputs = [visual_summary, semantic_summary, coverage]
+            gate_visual_summary = visual_summary
+            gate_semantic_summary = semantic_summary
+            if self.detach_reliability_inputs:
+                # The gate calibrates an already-computed adapter rather than
+                # learning to alter CARD features merely to open itself.
+                gate_visual_summary = gate_visual_summary.detach()
+                gate_semantic_summary = gate_semantic_summary.detach()
+            gate_inputs = [gate_visual_summary, gate_semantic_summary, coverage]
             visual_consistency = query.new_zeros(batch_size, 1)
             if self.use_visual_consistency_gate:
                 visual_consistency = F.cosine_similarity(
-                    visual_summary, semantic_summary, dim=-1, eps=1e-6
+                    gate_visual_summary, gate_semantic_summary, dim=-1, eps=1e-6
                 ).unsqueeze(-1)
                 visual_consistency = (visual_consistency + 1.0) * 0.5
                 gate_inputs.extend([semantic_quality, visual_consistency])
             semantic_reliability = torch.sigmoid(self.reliability_gate(torch.cat(gate_inputs, dim=-1)))
             if self.use_visual_fallback:
-                visual_fallback = torch.sigmoid(visual_summary.mean(dim=-1, keepdim=True))
+                visual_fallback = torch.sigmoid(
+                    gate_visual_summary.mean(dim=-1, keepdim=True)
+                )
                 # Do not force the adapter off merely because a noisy pseudo-mask
                 # missed a change. The visual fallback is deliberately capped.
                 reliability = semantic_reliability * semantic_quality + (
@@ -613,6 +624,9 @@ class CARD(nn.Module):
                     ),
                     gate_whole_adapter=bool(
                         getattr(cfg.model, 'semantic_fusion_gate_whole_adapter', False)
+                    ),
+                    detach_reliability_inputs=bool(
+                        getattr(cfg.model, 'semantic_fusion_detach_reliability_inputs', False)
                     ),
                     use_visual_consistency_gate=bool(
                         getattr(cfg.model, 'semantic_fusion_visual_consistency_gate', False)

@@ -111,3 +111,34 @@ completed.
 
 Its default output root is
 `experiments/reliability_sparse_rsaca_v1_prenorm_changed_global`.
+
+## Detached-gate V2 candidate
+
+`scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh` is the LEVIR-CC
+stability candidate derived from the strongest pre-norm changed-token RSACA
+core. It keeps sparse changed-location K/V, `changed_mean`, the whole-adapter
+continuous gate, `context_pre_norm`, `gamma_init=0.01`, `gamma_max=0.1`, gate
+bias `-2.5`, and partial detach `0.5`. It adds only
+`model.semantic_fusion_detach_reliability_inputs=true`: visual and semantic
+summaries are detached before entering the reliability MLP, while the adapter
+and the MLP remain trainable.
+
+V2 explicitly disables confidence maps, visual-consistency gating, visual
+fallback, and fusion warmup. It uses the active LEVIR-CC `pseudo_masks`; this
+is a new model candidate, not evidence that the current masks are better.
+
+Screen the difficult seeds on validation only first. Do not run `test` or
+`all` during this decision:
+
+```bash
+RUN_ROOT=/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v2_detached_gate NUM_WORKERS=8 SEEDS="3333 1111" bash scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh --stage preflight --dataset levir_cc
+RUN_ROOT=/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v2_detached_gate NUM_WORKERS=8 SEEDS="3333 1111" bash scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh --stage train --dataset levir_cc
+RUN_ROOT=/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v2_detached_gate NUM_WORKERS=8 SEEDS="3333 1111" bash scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh --stage select --dataset levir_cc
+```
+
+Only after pre-registering V2 as the sole candidate and completing its paired
+CARD control should the locked three-seed process run once:
+
+```bash
+RUN_ROOT=/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v2_detached_gate NUM_WORKERS=8 SEEDS="1111 2222 3333" bash scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh --stage all --dataset levir_cc
+```

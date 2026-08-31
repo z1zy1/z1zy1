@@ -4,6 +4,11 @@ import csv
 import json
 import tempfile
 
+import torch
+from torch import nn
+
+from models.CARD import SemanticCrossAttentionFusion
+
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -82,6 +87,54 @@ def test_reliability_sparse_prenorm_changed_global_runner_dry_run_is_enabled():
     assert 'global_token=changed_mean' in result.stdout
     assert 'gamma_max=0.1' in result.stdout
     assert 'gate_bias=-2.5' in result.stdout
+
+
+def test_detached_gate_runner_dry_run_is_isolated_and_enabled():
+    result = subprocess.run(
+        [
+            'bash', 'scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh',
+            '--stage', 'train', '--dataset', 'levir_cc', '--seed', '3333', '--dry-run',
+        ],
+        cwd=ROOT, check=True, capture_output=True, text=True,
+    )
+    assert 'reliability_sparse_rsaca_v2_detached_gate' in result.stdout
+    assert 'detached_gate_inputs=1' in result.stdout
+    assert 'visual_gate=0 fallback=0 warmup=0' in result.stdout
+
+
+def test_detached_reliability_gate_inputs_do_not_require_grad():
+    class CaptureGate(nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.inputs = None
+
+        def forward(self, inputs):
+            self.inputs = inputs
+            return inputs.new_zeros(inputs.size(0), 1)
+
+    fusion = SemanticCrossAttentionFusion(
+        embed_dim=8,
+        num_semantic_classes=7,
+        num_heads=2,
+        dropout=0.0,
+        use_sparse_change_tokens=True,
+        use_reliability_gate=True,
+        detach_reliability_inputs=True,
+    )
+    capture_gate = CaptureGate()
+    fusion.reliability_gate = capture_gate
+    diff_feat = torch.randn(2, 8, 2, 2, requires_grad=True)
+    semantic_diff = torch.tensor([
+        [[0, 6], [6, 0]],
+        [[6, 0], [0, 6]],
+    ])
+
+    output = fusion(diff_feat, semantic_diff=semantic_diff)
+    output.mean().backward()
+
+    assert capture_gate.inputs is not None
+    assert not capture_gate.inputs.requires_grad
+    assert diff_feat.grad is not None
 
 
 def test_paper_selector_accepts_uppercase_validation_flag():

@@ -62,7 +62,9 @@ def checkpoint_number(path):
 
 
 def resolve_snapshot(raw_path, exp_dir):
-    raw_path = raw_path or ''
+    raw_path = (raw_path or '').strip()
+    if not raw_path:
+        return None
     candidates = [
         raw_path,
         os.path.abspath(raw_path),
@@ -99,7 +101,7 @@ def resolve_snapshot(raw_path, exp_dir):
     for pattern in patterns:
         matches.extend(glob.glob(pattern))
     matches = sorted({os.path.normpath(path) for path in matches if os.path.exists(path)})
-    return matches[0] if matches else os.path.normpath(raw_path)
+    return matches[0] if matches else None
 
 
 def is_negative_ablation(exp_dir, snapshot_path):
@@ -148,8 +150,18 @@ def load_rows(csv_path, exp_dir, metric):
     if not rows:
         raise RuntimeError('No rows in %s' % csv_path)
     normalized = []
-    for row in rows:
-        row['snapshot_path'] = resolve_snapshot(row.get('snapshot_path', ''), exp_dir)
+    invalid = []
+    required_metrics = ['CIDEr', 'Bleu_4', 'METEOR', 'ROUGE_L']
+    for row_number, row in enumerate(rows, start=2):
+        raw_snapshot = case_insensitive_value(row, 'snapshot_path')
+        row['snapshot_path'] = resolve_snapshot(raw_snapshot, exp_dir)
+        if not row['snapshot_path'] or not os.path.isfile(row['snapshot_path']):
+            invalid.append('row %d has no existing snapshot_path (%r)' % (row_number, raw_snapshot))
+            continue
+        missing = [name for name in required_metrics if case_insensitive_value(row, name) in (None, '')]
+        if missing:
+            invalid.append('row %d is missing validation metrics: %s' % (row_number, ', '.join(missing)))
+            continue
         row['paper_score'] = score_row(row, metric)
         row['caption_score'] = caption_score(row)
         row['aux_tiebreak'] = aux_tiebreak(row)
@@ -160,6 +172,9 @@ def load_rows(csv_path, exp_dir, metric):
             case_insensitive_value(row, 'all_above_baseline')
         )
         normalized.append(row)
+    if not normalized:
+        detail = '; '.join(invalid[:3])
+        raise RuntimeError('No valid validation snapshots in %s%s' % (csv_path, ': ' + detail if detail else ''))
     return normalized
 
 

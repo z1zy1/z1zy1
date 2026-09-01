@@ -14,15 +14,18 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def test_unified_runner_dry_run_contains_all_three_datasets():
-    command = [
-        'bash', 'scripts/run_unified_rsaca_experiments.sh',
-        '--stage', 'train', '--dry-run',
-    ]
-    result = subprocess.run(command, cwd=ROOT, check=True, capture_output=True, text=True)
-    assert 'levir_cc' in result.stdout
-    assert 'levir_mci' in result.stdout
-    assert 'second_cc' in result.stdout
-    assert result.stdout.count('DRY RUN:') == 9
+    with tempfile.TemporaryDirectory() as root:
+        env = os.environ.copy()
+        env['RUN_ROOT'] = root
+        command = [
+            'bash', 'scripts/run_unified_rsaca_experiments.sh',
+            '--stage', 'train', '--dry-run',
+        ]
+        result = subprocess.run(command, cwd=ROOT, check=True, capture_output=True, text=True, env=env)
+        assert 'levir_cc' in result.stdout
+        assert 'levir_mci' in result.stdout
+        assert 'second_cc' in result.stdout
+        assert result.stdout.count('DRY RUN:') == 9
 
 
 def test_identity_residual_candidate_is_explicit_in_dry_run():
@@ -90,16 +93,19 @@ def test_reliability_sparse_prenorm_changed_global_runner_dry_run_is_enabled():
 
 
 def test_detached_gate_runner_dry_run_is_isolated_and_enabled():
-    result = subprocess.run(
-        [
-            'bash', 'scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh',
-            '--stage', 'train', '--dataset', 'levir_cc', '--seed', '3333', '--dry-run',
-        ],
-        cwd=ROOT, check=True, capture_output=True, text=True,
-    )
-    assert 'reliability_sparse_rsaca_v2_detached_gate' in result.stdout
-    assert 'detached_gate_inputs=1' in result.stdout
-    assert 'visual_gate=0 fallback=0 warmup=0' in result.stdout
+    with tempfile.TemporaryDirectory() as root:
+        env = os.environ.copy()
+        env['RUN_ROOT'] = root
+        result = subprocess.run(
+            [
+                'bash', 'scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh',
+                '--stage', 'train', '--dataset', 'levir_cc', '--seed', '3333', '--dry-run',
+            ],
+            cwd=ROOT, check=True, capture_output=True, text=True, env=env,
+        )
+        assert root in result.stdout
+        assert 'detached_gate_inputs=1' in result.stdout
+        assert 'visual_gate=0 fallback=0 warmup=0' in result.stdout
 
 
 def test_detached_reliability_gate_inputs_do_not_require_grad():
@@ -169,3 +175,22 @@ def test_paper_selector_accepts_uppercase_validation_flag():
         with open(output, encoding='utf-8') as handle:
             payload = json.load(handle)
         assert payload['best']['all_above_baseline'] is True
+
+
+def test_paper_selector_rejects_empty_snapshot_rows():
+    with tempfile.TemporaryDirectory() as root:
+        csv_path = os.path.join(root, 'val_metrics.csv')
+        fields = ['iter', 'snapshot_path', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr']
+        with open(csv_path, 'w', newline='', encoding='utf-8') as handle:
+            writer = csv.DictWriter(handle, fieldnames=fields)
+            writer.writeheader()
+            writer.writerow({key: '' for key in fields})
+        result = subprocess.run(
+            [
+                'python', 'scripts/select_best_snapshot_for_paper.py',
+                '--exp_dir', root, '--csv', csv_path,
+            ],
+            cwd=ROOT, capture_output=True, text=True,
+        )
+        assert result.returncode != 0
+        assert 'No valid validation snapshots' in result.stderr

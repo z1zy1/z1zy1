@@ -6,6 +6,21 @@ set -euo pipefail
 PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
 cd "$PROJECT_DIR"
 
+# V2 is a CUDA training candidate. Check the exact interpreter that the
+# training subprocess will use before creating any run artifacts.
+export PYTHON="${PYTHON:-python}"
+is_dry_run=0
+for argument in "$@"; do
+  case "$argument" in
+    --dry-run|--dry_run) is_dry_run=1 ;;
+  esac
+done
+if [ "$is_dry_run" -ne 1 ] && ! "$PYTHON" -c 'import torch; raise SystemExit(0 if torch.cuda.is_available() and torch.cuda.device_count() > 0 else 1)'; then
+  echo "V2 RSACA requires a Python/PyTorch environment with CUDA available." >&2
+  echo "Set PYTHON to the GPU-enabled interpreter and retry." >&2
+  exit 2
+fi
+
 export RUN_ROOT="${RUN_ROOT:-./experiments/reliability_sparse_rsaca_v2_detached_gate}"
 export SEMANTIC_FUSION_SPARSE_CHANGE_TOKENS=1
 export SEMANTIC_FUSION_RELIABILITY_GATE=1

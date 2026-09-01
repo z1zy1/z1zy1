@@ -13,6 +13,7 @@ STAGE="all"
 ONLY_DATASET=""
 ONLY_SEED=""
 DRY_RUN=0
+RESET_INCOMPLETE=0
 
 usage() {
   cat >&2 <<'EOF'
@@ -23,6 +24,7 @@ Options:
   --dataset levir_cc|levir_mci|second_cc
   --seed 1111|2222|3333
   --dry-run
+  --reset-incomplete  Archive an incomplete run directory before retraining.
 
 The all stage runs preflight -> train -> validation selection -> locked test -> summary.
 Use DATA_ROOT/FEATURE_ROOT overrides only through the dataset-specific *_ROOT variables.
@@ -35,6 +37,7 @@ while [ "$#" -gt 0 ]; do
     --dataset) ONLY_DATASET="$2"; shift 2 ;;
     --seed) ONLY_SEED="$2"; shift 2 ;;
     --dry-run|--dry_run) DRY_RUN=1; shift ;;
+    --reset-incomplete|--reset_incomplete) RESET_INCOMPLETE=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; usage; exit 2 ;;
   esac
@@ -113,8 +116,12 @@ configure_case() {
 selected_checkpoint() {
   "$PYTHON" - "$1" <<'PY'
 import json, sys
+import os
 with open(sys.argv[1], encoding='utf-8-sig') as f:
-    print(json.load(f)['best_snapshot'])
+    path = json.load(f).get('best_snapshot', '')
+if not path or not os.path.isfile(path):
+    raise SystemExit('Selected checkpoint is missing or is not a file: %s' % path)
+print(path)
 PY
 }
 
@@ -136,7 +143,23 @@ train_one() {
     echo "Skipping completed run: $EXP_NAME"; return
   fi
   if [ -d "$exp_path" ] && find "$exp_path" -mindepth 1 -print -quit 2>/dev/null | grep -q .; then
-    echo "Refusing non-empty incomplete run: $exp_path" >&2; return 1
+    if [ "$RESET_INCOMPLETE" -ne 1 ]; then
+      echo "Refusing non-empty incomplete run: $exp_path" >&2
+      echo "Re-run with --reset-incomplete to archive it before retraining." >&2
+      return 1
+    fi
+    local aborted_root="$RUN_ROOT/aborted"
+    local archive_path="$aborted_root/${EXP_NAME}_$(date -u +%Y%m%dT%H%M%SZ)"
+    if [ "$DRY_RUN" -eq 1 ]; then
+      echo "DRY RUN: archive incomplete run $exp_path -> $archive_path"
+    else
+      mkdir -p "$aborted_root"
+      while [ -e "$archive_path" ]; do
+        archive_path="${archive_path}_retry"
+      done
+      mv "$exp_path" "$archive_path"
+      echo "Archived incomplete run: $archive_path"
+    fi
   fi
   run_or_print bash scripts/_run_paper_training.sh
 }
@@ -144,7 +167,19 @@ train_one() {
 select_one() {
   local exp_path="$RUN_ROOT/$EXP_NAME"
   local output="$exp_path/best_snapshot_for_paper.json"
-  [ -s "$output" ] && { echo "Skipping validation selection: $output"; return; }
+  if [ -s "$output" ]; then
+    if "$PYTHON" - "$output" <<'PY'
+import json, os, sys
+with open(sys.argv[1], encoding='utf-8-sig') as f:
+    path = json.load(f).get('best_snapshot', '')
+raise SystemExit(0 if path and os.path.isfile(path) else 1)
+PY
+    then
+      echo "Skipping validation selection: $output"
+      return
+    fi
+    echo "Ignoring invalid validation selection: $output" >&2
+  fi
   run_or_print "$PYTHON" scripts/select_best_snapshot_for_paper.py \
     --exp_dir "$exp_path" --csv "$exp_path/val_metrics.csv" \
     --metric "$SELECTION_METRIC" \

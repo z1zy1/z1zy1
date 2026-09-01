@@ -142,3 +142,9 @@ CARD control should the locked three-seed process run once:
 ```bash
 RUN_ROOT=/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v2_detached_gate NUM_WORKERS=8 SEEDS="1111 2222 3333" bash scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh --stage all --dataset levir_cc
 ```
+
+V2 requires that the selected `PYTHON` interpreter reports CUDA available
+before it creates a training directory. If a run was interrupted before its
+final checkpoint, preserve it for audit and restart only that run with
+`--reset-incomplete`; selection rejects empty metric rows and non-file
+snapshots, so interrupted runs cannot become test candidates.

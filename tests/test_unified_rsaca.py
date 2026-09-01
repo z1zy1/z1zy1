@@ -193,6 +193,38 @@ def test_detached_gate_paired_control_dry_run_is_isolated_and_disabled():
         assert 'visual_gate=0 fallback=0 warmup=0' in result.stdout
 
 
+def test_paired_validation_comparison_requires_all_non_spice_improvements():
+    with tempfile.TemporaryDirectory() as root:
+        metrics = {
+            'Bleu_1': 0.8, 'Bleu_2': 0.7, 'Bleu_3': 0.6, 'Bleu_4': 0.5,
+            'METEOR': 0.4, 'ROUGE_L': 0.7, 'CIDEr': 1.4, 'SPICE': 0.3,
+        }
+        for label, offset in (('candidate', 0.01), ('control', 0.0)):
+            exp_dir = os.path.join(root, label, 'unified_rsaca_levir_cc_seed3333')
+            snapshots = os.path.join(exp_dir, 'snapshots')
+            os.makedirs(snapshots)
+            checkpoint = os.path.join(snapshots, 'checkpoint.pt')
+            open(checkpoint, 'w').close()
+            selected = dict(metrics)
+            for metric in ('Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr'):
+                selected[metric] += offset
+            with open(os.path.join(exp_dir, 'best_snapshot_for_paper.json'), 'w', encoding='utf-8') as handle:
+                json.dump({'best': {'snapshot_path': checkpoint, 'metrics': selected}}, handle)
+        output = os.path.join(root, 'comparison.json')
+        subprocess.run(
+            [
+                'python', 'scripts/compare_rsaca_validation_pairs.py',
+                '--candidate-root', os.path.join(root, 'candidate'),
+                '--control-root', os.path.join(root, 'control'),
+                '--seeds', '3333', '--output', output,
+            ],
+            cwd=ROOT, check=True, capture_output=True, text=True,
+        )
+        with open(output, encoding='utf-8') as handle:
+            payload = json.load(handle)
+        assert payload['screen']['locked_test_recommended'] is True
+
+
 def test_paper_selector_rejects_empty_snapshot_rows():
     with tempfile.TemporaryDirectory() as root:
         csv_path = os.path.join(root, 'val_metrics.csv')

@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# LEVIR-CC paired validation control for the V2 detached-gate candidate. It
+# matches V2 exactly except that the reliability MLP retains feature gradients.
+PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
+cd "$PROJECT_DIR"
+
+export PYTHON="${PYTHON:-python}"
+is_dry_run=0
+for argument in "$@"; do
+  case "$argument" in
+    --dry-run|--dry_run) is_dry_run=1 ;;
+  esac
+done
+if [ "$is_dry_run" -ne 1 ] && ! "$PYTHON" -c 'import torch; raise SystemExit(0 if torch.cuda.is_available() and torch.cuda.device_count() > 0 else 1)'; then
+  echo "V2 paired control requires a Python/PyTorch environment with CUDA available." >&2
+  echo "Set PYTHON to the GPU-enabled interpreter and retry." >&2
+  exit 2
+fi
+
+export RUN_ROOT="${RUN_ROOT:-./experiments/reliability_sparse_rsaca_v2_paired_control}"
+export SEMANTIC_FUSION_SPARSE_CHANGE_TOKENS=1
+export SEMANTIC_FUSION_RELIABILITY_GATE=1
+export SEMANTIC_FUSION_RELIABILITY_GATE_BIAS="${SEMANTIC_FUSION_RELIABILITY_GATE_BIAS:--2.5}"
+export SEMANTIC_FUSION_GLOBAL_TOKEN=1
+export SEMANTIC_FUSION_GLOBAL_TOKEN_MODE=changed_mean
+export SEMANTIC_FUSION_GATE_WHOLE_ADAPTER=1
+export SEMANTIC_FUSION_DETACH_RELIABILITY_INPUTS=0
+export SEMANTIC_FUSION_NORM_MODE=context_pre_norm
+export SEMANTIC_FUSION_GAMMA_INIT=0.01
+export SEMANTIC_FUSION_GAMMA_MAX=0.1
+
+# Match V2 semantic-input and schedule settings exactly.
+export SEMANTIC_FUSION_VISUAL_CONSISTENCY_GATE=0
+export SEMANTIC_FUSION_VISUAL_FALLBACK=0
+export SEMANTIC_FUSION_WARMUP_STEPS=0
+unset LEVIR_CC_SEMANTIC_DIFF_CONFIDENCE_ROOT
+unset SEMANTIC_DIFF_CONFIDENCE_ROOT
+
+export SELECTION_STRATEGY="${SELECTION_STRATEGY:-paper_balanced_no_spice}"
+export SELECTION_METRIC="${SELECTION_METRIC:-paper_balanced_no_spice}"
+
+printf '%s\n' 'V2 paired control: sparse=1 reliability_gate=1 changed_mean=1 whole_adapter_gate=1 detached_gate_inputs=0'
+printf '%s\n' "V2 paired control: RUN_ROOT=$RUN_ROOT norm=$SEMANTIC_FUSION_NORM_MODE gamma_max=$SEMANTIC_FUSION_GAMMA_MAX gate_bias=$SEMANTIC_FUSION_RELIABILITY_GATE_BIAS visual_gate=0 fallback=0 warmup=0 selection=$SELECTION_METRIC"
+
+exec bash scripts/run_unified_rsaca_experiments.sh "$@"

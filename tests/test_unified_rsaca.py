@@ -161,7 +161,7 @@ def test_paper_selector_accepts_uppercase_validation_flag():
                 'iter': 100, 'snapshot_path': checkpoint,
                 'Bleu_1': 0.8, 'Bleu_2': 0.7, 'Bleu_3': 0.6, 'Bleu_4': 0.5,
                 'METEOR': 0.4, 'ROUGE_L': 0.7, 'CIDEr': 1.4, 'SPICE': 0.3,
-                'ALL_ABOVE_BASELINE': '1',
+                'ALL_ABOVE_BASELINE': '1.0',
             })
         output = os.path.join(root, 'best_snapshot_for_paper.json')
         subprocess.run(
@@ -175,6 +175,22 @@ def test_paper_selector_accepts_uppercase_validation_flag():
         with open(output, encoding='utf-8') as handle:
             payload = json.load(handle)
         assert payload['best']['all_above_baseline'] is True
+
+
+def test_detached_gate_paired_control_dry_run_is_isolated_and_disabled():
+    with tempfile.TemporaryDirectory() as root:
+        env = os.environ.copy()
+        env['RUN_ROOT'] = root
+        result = subprocess.run(
+            [
+                'bash', 'scripts/run_reliability_sparse_rsaca_v2_paired_control.sh',
+                '--stage', 'train', '--dataset', 'levir_cc', '--seed', '3333', '--dry-run',
+            ],
+            cwd=ROOT, check=True, capture_output=True, text=True, env=env,
+        )
+        assert root in result.stdout
+        assert 'detached_gate_inputs=0' in result.stdout
+        assert 'visual_gate=0 fallback=0 warmup=0' in result.stdout
 
 
 def test_paper_selector_rejects_empty_snapshot_rows():

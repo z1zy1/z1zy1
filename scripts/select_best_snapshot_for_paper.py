@@ -45,7 +45,13 @@ def to_float(value, default=0.0):
 
 
 def parse_bool(value):
-    return str(value).strip().lower() in ('1', 'true', 't', 'yes', 'y')
+    text = str(value).strip().lower()
+    if text in ('true', 't', 'yes', 'y'):
+        return True
+    try:
+        return float(text) == 1.0
+    except ValueError:
+        return False
 
 
 def case_insensitive_value(row, name, default=''):

@@ -51,6 +51,91 @@ def test_unified_summary_script_is_executable():
     assert '--run_root' in result.stdout
 
 
+def test_paired_card_rsaca_runner_dry_run_contains_both_arms():
+    with tempfile.TemporaryDirectory() as root:
+        env = os.environ.copy()
+        env['PAIR_ROOT'] = root
+        env['REQUIRE_CUDA'] = '0'
+        result = subprocess.run(
+            [
+                'bash', 'scripts/run_paired_card_rsaca_matrix.sh',
+                '--stage', 'train', '--dataset', 'levir_cc', '--seed', '1111', '--dry-run',
+            ],
+            cwd=ROOT, check=True, capture_output=True, text=True, env=env,
+        )
+        assert 'arm=card dataset=levir_cc seed=1111' in result.stdout
+        assert 'arm=rsaca dataset=levir_cc seed=1111' in result.stdout
+        assert result.stdout.count('DRY RUN: bash scripts/_run_paper_training.sh') == 2
+
+
+def test_paired_summary_requires_matching_protocol_and_resolved_configs():
+    with tempfile.TemporaryDirectory() as root:
+        subprocess.run(
+            [
+                'python', 'scripts/lock_paired_card_rsaca_protocol.py',
+                '--pair-root', root, '--git-commit', 'abc123', '--source-digest', 'source',
+                '--source-status-digest', 'status', '--python', 'python',
+                '--num-workers', '8', '--datasets', 'levir_cc', '--seeds', '1111',
+                '--rsaca-arm', 'whole_adapter_gate_v1',
+            ],
+            cwd=ROOT, check=True, capture_output=True, text=True,
+        )
+        metrics = {
+            'Bleu_1': 0.8, 'Bleu_2': 0.7, 'Bleu_3': 0.6, 'Bleu_4': 0.5,
+            'METEOR': 0.4, 'ROUGE_L': 0.7, 'CIDEr': 1.4, 'SPICE': 0.3,
+        }
+        for arm in ('card', 'rsaca'):
+            exp_dir = os.path.join(root, arm, '%s_levir_cc_seed1111' % arm)
+            snapshots = os.path.join(exp_dir, 'snapshots')
+            os.makedirs(snapshots)
+            checkpoint = os.path.join(snapshots, '%s.pt' % arm)
+            open(checkpoint, 'w').close()
+            arm_metrics = dict(metrics)
+            if arm == 'rsaca':
+                arm_metrics = {key: value + 0.01 for key, value in arm_metrics.items()}
+            with open(os.path.join(exp_dir, 'best_snapshot_for_paper.json'), 'w', encoding='utf-8') as handle:
+                json.dump({'best_snapshot': checkpoint}, handle)
+            with open(os.path.join(exp_dir, 'test_paired_locked_result.json'), 'w', encoding='utf-8') as handle:
+                json.dump({'snapshot_path': checkpoint, 'metrics': arm_metrics}, handle)
+            config = {
+                'exp_dir': os.path.join(root, arm),
+                'exp_name': '%s_levir_cc_seed1111' % arm,
+                'data': {'dataset': 'levir_cc', 'num_workers': 8, 'use_semantic_maps': arm == 'rsaca'},
+                'model': {'type': 'sgc_card', 'semantic_input_mode': 'cross_attention' if arm == 'rsaca' else 'none'},
+                'train': {'seed': 1111, 'max_iter': 10000, 'semantic_detach_ratio': 0.5 if arm == 'rsaca' else 0.0},
+            }
+            with open(os.path.join(exp_dir, 'resolved_config.json'), 'w', encoding='utf-8') as handle:
+                json.dump(config, handle)
+        output = os.path.join(root, 'summary.json')
+        subprocess.run(
+            [
+                'python', 'scripts/summarize_paired_card_rsaca_matrix.py',
+                '--pair-root', root, '--datasets', 'levir_cc', '--seeds', '1111', '--output', output,
+            ],
+            cwd=ROOT, check=True, capture_output=True, text=True,
+        )
+        with open(output, encoding='utf-8') as handle:
+            summary = json.load(handle)
+        assert summary['acceptance_passed'] is True
+        assert abs(summary['datasets']['levir_cc']['delta_rsaca_minus_card']['CIDEr'] - 0.01) < 1e-12
+
+        rsaca_config = os.path.join(root, 'rsaca', 'rsaca_levir_cc_seed1111', 'resolved_config.json')
+        with open(rsaca_config, encoding='utf-8') as handle:
+            payload = json.load(handle)
+        payload['train']['max_iter'] = 9000
+        with open(rsaca_config, 'w', encoding='utf-8') as handle:
+            json.dump(payload, handle)
+        rejected = subprocess.run(
+            [
+                'python', 'scripts/summarize_paired_card_rsaca_matrix.py',
+                '--pair-root', root, '--datasets', 'levir_cc', '--seeds', '1111', '--output', output,
+            ],
+            cwd=ROOT, capture_output=True, text=True,
+        )
+        assert rejected.returncode != 0
+        assert 'outside the semantic-arm allowlist' in rejected.stderr
+
+
 def test_reliability_sparse_v1_runner_dry_run_is_isolated_and_enabled():
     result = subprocess.run(
         [

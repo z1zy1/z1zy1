@@ -18,6 +18,7 @@ BASE_CFG="${BASE_CFG:-configs/dynamic/transformer_levir_cc_sgc_card.yaml}"
 ANNO="${ANNO:-./Levir-CC/levir_cc_captions_reformat.json}"
 
 DATASET="${DATASET:-}"
+SEED="${SEED:-}"
 DATA_ROOT="${DATA_ROOT:-}"
 FEATURE_ROOT="${FEATURE_ROOT:-}"
 MODEL_TYPE="${MODEL_TYPE:-sgc_card}"
@@ -248,6 +249,13 @@ COMMON_OPTS=(
   data.semantic_diff_binary "$(bool_word "$SEMANTIC_DIFF_BINARY")"
   data.semantic_unknown_change_class "$SEMANTIC_UNKNOWN_CHANGE_CLASS"
 )
+
+# Keep test-time configuration tied to the matrix arm.  The base YAML defaults
+# to seed 1111, so omitting this override makes the resolved test config lie
+# about non-1111 arms even when decoding itself is deterministic.
+if [ -n "$SEED" ]; then
+  COMMON_OPTS+=(train.seed "$SEED")
+fi
 
 if [ -n "${SEMANTIC_DIFF_CONFIDENCE_ROOT:-}" ]; then
   COMMON_OPTS+=(data.semantic_diff_confidence_root "$SEMANTIC_DIFF_CONFIDENCE_ROOT")

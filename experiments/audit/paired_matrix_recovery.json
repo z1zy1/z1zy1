@@ -1,0 +1,2929 @@
+{
+  "arms": [
+    {
+      "actual_steps": 10000,
+      "arm": "card",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T11:15:52.396075+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_1000.pt",
+          "sha256_current": "02145b04720c3afa87fe9fd47596742860bb623071b811f4406a489c683614ec",
+          "size_bytes": 59597548,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:36:46.563708+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_10000.pt",
+          "sha256_current": "18c90b31b435170d01160b2d6bfe05f4de2801e8f4b648397fef67a3f7e45a38",
+          "size_bytes": 59597548,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:17:46.560865+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_2000.pt",
+          "sha256_current": "fbddb68e3d3a524335920c06b69beaaa0718c4cd65b1494dd92ea7b982556fbc",
+          "size_bytes": 59597548,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:23:06.879710+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_3000.pt",
+          "sha256_current": "47a8be8bdcccd10fecf245080f49913d7ee539e238a717ef9e017175c53447e1",
+          "size_bytes": 59597548,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:25:00.940322+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_4000.pt",
+          "sha256_current": "7f36311c591473456a712f645366e2f5762d75f75ea7aee1cfd27f40eedd9ac6",
+          "size_bytes": 59597548,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:26:52.517647+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_5000.pt",
+          "sha256_current": "474ba9c1b8a50187eb064629dfd7a2bd3ee4b3ae1571b390a7dee2e33e0dcb12",
+          "size_bytes": 59597548,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:28:50.267076+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_6000.pt",
+          "sha256_current": "5a6b952b956bfa515860b1a402877d5fe03fe754f5da104e8e8af820f65b869a",
+          "size_bytes": 59597548,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:30:45.133039+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_7000.pt",
+          "sha256_current": "ef7a8b3928952a109c7a1eb1ddb4a29894841a283fb8c38f0dd0cccd04ce0777",
+          "size_bytes": 59597548,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:32:48.806868+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_8000.pt",
+          "sha256_current": "3127c6c8137473c15408c50c67fb0a8ac5e7744cbe833b75a4574c59a56e213f",
+          "size_bytes": 59597548,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:34:51.433014+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_9000.pt",
+          "sha256_current": "e5e7975957ca84b0d437c4ae5a8b703dfd512a3a34dfcd022cb7f5f908831226",
+          "size_bytes": 59597548,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_cc --seed 1111"
+      ],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_cc",
+      "dataset_condition": "LEVIR-CC",
+      "directory_exists": true,
+      "dry_run_commands": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_cc --seed 1111 --dry-run"
+      ],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111",
+      "pair_command_owner": true,
+      "pair_id": "pair-c9436ccb8170ee70",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "Levir-CC",
+        "dataset": "levir_cc",
+        "eval_anno_path": "Levir-CC/levir_cc_captions_reformat.json",
+        "seed": 1111,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "none",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "Levir-CC/levir_cc_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-ae0cf2f7964a6ef2",
+      "sample_coverage_audit_id": "prediction-feca0cc3b3d7ea49",
+      "seed": 1111,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "card",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T12:01:03.527185+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_1000.pt",
+          "sha256_current": "1624a01177a1f4f84afbff918055796340fafd16066b480a6a73eb9c8d840428",
+          "size_bytes": 59597550,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:31:45.998683+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_10000.pt",
+          "sha256_current": "cb4c5922fb44cc4cf9fa1ea9581820cb7ae298ea242ea7f7e33b2289f1ef721e",
+          "size_bytes": 59597550,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:06:06.469625+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_2000.pt",
+          "sha256_current": "fbd56456566cdf102be344ebcc6b79c01a978f554de557a3965f7e14b0a605d4",
+          "size_bytes": 59597550,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:11:20.715491+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_3000.pt",
+          "sha256_current": "f6d3d0464309097feee88f591e5e24b12979a7a2a11b1218ed57dc8db5ae4c66",
+          "size_bytes": 59597550,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:17:05.899207+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_4000.pt",
+          "sha256_current": "0a58b105d5be00b1b2660695e409e45a310b0f5a692c135a2a32552ec92240bb",
+          "size_bytes": 59597550,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:22:07.043274+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_5000.pt",
+          "sha256_current": "78f6c332b036d5cc4849e07c6b87008149294dd7f3c94b038f2bc8e236176378",
+          "size_bytes": 59597550,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:24:03.439783+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_6000.pt",
+          "sha256_current": "e740f8cc22ab25a0427fc83e8fa4140febb49bd8f386b63dddcda1330bef2e8f",
+          "size_bytes": 59597550,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:25:54.366157+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_7000.pt",
+          "sha256_current": "21a24d7b07f7d7bd5aceee1a52325bfa4a329eb365eae623b5a7987065e0403f",
+          "size_bytes": 59597550,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:27:53.648565+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_8000.pt",
+          "sha256_current": "73f417650a6861b0713eab127b2ddf2ae9ac36d3245fe1c6199f8c1d12e55079",
+          "size_bytes": 59597550,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:29:49.851480+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_9000.pt",
+          "sha256_current": "539abd60b45d726c082cac6019150e6ba88b5be3bb4c155551912375934f0114",
+          "size_bytes": 59597550,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_cc --seed 2222"
+      ],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_cc",
+      "dataset_condition": "LEVIR-CC",
+      "directory_exists": true,
+      "dry_run_commands": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_cc --seed 2222 --dry-run"
+      ],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222",
+      "pair_command_owner": true,
+      "pair_id": "pair-e249f10e62d768ff",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "Levir-CC",
+        "dataset": "levir_cc",
+        "eval_anno_path": "Levir-CC/levir_cc_captions_reformat.json",
+        "seed": 2222,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "none",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "Levir-CC/levir_cc_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-1bd5ff39e736f145",
+      "sample_coverage_audit_id": "prediction-18e4b06f4386b277",
+      "seed": 2222,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed2222/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "card",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T12:56:30.079516+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_1000.pt",
+          "sha256_current": "8b4292e9656ea7ee3d1c2feb14b5b4f9db7650ccefd6df09bff3affa67899082",
+          "size_bytes": 59597549,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:14:27.572695+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_10000.pt",
+          "sha256_current": "bbfc76c551e7f76f623b6c565bca6504b591ecbd703534791ba2e19f221aa810",
+          "size_bytes": 59597549,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:58:29.336501+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_2000.pt",
+          "sha256_current": "2c44ca63b12fb1f9e49f4b6f92051ce03728175387255b4a55fb4097bdf89a55",
+          "size_bytes": 59597549,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:00:28.621912+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_3000.pt",
+          "sha256_current": "86d0fd1453524fc957a019454bef4155d5583061fa5ed0e703e3334d051ee761",
+          "size_bytes": 59597549,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:02:30.782916+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_4000.pt",
+          "sha256_current": "5222d01393077622788530acc082f46a502a1271ebf673edf4465dc585bf7392",
+          "size_bytes": 59597549,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:04:30.117133+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_5000.pt",
+          "sha256_current": "7298e1a65047e5eedb6d5d3e1fe11b45f79bdaee5200d36fa73e6bf296e0c1bf",
+          "size_bytes": 59597549,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:06:27.367082+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_6000.pt",
+          "sha256_current": "1daa240c7e373f46f56c1be941a9f036d9933f6bcff42cd2c161e707341f43b8",
+          "size_bytes": 59597549,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:08:25.564777+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_7000.pt",
+          "sha256_current": "2b0ff21f2e7cd25de7694ecb0faed93ca2ceb45f2852a5915c4ca51f9fe53fd4",
+          "size_bytes": 59597549,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:10:25.258250+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_8000.pt",
+          "sha256_current": "3bfc9df22113234d0f55706ab942a79799e67af1ca2b312f46dbaa00a66402ca",
+          "size_bytes": 59597549,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:12:29.643461+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_9000.pt",
+          "sha256_current": "b19c6f46bb6f213847503e4c131459519d8cc9557525febfaf77817d1a2cc016",
+          "size_bytes": 59597549,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_cc --seed 3333"
+      ],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_cc",
+      "dataset_condition": "LEVIR-CC",
+      "directory_exists": true,
+      "dry_run_commands": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_cc --seed 3333 --dry-run"
+      ],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333",
+      "pair_command_owner": true,
+      "pair_id": "pair-27a6e229f9655009",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "Levir-CC",
+        "dataset": "levir_cc",
+        "eval_anno_path": "Levir-CC/levir_cc_captions_reformat.json",
+        "seed": 3333,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "none",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "Levir-CC/levir_cc_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-7d4cca8b9fd23a16",
+      "sample_coverage_audit_id": "prediction-fb1a66d6ddd401be",
+      "seed": 3333,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed3333/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "rsaca",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T11:39:13.065164+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_1000.pt",
+          "sha256_current": "1ad783ba1255d83dd9af0480501fb5dae50eeec35826d7f6c7c9e664f1c257ef",
+          "size_bytes": 69115487,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:58:56.523818+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_10000.pt",
+          "sha256_current": "5384275b2fdddb0d980a42e99cbbd5f18ec9f211add57802b9ece55974fbba75",
+          "size_bytes": 69115487,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:41:29.371235+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_2000.pt",
+          "sha256_current": "c9d1386ed6bd3d91bad25fe32932c89560892e03f866200c38ee5e8ef0decea5",
+          "size_bytes": 69115487,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:43:40.277653+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_3000.pt",
+          "sha256_current": "5cea22971daddbfddabd9d4264aed6f373b570231c62b001054ef8c8e013e845",
+          "size_bytes": 69115487,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:45:51.832128+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_4000.pt",
+          "sha256_current": "d620ed6317ac510cec49e933ad7090760d583f64c642480331b713dd8234105c",
+          "size_bytes": 69115487,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:48:05.454583+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_5000.pt",
+          "sha256_current": "88746380e21b24756c274f2bad712ab7877f832bd086052c922e6822a0736545",
+          "size_bytes": 69115487,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:50:16.012385+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_6000.pt",
+          "sha256_current": "e9d0b399ef45bad24ebbff3acbb8b7df10a70179afdc4871f93bf12312ae5a32",
+          "size_bytes": 69115487,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:52:22.273809+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_7000.pt",
+          "sha256_current": "2ebb6343cb8ea1f0cc804a3e0ebf09e2750ec16baabb797189454926be864a22",
+          "size_bytes": 69115487,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:54:32.845335+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_8000.pt",
+          "sha256_current": "1e99662887541cbea79d7989550a92019cc8157708f8d9e28cd8eaaeed11cee1",
+          "size_bytes": 69115487,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T11:56:45.115229+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_9000.pt",
+          "sha256_current": "dfe8eed926cec8d6d132b12e24db553164b6a222d6b733ad824bb6e7bcdf4a5d",
+          "size_bytes": 69115487,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_cc",
+      "dataset_condition": "LEVIR-CC",
+      "directory_exists": true,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111",
+      "pair_command_owner": false,
+      "pair_id": "pair-c9436ccb8170ee70",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "Levir-CC",
+        "dataset": "levir_cc",
+        "eval_anno_path": "Levir-CC/levir_cc_captions_reformat.json",
+        "seed": 1111,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "cross_attention",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "Levir-CC/levir_cc_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-f5473d5e05e49674",
+      "sample_coverage_audit_id": "prediction-d204d552ad17ae5c",
+      "seed": 1111,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed1111/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "rsaca",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T12:34:17.196771+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_1000.pt",
+          "sha256_current": "402513e642927a68b81cac2323c207b79b5b47de9be838da6dbd71646a48914b",
+          "size_bytes": 69115276,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:54:21.359664+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_10000.pt",
+          "sha256_current": "4edb995f2b4c9c9f9e8c93011c3800027fa59ea42b9f57be144645d7e609f87d",
+          "size_bytes": 69115276,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:36:32.395729+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_2000.pt",
+          "sha256_current": "71403eeeadff368e8a86872f2f30fa24325124a7609f83d607f74232da2e3a34",
+          "size_bytes": 69115276,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:38:44.370978+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_3000.pt",
+          "sha256_current": "4d4777de465cd42dfa38f283afa009c6d9e1e6476a9eff6c9099507d8f4ffc77",
+          "size_bytes": 69115276,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:40:57.986300+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_4000.pt",
+          "sha256_current": "138076f04f07a5983b9a678c0f6b13d7b5228f68bc480503a6282055b4699658",
+          "size_bytes": 69115276,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:43:12.957678+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_5000.pt",
+          "sha256_current": "779b70d847de91550a0dca04d6ee589e7092fa771e6f3d81846d92ec4755fa68",
+          "size_bytes": 69115276,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:45:26.917169+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_6000.pt",
+          "sha256_current": "10b829c805453a0d508f1ddb6a53b7a51d07b675f4a74a7e37fd8e2feaa3d71d",
+          "size_bytes": 69115276,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:47:40.140746+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_7000.pt",
+          "sha256_current": "e3eb36968a76a8b8637c694522b49b68966c2a8392f7ac6eccdad3424b5e9b6f",
+          "size_bytes": 69115276,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:49:56.476267+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_8000.pt",
+          "sha256_current": "678375ddbe4e5101c1b2a3cc816c5f6b7f75e8bf222e5ec25dee1e08ff46a9e1",
+          "size_bytes": 69115276,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T12:52:10.599897+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_9000.pt",
+          "sha256_current": "2806c383b0f21d1f9626bbb605174995791804aed7bb6b441e6cc35c2a38e58b",
+          "size_bytes": 69115276,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_cc",
+      "dataset_condition": "LEVIR-CC",
+      "directory_exists": true,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222",
+      "pair_command_owner": false,
+      "pair_id": "pair-e249f10e62d768ff",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "Levir-CC",
+        "dataset": "levir_cc",
+        "eval_anno_path": "Levir-CC/levir_cc_captions_reformat.json",
+        "seed": 2222,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "cross_attention",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "Levir-CC/levir_cc_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-8d9d3418b95531e2",
+      "sample_coverage_audit_id": "prediction-ce672ee6c2e4b62f",
+      "seed": 2222,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed2222/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "rsaca",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T13:16:55.805089+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_1000.pt",
+          "sha256_current": "69c0dce680a929b9cb7e89b70381d8596d2786e47cd5d74d5f9f2dec605f63f3",
+          "size_bytes": 69115277,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:37:18.114053+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_10000.pt",
+          "sha256_current": "412ce668610949e7377035e941ff2f5f82b1069fc6c1bccf971a1788bf25e39f",
+          "size_bytes": 69115277,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:19:08.605764+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_2000.pt",
+          "sha256_current": "8b4e7ae20a176a0ff20284723eaf8fbd6b10f3b00228f4dfb2bbcfa46af5a402",
+          "size_bytes": 69115277,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:21:22.294348+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_3000.pt",
+          "sha256_current": "f619e38cbca4d21af921a54d1f3767bcbb7fe211da8930ebc7201cc393f4d195",
+          "size_bytes": 69115277,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:23:37.366843+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_4000.pt",
+          "sha256_current": "29aacf6cce2ffef92d903db80919333a2a3f7b32c65b7ec8def411ced1fa33b0",
+          "size_bytes": 69115277,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:25:53.239274+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_5000.pt",
+          "sha256_current": "8ebb91e98d06f3874cb937b521fad0b331f99fd2f14b7d23aa4036070e23819c",
+          "size_bytes": 69115277,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:28:08.399693+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_6000.pt",
+          "sha256_current": "bda1c846257115b9fcf9cb31bc4b41143ff62e53e2ceb53fdb68856a3e7c0d85",
+          "size_bytes": 69115277,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:30:25.480035+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_7000.pt",
+          "sha256_current": "ecb60fa2a39c31c7515750693a65ce328de9a096481ee277d6f995787501d12c",
+          "size_bytes": 69115277,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:32:44.039321+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_8000.pt",
+          "sha256_current": "155602c1b09750c979739726538fc2547eddbafcb0154a62813cbc41c58878e3",
+          "size_bytes": 69115277,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:34:58.824467+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_9000.pt",
+          "sha256_current": "f60097ba3f5bdd6e4770fc4d79bfe710c6192db474011c92b6030c309d6db625",
+          "size_bytes": 69115277,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_cc",
+      "dataset_condition": "LEVIR-CC",
+      "directory_exists": true,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333",
+      "pair_command_owner": false,
+      "pair_id": "pair-27a6e229f9655009",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "Levir-CC",
+        "dataset": "levir_cc",
+        "eval_anno_path": "Levir-CC/levir_cc_captions_reformat.json",
+        "seed": 3333,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "cross_attention",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "Levir-CC/levir_cc_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-af5c9dfbfae62831",
+      "sample_coverage_audit_id": "prediction-ba59a2a424f1e312",
+      "seed": 3333,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_cc_seed3333/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "card",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T13:39:28.456525+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_1000.pt",
+          "sha256_current": "73ced9430a01e9faa64a388a51b386b112a2bd382f4cfce3db0ca805b540bffa",
+          "size_bytes": 59597749,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:57:44.814430+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_10000.pt",
+          "sha256_current": "db1294890161b55f71f637b6eca4d60524fddfe873a9296318e11c97065b5341",
+          "size_bytes": 59597749,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:41:27.079801+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_2000.pt",
+          "sha256_current": "b4456df378658bce24f1ef0e1449abd99e589cce9a2a383351babf815a6620f2",
+          "size_bytes": 59597749,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:43:24.923338+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_3000.pt",
+          "sha256_current": "51424739ba9e79ab1dec8e71bab1057494d18791c23ff024b4a4192ef40b2a92",
+          "size_bytes": 59597749,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:45:23.299037+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_4000.pt",
+          "sha256_current": "f9ba042bb8614fa74b1cd0ad6021078e70932add3cab8ef3bda2d32bb9a7d87f",
+          "size_bytes": 59597749,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:47:25.242758+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_5000.pt",
+          "sha256_current": "ba53bb41206ce8f5298ef33d37d4eba909d0bca0787ea62870aa765f4e632459",
+          "size_bytes": 59597749,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:49:27.890576+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_6000.pt",
+          "sha256_current": "ed502477bacd22bf0cf0ff55cac6a36c04d1d6ec0341243e8e1e17c2d3d0bdb7",
+          "size_bytes": 59597749,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:51:29.178536+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_7000.pt",
+          "sha256_current": "4aca215e9450d90b5e038bd1698b3a75bde932d000f8e44293bfc1a0b4e0aec8",
+          "size_bytes": 59597749,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:53:42.658175+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_8000.pt",
+          "sha256_current": "a18602b763a21ed23dd1afb22256cd4c3d761a4bc53830ffbb3c1b0f8588feca",
+          "size_bytes": 59597749,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T13:55:43.322294+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/snapshots/card_levir_mci_seed1111_checkpoint_9000.pt",
+          "sha256_current": "7b3d5a095ec2fd6206266ab6bbac695f557635e451c354caa4d8d996dd4f0b2c",
+          "size_bytes": 59597749,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_mci --seed 1111"
+      ],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_mci",
+      "dataset_condition": "LEVIR-MCI",
+      "directory_exists": true,
+      "dry_run_commands": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_mci --seed 1111 --dry-run"
+      ],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111",
+      "pair_command_owner": true,
+      "pair_id": "pair-a461ba0e5acee57b",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "LEVIR-MCI-dataset",
+        "dataset": "levir_mci",
+        "eval_anno_path": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+        "seed": 1111,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "none",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-965e9846657936e9",
+      "sample_coverage_audit_id": "prediction-6f5dd2e3e908f4a7",
+      "seed": 1111,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed1111/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "card",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T14:23:32.823496+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_1000.pt",
+          "sha256_current": "70ca5ac120470de7c0ad50fc6fc4d95c92926062c7dcf1cf1d45ecfe4f9e3d18",
+          "size_bytes": 59597743,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:54:24.652129+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_10000.pt",
+          "sha256_current": "60551c7253fef66a517d351dc2c3c00c7e79259dec32f0b6c24029f5e00934b1",
+          "size_bytes": 59597743,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:25:41.973497+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_2000.pt",
+          "sha256_current": "6ddf9e9a34c50a41980325c1bf86a7a58127ea221a573f466589449a316194bc",
+          "size_bytes": 59597743,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:27:52.079633+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_3000.pt",
+          "sha256_current": "74f9c3703994d4cc94e5904dfa9666dba4e74794b19ca038c9a696c90729d16f",
+          "size_bytes": 59597743,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:30:03.185865+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_4000.pt",
+          "sha256_current": "0149e2111d7cc70c986a9d529175b636e5b586c5b5644b5a49bb7adff4f0d717",
+          "size_bytes": 59597743,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:32:20.607937+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_5000.pt",
+          "sha256_current": "d31cb7923dc126a80772fc338f31966bfdbdd812e030233a5572c636df1be46b",
+          "size_bytes": 59597743,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:34:27.782533+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_6000.pt",
+          "sha256_current": "97703a7538a82ebbf9b3e4b9f20b3dc1d2f8bf1cb400b8ab0074af18fb1bf270",
+          "size_bytes": 59597743,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:36:46.488710+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_7000.pt",
+          "sha256_current": "51804fc964478aad40868f27af35d7efdb8bdcf0b4db91e114b90e2e6266bc31",
+          "size_bytes": 59597743,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:42:23.131791+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_8000.pt",
+          "sha256_current": "4d1ab6005c5c6671ac262b9984d88ad9e562d759314efb5a6b980cfa56eb4364",
+          "size_bytes": 59597743,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:48:30.607796+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_9000.pt",
+          "sha256_current": "67ffadde2504942b51665f1eff65b5ddf5cdddbd301940a893cc8bad1aba2ad2",
+          "size_bytes": 59597743,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_mci --seed 2222"
+      ],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_mci",
+      "dataset_condition": "LEVIR-MCI",
+      "directory_exists": true,
+      "dry_run_commands": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset levir_mci --seed 2222 --dry-run"
+      ],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222",
+      "pair_command_owner": true,
+      "pair_id": "pair-4ce129d5067e2871",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "LEVIR-MCI-dataset",
+        "dataset": "levir_mci",
+        "eval_anno_path": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+        "seed": 2222,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "none",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-ef8e160939028376",
+      "sample_coverage_audit_id": "prediction-8bf89951e56aa45d",
+      "seed": 2222,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "card",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-04T03:53:46.764598+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_1000.pt",
+          "sha256_current": "11dc0ecff22ebd7dbce8ec5ce436d188b68a38e032710c2781c124a8cf7bcf9c",
+          "size_bytes": 59597738,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:11:07.873372+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_10000.pt",
+          "sha256_current": "35e2c0a6b5047d9140ffedc9a4a7d921ba4d26160f36c9edad5344828cfbc506",
+          "size_bytes": 59597738,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-04T03:55:40.004916+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_2000.pt",
+          "sha256_current": "6d7f2590c0a9d2bb7f93508e30ce975d09b0c4c18752d07850ba88ad94998676",
+          "size_bytes": 59597738,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-04T03:57:42.678830+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_3000.pt",
+          "sha256_current": "7a13d8168a295fe3e61b2204cb391b2e8b1a781974bfb442410a83b9911322f3",
+          "size_bytes": 59597738,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-04T03:59:40.507151+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_4000.pt",
+          "sha256_current": "6ac5d6a82dc0d1ef1f7a2a9727576c6e0f64abd0a1914f6ac4e799a9e329d505",
+          "size_bytes": 59597738,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:01:39.992054+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_5000.pt",
+          "sha256_current": "7a9e5b6f1279dd6e10eb3c80b613f00a088ba04fd07098a030dfa53b73e68ba2",
+          "size_bytes": 59597738,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:03:40.221436+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_6000.pt",
+          "sha256_current": "1b61c01e3e167e662b64654ac95b411f6f3e4ce5f13e5e9e64a1c312355f01aa",
+          "size_bytes": 59597738,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:05:36.718284+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_7000.pt",
+          "sha256_current": "9735b791d0eb92139cb93dde43fc61e028d0b39824ee6a58ffd107f75568db25",
+          "size_bytes": 59597738,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:07:27.178447+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_8000.pt",
+          "sha256_current": "4d08b07f08e6e1b8a6b5c2af9233db38e0547248ead9f4806d705b359d85e131",
+          "size_bytes": 59597738,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:09:15.466121+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_9000.pt",
+          "sha256_current": "e6dd71c29c25085cbf40809d3bdf8ac3321bf70652183f07c67a5bab6fb8f720",
+          "size_bytes": 59597738,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_mci",
+      "dataset_condition": "LEVIR-MCI",
+      "directory_exists": true,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [],
+      "next_actions": [],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333",
+      "pair_command_owner": true,
+      "pair_id": "pair-3236ba803b379c49",
+      "planned_steps": 10000,
+      "prediction_file": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/test_output/captions/paired_locked/sc_results.json",
+      "primary_recovery_type": "VERIFIED_COMPLETE",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "LEVIR-MCI-dataset",
+        "dataset": "levir_mci",
+        "eval_anno_path": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+        "seed": 3333,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "none",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": true,
+      "reference_file": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-23220e1bbbeaa63a",
+      "sample_coverage_audit_id": "prediction-312fb9b78fb6f818",
+      "seed": 3333,
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/snapshots/card_levir_mci_seed3333_checkpoint_9000.pt",
+      "selection_reconstructed": false,
+      "selection_record": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/best_snapshot_for_paper.json",
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/val_metrics.csv",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/best_snapshot_for_paper.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/test_paired_locked_result.json"
+      ],
+      "test_metrics_complete": true,
+      "test_record": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/test_paired_locked_result.json",
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "rsaca",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T14:00:18.330260+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_1000.pt",
+          "sha256_current": "cccc1036f4f0573f701ed2a1389c041e71c40d31af39b3e8da77053926066293",
+          "size_bytes": 69115469,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:21:17.194043+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_10000.pt",
+          "sha256_current": "0b15f945e2de08783c98a8f10a0c173c9bf83d5479ed05f806e1db53fac0a3c8",
+          "size_bytes": 69115469,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:02:46.855191+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_2000.pt",
+          "sha256_current": "a9781a8dea84ab9a6d01fbe092f15a52c0615b2e33ec224cbe5462a63a13b83f",
+          "size_bytes": 69115469,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:05:06.542860+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_3000.pt",
+          "sha256_current": "cef0cbe7751f6e62217353923954d8edf9a4bd1ced80ea1f2f256a3f53fe09ac",
+          "size_bytes": 69115469,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:07:27.838328+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_4000.pt",
+          "sha256_current": "5870678e95b6c4cd9a8773f74787cf4c73d680f4955c36173de02bb5c225fdf9",
+          "size_bytes": 69115469,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:09:46.587151+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_5000.pt",
+          "sha256_current": "534444d3ac8705d52b18a2edf744ef1e0a6fa7e25bee4eb5a529ce1e45fb200a",
+          "size_bytes": 69115469,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:12:04.297370+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_6000.pt",
+          "sha256_current": "acb68c7bd77d2830bc26e1bd14d7386d8aa53c831013e28cc3c2a2afc60a495d",
+          "size_bytes": 69115469,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:14:22.916533+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_7000.pt",
+          "sha256_current": "6f2b082f21e428f1798153306339106384b6a5e3878daa8013f60d716d684f24",
+          "size_bytes": 69115469,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:16:40.888505+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_8000.pt",
+          "sha256_current": "4cd9c0561214240c2acf00e078d0fe97e411e63eb4993a8b1a0cc61d17c461db",
+          "size_bytes": 69115469,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T14:18:58.369086+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_9000.pt",
+          "sha256_current": "f60cb6bd86a9ddeec3ffa0fcf56f8fb97434276c27545323e31414d654d2d3d7",
+          "size_bytes": 69115469,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_mci",
+      "dataset_condition": "LEVIR-MCI",
+      "directory_exists": true,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111",
+      "pair_command_owner": false,
+      "pair_id": "pair-a461ba0e5acee57b",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "LEVIR-MCI-dataset",
+        "dataset": "levir_mci",
+        "eval_anno_path": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+        "seed": 1111,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "cross_attention",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-7baf180c85ffa54d",
+      "sample_coverage_audit_id": "prediction-340bc71bf3fa926e",
+      "seed": 1111,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "rsaca",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-02T15:01:16.773765+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_1000.pt",
+          "sha256_current": "49b8ada6aa2c75207299024cabe0c8803a8e05580ff168bb636e36bda2200838",
+          "size_bytes": 69115680,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-02T15:55:20.058084+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_10000.pt",
+          "sha256_current": "7e11b32ca8f371e8dfb547d50220767f87a86548007b259ba2c7829ca9b2f46e",
+          "size_bytes": 69115680,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-02T15:07:38.117461+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_2000.pt",
+          "sha256_current": "baebc3883a8babca1ad547f3d1712421d51f0052412f16be1369731175b198ec",
+          "size_bytes": 69115680,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-02T15:13:34.455180+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_3000.pt",
+          "sha256_current": "b2e0113f6e74df4bf0f03030e08436eaed3f7c364043638c087ed1548052181e",
+          "size_bytes": 69115680,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-02T15:19:30.765355+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_4000.pt",
+          "sha256_current": "3a495f7016042a8d35fef55b740a31b534ca8c567bcbf52f7e7d6765683665d2",
+          "size_bytes": 69115680,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-02T15:25:32.517902+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_5000.pt",
+          "sha256_current": "a55b7641c8b5247884d1cf9e8c7ae21d302ad67ce70496fb269bbea48a170233",
+          "size_bytes": 69115680,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-02T15:31:45.500803+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_6000.pt",
+          "sha256_current": "e534080be9a26d24cb6c8a735502b04daefde9f9524683cdd33b1147d137e82f",
+          "size_bytes": 69115680,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-02T15:37:34.042163+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_7000.pt",
+          "sha256_current": "89c5c1168270f44c87d3a772c7830a4b015c975908eb7906d6198d5b67fa0878",
+          "size_bytes": 69115680,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-02T15:43:32.699765+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_8000.pt",
+          "sha256_current": "9f213b66c798890b1c1f5cd5583725b7aa96ab8e580b0a608eae8e28b7ae3408",
+          "size_bytes": 69115680,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-02T15:49:34.472682+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_9000.pt",
+          "sha256_current": "bf7a83f9668e3c07d766dbcdfbd11baecb251a74ce971ea46a016c07641bebf9",
+          "size_bytes": 69115680,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_mci",
+      "dataset_condition": "LEVIR-MCI",
+      "directory_exists": true,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222",
+      "pair_command_owner": false,
+      "pair_id": "pair-4ce129d5067e2871",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "LEVIR-MCI-dataset",
+        "dataset": "levir_mci",
+        "eval_anno_path": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+        "seed": 2222,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "cross_attention",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-25243f3f999d62e5",
+      "sample_coverage_audit_id": "prediction-87fb5b79d38e967b",
+      "seed": 2222,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "rsaca",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-04T04:13:36.907871+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_1000.pt",
+          "sha256_current": "6c6623ac102933849b0f9d713a2a5693d963a2b1abfece10dfac696d8204b86a",
+          "size_bytes": 69115469,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:33:33.622194+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_10000.pt",
+          "sha256_current": "91236bd7897918b26bd4f3ae1caa3b860e4f9f9274632a5f01db84aa71d16982",
+          "size_bytes": 69115469,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:15:52.238121+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_2000.pt",
+          "sha256_current": "c6926b975e8e41a48f5226de63bf63f11f3dd4955805bf21d5219e9fde3cd5bc",
+          "size_bytes": 69115469,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:18:04.812134+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_3000.pt",
+          "sha256_current": "092d86ed5d24dd4d5c849369b264b5a68367e7f8761d802a1324b5a029e47207",
+          "size_bytes": 69115469,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:20:13.686003+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_4000.pt",
+          "sha256_current": "01423e0cbe53b6ae662ad1b27b3fad1f6b1f4c09c35b83d750c1b5cc64636a96",
+          "size_bytes": 69115469,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:22:26.475648+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_5000.pt",
+          "sha256_current": "c930dc6c9a205fb20aa26e29ed81c0e9d165fc8547d33cacff75de6cfdd18aa2",
+          "size_bytes": 69115469,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:24:40.889137+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_6000.pt",
+          "sha256_current": "c456e8c9a6925559cf7834a59a778c66c02f0e8a99bd91fbfabee194c0876238",
+          "size_bytes": 69115469,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:26:53.834557+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_7000.pt",
+          "sha256_current": "408f4ac687b634f6c2aeecba3f1b5807d1f4ead6d950f65f1ee66cbe224b032f",
+          "size_bytes": 69115469,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:29:07.279893+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_8000.pt",
+          "sha256_current": "c504b665dfa05c2ab306d750336b0ddac496fd7dd71b8399fd99b361f4f3f8bf",
+          "size_bytes": 69115469,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:31:22.542427+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_9000.pt",
+          "sha256_current": "80033dcae7803547129a859681191dbd193e15aec48516128ba3e3ff27ddf25f",
+          "size_bytes": 69115469,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "levir_mci",
+      "dataset_condition": "LEVIR-MCI",
+      "directory_exists": true,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [],
+      "next_actions": [],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333",
+      "pair_command_owner": false,
+      "pair_id": "pair-3236ba803b379c49",
+      "planned_steps": 10000,
+      "prediction_file": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/test_output/captions/paired_locked/sc_results.json",
+      "primary_recovery_type": "VERIFIED_COMPLETE",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "LEVIR-MCI-dataset",
+        "dataset": "levir_mci",
+        "eval_anno_path": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+        "seed": 3333,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "cross_attention",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": true,
+      "reference_file": "LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-584abd764f127e43",
+      "sample_coverage_audit_id": "prediction-a31387faccef8230",
+      "seed": 3333,
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_6000.pt",
+      "selection_reconstructed": false,
+      "selection_record": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/best_snapshot_for_paper.json",
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/val_metrics.csv",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/best_snapshot_for_paper.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/test_paired_locked_result.json"
+      ],
+      "test_metrics_complete": true,
+      "test_record": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/test_paired_locked_result.json",
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": 10000,
+      "arm": "card",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-04T04:44:59.150510+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_1000.pt",
+          "sha256_current": "8e590e76ae56b52bb18eff571c02debe8d3c33690f000f0d3ca42434fe7d6d04",
+          "size_bytes": 59888293,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-04T05:01:35.408806+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_10000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_10000.pt",
+          "sha256_current": "ce96404014799f15916e67392071b2706e771812e3ce864e23d305e9767b7045",
+          "size_bytes": 59888293,
+          "step": 10000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:46:52.238719+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_2000.pt",
+          "sha256_current": "43409c7357ec97f6e465eb1b7077003ae33b6ed4b91b86dc1c62efe99acde81a",
+          "size_bytes": 59888293,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:48:48.815206+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_3000.pt",
+          "sha256_current": "ed0cec2490ea824b40f4ed11a8d8a3c7ba165738102e20198524e0c3903cd164",
+          "size_bytes": 59888293,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:50:30.265014+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_4000.pt",
+          "sha256_current": "c58e70f901717abbf8848a9cb79cdf28d25338fa0b68be7131227da115e81f07",
+          "size_bytes": 59888293,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:52:04.291510+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_5000.pt",
+          "sha256_current": "df2dc28a2c4d01b5599f558bd6218a54dd1ddf0af828e2752225d59ba15d0847",
+          "size_bytes": 59888293,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:53:49.745557+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_6000.pt",
+          "sha256_current": "7b5ebb22e942a0c11e6ae18600ac3d990f755e4a526eff601d306e7195f11460",
+          "size_bytes": 59888293,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:55:48.523079+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_7000.pt",
+          "sha256_current": "d3aaecb9adc363d1d8ced28755bd9f17768cd1a9a2a59879c376cfc3280bb90d",
+          "size_bytes": 59888293,
+          "step": 7000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:57:44.608934+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_8000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_8000.pt",
+          "sha256_current": "8848a2b9d9c8378b1a9074aa9ea178f38eeeb8091c3c7177d235ec619979f691",
+          "size_bytes": 59888293,
+          "step": 8000
+        },
+        {
+          "mtime_utc": "2026-09-04T04:59:38.971023+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_9000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_9000.pt",
+          "sha256_current": "4ed31ac2c5200d21f1e8798eb20b4ad4cb3075a318367bfbd1bcb50b93dbadf2",
+          "size_bytes": 59888293,
+          "step": 9000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset second_cc --seed 1111"
+      ],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "second_cc",
+      "dataset_condition": "SECOND-CC-AUG",
+      "directory_exists": true,
+      "dry_run_commands": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage select --dataset second_cc --seed 1111 --dry-run"
+      ],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "reconstruct_selection_from_validation_only",
+        "then_test_selected_checkpoint_once"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111",
+      "pair_command_owner": true,
+      "pair_id": "pair-d2e2d98d325c27e3",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RECONSTRUCT_SELECTION",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "SECOND-CC-AUG",
+        "dataset": "second_cc",
+        "eval_anno_path": "SECOND-CC-AUG/second_cc_aug_captions_reformat.json",
+        "seed": 1111,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "none",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "SECOND-CC-AUG/second_cc_aug_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/resolved_config.json",
+      "reusable": true,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-79d8a634f31608d0",
+      "sample_coverage_audit_id": "prediction-e9a1e2755015e3ee",
+      "seed": 1111,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": true,
+      "training_status": "completed",
+      "valid_validation_rows": 10,
+      "validation_covers_expected_range": true,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000",
+        "7000",
+        "8000",
+        "9000",
+        "10000"
+      ]
+    },
+    {
+      "actual_steps": null,
+      "arm": "card",
+      "checkpoint_inventory": [],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "second_cc",
+      "dataset_condition": "SECOND-CC-AUG",
+      "directory_exists": false,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "resolved_config.json",
+        "run_summary.json",
+        "val_metrics.csv or valid rows",
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "resolve_protocol_conflict_without_modifying_existing_lock",
+        "locate_original_run_or_record_as_missing_before_training"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed2222",
+      "pair_command_owner": true,
+      "pair_id": "pair-3fe58a429b409fce",
+      "planned_steps": null,
+      "prediction_file": null,
+      "primary_recovery_type": "INCOMPATIBLE_OR_UNVERIFIABLE",
+      "protocol_conflicts": [
+        "selection rule differs from lock or is missing",
+        "resolved seed differs from arm seed",
+        "second_cc arm does not resolve to SECOND-CC-AUG"
+      ],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": null,
+        "dataset": null,
+        "eval_anno_path": null,
+        "seed": null,
+        "selection_rule": null,
+        "semantic_input_mode": null,
+        "total_steps": null
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": null,
+      "resolved_config": null,
+      "reusable": false,
+      "reuse_reason": "no target-root artifacts found",
+      "run_id": "run-7645077187da21eb",
+      "sample_coverage_audit_id": "prediction-c1b7d4827a99c8c1",
+      "seed": 2222,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": null,
+      "source_paths": [],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": null,
+      "training_commit_evidence": null,
+      "training_dirty": null,
+      "training_reached_planned_end": false,
+      "training_status": null,
+      "valid_validation_rows": 0,
+      "validation_covers_expected_range": false,
+      "validation_steps": []
+    },
+    {
+      "actual_steps": null,
+      "arm": "card",
+      "checkpoint_inventory": [],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "second_cc",
+      "dataset_condition": "SECOND-CC-AUG",
+      "directory_exists": false,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "resolved_config.json",
+        "run_summary.json",
+        "val_metrics.csv or valid rows",
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "resolve_protocol_conflict_without_modifying_existing_lock",
+        "locate_original_run_or_record_as_missing_before_training"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed3333",
+      "pair_command_owner": true,
+      "pair_id": "pair-9217250525315dc1",
+      "planned_steps": null,
+      "prediction_file": null,
+      "primary_recovery_type": "INCOMPATIBLE_OR_UNVERIFIABLE",
+      "protocol_conflicts": [
+        "selection rule differs from lock or is missing",
+        "resolved seed differs from arm seed",
+        "second_cc arm does not resolve to SECOND-CC-AUG"
+      ],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": null,
+        "dataset": null,
+        "eval_anno_path": null,
+        "seed": null,
+        "selection_rule": null,
+        "semantic_input_mode": null,
+        "total_steps": null
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": null,
+      "resolved_config": null,
+      "reusable": false,
+      "reuse_reason": "no target-root artifacts found",
+      "run_id": "run-69d31223e259bd07",
+      "sample_coverage_audit_id": "prediction-41c2a7883f36b44e",
+      "seed": 3333,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": null,
+      "source_paths": [],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": null,
+      "training_commit_evidence": null,
+      "training_dirty": null,
+      "training_reached_planned_end": false,
+      "training_status": null,
+      "valid_validation_rows": 0,
+      "validation_covers_expected_range": false,
+      "validation_steps": []
+    },
+    {
+      "actual_steps": null,
+      "arm": "rsaca",
+      "checkpoint_inventory": [
+        {
+          "mtime_utc": "2026-09-04T05:06:01.384721+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_1000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_1000.pt",
+          "sha256_current": "731433b2e7cfc5390dca2932d968f11e2963592f9e421798b52cea59676fa4cc",
+          "size_bytes": 69406176,
+          "step": 1000
+        },
+        {
+          "mtime_utc": "2026-09-04T05:10:15.827333+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_2000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_2000.pt",
+          "sha256_current": "42c848dd4dd99ab72205fdf5fd10521bf9c47e1b52eada75cdf69aa446bae596",
+          "size_bytes": 69406176,
+          "step": 2000
+        },
+        {
+          "mtime_utc": "2026-09-04T05:14:25.593504+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_3000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_3000.pt",
+          "sha256_current": "0595f5de7306c1d46ef1f7c99897f0b936d74de24fac9f95dbbaff75b5415928",
+          "size_bytes": 69406176,
+          "step": 3000
+        },
+        {
+          "mtime_utc": "2026-09-04T05:18:40.755448+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_4000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_4000.pt",
+          "sha256_current": "083e1ad040b29fd61fbf722e19aae46c45f2eb4437c8fb64460a67cb8233e079",
+          "size_bytes": 69406176,
+          "step": 4000
+        },
+        {
+          "mtime_utc": "2026-09-04T05:22:46.380751+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_5000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_5000.pt",
+          "sha256_current": "cfd846635c40deebf9d982fb527b3a16eaaf94a7f0e93eda8ecdbaf810d7dff4",
+          "size_bytes": 69406176,
+          "step": 5000
+        },
+        {
+          "mtime_utc": "2026-09-04T05:26:51.579610+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_6000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_6000.pt",
+          "sha256_current": "76ba5e028a0381ec7864142438714750264e56e44d1fc8ce2d8ac2b9abcf197c",
+          "size_bytes": 69406176,
+          "step": 6000
+        },
+        {
+          "mtime_utc": "2026-09-04T05:31:05.222867+00:00",
+          "path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_7000.pt",
+          "relative_path": "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/snapshots/rsaca_second_cc_seed1111_checkpoint_7000.pt",
+          "sha256_current": "0d523a9b8ee7616ccbb83ce67697a610739753c0765ee9f1adba6fe64ff880c9",
+          "size_bytes": 61014016,
+          "step": 7000
+        }
+      ],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage train --dataset second_cc --seed 1111  # dry-run only; existing failed directory must be archived/new protocol confirmed"
+      ],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "second_cc",
+      "dataset_condition": "SECOND-CC-AUG",
+      "directory_exists": true,
+      "dry_run_commands": [
+        "cd /root/autodl-tmp/z1zy1 && PAIR_ROOT=/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1 NUM_WORKERS=8 OMP_NUM_THREADS=1 PYTHON=/root/miniconda3/envs/card/bin/python bash scripts/run_paired_card_rsaca_matrix.sh --stage train --dataset second_cc --seed 1111 --dry-run  # dry-run only; existing failed directory must be archived/new protocol confirmed"
+      ],
+      "failure_reason": "[enforce fail at inline_container.cc:274] . unexpected pos 61001984 vs 61001872",
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "verify_checkpoint_integrity_and_optimizer_state",
+        "retrain_in_new_directory_if_resume_state_is_incomplete"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111",
+      "pair_command_owner": false,
+      "pair_id": "pair-d2e2d98d325c27e3",
+      "planned_steps": 10000,
+      "prediction_file": null,
+      "primary_recovery_type": "RESUME_OR_RETRAIN",
+      "protocol_conflicts": [],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": "SECOND-CC-AUG",
+        "dataset": "second_cc",
+        "eval_anno_path": "SECOND-CC-AUG/second_cc_aug_captions_reformat.json",
+        "seed": 1111,
+        "selection_rule": "paper_balanced_no_spice",
+        "semantic_input_mode": "cross_attention",
+        "total_steps": 10000
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": "SECOND-CC-AUG/second_cc_aug_captions_reformat.json",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/resolved_config.json",
+      "reusable": false,
+      "reuse_reason": "existing resolved config/checkpoints/validation artifacts are present",
+      "run_id": "run-85a56d2264ee353e",
+      "sample_coverage_audit_id": "prediction-91c446b54e6b4c75",
+      "seed": 1111,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": "paper_balanced_no_spice",
+      "source_paths": [
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/resolved_config.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/run_summary.json",
+        "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/val_metrics.csv"
+      ],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+      "training_commit_evidence": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed1111/git_info.txt",
+      "training_dirty": true,
+      "training_reached_planned_end": false,
+      "training_status": "failed",
+      "valid_validation_rows": 6,
+      "validation_covers_expected_range": false,
+      "validation_steps": [
+        "1000",
+        "2000",
+        "3000",
+        "4000",
+        "5000",
+        "6000"
+      ]
+    },
+    {
+      "actual_steps": null,
+      "arm": "rsaca",
+      "checkpoint_inventory": [],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "second_cc",
+      "dataset_condition": "SECOND-CC-AUG",
+      "directory_exists": false,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "resolved_config.json",
+        "run_summary.json",
+        "val_metrics.csv or valid rows",
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "resolve_protocol_conflict_without_modifying_existing_lock",
+        "locate_original_run_or_record_as_missing_before_training"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed2222",
+      "pair_command_owner": false,
+      "pair_id": "pair-3fe58a429b409fce",
+      "planned_steps": null,
+      "prediction_file": null,
+      "primary_recovery_type": "INCOMPATIBLE_OR_UNVERIFIABLE",
+      "protocol_conflicts": [
+        "selection rule differs from lock or is missing",
+        "resolved seed differs from arm seed",
+        "second_cc arm does not resolve to SECOND-CC-AUG"
+      ],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": null,
+        "dataset": null,
+        "eval_anno_path": null,
+        "seed": null,
+        "selection_rule": null,
+        "semantic_input_mode": null,
+        "total_steps": null
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": null,
+      "resolved_config": null,
+      "reusable": false,
+      "reuse_reason": "no target-root artifacts found",
+      "run_id": "run-af431b0cfbc472d4",
+      "sample_coverage_audit_id": "prediction-f92677df177da302",
+      "seed": 2222,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": null,
+      "source_paths": [],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": null,
+      "training_commit_evidence": null,
+      "training_dirty": null,
+      "training_reached_planned_end": false,
+      "training_status": null,
+      "valid_validation_rows": 0,
+      "validation_covers_expected_range": false,
+      "validation_steps": []
+    },
+    {
+      "actual_steps": null,
+      "arm": "rsaca",
+      "checkpoint_inventory": [],
+      "command_scope": "dataset_seed_pair",
+      "commands_after_lock_confirmation": [],
+      "current_action_blockers": [
+        "current source digest differs from immutable lock",
+        "current source-status digest differs from immutable lock"
+      ],
+      "dataset": "second_cc",
+      "dataset_condition": "SECOND-CC-AUG",
+      "directory_exists": false,
+      "dry_run_commands": [],
+      "failure_reason": null,
+      "lock_fingerprint": {
+        "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+        "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+        "git_commit_matches_lock": true,
+        "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+        "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+        "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+        "source_digest_matches_lock": false,
+        "source_status_digest_matches_lock": false
+      },
+      "missing_evidence": [
+        "resolved_config.json",
+        "run_summary.json",
+        "val_metrics.csv or valid rows",
+        "historical validation selection record",
+        "locked test result with complete metrics"
+      ],
+      "next_actions": [
+        "resolve_protocol_conflict_without_modifying_existing_lock",
+        "locate_original_run_or_record_as_missing_before_training"
+      ],
+      "original_directory": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_second_cc_seed3333",
+      "pair_command_owner": false,
+      "pair_id": "pair-9217250525315dc1",
+      "planned_steps": null,
+      "prediction_file": null,
+      "primary_recovery_type": "INCOMPATIBLE_OR_UNVERIFIABLE",
+      "protocol_conflicts": [
+        "selection rule differs from lock or is missing",
+        "resolved seed differs from arm seed",
+        "second_cc arm does not resolve to SECOND-CC-AUG"
+      ],
+      "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+      "protocol_lock": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+      "protocol_snapshot": {
+        "data_root": null,
+        "dataset": null,
+        "eval_anno_path": null,
+        "seed": null,
+        "selection_rule": null,
+        "semantic_input_mode": null,
+        "total_steps": null
+      },
+      "qualifies_for_final_comparison": false,
+      "reference_file": null,
+      "resolved_config": null,
+      "reusable": false,
+      "reuse_reason": "no target-root artifacts found",
+      "run_id": "run-96fdd9a7db2ecfc3",
+      "sample_coverage_audit_id": "prediction-c4246b32bc1a71db",
+      "seed": 3333,
+      "selected_checkpoint": null,
+      "selection_reconstructed": false,
+      "selection_record": null,
+      "selection_rule_documented": null,
+      "source_paths": [],
+      "test_metrics_complete": false,
+      "test_record": null,
+      "training_commit": null,
+      "training_commit_evidence": null,
+      "training_dirty": null,
+      "training_reached_planned_end": false,
+      "training_status": null,
+      "valid_validation_rows": 0,
+      "validation_covers_expected_range": false,
+      "validation_steps": []
+    }
+  ],
+  "counts": {
+    "INCOMPATIBLE_OR_UNVERIFIABLE": 4,
+    "NEED_TEST_OR_RESCORING": 0,
+    "NEED_VALIDATION": 0,
+    "RECONSTRUCT_SELECTION": 11,
+    "REGISTER_EXISTING": 0,
+    "RESUME_OR_RETRAIN": 1,
+    "VERIFIED_COMPLETE": 2
+  },
+  "expected_pairs": 9,
+  "generated_at": "2026-09-09T08:12:06.491925+00:00",
+  "lock": {
+    "arms": {
+      "card": "semantic_input_mode=none",
+      "rsaca": "whole_adapter_gate_v1"
+    },
+    "cuda_visible_devices": "",
+    "datasets": [
+      "levir_cc",
+      "levir_mci",
+      "second_cc"
+    ],
+    "git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+    "num_workers": "8",
+    "omp_num_threads": "1",
+    "pair_root": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1",
+    "python": "/root/miniconda3/envs/card/bin/python3.8",
+    "pytorch_gpu": "0",
+    "schema_version": 1,
+    "seeds": [
+      1111,
+      2222,
+      3333
+    ],
+    "selection": "validation_only: paper_balanced_no_spice",
+    "source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+    "source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+    "test_policy": "one immutable test per validation-selected checkpoint"
+  },
+  "lock_fingerprint": {
+    "current_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+    "current_source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+    "current_source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+    "git_commit_matches_lock": true,
+    "locked_git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+    "locked_source_digest_sha256": "6d0d8cba4789bb2eec5dce5a284d25a0eb7bfef2a0a763963bb79948cce69c9f",
+    "locked_source_status_digest_sha256": "f95c4fed1678c25ba3c035f3836935c9804ced52bfe436b0b198e5da7ecb9d79",
+    "source_digest_matches_lock": false,
+    "source_status_digest_matches_lock": false
+  },
+  "lock_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/paired_protocol_lock.json",
+  "observed_pairs": 1,
+  "pair_root": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1",
+  "pairs": [
+    {
+      "card_prediction_integrity": "not_available",
+      "card_run_id": "run-ae0cf2f7964a6ef2",
+      "card_state": "RECONSTRUCT_SELECTION",
+      "dataset": "levir_cc",
+      "dataset_condition": "LEVIR-CC",
+      "observed_complete_pair": false,
+      "pair_id": "pair-c9436ccb8170ee70",
+      "pair_status": "PENDING_SELECTION_AND_TEST",
+      "qualified_pair": false,
+      "rsaca_prediction_integrity": "not_available",
+      "rsaca_run_id": "run-f5473d5e05e49674",
+      "rsaca_state": "RECONSTRUCT_SELECTION",
+      "seed": 1111
+    },
+    {
+      "card_prediction_integrity": "not_available",
+      "card_run_id": "run-1bd5ff39e736f145",
+      "card_state": "RECONSTRUCT_SELECTION",
+      "dataset": "levir_cc",
+      "dataset_condition": "LEVIR-CC",
+      "observed_complete_pair": false,
+      "pair_id": "pair-e249f10e62d768ff",
+      "pair_status": "PENDING_SELECTION_AND_TEST",
+      "qualified_pair": false,
+      "rsaca_prediction_integrity": "not_available",
+      "rsaca_run_id": "run-8d9d3418b95531e2",
+      "rsaca_state": "RECONSTRUCT_SELECTION",
+      "seed": 2222
+    },
+    {
+      "card_prediction_integrity": "not_available",
+      "card_run_id": "run-7d4cca8b9fd23a16",
+      "card_state": "RECONSTRUCT_SELECTION",
+      "dataset": "levir_cc",
+      "dataset_condition": "LEVIR-CC",
+      "observed_complete_pair": false,
+      "pair_id": "pair-27a6e229f9655009",
+      "pair_status": "PENDING_SELECTION_AND_TEST",
+      "qualified_pair": false,
+      "rsaca_prediction_integrity": "not_available",
+      "rsaca_run_id": "run-af5c9dfbfae62831",
+      "rsaca_state": "RECONSTRUCT_SELECTION",
+      "seed": 3333
+    },
+    {
+      "card_prediction_integrity": "not_available",
+      "card_run_id": "run-965e9846657936e9",
+      "card_state": "RECONSTRUCT_SELECTION",
+      "dataset": "levir_mci",
+      "dataset_condition": "LEVIR-MCI",
+      "observed_complete_pair": false,
+      "pair_id": "pair-a461ba0e5acee57b",
+      "pair_status": "PENDING_SELECTION_AND_TEST",
+      "qualified_pair": false,
+      "rsaca_prediction_integrity": "not_available",
+      "rsaca_run_id": "run-7baf180c85ffa54d",
+      "rsaca_state": "RECONSTRUCT_SELECTION",
+      "seed": 1111
+    },
+    {
+      "card_prediction_integrity": "not_available",
+      "card_run_id": "run-ef8e160939028376",
+      "card_state": "RECONSTRUCT_SELECTION",
+      "dataset": "levir_mci",
+      "dataset_condition": "LEVIR-MCI",
+      "observed_complete_pair": false,
+      "pair_id": "pair-4ce129d5067e2871",
+      "pair_status": "PENDING_SELECTION_AND_TEST",
+      "qualified_pair": false,
+      "rsaca_prediction_integrity": "not_available",
+      "rsaca_run_id": "run-25243f3f999d62e5",
+      "rsaca_state": "RECONSTRUCT_SELECTION",
+      "seed": 2222
+    },
+    {
+      "card_prediction_integrity": "PASS_IDS_AND_CAPTIONS",
+      "card_run_id": "run-23220e1bbbeaa63a",
+      "card_state": "VERIFIED_COMPLETE",
+      "dataset": "levir_mci",
+      "dataset_condition": "LEVIR-MCI",
+      "observed_complete_pair": true,
+      "pair_id": "pair-3236ba803b379c49",
+      "pair_status": "QUALIFIED_COMPLETE",
+      "qualified_pair": true,
+      "rsaca_prediction_integrity": "PASS_IDS_AND_CAPTIONS",
+      "rsaca_run_id": "run-584abd764f127e43",
+      "rsaca_state": "VERIFIED_COMPLETE",
+      "seed": 3333
+    },
+    {
+      "card_prediction_integrity": "not_available",
+      "card_run_id": "run-79d8a634f31608d0",
+      "card_state": "RECONSTRUCT_SELECTION",
+      "dataset": "second_cc",
+      "dataset_condition": "SECOND-CC-AUG",
+      "observed_complete_pair": false,
+      "pair_id": "pair-d2e2d98d325c27e3",
+      "pair_status": "BLOCKED_BY_RESUME_OR_RETRAIN",
+      "qualified_pair": false,
+      "rsaca_prediction_integrity": "not_available",
+      "rsaca_run_id": "run-85a56d2264ee353e",
+      "rsaca_state": "RESUME_OR_RETRAIN",
+      "seed": 1111
+    },
+    {
+      "card_prediction_integrity": "not_available",
+      "card_run_id": "run-7645077187da21eb",
+      "card_state": "INCOMPATIBLE_OR_UNVERIFIABLE",
+      "dataset": "second_cc",
+      "dataset_condition": "SECOND-CC-AUG",
+      "observed_complete_pair": false,
+      "pair_id": "pair-3fe58a429b409fce",
+      "pair_status": "BLOCKED_BY_MISSING_OR_UNVERIFIABLE_EVIDENCE",
+      "qualified_pair": false,
+      "rsaca_prediction_integrity": "not_available",
+      "rsaca_run_id": "run-af431b0cfbc472d4",
+      "rsaca_state": "INCOMPATIBLE_OR_UNVERIFIABLE",
+      "seed": 2222
+    },
+    {
+      "card_prediction_integrity": "not_available",
+      "card_run_id": "run-69d31223e259bd07",
+      "card_state": "INCOMPATIBLE_OR_UNVERIFIABLE",
+      "dataset": "second_cc",
+      "dataset_condition": "SECOND-CC-AUG",
+      "observed_complete_pair": false,
+      "pair_id": "pair-9217250525315dc1",
+      "pair_status": "BLOCKED_BY_MISSING_OR_UNVERIFIABLE_EVIDENCE",
+      "qualified_pair": false,
+      "rsaca_prediction_integrity": "not_available",
+      "rsaca_run_id": "run-96fdd9a7db2ecfc3",
+      "rsaca_state": "INCOMPATIBLE_OR_UNVERIFIABLE",
+      "seed": 3333
+    }
+  ],
+  "protocol_id": "paired_card_rsaca_whole_gate_v1_locked",
+  "qualified_pairs": 1,
+  "schema_version": 1
+}

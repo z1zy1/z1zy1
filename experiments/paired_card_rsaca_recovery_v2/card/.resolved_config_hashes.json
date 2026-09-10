@@ -1,0 +1,109 @@
+{
+  "95ae01be9ba9125629c6035f928b0c47595ef1d2356529bbc31a5433e90ef42e": [
+    {
+      "exp_name": "card_levir_cc_seed1111",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_levir_cc_seed1111",
+      "timestamp": "2026-09-09 16:23:09"
+    },
+    {
+      "exp_name": "card_levir_cc_seed2222",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_levir_cc_seed2222",
+      "timestamp": "2026-09-09 16:29:20"
+    },
+    {
+      "exp_name": "card_levir_cc_seed3333",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_levir_cc_seed3333",
+      "timestamp": "2026-09-09 16:32:07"
+    },
+    {
+      "exp_name": "card_levir_cc_seed1111",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/card/card_levir_cc_seed1111",
+      "timestamp": "2026-09-09 20:15:43"
+    }
+  ],
+  "b30e6063bbd3c10d881dd4a73d6cbd1add4433370a461c666ccddfc743d8ebea": [
+    {
+      "exp_name": "card_levir_mci_seed1111",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_levir_mci_seed1111",
+      "timestamp": "2026-09-09 16:34:55"
+    },
+    {
+      "exp_name": "card_levir_mci_seed2222",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_levir_mci_seed2222",
+      "timestamp": "2026-09-09 16:37:56"
+    },
+    {
+      "exp_name": "card_levir_mci_seed1111",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/card/card_levir_mci_seed1111",
+      "timestamp": "2026-09-09 20:23:38"
+    }
+  ],
+  "27c9e8d261f423d6ab2c0463c43a219848b30359ad91d14c4c047003e0bd2fc5": [
+    {
+      "exp_name": "card_second_cc_seed2222",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_second_cc_seed2222",
+      "timestamp": "2026-09-09 16:44:25"
+    }
+  ],
+  "0fe7c85f4bd2b8613a0eaf5500fe1418a0ec984e0cb57b8839b0db058a467731": [
+    {
+      "exp_name": "card_second_cc_seed2222",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_second_cc_seed2222",
+      "timestamp": "2026-09-09 17:04:10"
+    },
+    {
+      "exp_name": "card_second_cc_seed1111",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/card/card_second_cc_seed1111",
+      "timestamp": "2026-09-09 20:05:53"
+    }
+  ],
+  "6c73a400ac00041c5b7b25a90101a90f2397cbbd6706043530afdcfe2248305c": [
+    {
+      "exp_name": "card_second_cc_seed3333",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_second_cc_seed3333",
+      "timestamp": "2026-09-09 17:58:25"
+    }
+  ],
+  "2d8da3dee54c9707d91aa07d950f32f0143f02dc3eb0a7bda4081bc2486a8593": [
+    {
+      "exp_name": "card_second_cc_seed3333",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/card/card_second_cc_seed3333",
+      "timestamp": "2026-09-09 19:18:09"
+    }
+  ],
+  "63e6e5109f1b0b2ffdf1ec04113a635ecc7d18dcaa78c0c49e1595234c009560": [
+    {
+      "exp_name": "card_second_cc_seed2222",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/card/card_second_cc_seed2222",
+      "timestamp": "2026-09-09 20:12:40"
+    }
+  ],
+  "ff9466ec7ac340c6bc65d7efcea0debb46aeacc813e23ae38968d2a9d2177b6d": [
+    {
+      "exp_name": "card_levir_cc_seed2222",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/card/card_levir_cc_seed2222",
+      "timestamp": "2026-09-09 20:18:21"
+    }
+  ],
+  "1c6df4990ec388e8b7ea26ac196aca643f6736f56ce2ed2b589473f017ba74df": [
+    {
+      "exp_name": "card_levir_cc_seed3333",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/card/card_levir_cc_seed3333",
+      "timestamp": "2026-09-09 20:20:57"
+    }
+  ],
+  "c65e8e3b7359d68a61a6a7ab5eb1601241a93b5fa346926ce1b2bdf01cafa5a2": [
+    {
+      "exp_name": "card_levir_mci_seed2222",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/card/card_levir_mci_seed2222",
+      "timestamp": "2026-09-09 20:26:19"
+    }
+  ],
+  "6dfdf4d5080fd05c4a39cd7c5f5a7b7595995a915ede5b299b5e16e2b73143ed": [
+    {
+      "exp_name": "card_levir_mci_seed3333",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/card/card_levir_mci_seed3333",
+      "timestamp": "2026-09-09 20:29:00"
+    }
+  ]
+}

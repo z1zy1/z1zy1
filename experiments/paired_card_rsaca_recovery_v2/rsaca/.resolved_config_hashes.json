@@ -1,0 +1,121 @@
+{
+  "fce467ccf2f30d27e7061bad8e9bc488b010df2a516b73c32af15c5dec7d1a10": [
+    {
+      "exp_name": "rsaca_levir_cc_seed1111",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_levir_cc_seed1111",
+      "timestamp": "2026-09-09 16:24:47"
+    },
+    {
+      "exp_name": "rsaca_levir_cc_seed2222",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_levir_cc_seed2222",
+      "timestamp": "2026-09-09 16:30:40"
+    },
+    {
+      "exp_name": "rsaca_levir_cc_seed3333",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_levir_cc_seed3333",
+      "timestamp": "2026-09-09 16:33:30"
+    },
+    {
+      "exp_name": "rsaca_levir_cc_seed1111",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_levir_cc_seed1111",
+      "timestamp": "2026-09-09 20:17:01"
+    }
+  ],
+  "a8d0666fee01718f42e74c5a643254bf1d1bbeb65fbc8fc8bdcbfa0ddec108f6": [
+    {
+      "exp_name": "rsaca_levir_mci_seed1111",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_levir_mci_seed1111",
+      "timestamp": "2026-09-09 16:36:22"
+    },
+    {
+      "exp_name": "rsaca_levir_mci_seed2222",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_levir_mci_seed2222",
+      "timestamp": "2026-09-09 16:39:32"
+    },
+    {
+      "exp_name": "rsaca_levir_mci_seed1111",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_levir_mci_seed1111",
+      "timestamp": "2026-09-09 20:24:53"
+    }
+  ],
+  "5179a03102ec98eea17bd3543eb415d24e2e87379c576422580c6f7e4000e7c4": [
+    {
+      "exp_name": "rsaca_second_cc_seed2222",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_second_cc_seed2222",
+      "timestamp": "2026-09-09 17:03:40"
+    },
+    {
+      "exp_name": "rsaca_second_cc_seed2222",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_second_cc_seed2222",
+      "timestamp": "2026-09-09 17:07:55"
+    }
+  ],
+  "c932fe96b6f7e2d158fe760f7d8d45a75080ff8565392d844c95e5dc3937b2e8": [
+    {
+      "exp_name": "rsaca_second_cc_seed2222",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_second_cc_seed2222",
+      "timestamp": "2026-09-09 17:56:34"
+    },
+    {
+      "exp_name": "rsaca_second_cc_seed1111",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_second_cc_seed1111",
+      "timestamp": "2026-09-09 20:07:08"
+    }
+  ],
+  "1ae95827a2e1df756c22543b13250c1d2fa2e5bcef80de6e40b62b769094424f": [
+    {
+      "exp_name": "rsaca_second_cc_seed3333",
+      "output_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_second_cc_seed3333",
+      "timestamp": "2026-09-09 18:17:37"
+    }
+  ],
+  "3de3f08da504c80df12a943e72120a55753cafa6b1853d0cd370fad747b3557e": [
+    {
+      "exp_name": "rsaca_second_cc_seed3333",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_second_cc_seed3333",
+      "timestamp": "2026-09-09 19:19:24"
+    }
+  ],
+  "f291d22292e17d1b3852e167426041b004ef27c12d0a0b1b0901eabad38bf0ed": [
+    {
+      "exp_name": "rsaca_second_cc_seed1111",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_second_cc_seed1111",
+      "timestamp": "2026-09-09 19:22:08"
+    }
+  ],
+  "fbd20c0ec8ab0dddfe43d8f1c88aac88ec4431ddb8f94350c600a6a7f2275ab2": [
+    {
+      "exp_name": "rsaca_second_cc_seed2222",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_second_cc_seed2222",
+      "timestamp": "2026-09-09 20:13:43"
+    }
+  ],
+  "860a958f7a5e3f953e9594c907c5d762ab40ff5b44ce05848c8d8fa626fa046b": [
+    {
+      "exp_name": "rsaca_levir_cc_seed2222",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_levir_cc_seed2222",
+      "timestamp": "2026-09-09 20:19:35"
+    }
+  ],
+  "f3f293837f1e1cdad57366cf0a8cf4178244f84004f8a21cbd323c3da8aba15f": [
+    {
+      "exp_name": "rsaca_levir_cc_seed3333",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_levir_cc_seed3333",
+      "timestamp": "2026-09-09 20:22:14"
+    }
+  ],
+  "c32d62b920df16ade56881070f7e290683f445f0986d4b604cfdf284d88923bd": [
+    {
+      "exp_name": "rsaca_levir_mci_seed2222",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_levir_mci_seed2222",
+      "timestamp": "2026-09-09 20:27:37"
+    }
+  ],
+  "ee728483e35fff00bfe27ed37da928fba80dccbb44365a8eaeab37f9d0d6ee56": [
+    {
+      "exp_name": "rsaca_levir_mci_seed3333",
+      "output_dir": "experiments/paired_card_rsaca_recovery_v2/rsaca/rsaca_levir_mci_seed3333",
+      "timestamp": "2026-09-09 20:30:18"
+    }
+  ]
+}

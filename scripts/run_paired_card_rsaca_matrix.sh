@@ -16,6 +16,7 @@ ONLY_SEED=""
 DRY_RUN=0
 RESET_INCOMPLETE=0
 FORCE_SELECT=0
+TEST_TAG="${TEST_TAG:-paired_locked}"
 REQUIRE_CUDA="${REQUIRE_CUDA:-1}"
 
 usage() {
@@ -33,6 +34,7 @@ Options:
   --dry-run
   --reset-incomplete
   --force-select       Refresh a pre-test validation selection only.
+  --test-tag TAG       Use an independent immutable test result tag (default: paired_locked).
 
 Environment:
   PAIR_ROOT, SEEDS, PYTHON, NUM_WORKERS, OMP_NUM_THREADS, CUDA_VISIBLE_DEVICES,
@@ -52,6 +54,7 @@ while [ "$#" -gt 0 ]; do
     --dry-run|--dry_run) DRY_RUN=1; shift ;;
     --reset-incomplete|--reset_incomplete) RESET_INCOMPLETE=1; shift ;;
     --force-select|--force_select) FORCE_SELECT=1; shift ;;
+    --test-tag) TEST_TAG="$2"; shift 2 ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; usage; exit 2 ;;
   esac
@@ -200,7 +203,10 @@ select_one() {
   if [ -s "$output" ]; then
     if selected_checkpoint "$output" >/dev/null 2>&1; then
       if [ "$FORCE_SELECT" -ne 1 ]; then echo "Skipping validation selection: $output"; return; fi
-      [ ! -f "$exp_path/test_paired_locked_result.json" ] || { echo "Refusing selection refresh after test: $exp_path" >&2; return 1; }
+      if find "$exp_path" -maxdepth 1 -type f -name 'test_*_result.json' -print -quit | grep -q .; then
+        echo "Refusing selection refresh after test: $exp_path" >&2
+        return 1
+      fi
     else
       echo "Ignoring invalid validation selection: $output" >&2
     fi
@@ -210,12 +216,12 @@ select_one() {
 }
 
 test_one() {
-  local exp_path="$EXP_DIR/$EXP_NAME" result="$EXP_DIR/$EXP_NAME/test_paired_locked_result.json" selection="$EXP_DIR/$EXP_NAME/best_snapshot_for_paper.json"
+  local exp_path="$EXP_DIR/$EXP_NAME" result="$EXP_DIR/$EXP_NAME/test_${TEST_TAG}_result.json" selection="$EXP_DIR/$EXP_NAME/best_snapshot_for_paper.json"
   [ -s "$result" ] && { echo "Skipping immutable test: $result"; return; }
   [ "$DRY_RUN" -eq 1 ] || [ -s "$selection" ] || { echo "Missing validation selection: $selection" >&2; return 1; }
   local checkpoint="$exp_path/best_for_paper.pth"
   if [ "$DRY_RUN" -ne 1 ]; then checkpoint="$(selected_checkpoint "$selection")"; fi
-  run_or_print bash scripts/test_specific_snapshot_sgc_card.sh --exp_dir "$exp_path" --checkpoint "$checkpoint" --tag paired_locked --anno "$ANNO"
+  run_or_print env SEED="$SEED" bash scripts/test_specific_snapshot_sgc_card.sh --exp_dir "$exp_path" --checkpoint "$checkpoint" --tag "$TEST_TAG" --anno "$ANNO"
 }
 
 matrix() {

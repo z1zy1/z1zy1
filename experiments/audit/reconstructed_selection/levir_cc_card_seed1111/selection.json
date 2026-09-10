@@ -1,0 +1,220 @@
+{
+  "exp_dir": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111",
+  "csv": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/val_metrics.csv",
+  "selection_metric": "paper_balanced_no_spice",
+  "allow_negative_ablation": false,
+  "best_snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_9000.pt",
+  "copy_path": "/root/autodl-tmp/z1zy1/experiments/audit/reconstructed_selection/levir_cc_card_seed1111/selected_checkpoint.pth",
+  "best": {
+    "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_9000.pt",
+    "paper_score": 1.0074356304776197,
+    "caption_score": 1.0089930068054649,
+    "aux_tiebreak": 0.0,
+    "negative_ablation": false,
+    "all_above_baseline": false,
+    "metrics": {
+      "Bleu_1": 0.740940254652229,
+      "Bleu_2": 0.6203775113919544,
+      "Bleu_3": 0.5217469047129211,
+      "Bleu_4": 0.4358442074053805,
+      "METEOR": 0.34309437108461927,
+      "ROUGE_L": 0.6952894946378724,
+      "CIDEr": 1.247024219521308,
+      "SPICE": 0.26384919471513935
+    },
+    "aux_metrics": {}
+  },
+  "top_candidates": [
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_9000.pt",
+      "paper_score": 1.0074356304776197,
+      "caption_score": 1.0089930068054649,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.740940254652229,
+        "Bleu_2": 0.6203775113919544,
+        "Bleu_3": 0.5217469047129211,
+        "Bleu_4": 0.4358442074053805,
+        "METEOR": 0.34309437108461927,
+        "ROUGE_L": 0.6952894946378724,
+        "CIDEr": 1.247024219521308,
+        "SPICE": 0.26384919471513935
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_7000.pt",
+      "paper_score": 1.0053419935430603,
+      "caption_score": 1.0075693971422994,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7370882868835765,
+        "Bleu_2": 0.6191622203518983,
+        "Bleu_3": 0.5224131873333682,
+        "Bleu_4": 0.43767954970107414,
+        "METEOR": 0.339922141254644,
+        "ROUGE_L": 0.693164857878445,
+        "CIDEr": 1.244734614730861,
+        "SPICE": 0.2638606265913581
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_10000.pt",
+      "paper_score": 1.0037459400371807,
+      "caption_score": 1.001046425128198,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7424871490707056,
+        "Bleu_2": 0.6224406648128353,
+        "Bleu_3": 0.5230734669457751,
+        "Bleu_4": 0.4384125023131431,
+        "METEOR": 0.3384689309752919,
+        "ROUGE_L": 0.693687235209198,
+        "CIDEr": 1.2401497949688003,
+        "SPICE": 0.2584699173315308
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_8000.pt",
+      "paper_score": 0.9998913498367805,
+      "caption_score": 1.0002587240721597,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7345044415609607,
+        "Bleu_2": 0.6120531871156879,
+        "Bleu_3": 0.5149956078594841,
+        "Bleu_4": 0.43049385429489,
+        "METEOR": 0.3367568482033899,
+        "ROUGE_L": 0.6944505489881669,
+        "CIDEr": 1.2452957192214726,
+        "SPICE": 0.2607928230876448
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_6000.pt",
+      "paper_score": 0.9915716677466782,
+      "caption_score": 0.987944430213213,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7326246113729081,
+        "Bleu_2": 0.6130346566669083,
+        "Bleu_3": 0.5157718277108772,
+        "Bleu_4": 0.4322889751339183,
+        "METEOR": 0.3316021591266154,
+        "ROUGE_L": 0.6842583238621959,
+        "CIDEr": 1.233501858496223,
+        "SPICE": 0.2540142874000978
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_5000.pt",
+      "paper_score": 0.9763372339079304,
+      "caption_score": 0.9714455980653263,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7226100151744337,
+        "Bleu_2": 0.6033314846933249,
+        "Bleu_3": 0.5063732129142628,
+        "Bleu_4": 0.42185980118077826,
+        "METEOR": 0.329043757555184,
+        "ROUGE_L": 0.6798938866940942,
+        "CIDEr": 1.2106527291118543,
+        "SPICE": 0.2494335756075311
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_4000.pt",
+      "paper_score": 0.9712210765761515,
+      "caption_score": 0.9735018364091297,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7167103093782643,
+        "Bleu_2": 0.597493139027583,
+        "Bleu_3": 0.5047590300936119,
+        "Bleu_4": 0.4270884940623986,
+        "METEOR": 0.3313017912329616,
+        "ROUGE_L": 0.6792868000450348,
+        "CIDEr": 1.1780906667303703,
+        "SPICE": 0.2564131048419365
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_3000.pt",
+      "paper_score": 0.958261145070031,
+      "caption_score": 0.960650269144333,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7141579731742956,
+        "Bleu_2": 0.592613173135838,
+        "Bleu_3": 0.497654127847831,
+        "Bleu_4": 0.4174405300238692,
+        "METEOR": 0.32246298751546343,
+        "ROUGE_L": 0.6729473913317394,
+        "CIDEr": 1.1767352851732233,
+        "SPICE": 0.2530018612952735
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_2000.pt",
+      "paper_score": 0.926499318847662,
+      "caption_score": 0.9264923290826937,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6956939638599869,
+        "Bleu_2": 0.5712252271790662,
+        "Bleu_3": 0.4696978353118314,
+        "Bleu_4": 0.3872014663129339,
+        "METEOR": 0.3154861969982395,
+        "ROUGE_L": 0.6653881469420739,
+        "CIDEr": 1.1480168164069835,
+        "SPICE": 0.2434691883846835
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_1000.pt",
+      "paper_score": 0.8025268479352109,
+      "caption_score": 0.8095283547032595,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6165006117811033,
+        "Bleu_2": 0.48618834301441877,
+        "Bleu_3": 0.38909329839651,
+        "Bleu_4": 0.31300690779022705,
+        "METEOR": 0.2853692248657678,
+        "ROUGE_L": 0.6065569507321591,
+        "CIDEr": 0.9835977935865419,
+        "SPICE": 0.2214776504350005
+      },
+      "aux_metrics": {}
+    }
+  ],
+  "negative_ablation_policy": "hard_gate/reweight experiments are excluded unless --allow_negative_ablation is set."
+}

@@ -17,6 +17,11 @@ SOURCE_FILES = [
 ]
 FOLLOWUP_SUMMARY = 'experiments/reliability_sparse_rsaca_v1_whole_gate_retry/summary.json'
 V1_SUMMARY = 'experiments/reliability_sparse_rsaca_v1/summary.json'
+NEW_MASKS_SUMMARY = 'experiments/reliability_sparse_rsaca_v1_new_masks_20260821/summary.json'
+MATCHED_CONTROL_SUMMARY = 'experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/summary.json'
+PRENORM_CHANGED_GLOBAL_SUMMARY = 'experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/summary.json'
+V2_VALIDATION_ROOT = 'experiments/reliability_sparse_rsaca_v2_detached_gate'
+PAIRED_MATRIX_ROOT = 'experiments/paired_card_rsaca_whole_gate_v1'
 
 EXPERIMENT_NOTES = {
     'levir_mci_card_baseline': 'LEVIR-MCI 的审计基线；所有该数据集改进实验应与它比较。',
@@ -89,6 +94,52 @@ def unified_conclusion_lines(unified):
     ]
 
 
+def paired_matrix_lines():
+    summary = load(os.path.join(PAIRED_MATRIX_ROOT, 'summary.json'), required=False)
+    if summary is None:
+        lock_path = os.path.join(ROOT, PAIRED_MATRIX_ROOT, 'paired_protocol_lock.json')
+        if os.path.isfile(lock_path):
+            complete_pairs = []
+            for dataset in ('levir_cc', 'levir_mci', 'second_cc'):
+                for seed in (1111, 2222, 3333):
+                    complete = True
+                    for arm in ('card', 'rsaca'):
+                        run_root = os.path.join(ROOT, PAIRED_MATRIX_ROOT, arm, '%s_%s_seed%d' % (arm, dataset, seed))
+                        if not (os.path.isfile(os.path.join(run_root, 'best_snapshot_for_paper.json')) and
+                                os.path.isfile(os.path.join(run_root, 'test_paired_locked_result.json'))):
+                            complete = False
+                    if complete:
+                        complete_pairs.append('%s seed %d' % (dataset, seed))
+            return [
+                '严格配对的 `3 datasets x 2 models x 3 seeds` 主实验矩阵已锁定但尚未完成：'
+                '当前只有 %d/9 个 seed-pair（%d/18 个 arm）同时具备验证选择和锁定测试记录。'
+                '因此没有生成正式 `summary.json`，不得把该矩阵写成已完成或用于主表。'
+                '已完成 pair：%s。入口 `scripts/run_paired_card_rsaca_matrix.sh` 会将 CARD 与 whole-adapter RSACA'
+                ' 固定在同一 Git commit、源码摘要、Python/CUDA/worker 设置、训练日程和验证选点协议下，'
+                '仅允许语义融合臂不同；汇总器拒绝缺失、测试选点或协议不一致的结果。'
+                % (len(complete_pairs), len(complete_pairs) * 2, '、'.join(complete_pairs) if complete_pairs else '无'),
+            ]
+        return [
+            '严格配对的 `3 datasets x 2 models x 3 seeds` 主实验矩阵尚未运行。'
+            '入口 `scripts/run_paired_card_rsaca_matrix.sh` 会将 CARD 与 whole-adapter RSACA'
+            ' 固定在同一 Git commit、源码摘要、Python/CUDA/worker 设置、训练日程和验证选点协议下，'
+            '仅允许语义融合臂不同；汇总器拒绝缺失、测试选点或协议不一致的结果。',
+        ]
+    verdict = '通过' if summary.get('acceptance_passed') else '未通过'
+    lines = ['严格配对的 `3 datasets x 2 models x 3 seeds` 矩阵已完成；总体验收：**%s**。' % verdict]
+    for dataset in ('levir_cc', 'levir_mci', 'second_cc'):
+        item = summary.get('datasets', {}).get(dataset, {})
+        delta = item.get('delta_rsaca_minus_card', {})
+        lines.append(
+            '%s：配对 B4/CIDEr/SPICE delta=%s/%s/%s；主要指标逐 seed 非劣=%s；8 项均值严格提升=%s。'
+            % (dataset, fmt(delta.get('Bleu_4'), True), fmt(delta.get('CIDEr'), True),
+               fmt(delta.get('SPICE'), True),
+               '是' if item.get('all_seed_primary_metrics_noninferior') else '否',
+               '是' if item.get('mean_all_metrics_strictly_improved') else '否')
+        )
+    return lines
+
+
 def followup_candidate_lines():
     summary = load(FOLLOWUP_SUMMARY, required=False)
     if summary is None:
@@ -109,10 +160,31 @@ def followup_candidate_lines():
     return [
         whole_line,
         '新增待验证候选 `run_reliability_sparse_rsaca_v1_prenorm_changed_global.sh` 使用 `context_pre_norm`、`gamma_max=0.1`、gate bias `-2.5` 和 changed-only global token；其输出目录独立，锁定测试前必须先完成验证集筛选。',
-        '新增待验证 LEVIR-CC V2 候选 `run_reliability_sparse_rsaca_v2_detached_gate.sh` 保留 pre-norm changed-global 核心，仅在 reliability MLP 的视觉/语义摘要输入上使用 detach，以阻断门控对 CARD 特征分支的反向塑形；它显式关闭 confidence、visual gate、fallback 和 warmup。入口在训练前要求所选 Python 的 CUDA 可用；中断目录必须通过 `--reset-incomplete` 归档后才能重训，空验证行或非文件 checkpoint 不得进入选择或测试。该设计尚无验证或锁定结果，不能作为性能增益证据。',
+        *v2_validation_lines(),
         '本次 V1 实现还支持可选的 `data.semantic_diff_confidence_root`：置信度会对变化位置的 K/V 和 changed-mean global token 加权；视觉一致性门控、低置信度 visual fallback 与 fusion warmup 默认关闭，仅由 V1 候选显式开启。当前 `pseudo_masks` 是二值外部模型输出，尚未提供可验证的逐像素概率，因此不能把该置信度路径或 fallback 设计宣称为已验证的性能增益。',
         'V1 的验证选点新增 `paper_balanced_no_spice`，只在验证集上按 CIDEr、BLEU-4、METEOR、ROUGE-L 加权，暂时忽略 SPICE；这只是选择协议调整，不能替代三数据集多 seed 锁定测试。',
-        'LEVIR-CC 掩码重生成入口为 `scripts/generate_levir_ensemble_masks.sh`：ChangeFormerV6 与 BIT 的概率图通过一致性规则融合，并同时输出 confidence/uncertainty；替换前保留旧 `pseudo_masks` 备份。由于当前环境尚无两模型完整推理结果，该输入替换不能写成已验证的性能增益。',
+        'LEVIR-CC 掩码重生成入口为 `scripts/generate_levir_ensemble_masks_direct.sh`：ChangeFormerV6 与 BIT 的概率图以 8-bit PNG 流程处理，通过一致性规则融合，并同时输出 confidence/uncertainty；该入口会在推理前删除旧 `pseudo_*` 目录以控制磁盘占用，成功后安装新结果。新掩码三 seed 锁定矩阵已经完成但未达到 CARD 验收，因此该输入替换不能写成已验证的性能增益。',
+        '为隔离新 LEVIR-CC 掩码本身的影响，可运行 `scripts/run_levir_cc_new_masks_matched_control.sh`：保留数据集作用域隔离，但关闭 confidence、visual gate、visual fallback 和 fusion warmup，并恢复 `paper_balanced` 验证选点。该入口要求 CUDA，且在受限容器中默认 `NUM_WORKERS=0`；该对照尚无结果，不能据此预判掩码优劣。',
+    ]
+
+
+def v2_validation_lines():
+    records = []
+    for seed in (3333, 1111):
+        path = os.path.join(ROOT, V2_VALIDATION_ROOT, 'unified_rsaca_levir_cc_seed%d' % seed, 'best_snapshot_for_paper.json')
+        payload = load(os.path.relpath(path, ROOT), required=False)
+        if payload is None:
+            continue
+        metrics = payload.get('best', {}).get('metrics', {})
+        if metrics:
+            records.append('seed %d: B4=%s, CIDEr=%s' % (seed, fmt(metrics.get('Bleu_4')), fmt(metrics.get('CIDEr'))))
+    base = (
+        '新增待验证 LEVIR-CC V2 候选 `run_reliability_sparse_rsaca_v2_detached_gate.sh` 保留 pre-norm changed-global 核心，仅在 reliability MLP 的视觉/语义摘要输入上使用 detach，以阻断门控对 CARD 特征分支的反向塑形；它显式关闭 confidence、visual gate、fallback 和 warmup。入口在训练前要求所选 Python 的 CUDA 可用；中断目录必须通过 `--reset-incomplete` 归档后才能重训，空验证行或非文件 checkpoint 不得进入选择或测试。'
+    )
+    if not records:
+        return [base + '该设计尚无验证或锁定结果，不能作为性能增益证据。']
+    return [
+        base + '当前仅完成 seed 3333/1111 的验证筛选（%s），尚未运行测试。历史 V1 运行与该筛选不构成严格配对，不能将任何差异归因于 detach；必须先与 `run_reliability_sparse_rsaca_v2_paired_control.sh` 在相同环境下比较。该结果不构成性能增益或论文证据。' % '；'.join(records)
     ]
 
 
@@ -132,6 +204,46 @@ def v1_candidate_line():
     )
 
 
+def new_masks_candidate_lines():
+    summary = load(NEW_MASKS_SUMMARY, required=False)
+    if summary is None:
+        return ['新掩码候选尚无完整锁定汇总，不能进入当前结果结论。']
+    datasets = summary.get('datasets', {})
+    lines = [
+        '新掩码候选 `reliability_sparse_rsaca_v1_new_masks_20260821` 已完成三数据集三 seed 验证选点和锁定测试，且 `selection_uses_test_metrics=false`；但 `acceptance_passed=false`，不能支持“稳定超过 CARD”的主张。',
+    ]
+    for dataset in ('levir_cc', 'levir_mci', 'second_cc'):
+        item = datasets.get(dataset, {})
+        delta = item.get('delta', {})
+        non_spice = sum(delta.get(metric, 0.0) > 0 for metric in METRICS if metric != 'SPICE')
+        lines.append(
+            '%s：均值 %d/8 指标高于 CARD，seed 全指标通过 %d/%d；忽略 SPICE 后仍仅 %d/7 指标提升；B4/CIDEr/SPICE delta=%s/%s/%s。'
+            % (dataset, sum(delta.get(metric, 0.0) > 0 for metric in METRICS), item.get('seed_passes', 0), item.get('seed_count', 0), non_spice, fmt(delta.get('Bleu_4'), True), fmt(delta.get('CIDEr'), True), fmt(delta.get('SPICE'), True))
+        )
+    lines.append('该候选使用 LEVIR-CC ChangeFormer+BIT 共识二值掩码及 agreement-aware confidence；LEVIR-MCI/SECOND-CC 语义输入保持原协议。新掩码输入变化尚未带来主张支持证据。')
+    return lines
+
+
+def matched_control_lines():
+    summary = load(MATCHED_CONTROL_SUMMARY, required=False)
+    if summary is None:
+        return ['新 LEVIR-CC 掩码匹配对照尚无完整锁定汇总，不能进入当前结果结论。']
+    item = summary.get('datasets', {}).get('levir_cc', {})
+    delta = item.get('delta', {})
+    non_spice = sum(delta.get(metric, 0.0) > 0 for metric in METRICS if metric != 'SPICE')
+    old_summary = load(PRENORM_CHANGED_GLOBAL_SUMMARY, required=False)
+    old_item = old_summary.get('datasets', {}).get('levir_cc', {}) if old_summary else {}
+    old_mean = old_item.get('mean', {})
+    mean = item.get('mean', {})
+    return [
+        '新 LEVIR-CC 掩码匹配对照 `reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826` 已完成三 seed 验证选点和锁定测试，且 `selection_uses_test_metrics=false`；均值仅 2/8 指标高于 CARD，忽略 SPICE 后仅 %d/7，seed 全指标通过 %d/%d，不能证明新掩码优于 CARD。'
+        % (non_spice, item.get('seed_passes', 0), item.get('seed_count', 0)),
+        '相对旧 LEVIR-CC pre-norm changed-global 结果，B4/CIDEr/SPICE 均值变化为 %s/%s/%s；新掩码在该条件下未带来整体提升。'
+        % (fmt(mean.get('Bleu_4', 0.0) - old_mean.get('Bleu_4', 0.0), True), fmt(mean.get('CIDEr', 0.0) - old_mean.get('CIDEr', 0.0), True), fmt(mean.get('SPICE', 0.0) - old_mean.get('SPICE', 0.0), True)),
+        '该对照关闭 confidence、visual gate、fallback 和 warmup，并恢复 `paper_balanced`；但新运行 `num_workers=0`、旧运行 `num_workers=8`，且两次提交不同，故它是反对“新掩码更好”的直接证据，但不能把全部差异严格归因于掩码本身。',
+    ]
+
+
 def main():
     baseline_payload = load('experiments/card_baseline_test_summary.json')
     paper_rows = load('experiments/paper_required_experiments_summary.json')
@@ -145,6 +257,20 @@ def main():
         source_paths.append(os.path.join(ROOT, FOLLOWUP_SUMMARY))
     if os.path.exists(os.path.join(ROOT, V1_SUMMARY)):
         source_paths.append(os.path.join(ROOT, V1_SUMMARY))
+    if os.path.exists(os.path.join(ROOT, NEW_MASKS_SUMMARY)):
+        source_paths.append(os.path.join(ROOT, NEW_MASKS_SUMMARY))
+    if os.path.exists(os.path.join(ROOT, MATCHED_CONTROL_SUMMARY)):
+        source_paths.append(os.path.join(ROOT, MATCHED_CONTROL_SUMMARY))
+    paired_summary = os.path.join(ROOT, PAIRED_MATRIX_ROOT, 'summary.json')
+    if os.path.exists(paired_summary):
+        source_paths.append(paired_summary)
+    paired_lock = os.path.join(ROOT, PAIRED_MATRIX_ROOT, 'paired_protocol_lock.json')
+    if os.path.exists(paired_lock):
+        source_paths.append(paired_lock)
+    for seed in (3333, 1111):
+        selection = os.path.join(ROOT, V2_VALIDATION_ROOT, 'unified_rsaca_levir_cc_seed%d' % seed, 'best_snapshot_for_paper.json')
+        if os.path.exists(selection):
+            source_paths.append(selection)
     source_snapshot = datetime.fromtimestamp(max(os.path.getmtime(path) for path in source_paths), timezone.utc)
     baselines = {row['dataset']: {metric: row[metric] for metric in METRICS}
                  for row in baseline_payload['results']}
@@ -164,9 +290,12 @@ def main():
         '新增的 V1 候选为 **reliability-gated sparse RSACA**：只把变化位置提供给语义 cross-attention 的 K/V，并为无变化样本加入一个可学习回退 token；连续可靠性门控以视觉变化摘要、稀疏语义摘要和变化覆盖率缩放语义残差。成对语义图按 `before != after` 判定变化，diff-only 输入按非零类别判定变化。该规则在三数据集共享，保留锁定 RSACA 的其余训练设置。完整入口：`bash scripts/run_reliability_sparse_rsaca_v1.sh --stage all`；候选筛选阶段仅可运行 `preflight`、`train` 和 `select`。', '',
         v1_candidate_line(), '',
         *followup_candidate_lines(), '',
+        *new_masks_candidate_lines(), '',
+        *matched_control_lines(), '',
+        *paired_matrix_lines(), '',
         '主实验必须从 scratch 分别训练 CARD 与 RSACA，避免用 MCI 初始化混淆结构增益。固定 3 个 seed（1111、2222、3333），形成 `3 datasets x 2 models x 3 seeds = 18` 次主实验。MCI-transfer 结果只能作为独立迁移实验。', '',
         '验收标准：每个数据集的主要指标均值不低于 CARD；至少 BLEU-4、CIDEr、SPICE 的方向一致；报告每 seed、均值、样本标准差；checkpoint 只能根据验证集选择，测试集仅运行一次锁定评估。', '',
-        '完整统一实验入口：`bash scripts/run_unified_rsaca_experiments.sh --stage all`。', '',
+        '历史 RSACA-only 入口：`bash scripts/run_unified_rsaca_experiments.sh --stage all`。严格主实验入口：`bash scripts/run_paired_card_rsaca_matrix.sh --stage all`。', '',
         '## 4. 审计 CARD 基线', '',
         '| 数据集 | %s |' % ' | '.join(METRICS),
         '|---|%s|' % '|'.join(['---:'] * len(METRICS)),
@@ -234,7 +363,11 @@ def main():
         '- `experiments/paper_required_experiments_summary.json`：论文要求的单项实验结果。',
         '- `experiments/7_6_locked_test_summary.json`：LEVIR-CC、LEVIR-MCI 和旧 SECOND-CC 锁定结果。',
         '- `experiments/second_cc_current_mci_test_summary.json`：SECOND-CC 的 MCI-transfer 三 seed 结果，只能作为迁移证据。',
-        '- `experiments/unified_rsaca/summary.json`：统一 RSACA scratch 三 seed 矩阵结果；存在时作为当前统一结论的直接依据。', ''])
+        '- `experiments/unified_rsaca/summary.json`：统一 RSACA scratch 三 seed 矩阵结果；存在时作为当前统一结论的直接依据。',
+        '- `experiments/paired_card_rsaca_whole_gate_v1/summary.json`：严格 CARD/whole-adapter RSACA 配对 `3 x 2 x 3` 矩阵；存在时优先用于主结论。',
+        '- `experiments/reliability_sparse_rsaca_v1_new_masks_20260821/summary.json`：新 LEVIR-CC 共识掩码候选的三数据集三 seed 锁定汇总，仅作为候选负结果证据。',
+        '- `experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/summary.json`：新 LEVIR-CC 掩码匹配对照的三 seed 锁定汇总，仅作为掩码效果的受限负结果证据。',
+        ''])
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     with open(OUTPUT, 'w', encoding='utf-8') as handle:
         handle.write('\n'.join(lines))

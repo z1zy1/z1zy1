@@ -1,0 +1,15 @@
+{
+  "cider": {
+    "score": 0.707445888187373,
+    "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_second_cc_seed3333/snapshots/card_second_cc_seed3333_checkpoint_10000.pt"
+  },
+  "spice": {
+    "score": 0.19249017684934933,
+    "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_second_cc_seed3333/snapshots/card_second_cc_seed3333_checkpoint_10000.pt"
+  },
+  "balanced": {
+    "score": 0.6290249908175455,
+    "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/card/card_second_cc_seed3333/snapshots/card_second_cc_seed3333_checkpoint_10000.pt",
+    "all_above_baseline": false
+  }
+}

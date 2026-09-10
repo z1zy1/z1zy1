@@ -1,0 +1,46 @@
+{
+  "experiment_name": "card_second_cc_seed1111",
+  "dataset": "second_cc",
+  "run_id": "card_second_cc_seed1111",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-09-04T12:43:36+08:00",
+  "end_time": "2026-09-04T13:02:11+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "paper_balanced_no_spice",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 8438,
+  "val_samples": 1190,
+  "total_parameters": 14956557,
+  "trainable_parameters": 14956557,
+  "device": "cuda:0",
+  "final_epoch": 38,
+  "final_global_step": 10000,
+  "total_training_seconds": 1114.8641176223755,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 0.7226365898169568,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_9000.pt"
+    },
+    "spice": {
+      "score": 0.19628276441324358,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_10000.pt"
+    },
+    "balanced": {
+      "score": 0.6455250673396259,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_9000.pt",
+      "all_above_baseline": false
+    }
+  },
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-09-09T20:06:40+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_9000.pt",
+  "test_prediction_file": "experiments/paired_card_rsaca_recovery_v2/card/card_second_cc_seed1111/test_output/captions/paired_recovery_seeded/sc_results.json"
+}

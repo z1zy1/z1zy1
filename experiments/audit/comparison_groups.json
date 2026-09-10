@@ -1,0 +1,496 @@
+{
+  "generated_at": "2026-09-08T07:44:20.123114+00:00",
+  "groups": [
+    {
+      "eligible_for_verified_main_table": false,
+      "expected_arm_n": 18,
+      "expected_n": 9,
+      "group_id": "strict_paired_whole_gate_v1",
+      "members": [
+        "experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed3333",
+        "experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed3333"
+      ],
+      "missing_runs": [
+        "levir_cc seed 1111",
+        "levir_cc seed 2222",
+        "levir_cc seed 3333",
+        "levir_mci seed 1111",
+        "levir_mci seed 2222",
+        "second_cc seed 1111",
+        "second_cc seed 2222",
+        "second_cc seed 3333"
+      ],
+      "observed_arm_n": 2,
+      "observed_n": 1,
+      "protocol": "strict_paired",
+      "question": "D: same core settings, CARD versus whole-adapter RSACA",
+      "reason": "requires all 9 seed-pairs / 18 validation-selected locked tests and verified common conditions",
+      "statistics": {
+        "levir_cc": {
+          "direction_consistency": {
+            "Bleu_1": null,
+            "Bleu_2": null,
+            "Bleu_3": null,
+            "Bleu_4": null,
+            "CIDEr": null,
+            "METEOR": null,
+            "ROUGE_L": null,
+            "SPICE": null
+          },
+          "expected_seed_n": 3,
+          "observed_seed_n": 0,
+          "paired_delta_mean": {
+            "Bleu_1": null,
+            "Bleu_2": null,
+            "Bleu_3": null,
+            "Bleu_4": null,
+            "CIDEr": null,
+            "METEOR": null,
+            "ROUGE_L": null,
+            "SPICE": null
+          },
+          "paired_delta_sample_std": {
+            "Bleu_1": null,
+            "Bleu_2": null,
+            "Bleu_3": null,
+            "Bleu_4": null,
+            "CIDEr": null,
+            "METEOR": null,
+            "ROUGE_L": null,
+            "SPICE": null
+          }
+        },
+        "levir_mci": {
+          "direction_consistency": {
+            "Bleu_1": 1,
+            "Bleu_2": 1,
+            "Bleu_3": 1,
+            "Bleu_4": 1,
+            "CIDEr": 1,
+            "METEOR": 1,
+            "ROUGE_L": 1,
+            "SPICE": 0
+          },
+          "expected_seed_n": 3,
+          "observed_seed_n": 1,
+          "paired_delta_mean": {
+            "Bleu_1": 0.015516463830492433,
+            "Bleu_2": 0.019841366236859392,
+            "Bleu_3": 0.02151105609155557,
+            "Bleu_4": 0.024005230875729144,
+            "CIDEr": 0.056049151113797935,
+            "METEOR": 0.016665070809691984,
+            "ROUGE_L": 0.020426152400903508,
+            "SPICE": -0.008364896774168407
+          },
+          "paired_delta_sample_std": {
+            "Bleu_1": null,
+            "Bleu_2": null,
+            "Bleu_3": null,
+            "Bleu_4": null,
+            "CIDEr": null,
+            "METEOR": null,
+            "ROUGE_L": null,
+            "SPICE": null
+          }
+        },
+        "second_cc": {
+          "direction_consistency": {
+            "Bleu_1": null,
+            "Bleu_2": null,
+            "Bleu_3": null,
+            "Bleu_4": null,
+            "CIDEr": null,
+            "METEOR": null,
+            "ROUGE_L": null,
+            "SPICE": null
+          },
+          "expected_seed_n": 3,
+          "observed_seed_n": 0,
+          "paired_delta_mean": {
+            "Bleu_1": null,
+            "Bleu_2": null,
+            "Bleu_3": null,
+            "Bleu_4": null,
+            "CIDEr": null,
+            "METEOR": null,
+            "ROUGE_L": null,
+            "SPICE": null
+          },
+          "paired_delta_sample_std": {
+            "Bleu_1": null,
+            "Bleu_2": null,
+            "Bleu_3": null,
+            "Bleu_4": null,
+            "CIDEr": null,
+            "METEOR": null,
+            "ROUGE_L": null,
+            "SPICE": null
+          }
+        }
+      }
+    },
+    {
+      "eligible_for_verified_main_table": false,
+      "expected_n": 9,
+      "group_id": "unified_rsaca_vs_single_audit_card",
+      "members": [
+        "experiments/unified_rsaca/unified_rsaca_levir_cc_seed1111",
+        "experiments/unified_rsaca/unified_rsaca_levir_cc_seed2222",
+        "experiments/unified_rsaca/unified_rsaca_levir_cc_seed3333",
+        "experiments/unified_rsaca/unified_rsaca_levir_mci_seed1111",
+        "experiments/unified_rsaca/unified_rsaca_levir_mci_seed2222",
+        "experiments/unified_rsaca/unified_rsaca_levir_mci_seed3333",
+        "experiments/unified_rsaca/unified_rsaca_second_cc_seed1111",
+        "experiments/unified_rsaca/unified_rsaca_second_cc_seed2222",
+        "experiments/unified_rsaca/unified_rsaca_second_cc_seed3333"
+      ],
+      "missing_runs": [],
+      "observed_n": 9,
+      "protocol": "exploratory_vs_single_audit_baseline",
+      "question": "A: RGB CARD versus RSACA with added semantic input",
+      "reason": "CARD is a single audit baseline, not a seed-matched control; do not report paired gain.",
+      "statistics": {
+        "levir_cc": {
+          "candidate_mean": {
+            "Bleu_1": 0.8225446035876783,
+            "Bleu_2": 0.7212156881192718,
+            "Bleu_3": 0.6320722628206793,
+            "Bleu_4": 0.5541003660939596,
+            "CIDEr": 1.3408781510248158,
+            "METEOR": 0.387279841219268,
+            "ROUGE_L": 0.7419260224709587,
+            "SPICE": 0.34292951574091957
+          },
+          "candidate_sample_std": {
+            "Bleu_1": 0.004212871696479405,
+            "Bleu_2": 0.005194431605851059,
+            "Bleu_3": 0.006626362692682347,
+            "Bleu_4": 0.008962704474146667,
+            "CIDEr": 0.0038993087601852062,
+            "METEOR": 0.003518020160298832,
+            "ROUGE_L": 0.0009934549507940407,
+            "SPICE": 0.008200687670390847
+          },
+          "comparison_label": "exploratory comparison relative to a single audit baseline",
+          "delta_vs_single_audit_baseline": {
+            "Bleu_1": -0.01782537061474787,
+            "Bleu_2": -0.028672923820543428,
+            "Bleu_3": -0.0417260527853176,
+            "Bleu_4": -0.05847925343420379,
+            "CIDEr": -0.0026290875701093785,
+            "METEOR": -0.01524509209299113,
+            "ROUGE_L": 0.00020149685818537932,
+            "SPICE": 0.06116554784452821
+          },
+          "expected_seed_n": 3,
+          "observed_seed_n": 3,
+          "single_audit_baseline": {
+            "Bleu_1": 0.8403699742024262,
+            "Bleu_2": 0.7498886119398153,
+            "Bleu_3": 0.6737983156059969,
+            "Bleu_4": 0.6125796195281634,
+            "CIDEr": 1.3435072385949252,
+            "METEOR": 0.40252493331225914,
+            "ROUGE_L": 0.7417245256127734,
+            "SPICE": 0.28176396789639135
+          }
+        },
+        "levir_mci": {
+          "candidate_mean": {
+            "Bleu_1": 0.837844643604036,
+            "Bleu_2": 0.7391204422797941,
+            "Bleu_3": 0.6520674119145861,
+            "Bleu_4": 0.5762200267303684,
+            "CIDEr": 1.3833193348000838,
+            "METEOR": 0.40077112806443427,
+            "ROUGE_L": 0.7582859963994828,
+            "SPICE": 0.3387957266850337
+          },
+          "candidate_sample_std": {
+            "Bleu_1": 0.005838116363827678,
+            "Bleu_2": 0.010424662380903768,
+            "Bleu_3": 0.01639636443033441,
+            "Bleu_4": 0.023705035037582256,
+            "CIDEr": 0.009677260100445522,
+            "METEOR": 0.0072907261943084,
+            "ROUGE_L": 0.0023333193752607295,
+            "SPICE": 0.020281955107419987
+          },
+          "comparison_label": "exploratory comparison relative to a single audit baseline",
+          "delta_vs_single_audit_baseline": {
+            "Bleu_1": 0.016124447632398953,
+            "Bleu_2": 0.01721615509375185,
+            "Bleu_3": 0.016071058200819666,
+            "Bleu_4": 0.014085867580882594,
+            "CIDEr": 0.04534902089574633,
+            "METEOR": 0.011832084172620605,
+            "ROUGE_L": 0.016306655442070883,
+            "SPICE": 0.009087686413892238
+          },
+          "expected_seed_n": 3,
+          "observed_seed_n": 3,
+          "single_audit_baseline": {
+            "Bleu_1": 0.821720195971637,
+            "Bleu_2": 0.7219042871860423,
+            "Bleu_3": 0.6359963537137664,
+            "Bleu_4": 0.5621341591494858,
+            "CIDEr": 1.3379703139043375,
+            "METEOR": 0.38893904389181366,
+            "ROUGE_L": 0.7419793409574119,
+            "SPICE": 0.3297080402711415
+          }
+        },
+        "second_cc": {
+          "candidate_mean": {
+            "Bleu_1": 0.6520447517383452,
+            "Bleu_2": 0.4922509268689912,
+            "Bleu_3": 0.3827050182082107,
+            "Bleu_4": 0.30654135115550574,
+            "CIDEr": 0.8118070227288229,
+            "METEOR": 0.24780858871077718,
+            "ROUGE_L": 0.5455263077995964,
+            "SPICE": 0.24862140057304483
+          },
+          "candidate_sample_std": {
+            "Bleu_1": 0.011422682712756985,
+            "Bleu_2": 0.01616335490366498,
+            "Bleu_3": 0.01928428497004283,
+            "Bleu_4": 0.020857376936691433,
+            "CIDEr": 0.02785102952455025,
+            "METEOR": 0.00804407236686204,
+            "ROUGE_L": 0.009829221164335433,
+            "SPICE": 0.008262482276776641
+          },
+          "comparison_label": "exploratory comparison relative to a single audit baseline",
+          "delta_vs_single_audit_baseline": {
+            "Bleu_1": 0.021371704501592426,
+            "Bleu_2": 0.017425383785151738,
+            "Bleu_3": 0.01236245801420055,
+            "Bleu_4": 0.011269800123721196,
+            "CIDEr": 0.032936494007209216,
+            "METEOR": 0.011235858589838832,
+            "ROUGE_L": 0.01889720472557488,
+            "SPICE": -0.000525139050129797
+          },
+          "expected_seed_n": 3,
+          "observed_seed_n": 3,
+          "single_audit_baseline": {
+            "Bleu_1": 0.6306730472367528,
+            "Bleu_2": 0.47482554308383945,
+            "Bleu_3": 0.37034256019401013,
+            "Bleu_4": 0.29527155103178454,
+            "CIDEr": 0.7788705287216137,
+            "METEOR": 0.23657273012093835,
+            "ROUGE_L": 0.5266291030740216,
+            "SPICE": 0.24914653962317462
+          }
+        }
+      }
+    },
+    {
+      "eligible_for_verified_main_table": false,
+      "expected_n": 9,
+      "group_id": "whole_gate_retry_vs_single_audit_card",
+      "members": [
+        "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed1111",
+        "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed2222",
+        "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333",
+        "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_mci_seed1111",
+        "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_mci_seed2222",
+        "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_mci_seed3333",
+        "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_second_cc_seed1111",
+        "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_second_cc_seed2222",
+        "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_second_cc_seed3333"
+      ],
+      "missing_runs": [],
+      "observed_n": 9,
+      "protocol": "exploratory_vs_single_audit_baseline",
+      "question": "A: audit baseline versus whole-gate candidate",
+      "reason": "CARD is a single audit baseline, not a seed-matched control; do not report paired gain.",
+      "statistics": {
+        "levir_cc": {
+          "candidate_mean": {
+            "Bleu_1": 0.8322050549376179,
+            "Bleu_2": 0.7379368830867262,
+            "Bleu_3": 0.6587090130330476,
+            "Bleu_4": 0.5926224009923698,
+            "CIDEr": 1.3431170285042813,
+            "METEOR": 0.3982354076283117,
+            "ROUGE_L": 0.7426740211009436,
+            "SPICE": 0.30330466091019204
+          },
+          "candidate_sample_std": {
+            "Bleu_1": 0.00889099280344255,
+            "Bleu_2": 0.01347990581623162,
+            "Bleu_3": 0.01964462845243609,
+            "Bleu_4": 0.02708134496310353,
+            "CIDEr": 0.004998030297506028,
+            "METEOR": 0.0070070319842258635,
+            "ROUGE_L": 0.001998224312404169,
+            "SPICE": 0.026890588539477733
+          },
+          "comparison_label": "exploratory comparison relative to a single audit baseline",
+          "delta_vs_single_audit_baseline": {
+            "Bleu_1": -0.008164919264808335,
+            "Bleu_2": -0.011951728853089039,
+            "Bleu_3": -0.01508930257294927,
+            "Bleu_4": -0.019957218535793575,
+            "CIDEr": -0.00039021009064388323,
+            "METEOR": -0.004289525683947415,
+            "ROUGE_L": 0.0009494954881702489,
+            "SPICE": 0.021540693013800682
+          },
+          "expected_seed_n": 3,
+          "observed_seed_n": 3,
+          "single_audit_baseline": {
+            "Bleu_1": 0.8403699742024262,
+            "Bleu_2": 0.7498886119398153,
+            "Bleu_3": 0.6737983156059969,
+            "Bleu_4": 0.6125796195281634,
+            "CIDEr": 1.3435072385949252,
+            "METEOR": 0.40252493331225914,
+            "ROUGE_L": 0.7417245256127734,
+            "SPICE": 0.28176396789639135
+          }
+        },
+        "levir_mci": {
+          "candidate_mean": {
+            "Bleu_1": 0.8360479271716376,
+            "Bleu_2": 0.7349004787506033,
+            "Bleu_3": 0.6445842601708639,
+            "Bleu_4": 0.5660619711714568,
+            "CIDEr": 1.3742124636108832,
+            "METEOR": 0.3999156788294753,
+            "ROUGE_L": 0.7566792989306402,
+            "SPICE": 0.33855715885006216
+          },
+          "candidate_sample_std": {
+            "Bleu_1": 0.01062506372868783,
+            "Bleu_2": 0.016101915149404837,
+            "Bleu_3": 0.02351368151278186,
+            "Bleu_4": 0.03392404540041262,
+            "CIDEr": 0.00821822378819729,
+            "METEOR": 0.005071889174911181,
+            "ROUGE_L": 0.0050641338713633,
+            "SPICE": 0.035569779822893055
+          },
+          "comparison_label": "exploratory comparison relative to a single audit baseline",
+          "delta_vs_single_audit_baseline": {
+            "Bleu_1": 0.014327731200000526,
+            "Bleu_2": 0.012996191564561,
+            "Bleu_3": 0.008587906457097505,
+            "Bleu_4": 0.003927812021971011,
+            "CIDEr": 0.03624214970654571,
+            "METEOR": 0.010976634937661656,
+            "ROUGE_L": 0.014699957973228317,
+            "SPICE": 0.008849118578920678
+          },
+          "expected_seed_n": 3,
+          "observed_seed_n": 3,
+          "single_audit_baseline": {
+            "Bleu_1": 0.821720195971637,
+            "Bleu_2": 0.7219042871860423,
+            "Bleu_3": 0.6359963537137664,
+            "Bleu_4": 0.5621341591494858,
+            "CIDEr": 1.3379703139043375,
+            "METEOR": 0.38893904389181366,
+            "ROUGE_L": 0.7419793409574119,
+            "SPICE": 0.3297080402711415
+          }
+        },
+        "second_cc": {
+          "candidate_mean": {
+            "Bleu_1": 0.6589318953007278,
+            "Bleu_2": 0.5016993304556768,
+            "Bleu_3": 0.393428978817728,
+            "Bleu_4": 0.3168163996490845,
+            "CIDEr": 0.8324243885700607,
+            "METEOR": 0.25043449912123994,
+            "ROUGE_L": 0.549888640483566,
+            "SPICE": 0.25395549438968446
+          },
+          "candidate_sample_std": {
+            "Bleu_1": 0.0003850078821185568,
+            "Bleu_2": 0.0009798723889397622,
+            "Bleu_3": 0.0015174363305051001,
+            "Bleu_4": 0.003838040267026166,
+            "CIDEr": 0.009346194129543305,
+            "METEOR": 0.002520612267547006,
+            "ROUGE_L": 0.0016134221806242495,
+            "SPICE": 0.00694003720394901
+          },
+          "comparison_label": "exploratory comparison relative to a single audit baseline",
+          "delta_vs_single_audit_baseline": {
+            "Bleu_1": 0.02825884806397505,
+            "Bleu_2": 0.026873787371837377,
+            "Bleu_3": 0.023086418623717853,
+            "Bleu_4": 0.02154484861729994,
+            "CIDEr": 0.05355385984844707,
+            "METEOR": 0.013861769000301588,
+            "ROUGE_L": 0.02325953740954445,
+            "SPICE": 0.004808954766509832
+          },
+          "expected_seed_n": 3,
+          "observed_seed_n": 3,
+          "single_audit_baseline": {
+            "Bleu_1": 0.6306730472367528,
+            "Bleu_2": 0.47482554308383945,
+            "Bleu_3": 0.37034256019401013,
+            "Bleu_4": 0.29527155103178454,
+            "CIDEr": 0.7788705287216137,
+            "METEOR": 0.23657273012093835,
+            "ROUGE_L": 0.5266291030740216,
+            "SPICE": 0.24914653962317462
+          }
+        }
+      }
+    },
+    {
+      "eligible_for_verified_main_table": false,
+      "expected_n": null,
+      "group_id": "second_cc_mci_transfer",
+      "members": [
+        "experiments/levir_cc_mci_init_seed1111",
+        "experiments/levir_cc_mci_init_seed2222",
+        "experiments/levir_cc_mci_init_seed3333",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd05_lr1e4_seed1111",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd05_lr1e4_seed2222",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd05_lr1e4_seed3333",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd05_lr2e4_seed1111",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd05_lr2e4_seed2222",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd05_lr2e4_seed3333",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd07_lr1e4_seed1111",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd07_lr1e4_seed2222",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd07_lr1e4_seed3333",
+        "experiments/second_cc_mci_init_seed1111",
+        "experiments/second_cc_mci_init_seed2222",
+        "experiments/second_cc_mci_init_seed3333",
+        "experiments/second_cc_mci_pd05_locked_lr2e4_seed1111",
+        "experiments/second_cc_mci_pd05_locked_lr2e4_seed2222",
+        "experiments/second_cc_mci_pd05_locked_lr2e4_seed3333"
+      ],
+      "missing_runs": [],
+      "observed_n": 18,
+      "protocol": "transfer_not_ablation",
+      "question": "E: initialization/transfer effect",
+      "reason": "transfer initialization changes the training protocol and cannot establish scratch structural gain."
+    },
+    {
+      "eligible_for_verified_main_table": false,
+      "expected_n": null,
+      "group_id": "second_cc_scratch_protocol_undetermined",
+      "members": [
+        "experiments/mci_transfer_crossattn_matrix/second_cc_scratch_pd05_lr2e4_seed1111",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_scratch_pd05_lr2e4_seed2222",
+        "experiments/mci_transfer_crossattn_matrix/second_cc_scratch_pd05_lr2e4_seed3333"
+      ],
+      "missing_runs": [],
+      "observed_n": 3,
+      "protocol": "protocol_undetermined",
+      "question": "F: scratch runs with no registered matched control",
+      "reason": "scratch naming alone does not establish a matched baseline, fixed selection rule, or comparable scorer protocol."
+    }
+  ],
+  "schema_version": 1
+}

@@ -6,3 +6,15 @@ LEVIR-MCI-dataset/
 SECOND-CC-AUG/
 LEVIR-MCI-dataset.zip
 SECOND-CC-AUG.zip
+
+# Local experiment artifacts are retained on the runner and represented in
+# audit manifests by paths, sizes, and current checksums.
+experiments/**/snapshots/
+experiments/**/test_output/
+experiments/**/eval_sents/
+experiments/**/aborted/
+experiments/**/*.pt
+experiments/**/*.pth
+experiments/**/*.h5
+experiments/**/*.npz
+experiments/**/*.npy

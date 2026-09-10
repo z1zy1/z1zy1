@@ -2,7 +2,7 @@
 
 > 本文档是模型实现、实验设计和论文结论的统一语义来源。修改 CARD/RSACA、数据输入、训练协议、选点策略、测试结果或论文主张后，必须运行 `python scripts/update_experiment_claim_reference.py` 并复核结论。
 
-结果快照时间：`2026-08-15 12:58:18 UTC`
+结果快照时间：`2026-09-02 11:13:48 UTC`
 
 ## 1. 原始论文主张
 
@@ -31,16 +31,29 @@ V1 reliability-gated sparse RSACA 已完成三数据集三 seed 锁定测试，�
 
 V1 whole-adapter 候选已完成独立三数据集三 seed 锁定测试，但总体验收仍为 `acceptance_passed=false`：LEVIR-CC 的 B4/CIDEr 均值仍低于 CARD（-0.0200、-0.0004），而 LEVIR-MCI 与 SECOND-CC 的均值 8/8 指标提升。该结果是候选证据，不能改写统一主张。
 新增待验证候选 `run_reliability_sparse_rsaca_v1_prenorm_changed_global.sh` 使用 `context_pre_norm`、`gamma_max=0.1`、gate bias `-2.5` 和 changed-only global token；其输出目录独立，锁定测试前必须先完成验证集筛选。
-新增待验证 LEVIR-CC V2 候选 `run_reliability_sparse_rsaca_v2_detached_gate.sh` 保留 pre-norm changed-global 核心，仅在 reliability MLP 的视觉/语义摘要输入上使用 detach，以阻断门控对 CARD 特征分支的反向塑形；它显式关闭 confidence、visual gate、fallback 和 warmup。入口在训练前要求所选 Python 的 CUDA 可用；中断目录必须通过 `--reset-incomplete` 归档后才能重训，空验证行或非文件 checkpoint 不得进入选择或测试。该设计尚无验证或锁定结果，不能作为性能增益证据。
+新增待验证 LEVIR-CC V2 候选 `run_reliability_sparse_rsaca_v2_detached_gate.sh` 保留 pre-norm changed-global 核心，仅在 reliability MLP 的视觉/语义摘要输入上使用 detach，以阻断门控对 CARD 特征分支的反向塑形；它显式关闭 confidence、visual gate、fallback 和 warmup。入口在训练前要求所选 Python 的 CUDA 可用；中断目录必须通过 `--reset-incomplete` 归档后才能重训，空验证行或非文件 checkpoint 不得进入选择或测试。当前仅完成 seed 3333/1111 的验证筛选（seed 3333: B4=0.4445, CIDEr=1.2615；seed 1111: B4=0.4411, CIDEr=1.2434），尚未运行测试。历史 V1 运行与该筛选不构成严格配对，不能将任何差异归因于 detach；必须先与 `run_reliability_sparse_rsaca_v2_paired_control.sh` 在相同环境下比较。该结果不构成性能增益或论文证据。
 本次 V1 实现还支持可选的 `data.semantic_diff_confidence_root`：置信度会对变化位置的 K/V 和 changed-mean global token 加权；视觉一致性门控、低置信度 visual fallback 与 fusion warmup 默认关闭，仅由 V1 候选显式开启。当前 `pseudo_masks` 是二值外部模型输出，尚未提供可验证的逐像素概率，因此不能把该置信度路径或 fallback 设计宣称为已验证的性能增益。
 V1 的验证选点新增 `paper_balanced_no_spice`，只在验证集上按 CIDEr、BLEU-4、METEOR、ROUGE-L 加权，暂时忽略 SPICE；这只是选择协议调整，不能替代三数据集多 seed 锁定测试。
-LEVIR-CC 掩码重生成入口为 `scripts/generate_levir_ensemble_masks.sh`：ChangeFormerV6 与 BIT 的概率图通过一致性规则融合，并同时输出 confidence/uncertainty；替换前保留旧 `pseudo_masks` 备份。由于当前环境尚无两模型完整推理结果，该输入替换不能写成已验证的性能增益。
+LEVIR-CC 掩码重生成入口为 `scripts/generate_levir_ensemble_masks_direct.sh`：ChangeFormerV6 与 BIT 的概率图以 8-bit PNG 流程处理，通过一致性规则融合，并同时输出 confidence/uncertainty；该入口会在推理前删除旧 `pseudo_*` 目录以控制磁盘占用，成功后安装新结果。新掩码三 seed 锁定矩阵已经完成但未达到 CARD 验收，因此该输入替换不能写成已验证的性能增益。
+为隔离新 LEVIR-CC 掩码本身的影响，可运行 `scripts/run_levir_cc_new_masks_matched_control.sh`：保留数据集作用域隔离，但关闭 confidence、visual gate、visual fallback 和 fusion warmup，并恢复 `paper_balanced` 验证选点。该入口要求 CUDA，且在受限容器中默认 `NUM_WORKERS=0`；该对照尚无结果，不能据此预判掩码优劣。
+
+新掩码候选 `reliability_sparse_rsaca_v1_new_masks_20260821` 已完成三数据集三 seed 验证选点和锁定测试，且 `selection_uses_test_metrics=false`；但 `acceptance_passed=false`，不能支持“稳定超过 CARD”的主张。
+levir_cc：均值 1/8 指标高于 CARD，seed 全指标通过 0/3；忽略 SPICE 后仍仅 0/7 指标提升；B4/CIDEr/SPICE delta=-0.0642/-0.0556/+0.0196。
+levir_mci：均值 1/8 指标高于 CARD，seed 全指标通过 0/3；忽略 SPICE 后仍仅 1/7 指标提升；B4/CIDEr/SPICE delta=+0.0066/-0.0416/-0.0204。
+second_cc：均值 0/8 指标高于 CARD，seed 全指标通过 0/3；忽略 SPICE 后仍仅 0/7 指标提升；B4/CIDEr/SPICE delta=-0.0532/-0.1155/-0.0342。
+该候选使用 LEVIR-CC ChangeFormer+BIT 共识二值掩码及 agreement-aware confidence；LEVIR-MCI/SECOND-CC 语义输入保持原协议。新掩码输入变化尚未带来主张支持证据。
+
+新 LEVIR-CC 掩码匹配对照 `reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826` 已完成三 seed 验证选点和锁定测试，且 `selection_uses_test_metrics=false`；均值仅 2/8 指标高于 CARD，忽略 SPICE 后仅 1/7，seed 全指标通过 0/3，不能证明新掩码优于 CARD。
+相对旧 LEVIR-CC pre-norm changed-global 结果，B4/CIDEr/SPICE 均值变化为 -0.0210/-0.0090/+0.0205；新掩码在该条件下未带来整体提升。
+该对照关闭 confidence、visual gate、fallback 和 warmup，并恢复 `paper_balanced`；但新运行 `num_workers=0`、旧运行 `num_workers=8`，且两次提交不同，故它是反对“新掩码更好”的直接证据，但不能把全部差异严格归因于掩码本身。
+
+严格配对的 `3 datasets x 2 models x 3 seeds` 主实验矩阵已锁定但尚未完成：当前只有 1/9 个 seed-pair（2/18 个 arm）同时具备验证选择和锁定测试记录。因此没有生成正式 `summary.json`，不得把该矩阵写成已完成或用于主表。已完成 pair：levir_mci seed 3333。入口 `scripts/run_paired_card_rsaca_matrix.sh` 会将 CARD 与 whole-adapter RSACA 固定在同一 Git commit、源码摘要、Python/CUDA/worker 设置、训练日程和验证选点协议下，仅允许语义融合臂不同；汇总器拒绝缺失、测试选点或协议不一致的结果。
 
 主实验必须从 scratch 分别训练 CARD 与 RSACA，避免用 MCI 初始化混淆结构增益。固定 3 个 seed（1111、2222、3333），形成 `3 datasets x 2 models x 3 seeds = 18` 次主实验。MCI-transfer 结果只能作为独立迁移实验。
 
 验收标准：每个数据集的主要指标均值不低于 CARD；至少 BLEU-4、CIDEr、SPICE 的方向一致；报告每 seed、均值、样本标准差；checkpoint 只能根据验证集选择，测试集仅运行一次锁定评估。
 
-完整统一实验入口：`bash scripts/run_unified_rsaca_experiments.sh --stage all`。
+历史 RSACA-only 入口：`bash scripts/run_unified_rsaca_experiments.sh --stage all`。严格主实验入口：`bash scripts/run_paired_card_rsaca_matrix.sh --stage all`。
 
 ## 4. 审计 CARD 基线
 
@@ -136,3 +149,6 @@ python scripts/update_experiment_claim_reference.py
 - `experiments/7_6_locked_test_summary.json`：LEVIR-CC、LEVIR-MCI 和旧 SECOND-CC 锁定结果。
 - `experiments/second_cc_current_mci_test_summary.json`：SECOND-CC 的 MCI-transfer 三 seed 结果，只能作为迁移证据。
 - `experiments/unified_rsaca/summary.json`：统一 RSACA scratch 三 seed 矩阵结果；存在时作为当前统一结论的直接依据。
+- `experiments/paired_card_rsaca_whole_gate_v1/summary.json`：严格 CARD/whole-adapter RSACA 配对 `3 x 2 x 3` 矩阵；存在时优先用于主结论。
+- `experiments/reliability_sparse_rsaca_v1_new_masks_20260821/summary.json`：新 LEVIR-CC 共识掩码候选的三数据集三 seed 锁定汇总，仅作为候选负结果证据。
+- `experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/summary.json`：新 LEVIR-CC 掩码匹配对照的三 seed 锁定汇总，仅作为掩码效果的受限负结果证据。

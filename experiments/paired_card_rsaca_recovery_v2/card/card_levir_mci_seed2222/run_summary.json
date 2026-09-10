@@ -1,0 +1,46 @@
+{
+  "experiment_name": "card_levir_mci_seed2222",
+  "dataset": "levir_mci",
+  "run_id": "card_levir_mci_seed2222",
+  "seed": 2222,
+  "status": "completed",
+  "start_time": "2026-09-02T22:21:58+08:00",
+  "end_time": "2026-09-02T22:58:46+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "paper_balanced_no_spice",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 14878509,
+  "trainable_parameters": 14878509,
+  "device": "cuda:0",
+  "final_epoch": 47,
+  "final_global_step": 10000,
+  "total_training_seconds": 2207.6534044742584,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 1.249566056955455,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_10000.pt"
+    },
+    "spice": {
+      "score": 0.2658220189606688,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_5000.pt"
+    },
+    "balanced": {
+      "score": 1.0114477753417124,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_10000.pt",
+      "all_above_baseline": true
+    }
+  },
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-09-09T20:27:20+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_10000.pt",
+  "test_prediction_file": "experiments/paired_card_rsaca_recovery_v2/card/card_levir_mci_seed2222/test_output/captions/paired_recovery_seeded/sc_results.json"
+}

@@ -1,0 +1,14 @@
+timestamp=2026-09-02T21:37:57+08:00
+platform=Linux-5.15.0-94-generic-x86_64-with-glibc2.17
+python_version=3.8.20
+python_executable=/root/miniconda3/envs/card/bin/python
+cwd=/root/autodl-tmp/z1zy1
+pip_freeze=["certifi==2026.2.25", "charset-normalizer==3.4.7", "clip @ git+https://github.com/openai/CLIP.git@a1d071733d7111c9c014f024669f959182114e33", "contourpy==1.1.1", "cycler==0.12.1", "einops==0.3.2", "filelock==3.16.1", "fonttools==4.57.0", "fsspec==2025.3.0", "ftfy==6.2.3", "h5py==3.11.0", "hf-xet==1.6.0", "huggingface_hub==0.36.2", "idna==3.11", "imageio==2.35.1", "importlib_resources==6.4.5", "jsonpatch==1.33", "jsonpointer==3.0.0", "kiwisolver==1.4.7", "lazy_loader==0.4", "matplotlib==3.7.5", "networkx==3.1", "numpy==1.24.4", "opencv-python==4.13.0.92", "packaging==26.1", "pandas==2.0.3", "pillow==10.4.0", "pycocoevalcap==1.2", "pycocotools==2.0.7", "pyparsing==3.1.4", "python-dateutil==2.9.0.post0", "pytz==2026.2", "PyWavelets==1.4.1", "PyYAML==6.0.3", "regex==2024.11.6", "requests==2.32.4", "safetensors==0.5.3", "scikit-image==0.21.0", "scipy==1.10.1", "six==1.17.0", "tifffile==2023.7.10", "timm==0.4.12", "torch==1.8.0+cu111", "torchaudio==0.8.0", "torchvision==0.9.0+cu111", "tornado==6.4.2", "tqdm==4.67.3", "typing_extensions==4.13.2", "tzdata==2026.2", "urllib3==2.2.3", "utils==1.0.2", "visdom==0.2.4", "wcwidth==0.2.14", "websocket-client==1.8.0", "zipp==3.20.2"]
+torch_available=True
+torch_version=1.8.0+cu111
+cuda_available=True
+cuda_version=11.1
+cudnn_version=8005
+gpu_count=1
+gpus=["NVIDIA GeForce RTX 4090 D"]
+torchvision_version=0.9.0+cu111

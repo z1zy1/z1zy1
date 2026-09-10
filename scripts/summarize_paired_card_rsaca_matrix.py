@@ -14,6 +14,10 @@ ALLOWED_ARM_DIFFERENCE_PREFIXES = (
     'data.allow_missing_pseudo_mask', 'data.semantic_', 'data.use_semantic_maps',
     'model.num_semantic_classes', 'model.semantic_', 'train.semantic_',
     'train.use_semantic_cross_attention', 'train.use_semantic_partial_detach',
+    # Older resolved configs also persist this equivalent partial-detach flag.
+    # It is an RSACA-only arm switch, so allow exactly this key rather than
+    # widening the comparison to arbitrary train.use_* differences.
+    'train.use_partial_detach',
 )
 IGNORED_CONFIG_PATHS = {'exp_dir', 'exp_name'}
 
@@ -155,7 +159,7 @@ def main():
         deltas = {metric: rsaca_means[metric] - card_means[metric] for metric in METRICS}
         delta_std = {
             metric: statistics.stdev(row['delta_rsaca_minus_card'][metric] for row in paired_rows)
-            if len(paired_rows) > 1 else 0.0
+            if len(paired_rows) > 1 else None
             for metric in METRICS
         }
         payload['datasets'][dataset] = {

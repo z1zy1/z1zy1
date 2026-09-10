@@ -1,0 +1,15 @@
+{
+  "cider": {
+    "score": 1.2686344767475142,
+    "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_10000.pt"
+  },
+  "spice": {
+    "score": 0.2658000348071927,
+    "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_9000.pt"
+  },
+  "balanced": {
+    "score": 1.0213673180894811,
+    "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_8000.pt",
+    "all_above_baseline": true
+  }
+}

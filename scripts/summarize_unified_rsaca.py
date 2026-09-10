@@ -81,7 +81,7 @@ def main():
             csv_rows.append(row)
         mean = {metric: statistics.mean(row[metric] for row in rows) for metric in METRICS}
         sample_std = {
-            metric: statistics.stdev(row[metric] for row in rows) if len(rows) > 1 else 0.0
+            metric: statistics.stdev(row[metric] for row in rows) if len(rows) > 1 else None
             for metric in METRICS
         }
         delta = {metric: mean[metric] - baselines[dataset][metric] for metric in METRICS}

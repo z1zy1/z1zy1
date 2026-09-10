@@ -1,0 +1,38 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/card/card_second_cc_seed1111/snapshots/card_second_cc_seed1111_checkpoint_9000.pt",
+  "result_json": "experiments/paired_card_rsaca_recovery_v2/card/card_second_cc_seed1111/test_output/captions/paired_recovery_seeded/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.6295769248338503,
+    "Bleu_2": 0.47114282137137664,
+    "Bleu_3": 0.3629824306869884,
+    "Bleu_4": 0.2859643938588912,
+    "METEOR": 0.23448633691505077,
+    "ROUGE_L": 0.528527328022523,
+    "CIDEr": 0.7743318418463642,
+    "SPICE": 0.2490005627081737
+  },
+  "aux_metrics": {},
+  "baseline_name": "test",
+  "num_images": 1227,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.19842307516614965,
+    "Bleu_2": -0.25685717862862334,
+    "Bleu_3": -0.27801756931301164,
+    "Bleu_4": -0.2790356061411087,
+    "METEOR": -0.15651366308494924,
+    "ROUGE_L": -0.217472671977477,
+    "CIDEr": -0.5736681581536359,
+    "SPICE": -0.08699943729182633
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false
+}

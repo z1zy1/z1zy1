@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_9000.pt",
+  "result_json": "./experiments/second_cc_7_6_stable_locked/test_output/captions/7_6_locked/sc_results.json",
+  "group": "change",
+  "num_images": 886,
+  "metrics": {
+    "Bleu_1": 0.5915053664800851,
+    "Bleu_2": 0.402427446522043,
+    "Bleu_3": 0.2776087148197722,
+    "Bleu_4": 0.19464120273481725,
+    "METEOR": 0.1906390314705099,
+    "ROUGE_L": 0.3917589103191628,
+    "CIDEr": 0.36211428729256306,
+    "SPICE": 0.15792040698215246
+  },
+  "note": ""
+}

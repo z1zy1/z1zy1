@@ -1,0 +1,23 @@
+{
+  "status": "passed",
+  "datasets": [
+    {
+      "dataset": "levir_cc",
+      "root": "/root/autodl-tmp/z1zy1/Levir-CC",
+      "checked": 10077,
+      "missing": []
+    },
+    {
+      "dataset": "levir_mci",
+      "root": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset",
+      "checked": 10077,
+      "missing": []
+    },
+    {
+      "dataset": "second_cc",
+      "root": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG",
+      "checked": 10855,
+      "missing": []
+    }
+  ]
+}

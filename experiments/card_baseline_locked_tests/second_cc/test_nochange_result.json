@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt",
+  "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/second_cc/test_output/captions/card_baseline_locked/sc_results.json",
+  "group": "nochange",
+  "num_images": 341,
+  "metrics": {
+    "Bleu_1": 0.806480248557121,
+    "Bleu_2": 0.7706447980716482,
+    "Bleu_3": 0.7470837268619631,
+    "Bleu_4": 0.7227692206102783,
+    "METEOR": 0.5878839330318649,
+    "ROUGE_L": 0.9023628747725765,
+    "CIDEr": 0.0,
+    "SPICE": 0.47699445390061224
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

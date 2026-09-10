@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333/snapshots/levir_mci_masksemantic_repro_seed3333_checkpoint_10000.pt",
+  "result_json": "./experiments/levir_mci_masksemantic_repro_seed3333_7_6_val_locked/test_output/captions/7_6_locked/sc_results.json",
+  "group": "change",
+  "num_images": 964,
+  "metrics": {
+    "Bleu_1": 0.7553939634023165,
+    "Bleu_2": 0.606918381007067,
+    "Bleu_3": 0.4788393352580157,
+    "Bleu_4": 0.3762288107142536,
+    "METEOR": 0.28285999658448185,
+    "ROUGE_L": 0.5299485063234872,
+    "CIDEr": 0.635766551104257,
+    "SPICE": 0.2249705183685345
+  },
+  "note": ""
+}

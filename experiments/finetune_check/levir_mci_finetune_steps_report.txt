@@ -3,52 +3,57 @@ experiments: 2
 
 [per experiment]
 
-- exp_dir: experiments\levir_mci_short_caption_ft_500_lr01
-  exists: False
-  config_hash: {}
+- exp_dir: experiments/levir_mci_short_caption_ft_500_lr01
+  exists: True
+  config_hash: {"comparable_config_hash": "33a383e3228e64982231086db692921e504165ff2bf000bcce37e43967116559", "full_config_hash": "ae83a2e77030d1ba0753d07b91cd9a78606903a8cade668ed6e11ad19e9a99be"}
   init_checkpoint: 
   finetune_steps: 
-  max_iter: 
+  max_iter: 10000
   total_steps: 
   max_epochs: 
   save_interval: 
   eval_interval: 
-  snapshot_interval: 
-  train_log_last_step: None
-  actual_step_count: None
-  checkpoint_count: 0
-  checkpoints: <none>
-  selected_best_checkpoint: <none>
-  val_metrics_file: <none>
-  val_metrics_checkpoints: <none>
+  snapshot_interval: 1000
+  train_log_last_step: 10000
+  actual_step_count: 10000
+  checkpoint_count: 5
+  checkpoints: levir_mci_short_caption_ft_500_lr01_checkpoint_250.pt, levir_mci_short_caption_ft_500_lr01_checkpoint_500.pt, best_balanced.pth, best_cider.pth, best_spice.pth
+  selected_best_checkpoint: experiments/levir_mci_short_caption_ft_500_lr01/snapshots/levir_mci_short_caption_ft_500_lr01_checkpoint_250.pt
+  val_metrics_file: ./experiments/levir_mci_short_caption_ft_500_lr01/val_metrics.csv
+  val_metrics_checkpoints: levir_mci_short_caption_ft_500_lr01_checkpoint_250.pt, levir_mci_short_caption_ft_500_lr01_checkpoint_500.pt
 
-- exp_dir: experiments\levir_mci_short_caption_ft_1000_lr01
-  exists: False
-  config_hash: {}
+- exp_dir: experiments/levir_mci_short_caption_ft_1000_lr01
+  exists: True
+  config_hash: {"comparable_config_hash": "33a383e3228e64982231086db692921e504165ff2bf000bcce37e43967116559", "full_config_hash": "94aeec25799ebda97005282e97068c83b328d90e0905d3f88c7fc55551f85e69"}
   init_checkpoint: 
   finetune_steps: 
-  max_iter: 
+  max_iter: 10000
   total_steps: 
   max_epochs: 
   save_interval: 
   eval_interval: 
-  snapshot_interval: 
-  train_log_last_step: None
-  actual_step_count: None
-  checkpoint_count: 0
-  checkpoints: <none>
-  selected_best_checkpoint: <none>
-  val_metrics_file: <none>
-  val_metrics_checkpoints: <none>
+  snapshot_interval: 1000
+  train_log_last_step: 10000
+  actual_step_count: 10000
+  checkpoint_count: 7
+  checkpoints: levir_mci_short_caption_ft_1000_lr01_checkpoint_250.pt, levir_mci_short_caption_ft_1000_lr01_checkpoint_500.pt, levir_mci_short_caption_ft_1000_lr01_checkpoint_750.pt, levir_mci_short_caption_ft_1000_lr01_checkpoint_1000.pt, best_balanced.pth, best_cider.pth, best_spice.pth
+  selected_best_checkpoint: experiments/levir_mci_short_caption_ft_1000_lr01/snapshots/levir_mci_short_caption_ft_1000_lr01_checkpoint_250.pt
+  val_metrics_file: ./experiments/levir_mci_short_caption_ft_1000_lr01/val_metrics.csv
+  val_metrics_checkpoints: levir_mci_short_caption_ft_1000_lr01_checkpoint_250.pt, levir_mci_short_caption_ft_1000_lr01_checkpoint_500.pt, levir_mci_short_caption_ft_1000_lr01_checkpoint_750.pt, levir_mci_short_caption_ft_1000_lr01_checkpoint_1000.pt
 
 [same selected checkpoint]
 - none
 
 [resolved config diff]
-- no resolved_config differences found, or configs are missing
+columns: key | levir_mci_short_caption_ft_500_lr01 | levir_mci_short_caption_ft_1000_lr01
+- exp_name | levir_mci_short_caption_ft_500_lr01 | levir_mci_short_caption_ft_1000_lr01
 
 [diagnosis]
-- levir_mci_short_caption_ft_500_lr01: no saved checkpoint files found in this workspace.
-- levir_mci_short_caption_ft_500_lr01: no val_metrics/eval_snapshots rows found in this workspace.
-- levir_mci_short_caption_ft_1000_lr01: no saved checkpoint files found in this workspace.
-- levir_mci_short_caption_ft_1000_lr01: no val_metrics/eval_snapshots rows found in this workspace.
+- levir_mci_short_caption_ft_500_lr01: resolved config has no explicit train.finetune_steps; training length is controlled by train.max_iter=10000.
+- levir_mci_short_caption_ft_500_lr01: saved checkpoint steps=250,500.
+- levir_mci_short_caption_ft_500_lr01: validation metric steps=250,500.
+- levir_mci_short_caption_ft_500_lr01: selected an earlier evaluated checkpoint (250) even though later val checkpoints exist; this indicates checkpoint selection, not necessarily an ignored step limit.
+- levir_mci_short_caption_ft_1000_lr01: resolved config has no explicit train.finetune_steps; training length is controlled by train.max_iter=10000.
+- levir_mci_short_caption_ft_1000_lr01: saved checkpoint steps=250,500,750,1000.
+- levir_mci_short_caption_ft_1000_lr01: validation metric steps=250,500,750,1000.
+- levir_mci_short_caption_ft_1000_lr01: selected an earlier evaluated checkpoint (250) even though later val checkpoints exist; this indicates checkpoint selection, not necessarily an ignored step limit.

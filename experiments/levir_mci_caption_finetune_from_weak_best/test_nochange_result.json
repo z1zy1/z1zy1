@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/levir_mci_caption_finetune_from_weak_best/snapshots/levir_mci_caption_finetune_from_weak_best_checkpoint_1000.pt",
+  "result_json": "./experiments/levir_mci_caption_finetune_from_weak_best/test_output/captions/paper_best/sc_results.json",
+  "group": "nochange",
+  "num_images": 965,
+  "metrics": {
+    "Bleu_1": 0.9182365507863821,
+    "Bleu_2": 0.9008757642651682,
+    "Bleu_3": 0.8862544162775012,
+    "Bleu_4": 0.8696421416586412,
+    "METEOR": 0.665744801024115,
+    "ROUGE_L": 0.955139979897111,
+    "CIDEr": 0.0,
+    "SPICE": 0.47236992426111596
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

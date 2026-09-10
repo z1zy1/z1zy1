@@ -1,0 +1,220 @@
+{
+  "exp_dir": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222",
+  "csv": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/val_metrics.csv",
+  "selection_metric": "paper_balanced",
+  "allow_negative_ablation": false,
+  "best_snapshot": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_10000.pt",
+  "copy_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/best_for_paper.pth",
+  "best": {
+    "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_10000.pt",
+    "paper_score": 1.0232360551598025,
+    "caption_score": 1.0232360551598025,
+    "aux_tiebreak": 0.0,
+    "negative_ablation": false,
+    "all_above_baseline": false,
+    "metrics": {
+      "Bleu_1": 0.7475024485797505,
+      "Bleu_2": 0.6297724432446907,
+      "Bleu_3": 0.5339141101015237,
+      "Bleu_4": 0.4517118785115126,
+      "METEOR": 0.34767057717892524,
+      "ROUGE_L": 0.7082308296230443,
+      "CIDEr": 1.2735776970606953,
+      "SPICE": 0.2603197318077013
+    },
+    "aux_metrics": {}
+  },
+  "top_candidates": [
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_10000.pt",
+      "paper_score": 1.0232360551598025,
+      "caption_score": 1.0232360551598025,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7475024485797505,
+        "Bleu_2": 0.6297724432446907,
+        "Bleu_3": 0.5339141101015237,
+        "Bleu_4": 0.4517118785115126,
+        "METEOR": 0.34767057717892524,
+        "ROUGE_L": 0.7082308296230443,
+        "CIDEr": 1.2735776970606953,
+        "SPICE": 0.2603197318077013
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_7000.pt",
+      "paper_score": 1.0123093949043158,
+      "caption_score": 1.0123093949043158,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7411414392058817,
+        "Bleu_2": 0.6197865940945637,
+        "Bleu_3": 0.5218252157794658,
+        "Bleu_4": 0.4368632229269498,
+        "METEOR": 0.3405849546895567,
+        "ROUGE_L": 0.7000456143239008,
+        "CIDEr": 1.260067159884729,
+        "SPICE": 0.26395201694587467
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_8000.pt",
+      "paper_score": 1.0080379207363785,
+      "caption_score": 1.0080379207363785,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7359165136727475,
+        "Bleu_2": 0.6162077778366805,
+        "Bleu_3": 0.5176112755044321,
+        "Bleu_4": 0.43409971451896295,
+        "METEOR": 0.3437217398443104,
+        "ROUGE_L": 0.6981748359915954,
+        "CIDEr": 1.245542957382295,
+        "SPICE": 0.26333760572523857
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_9000.pt",
+      "paper_score": 1.0063525486661569,
+      "caption_score": 1.0063525486661569,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7389767259156693,
+        "Bleu_2": 0.6175992963446999,
+        "Bleu_3": 0.516281115803991,
+        "Bleu_4": 0.4283581574113392,
+        "METEOR": 0.3409234681213823,
+        "ROUGE_L": 0.6978858654516215,
+        "CIDEr": 1.2496226694956123,
+        "SPICE": 0.2646189705068518
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_4000.pt",
+      "paper_score": 0.9805419109849807,
+      "caption_score": 0.9805419109849807,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7131583951320866,
+        "Bleu_2": 0.5907040564258723,
+        "Bleu_3": 0.4908342163221747,
+        "Bleu_4": 0.4058717047491206,
+        "METEOR": 0.3346612720557537,
+        "ROUGE_L": 0.6828516671270002,
+        "CIDEr": 1.198817138725626,
+        "SPICE": 0.26650510449566084
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_6000.pt",
+      "paper_score": 0.9789651444063421,
+      "caption_score": 0.9789651444063421,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7199809705042131,
+        "Bleu_2": 0.5964182182868601,
+        "Bleu_3": 0.4933563616000161,
+        "Bleu_4": 0.40728726552164984,
+        "METEOR": 0.3369563458954077,
+        "ROUGE_L": 0.6949394640910119,
+        "CIDEr": 1.2336114279887611,
+        "SPICE": 0.2524568506747948
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_5000.pt",
+      "paper_score": 0.9712021077796079,
+      "caption_score": 0.9712021077796079,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7203746177369342,
+        "Bleu_2": 0.5964970505828028,
+        "Bleu_3": 0.4985641484295936,
+        "Bleu_4": 0.41789405858982914,
+        "METEOR": 0.33319521235224453,
+        "ROUGE_L": 0.6814207473999269,
+        "CIDEr": 1.1841873347854701,
+        "SPICE": 0.25564968141439903
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_3000.pt",
+      "paper_score": 0.9624199515936834,
+      "caption_score": 0.9624199515936834,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7116104868913156,
+        "Bleu_2": 0.5895157547487612,
+        "Bleu_3": 0.4910166503849845,
+        "Bleu_4": 0.4100343245740439,
+        "METEOR": 0.32616391651208415,
+        "ROUGE_L": 0.6749293449683371,
+        "CIDEr": 1.173340248851913,
+        "SPICE": 0.25722949381118454
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_2000.pt",
+      "paper_score": 0.9476520843281033,
+      "caption_score": 0.9476520843281033,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7046263345195013,
+        "Bleu_2": 0.5779966002655906,
+        "Bleu_3": 0.48012228812129176,
+        "Bleu_4": 0.397540631527964,
+        "METEOR": 0.3170340732950808,
+        "ROUGE_L": 0.6693426293759774,
+        "CIDEr": 1.186322697550234,
+        "SPICE": 0.24955125541387524
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_1000.pt",
+      "paper_score": 0.8803459824277264,
+      "caption_score": 0.8803459824277264,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6683821465331086,
+        "Bleu_2": 0.5373511254303681,
+        "Bleu_3": 0.4375503788249232,
+        "Bleu_4": 0.35735488899473516,
+        "METEOR": 0.30324578730040125,
+        "ROUGE_L": 0.6461184663865277,
+        "CIDEr": 1.0931041439719815,
+        "SPICE": 0.23210788026267754
+      },
+      "aux_metrics": {}
+    }
+  ],
+  "negative_ablation_policy": "hard_gate/reweight experiments are excluded unless --allow_negative_ablation is set."
+}

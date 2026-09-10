@@ -1,0 +1,42 @@
+{
+  "experiment_name": "rsaca_levir_mci_seed2222",
+  "dataset": "levir_mci",
+  "run_id": "rsaca_levir_mci_seed2222",
+  "seed": 2222,
+  "status": "completed",
+  "start_time": "2026-09-02T22:59:24+08:00",
+  "end_time": "2026-09-02T23:59:49+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "paper_balanced_no_spice",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 17256239,
+  "trainable_parameters": 17256239,
+  "device": "cuda:0",
+  "final_epoch": 47,
+  "final_global_step": 10000,
+  "total_training_seconds": 3625.0768389701843,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 1.2686344767475142,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_10000.pt"
+    },
+    "spice": {
+      "score": 0.2658000348071927,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_9000.pt"
+    },
+    "balanced": {
+      "score": 1.0213673180894811,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed2222/snapshots/rsaca_levir_mci_seed2222_checkpoint_8000.pt",
+      "all_above_baseline": true
+    }
+  }
+}

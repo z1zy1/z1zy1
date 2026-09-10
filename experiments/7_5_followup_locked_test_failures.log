@@ -1,2 +1,16 @@
 
 [2026-07-13 08:48:25] run_7_5_followup_test_locked start dry_run=1
+
+[2026-07-16 21:45:27] run_7_5_followup_test_locked start dry_run=1
+FAILED: levir_cc - source resolved config missing: /root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/resolved_config.json
+FAILED: levir_mci - source resolved config missing: /root/autodl-tmp/z1zy1/experiments/levir_mci_card_mask_semantic/resolved_config.json
+FAILED: second_cc - source resolved config missing: /root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/resolved_config.json
+
+[2026-07-16 21:49:41] run_7_5_followup_test_locked start dry_run=0
+FAILED: levir_cc - source resolved config missing: /root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/resolved_config.json
+FAILED: levir_mci - source resolved config missing: /root/autodl-tmp/z1zy1/experiments/levir_mci_card_mask_semantic/resolved_config.json
+FAILED: second_cc - source resolved config missing: /root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/resolved_config.json
+
+[2026-07-16 22:34:01] run_7_5_followup_test_locked start dry_run=1
+
+[2026-07-16 22:36:18] run_7_5_followup_test_locked start dry_run=0

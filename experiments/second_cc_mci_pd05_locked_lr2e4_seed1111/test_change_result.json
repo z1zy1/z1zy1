@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd05_lr2e4_seed1111/snapshots/second_cc_mci_pd05_lr2e4_seed1111_checkpoint_10000.pt",
+  "result_json": "./experiments/second_cc_mci_pd05_locked_lr2e4_seed1111/test_output/captions/optimized_locked/sc_results.json",
+  "group": "change",
+  "num_images": 886,
+  "metrics": {
+    "Bleu_1": 0.5918931454513436,
+    "Bleu_2": 0.40429533490567576,
+    "Bleu_3": 0.27773609114437176,
+    "Bleu_4": 0.19187891902423057,
+    "METEOR": 0.1955335141794485,
+    "ROUGE_L": 0.3899076992765822,
+    "CIDEr": 0.363892253109515,
+    "SPICE": 0.16551338817839478
+  },
+  "note": ""
+}

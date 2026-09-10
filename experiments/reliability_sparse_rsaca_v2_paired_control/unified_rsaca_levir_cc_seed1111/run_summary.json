@@ -1,0 +1,42 @@
+{
+  "experiment_name": "unified_rsaca_levir_cc_seed1111",
+  "dataset": "levir_cc",
+  "run_id": "unified_rsaca_levir_cc_seed1111",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-09-01T16:58:31+08:00",
+  "end_time": "2026-09-01T17:22:33+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "paper_balanced_no_spice",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 17256239,
+  "trainable_parameters": 17256239,
+  "device": "cuda:0",
+  "final_epoch": 47,
+  "final_global_step": 10000,
+  "total_training_seconds": 1441.711546421051,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 1.253333352177652,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v2_paired_control/unified_rsaca_levir_cc_seed1111/snapshots/unified_rsaca_levir_cc_seed1111_checkpoint_10000.pt"
+    },
+    "spice": {
+      "score": 0.26793066027130397,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v2_paired_control/unified_rsaca_levir_cc_seed1111/snapshots/unified_rsaca_levir_cc_seed1111_checkpoint_10000.pt"
+    },
+    "balanced": {
+      "score": 1.0215947408070547,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v2_paired_control/unified_rsaca_levir_cc_seed1111/snapshots/unified_rsaca_levir_cc_seed1111_checkpoint_10000.pt",
+      "all_above_baseline": true
+    }
+  }
+}

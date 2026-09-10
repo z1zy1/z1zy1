@@ -1,0 +1,105 @@
+{
+  "status": "done",
+  "selection_uses_test_metrics": false,
+  "model": "CARD + Residual Semantic Cross-Attention Adapter (RSACA)",
+  "run_root": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826",
+  "baseline": "/root/autodl-tmp/z1zy1/experiments/card_baseline_test_summary.json",
+  "datasets": {
+    "levir_cc": {
+      "baseline": {
+        "Bleu_1": 0.8403699742024262,
+        "Bleu_2": 0.7498886119398153,
+        "Bleu_3": 0.6737983156059969,
+        "Bleu_4": 0.6125796195281634,
+        "METEOR": 0.40252493331225914,
+        "ROUGE_L": 0.7417245256127734,
+        "CIDEr": 1.3435072385949252,
+        "SPICE": 0.28176396789639135
+      },
+      "seed_results": [
+        {
+          "dataset": "levir_cc",
+          "seed": 1111,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/unified_rsaca_levir_cc_seed1111/snapshots/unified_rsaca_levir_cc_seed1111_checkpoint_9000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/unified_rsaca_levir_cc_seed1111/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/unified_rsaca_levir_cc_seed1111/test_unified_locked_result.json",
+          "Bleu_1": 0.8331103678929208,
+          "Bleu_2": 0.7338943781058346,
+          "Bleu_3": 0.6493997567295264,
+          "Bleu_4": 0.5784124403279796,
+          "METEOR": 0.39134955460919046,
+          "ROUGE_L": 0.7435035349828871,
+          "CIDEr": 1.3350253828793934,
+          "SPICE": 0.3208703534345233,
+          "all_metrics_strictly_above_baseline": false
+        },
+        {
+          "dataset": "levir_cc",
+          "seed": 2222,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_9000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/unified_rsaca_levir_cc_seed2222/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/unified_rsaca_levir_cc_seed2222/test_unified_locked_result.json",
+          "Bleu_1": 0.816460152069782,
+          "Bleu_2": 0.7140706021883897,
+          "Bleu_3": 0.6236214808683983,
+          "Bleu_4": 0.5442498175233459,
+          "METEOR": 0.3847164225807521,
+          "ROUGE_L": 0.7401585043624616,
+          "CIDEr": 1.3278140772319336,
+          "SPICE": 0.3415134775462054,
+          "all_metrics_strictly_above_baseline": false
+        },
+        {
+          "dataset": "levir_cc",
+          "seed": 3333,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_8000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/unified_rsaca_levir_cc_seed3333/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/unified_rsaca_levir_cc_seed3333/test_unified_locked_result.json",
+          "Bleu_1": 0.8349540078843078,
+          "Bleu_2": 0.7390303358960214,
+          "Bleu_3": 0.655673909710756,
+          "Bleu_4": 0.5859562896636025,
+          "METEOR": 0.3970949744743769,
+          "ROUGE_L": 0.7463981643683091,
+          "CIDEr": 1.349488304848904,
+          "SPICE": 0.3199215776279551,
+          "all_metrics_strictly_above_baseline": false
+        }
+      ],
+      "mean": {
+        "Bleu_1": 0.8281748426156702,
+        "Bleu_2": 0.7289984387300819,
+        "Bleu_3": 0.6428983824362269,
+        "Bleu_4": 0.5695395158383093,
+        "METEOR": 0.39105365055477315,
+        "ROUGE_L": 0.743353401237886,
+        "CIDEr": 1.337442588320077,
+        "SPICE": 0.3274351362028946
+      },
+      "sample_std": {
+        "Bleu_1": 0.01018701295983779,
+        "Bleu_2": 0.013180468256752334,
+        "Bleu_3": 0.016986478429909566,
+        "Bleu_4": 0.02222395208656737,
+        "METEOR": 0.006194578771220524,
+        "ROUGE_L": 0.003122538126778334,
+        "CIDEr": 0.011037445234514763,
+        "SPICE": 0.01220142676562308
+      },
+      "delta": {
+        "Bleu_1": -0.012195131586756003,
+        "Bleu_2": -0.02089017320973341,
+        "Bleu_3": -0.030899933169770022,
+        "Bleu_4": -0.043040103689854114,
+        "METEOR": -0.01147128275748599,
+        "ROUGE_L": 0.0016288756251126024,
+        "CIDEr": -0.00606465027484826,
+        "SPICE": 0.04567116830650325
+      },
+      "seed_passes": 0,
+      "seed_count": 3,
+      "mean_all_metrics_strictly_above_baseline": false
+    }
+  },
+  "acceptance_passed": false
+}

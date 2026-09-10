@@ -12,6 +12,7 @@ from PIL import Image
 import torch
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset
+from imageio.v2 import imwrite
 
 
 class PairDataset(Dataset):
@@ -84,14 +85,21 @@ def main(args):
         loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=args.num_workers)
         output_dir = os.path.join(args.output_root, split)
         os.makedirs(output_dir, exist_ok=True)
-        with torch.inference_mode():
+        # PyTorch 1.8 (the project's card environment) has no inference_mode.
+        inference_context = getattr(torch, 'inference_mode', torch.no_grad)
+        with inference_context():
             for before, after, names in loader:
                 probabilities = logits_to_probability(model(before.to(device), after.to(device))).cpu().numpy()
                 for probability, name in zip(probabilities, names):
-                    output_path = os.path.join(output_dir, os.path.splitext(name)[0] + '.npy')
+                    extension = '.png' if args.output_format == 'png' else '.npy'
+                    output_path = os.path.join(output_dir, os.path.splitext(name)[0] + extension)
                     if os.path.exists(output_path) and not args.overwrite:
                         raise FileExistsError('Refusing to overwrite %s; pass --overwrite.' % output_path)
-                    np.save(output_path, np.clip(probability.astype(np.float32), 0.0, 1.0))
+                    probability = np.clip(probability.astype(np.float32), 0.0, 1.0)
+                    if args.output_format == 'png':
+                        imwrite(output_path, np.rint(probability * 255.0).astype(np.uint8))
+                    else:
+                        np.save(output_path, probability)
         print('Finished %s: %d probability maps -> %s' % (split, len(dataset), output_dir))
 
 
@@ -109,4 +117,5 @@ if __name__ == '__main__':
     parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--device', default='cuda:0')
     parser.add_argument('--overwrite', action='store_true')
+    parser.add_argument('--output_format', choices=('png', 'npy'), default='png')
     main(parser.parse_args())

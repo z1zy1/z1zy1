@@ -1,0 +1,74 @@
+{
+  "snapshot_path": "experiments/second_cc_crossattn_pd09_lsem0000/snapshots/second_cc_crossattn_pd09_lsem0000_checkpoint_8000.pt",
+  "result_json": "./experiments/second_cc_crossattn_pd09_lsem0000/test_output/captions/paper_best/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.6469346262120232,
+    "Bleu_2": 0.4868671508520917,
+    "Bleu_3": 0.3740727249287818,
+    "Bleu_4": 0.29440290781766043,
+    "METEOR": 0.2450001246482814,
+    "ROUGE_L": 0.544728167587355,
+    "CIDEr": 0.8009441664222234,
+    "SPICE": 0.254798803543992
+  },
+  "aux_metrics": {},
+  "baseline_name": "test",
+  "num_images": 1227,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.1810653737879767,
+    "Bleu_2": -0.24113284914790828,
+    "Bleu_3": -0.2669272750712182,
+    "Bleu_4": -0.2705970921823395,
+    "METEOR": -0.14599987535171863,
+    "ROUGE_L": -0.201271832412645,
+    "CIDEr": -0.5470558335777767,
+    "SPICE": -0.08120119645600804
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false,
+  "group_metrics": {
+    "change": {
+      "snapshot_path": "experiments/second_cc_crossattn_pd09_lsem0000/snapshots/second_cc_crossattn_pd09_lsem0000_checkpoint_8000.pt",
+      "result_json": "./experiments/second_cc_crossattn_pd09_lsem0000/test_output/captions/paper_best/sc_results.json",
+      "group": "change",
+      "num_images": 886,
+      "metrics": {
+        "Bleu_1": 0.6002438610255576,
+        "Bleu_2": 0.41390165937831214,
+        "Bleu_3": 0.28244613983198075,
+        "Bleu_4": 0.19474846825886702,
+        "METEOR": 0.19867530331184893,
+        "ROUGE_L": 0.39767019503641904,
+        "CIDEr": 0.3721687238504207,
+        "SPICE": 0.1640125213041085
+      },
+      "note": ""
+    },
+    "nochange": {
+      "snapshot_path": "experiments/second_cc_crossattn_pd09_lsem0000/snapshots/second_cc_crossattn_pd09_lsem0000_checkpoint_8000.pt",
+      "result_json": "./experiments/second_cc_crossattn_pd09_lsem0000/test_output/captions/paper_best/sc_results.json",
+      "group": "nochange",
+      "num_images": 341,
+      "metrics": {
+        "Bleu_1": 0.8515699333963599,
+        "Bleu_2": 0.8254408889048166,
+        "Bleu_3": 0.8074148757199691,
+        "Bleu_4": 0.7876557532107679,
+        "METEOR": 0.6246445549112232,
+        "ROUGE_L": 0.9268201431889068,
+        "CIDEr": 0.0,
+        "SPICE": 0.490683396108616
+      },
+      "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+    }
+  }
+}

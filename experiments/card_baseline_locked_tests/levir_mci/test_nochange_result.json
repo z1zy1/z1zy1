@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/snapshots/levir_mci_card_baseline_checkpoint_8000.pt",
+  "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_mci/test_output/captions/card_baseline_locked/sc_results.json",
+  "group": "nochange",
+  "num_images": 965,
+  "metrics": {
+    "Bleu_1": 0.9351090454056247,
+    "Bleu_2": 0.9225358844216262,
+    "Bleu_3": 0.9137950792731616,
+    "Bleu_4": 0.9049291150105236,
+    "METEOR": 0.6786096073688125,
+    "ROUGE_L": 0.958166326010132,
+    "CIDEr": 0.0,
+    "SPICE": 0.4365310843107246
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

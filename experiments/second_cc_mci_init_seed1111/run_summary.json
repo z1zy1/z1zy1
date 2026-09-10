@@ -1,0 +1,42 @@
+{
+  "experiment_name": "second_cc_mci_init_seed1111",
+  "dataset": "second_cc",
+  "run_id": "second_cc_mci_init_seed1111",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-08-05T17:53:22+08:00",
+  "end_time": "2026-08-05T18:35:41+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "val_baseline_pareto",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 8438,
+  "val_samples": 1190,
+  "total_parameters": 16142613,
+  "trainable_parameters": 16142613,
+  "device": "cuda:0",
+  "final_epoch": 38,
+  "final_global_step": 10000,
+  "total_training_seconds": 2538.6492075920105,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 0.7208327610128065,
+      "snapshot": "experiments/second_cc_mci_init_seed1111/snapshots/second_cc_mci_init_seed1111_checkpoint_8000.pt"
+    },
+    "spice": {
+      "score": 0.1906518382864962,
+      "snapshot": "experiments/second_cc_mci_init_seed1111/snapshots/second_cc_mci_init_seed1111_checkpoint_9000.pt"
+    },
+    "balanced": {
+      "score": 0.6285954150628076,
+      "snapshot": "experiments/second_cc_mci_init_seed1111/snapshots/second_cc_mci_init_seed1111_checkpoint_8000.pt",
+      "all_above_baseline": false
+    }
+  }
+}

@@ -1,0 +1,295 @@
+{
+  "status": "done",
+  "selection_uses_test_metrics": false,
+  "model": "CARD + Residual Semantic Cross-Attention Adapter (RSACA)",
+  "run_root": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global",
+  "baseline": "/root/autodl-tmp/z1zy1/experiments/card_baseline_test_summary.json",
+  "datasets": {
+    "levir_cc": {
+      "baseline": {
+        "Bleu_1": 0.8403699742024262,
+        "Bleu_2": 0.7498886119398153,
+        "Bleu_3": 0.6737983156059969,
+        "Bleu_4": 0.6125796195281634,
+        "METEOR": 0.40252493331225914,
+        "ROUGE_L": 0.7417245256127734,
+        "CIDEr": 1.3435072385949252,
+        "SPICE": 0.28176396789639135
+      },
+      "seed_results": [
+        {
+          "dataset": "levir_cc",
+          "seed": 1111,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed1111/snapshots/unified_rsaca_levir_cc_seed1111_checkpoint_10000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed1111/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed1111/test_unified_locked_result.json",
+          "Bleu_1": 0.8347133556664664,
+          "Bleu_2": 0.7422854738541341,
+          "Bleu_3": 0.6652071052966352,
+          "Bleu_4": 0.6022679425848496,
+          "METEOR": 0.4020346952207171,
+          "ROUGE_L": 0.7431647850286569,
+          "CIDEr": 1.338114045361197,
+          "SPICE": 0.29304779012309085,
+          "all_metrics_strictly_above_baseline": false
+        },
+        {
+          "dataset": "levir_cc",
+          "seed": 2222,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/snapshots/unified_rsaca_levir_cc_seed2222_checkpoint_10000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed2222/test_unified_locked_result.json",
+          "Bleu_1": 0.8439720694555494,
+          "Bleu_2": 0.7551075340779969,
+          "Bleu_3": 0.6794102651369776,
+          "Bleu_4": 0.6177024727814351,
+          "METEOR": 0.40613345612141893,
+          "ROUGE_L": 0.7479206558279948,
+          "CIDEr": 1.3704019601879813,
+          "SPICE": 0.29063860661843544,
+          "all_metrics_strictly_above_baseline": true
+        },
+        {
+          "dataset": "levir_cc",
+          "seed": 3333,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_9000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed3333/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_cc_seed3333/test_unified_locked_result.json",
+          "Bleu_1": 0.8183169989860887,
+          "Bleu_2": 0.7172318784930958,
+          "Bleu_3": 0.628249453239494,
+          "Bleu_4": 0.5515172787587096,
+          "METEOR": 0.38893945579950706,
+          "ROUGE_L": 0.7402848237780288,
+          "CIDEr": 1.330827941981557,
+          "SPICE": 0.33721078759957435,
+          "all_metrics_strictly_above_baseline": false
+        }
+      ],
+      "mean": {
+        "Bleu_1": 0.8323341413693681,
+        "Bleu_2": 0.7382082954750756,
+        "Bleu_3": 0.6576222745577023,
+        "Bleu_4": 0.5904958980416648,
+        "METEOR": 0.3990358690472144,
+        "ROUGE_L": 0.7437900882115602,
+        "CIDEr": 1.3464479825102451,
+        "SPICE": 0.3069657281137002
+      },
+      "sample_std": {
+        "Bleu_1": 0.012991965043898716,
+        "Bleu_2": 0.019264185919667352,
+        "Bleu_3": 0.026410308811260053,
+        "Bleu_4": 0.034627384416116395,
+        "METEOR": 0.008980708801739437,
+        "ROUGE_L": 0.0038561296434033014,
+        "CIDEr": 0.02106220811201462,
+        "SPICE": 0.026220674262265355
+      },
+      "delta": {
+        "Bleu_1": -0.008035832833058087,
+        "Bleu_2": -0.01168031646473966,
+        "Bleu_3": -0.01617604104829462,
+        "Bleu_4": -0.02208372148649862,
+        "METEOR": -0.00348906426504475,
+        "ROUGE_L": 0.002065562598786874,
+        "CIDEr": 0.0029407439153199544,
+        "SPICE": 0.025201760217308855
+      },
+      "seed_passes": 1,
+      "seed_count": 3,
+      "mean_all_metrics_strictly_above_baseline": false
+    },
+    "levir_mci": {
+      "baseline": {
+        "Bleu_1": 0.821720195971637,
+        "Bleu_2": 0.7219042871860423,
+        "Bleu_3": 0.6359963537137664,
+        "Bleu_4": 0.5621341591494858,
+        "METEOR": 0.38893904389181366,
+        "ROUGE_L": 0.7419793409574119,
+        "CIDEr": 1.3379703139043375,
+        "SPICE": 0.3297080402711415
+      },
+      "seed_results": [
+        {
+          "dataset": "levir_mci",
+          "seed": 1111,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed1111/snapshots/unified_rsaca_levir_mci_seed1111_checkpoint_9000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed1111/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed1111/test_unified_locked_result.json",
+          "Bleu_1": 0.8473048268953329,
+          "Bleu_2": 0.7573492101188187,
+          "Bleu_3": 0.6776240789239691,
+          "Bleu_4": 0.6120188744842077,
+          "METEOR": 0.4095727745480954,
+          "ROUGE_L": 0.7557523390939872,
+          "CIDEr": 1.3794717722000513,
+          "SPICE": 0.2994613600758025,
+          "all_metrics_strictly_above_baseline": false
+        },
+        {
+          "dataset": "levir_mci",
+          "seed": 2222,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed2222/snapshots/unified_rsaca_levir_mci_seed2222_checkpoint_10000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed2222/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed2222/test_unified_locked_result.json",
+          "Bleu_1": 0.8485256331823781,
+          "Bleu_2": 0.7552301698823873,
+          "Bleu_3": 0.6764480030987333,
+          "Bleu_4": 0.6126232357502963,
+          "METEOR": 0.4111105728902836,
+          "ROUGE_L": 0.7594143739059727,
+          "CIDEr": 1.3907407706639214,
+          "SPICE": 0.29925855814685226,
+          "all_metrics_strictly_above_baseline": false
+        },
+        {
+          "dataset": "levir_mci",
+          "seed": 3333,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed3333/snapshots/unified_rsaca_levir_mci_seed3333_checkpoint_10000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed3333/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed3333/test_unified_locked_result.json",
+          "Bleu_1": 0.8373366180797346,
+          "Bleu_2": 0.7373161167145681,
+          "Bleu_3": 0.6482388782151838,
+          "Bleu_4": 0.5692798503748817,
+          "METEOR": 0.3997994302757759,
+          "ROUGE_L": 0.7603199411754828,
+          "CIDEr": 1.3798825241419803,
+          "SPICE": 0.3438439354371135,
+          "all_metrics_strictly_above_baseline": true
+        }
+      ],
+      "mean": {
+        "Bleu_1": 0.8443890260524819,
+        "Bleu_2": 0.7499651655719247,
+        "Bleu_3": 0.6674369867459621,
+        "Bleu_4": 0.5979739868697952,
+        "METEOR": 0.40682759257138496,
+        "ROUGE_L": 0.7584955513918142,
+        "CIDEr": 1.3833650223353178,
+        "SPICE": 0.31418795121992277
+      },
+      "sample_std": {
+        "Bleu_1": 0.006137991174494649,
+        "Bleu_2": 0.011005517281243533,
+        "Bleu_3": 0.01663644544235135,
+        "Bleu_4": 0.024851688373761106,
+        "METEOR": 0.006134941309855752,
+        "ROUGE_L": 0.0024184547345596835,
+        "CIDEr": 0.006390886233115497,
+        "SPICE": 0.025683035881166712
+      },
+      "delta": {
+        "Bleu_1": 0.02266883008084486,
+        "Bleu_2": 0.02806087838588245,
+        "Bleu_3": 0.031440633032195686,
+        "Bleu_4": 0.03583982772030936,
+        "METEOR": 0.017888548679571292,
+        "ROUGE_L": 0.016516210434402323,
+        "CIDEr": 0.04539470843098026,
+        "SPICE": -0.01552008905121871
+      },
+      "seed_passes": 1,
+      "seed_count": 3,
+      "mean_all_metrics_strictly_above_baseline": false
+    },
+    "second_cc": {
+      "baseline": {
+        "Bleu_1": 0.6306730472367528,
+        "Bleu_2": 0.47482554308383945,
+        "Bleu_3": 0.37034256019401013,
+        "Bleu_4": 0.29527155103178454,
+        "METEOR": 0.23657273012093835,
+        "ROUGE_L": 0.5266291030740216,
+        "CIDEr": 0.7788705287216137,
+        "SPICE": 0.24914653962317462
+      },
+      "seed_results": [
+        {
+          "dataset": "second_cc",
+          "seed": 1111,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_10000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed1111/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed1111/test_unified_locked_result.json",
+          "Bleu_1": 0.6606387071950242,
+          "Bleu_2": 0.5040109474852831,
+          "Bleu_3": 0.39611062285753074,
+          "Bleu_4": 0.320993215731756,
+          "METEOR": 0.2515423167690118,
+          "ROUGE_L": 0.5476346835424447,
+          "CIDEr": 0.8288613843831192,
+          "SPICE": 0.24626273886541475,
+          "all_metrics_strictly_above_baseline": false
+        },
+        {
+          "dataset": "second_cc",
+          "seed": 2222,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed2222/snapshots/unified_rsaca_second_cc_seed2222_checkpoint_9000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed2222/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed2222/test_unified_locked_result.json",
+          "Bleu_1": 0.6515069760270831,
+          "Bleu_2": 0.488540092087715,
+          "Bleu_3": 0.3794554682942239,
+          "Bleu_4": 0.3016970473434512,
+          "METEOR": 0.24581222117498447,
+          "ROUGE_L": 0.5481977577056781,
+          "CIDEr": 0.8188398869548975,
+          "SPICE": 0.25809310303195193,
+          "all_metrics_strictly_above_baseline": true
+        },
+        {
+          "dataset": "second_cc",
+          "seed": 3333,
+          "checkpoint": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed3333/snapshots/unified_rsaca_second_cc_seed3333_checkpoint_10000.pt",
+          "selection_json": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed3333/best_snapshot_for_paper.json",
+          "test_result": "/root/autodl-tmp/z1zy1/experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed3333/test_unified_locked_result.json",
+          "Bleu_1": 0.6463622291021172,
+          "Bleu_2": 0.4850380618167627,
+          "Bleu_3": 0.3752144804297754,
+          "Bleu_4": 0.29787697590185697,
+          "METEOR": 0.24836396979879635,
+          "ROUGE_L": 0.541579485110003,
+          "CIDEr": 0.8114306042770013,
+          "SPICE": 0.2591244121928557,
+          "all_metrics_strictly_above_baseline": true
+        }
+      ],
+      "mean": {
+        "Bleu_1": 0.6528359707747414,
+        "Bleu_2": 0.49252970046325356,
+        "Bleu_3": 0.38359352386051,
+        "Bleu_4": 0.3068557463256881,
+        "METEOR": 0.2485728359142642,
+        "ROUGE_L": 0.5458039754527086,
+        "CIDEr": 0.819710625205006,
+        "SPICE": 0.25449341803007414
+      },
+      "sample_std": {
+        "Bleu_1": 0.007230430620909866,
+        "Bleu_2": 0.01009605511525727,
+        "Bleu_3": 0.01104557920584126,
+        "Bleu_4": 0.01239149980270149,
+        "METEOR": 0.002870752108736627,
+        "ROUGE_L": 0.0036693326532266195,
+        "CIDEr": 0.008747951908996193,
+        "SPICE": 0.007146604737916427
+      },
+      "delta": {
+        "Bleu_1": 0.022162923537988655,
+        "Bleu_2": 0.01770415737941411,
+        "Bleu_3": 0.01325096366649986,
+        "Bleu_4": 0.011584195293903532,
+        "METEOR": 0.01200010579332586,
+        "ROUGE_L": 0.01917487237868709,
+        "CIDEr": 0.040840096483392374,
+        "SPICE": 0.0053468784068995134
+      },
+      "seed_passes": 2,
+      "seed_count": 3,
+      "mean_all_metrics_strictly_above_baseline": true
+    }
+  },
+  "acceptance_passed": false
+}

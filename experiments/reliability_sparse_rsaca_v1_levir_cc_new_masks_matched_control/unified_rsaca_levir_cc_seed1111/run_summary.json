@@ -1,0 +1,23 @@
+{
+  "experiment_name": "unified_rsaca_levir_cc_seed1111",
+  "dataset": "levir_cc",
+  "run_id": "unified_rsaca_levir_cc_seed1111",
+  "seed": 1111,
+  "status": "running",
+  "start_time": "2026-08-26T14:44:46+08:00",
+  "end_time": null,
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 17256239,
+  "trainable_parameters": 17256239,
+  "device": "cpu"
+}

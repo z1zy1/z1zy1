@@ -1,0 +1,14 @@
+Small Ablation SGC-CARD Report
+==============================
+
+lmask003_lsem005_pd05_warmup_no_reweight: snapshot=experiments/lmask003_lsem005_pd05_warmup_no_reweight/best_balanced_v2.pth Bleu_4=0.5700292427676599 METEOR=0.39086147172150826 ROUGE_L=0.7439663100568505 CIDEr=1.336888909072797 SPICE=0.3245240530737334 all_above=False main_failure=SPICE
+lmask003_lsem005_pd05_rw01_warmup: snapshot=experiments/lmask003_lsem005_pd05_rw01_warmup/snapshots/lmask003_lsem005_pd05_rw01_warmup_checkpoint_9000.pt Bleu_4=0.5929754702847191 METEOR=0.39578219786688773 ROUGE_L=0.743703292126109 CIDEr=1.3497674326638487 SPICE=0.31092805411394236 all_above=False main_failure=SPICE
+lmask003_lsem003_pd05_rw01_warmup: snapshot=experiments/lmask003_lsem003_pd05_rw01_warmup/snapshots/lmask003_lsem003_pd05_rw01_warmup_checkpoint_9000.pt Bleu_4=0.5936195109713398 METEOR=0.39680380757502914 ROUGE_L=0.7423181022888062 CIDEr=1.3497480477839567 SPICE=0.3074927169325668 all_above=False main_failure=SPICE
+
+Conclusion:
+- Is feature reweight harmful? no
+- Is alpha=0.2 too strong? yes (rw01 must be compared against the previous rw02 run for a firm answer)
+- Is lsem=0.005 too strong? no
+- Which experiment should be used for final testing/reporting? lmask003_lsem005_pd05_rw01_warmup
+  snapshot: experiments/lmask003_lsem005_pd05_rw01_warmup/snapshots/lmask003_lsem005_pd05_rw01_warmup_checkpoint_9000.pt
+- Should we continue with another round of ablation? yes, if none of these rows reaches all test baselines; focus on the main_failure_metric shown above.

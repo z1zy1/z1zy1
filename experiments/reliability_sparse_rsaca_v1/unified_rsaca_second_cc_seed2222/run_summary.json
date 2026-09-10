@@ -1,0 +1,46 @@
+{
+  "experiment_name": "unified_rsaca_second_cc_seed2222",
+  "dataset": "second_cc",
+  "run_id": "unified_rsaca_second_cc_seed2222",
+  "seed": 2222,
+  "status": "completed",
+  "start_time": "2026-08-14T22:25:42+08:00",
+  "end_time": "2026-08-14T23:08:50+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "val_baseline_stable_window",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 8438,
+  "val_samples": 1190,
+  "total_parameters": 17334287,
+  "trainable_parameters": 17334287,
+  "device": "cuda:0",
+  "final_epoch": 38,
+  "final_global_step": 10000,
+  "total_training_seconds": 2588.3392946720123,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 0.7613632141175221,
+      "snapshot": "experiments/reliability_sparse_rsaca_v1/unified_rsaca_second_cc_seed2222/snapshots/unified_rsaca_second_cc_seed2222_checkpoint_9000.pt"
+    },
+    "spice": {
+      "score": 0.20369987964614805,
+      "snapshot": "experiments/reliability_sparse_rsaca_v1/unified_rsaca_second_cc_seed2222/snapshots/unified_rsaca_second_cc_seed2222_checkpoint_5000.pt"
+    },
+    "balanced": {
+      "score": 0.6598385049551827,
+      "snapshot": "experiments/reliability_sparse_rsaca_v1/unified_rsaca_second_cc_seed2222/snapshots/unified_rsaca_second_cc_seed2222_checkpoint_9000.pt",
+      "all_above_baseline": false
+    }
+  },
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-08-15T11:23:32+08:00",
+  "test_checkpoint": "experiments/reliability_sparse_rsaca_v1/unified_rsaca_second_cc_seed2222/snapshots/unified_rsaca_second_cc_seed2222_checkpoint_9000.pt",
+  "test_prediction_file": "experiments/reliability_sparse_rsaca_v1/unified_rsaca_second_cc_seed2222/test_output/captions/unified_locked/sc_results.json"
+}

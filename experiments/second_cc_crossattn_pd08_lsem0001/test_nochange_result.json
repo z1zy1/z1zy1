@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/second_cc_crossattn_pd08_lsem0001/snapshots/second_cc_crossattn_pd08_lsem0001_checkpoint_7000.pt",
+  "result_json": "./experiments/second_cc_crossattn_pd08_lsem0001/test_output/captions/paper_best/sc_results.json",
+  "group": "nochange",
+  "num_images": 341,
+  "metrics": {
+    "Bleu_1": 0.8513655462180403,
+    "Bleu_2": 0.8205173746338486,
+    "Bleu_3": 0.7987582622143798,
+    "Bleu_4": 0.772614267031984,
+    "METEOR": 0.619194452318296,
+    "ROUGE_L": 0.928151935501364,
+    "CIDEr": 0.0,
+    "SPICE": 0.5429731558763816
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/snapshots/levir_mci_card_baseline_checkpoint_8000.pt",
+  "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_mci/test_output/captions/card_baseline_locked/sc_results.json",
+  "group": "change",
+  "num_images": 964,
+  "metrics": {
+    "Bleu_1": 0.7474198490543987,
+    "Bleu_2": 0.5954250260456901,
+    "Bleu_3": 0.4663517592081827,
+    "Bleu_4": 0.3643776849566223,
+    "METEOR": 0.27870307106436987,
+    "ROUGE_L": 0.5255680955467532,
+    "CIDEr": 0.6303229853545738,
+    "SPICE": 0.2227741839452102
+  },
+  "note": ""
+}

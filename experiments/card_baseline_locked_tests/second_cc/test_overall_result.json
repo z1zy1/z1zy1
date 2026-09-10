@@ -1,0 +1,74 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt",
+  "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/second_cc/test_output/captions/card_baseline_locked/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.6306730472367528,
+    "Bleu_2": 0.47482554308383945,
+    "Bleu_3": 0.37034256019401013,
+    "Bleu_4": 0.29527155103178454,
+    "METEOR": 0.23657273012093835,
+    "ROUGE_L": 0.5266291030740216,
+    "CIDEr": 0.7788705287216137,
+    "SPICE": 0.24914653962317462
+  },
+  "aux_metrics": {},
+  "baseline_name": "test",
+  "num_images": 1227,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.1973269527632472,
+    "Bleu_2": -0.25317445691616053,
+    "Bleu_3": -0.2706574398059899,
+    "Bleu_4": -0.2697284489682154,
+    "METEOR": -0.15442726987906166,
+    "ROUGE_L": -0.21937089692597844,
+    "CIDEr": -0.5691294712783864,
+    "SPICE": -0.0868534603768254
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false,
+  "group_metrics": {
+    "change": {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt",
+      "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/second_cc/test_output/captions/card_baseline_locked/sc_results.json",
+      "group": "change",
+      "num_images": 886,
+      "metrics": {
+        "Bleu_1": 0.5868270848442813,
+        "Bleu_2": 0.4056603043030773,
+        "Bleu_3": 0.2844017407269981,
+        "Bleu_4": 0.20147767500780214,
+        "METEOR": 0.1901854513268939,
+        "ROUGE_L": 0.3820182496324785,
+        "CIDEr": 0.37014222207731884,
+        "SPICE": 0.16145338074212917
+      },
+      "note": ""
+    },
+    "nochange": {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt",
+      "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/second_cc/test_output/captions/card_baseline_locked/sc_results.json",
+      "group": "nochange",
+      "num_images": 341,
+      "metrics": {
+        "Bleu_1": 0.806480248557121,
+        "Bleu_2": 0.7706447980716482,
+        "Bleu_3": 0.7470837268619631,
+        "Bleu_4": 0.7227692206102783,
+        "METEOR": 0.5878839330318649,
+        "ROUGE_L": 0.9023628747725765,
+        "CIDEr": 0.0,
+        "SPICE": 0.47699445390061224
+      },
+      "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+    }
+  }
+}

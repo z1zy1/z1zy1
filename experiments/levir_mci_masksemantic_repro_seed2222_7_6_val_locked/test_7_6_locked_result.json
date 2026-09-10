@@ -1,0 +1,84 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/snapshots/levir_mci_masksemantic_repro_seed2222_checkpoint_9000.pt",
+  "result_json": "./experiments/levir_mci_masksemantic_repro_seed2222_7_6_val_locked/test_output/captions/7_6_locked/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.8232527759633688,
+    "Bleu_2": 0.7191031239607001,
+    "Bleu_3": 0.6285332304922403,
+    "Bleu_4": 0.5514262286626618,
+    "METEOR": 0.3931481049372966,
+    "ROUGE_L": 0.7429435375793996,
+    "CIDEr": 1.328310567499652,
+    "SPICE": 0.328257504341654
+  },
+  "aux_metrics": {
+    "Mask_Precision": 0.2761737620879259,
+    "Mask_Recall": 0.2931817321292337,
+    "Mask_F1": 0.26953902752165443,
+    "Mask_IoU": 0.2055716735305272,
+    "Mask_mIoU": 0.19410853091645516,
+    "IoU_road": 0.35609935025260686,
+    "IoU_building": 0.4315981828616138
+  },
+  "baseline_name": "test",
+  "num_images": 1929,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.004747224036631192,
+    "Bleu_2": -0.008896876039299895,
+    "Bleu_3": -0.012466769507759712,
+    "Bleu_4": -0.01357377133733817,
+    "METEOR": 0.0021481049372966132,
+    "ROUGE_L": -0.0030564624206004254,
+    "CIDEr": -0.019689432500348047,
+    "SPICE": -0.007742495658346005
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false,
+  "group_metrics": {
+    "change": {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/snapshots/levir_mci_masksemantic_repro_seed2222_checkpoint_9000.pt",
+      "result_json": "./experiments/levir_mci_masksemantic_repro_seed2222_7_6_val_locked/test_output/captions/7_6_locked/sc_results.json",
+      "group": "change",
+      "num_images": 964,
+      "metrics": {
+        "Bleu_1": 0.7528663748175158,
+        "Bleu_2": 0.5944030977738703,
+        "Bleu_3": 0.45781640016036135,
+        "Bleu_4": 0.34982458281075296,
+        "METEOR": 0.2830866236014564,
+        "ROUGE_L": 0.5241320916988743,
+        "CIDEr": 0.5921716248260289,
+        "SPICE": 0.22522424111254488
+      },
+      "note": ""
+    },
+    "nochange": {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/snapshots/levir_mci_masksemantic_repro_seed2222_checkpoint_9000.pt",
+      "result_json": "./experiments/levir_mci_masksemantic_repro_seed2222_7_6_val_locked/test_output/captions/7_6_locked/sc_results.json",
+      "group": "nochange",
+      "num_images": 965,
+      "metrics": {
+        "Bleu_1": 0.9413925822251676,
+        "Bleu_2": 0.9289384738451737,
+        "Bleu_3": 0.9200528112642926,
+        "Bleu_4": 0.9114729785711119,
+        "METEOR": 0.6882975741162506,
+        "ROUGE_L": 0.9615282358476134,
+        "CIDEr": 0.0,
+        "SPICE": 0.4311839973498004
+      },
+      "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+    }
+  },
+  "group_output_json": "./experiments/levir_mci_masksemantic_repro_seed2222_7_6_val_locked/test_overall_result.json",
+  "group_summary_csv": "./experiments/levir_mci_masksemantic_repro_seed2222_7_6_val_locked/test_group_summary.csv"
+}

@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/second_cc_crossattn_pd05_lsem0000/snapshots/second_cc_crossattn_pd05_lsem0000_checkpoint_9000.pt",
+  "result_json": "./experiments/second_cc_crossattn_pd05_lsem0000/test_output/captions/paper_best/sc_results.json",
+  "group": "change",
+  "num_images": 886,
+  "metrics": {
+    "Bleu_1": 0.5949271775626791,
+    "Bleu_2": 0.4090733380289617,
+    "Bleu_3": 0.281606920495887,
+    "Bleu_4": 0.19674697483305745,
+    "METEOR": 0.1969001019303575,
+    "ROUGE_L": 0.39527404043893394,
+    "CIDEr": 0.37855094333842954,
+    "SPICE": 0.16350845090680205
+  },
+  "note": ""
+}

@@ -1,0 +1,46 @@
+{
+  "experiment_name": "unified_rsaca_second_cc_seed2222",
+  "dataset": "second_cc",
+  "run_id": "unified_rsaca_second_cc_seed2222",
+  "seed": 2222,
+  "status": "completed",
+  "start_time": "2026-08-12T17:25:28+08:00",
+  "end_time": "2026-08-12T18:10:46+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "val_baseline_stable_window",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 8438,
+  "val_samples": 1190,
+  "total_parameters": 16807950,
+  "trainable_parameters": 16807950,
+  "device": "cuda:0",
+  "final_epoch": 38,
+  "final_global_step": 10000,
+  "total_training_seconds": 2718.345826148987,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 0.7747078369704721,
+      "snapshot": "experiments/unified_rsaca/unified_rsaca_second_cc_seed2222/snapshots/unified_rsaca_second_cc_seed2222_checkpoint_9000.pt"
+    },
+    "spice": {
+      "score": 0.20843654728332395,
+      "snapshot": "experiments/unified_rsaca/unified_rsaca_second_cc_seed2222/snapshots/unified_rsaca_second_cc_seed2222_checkpoint_6000.pt"
+    },
+    "balanced": {
+      "score": 0.6656696470244629,
+      "snapshot": "experiments/unified_rsaca/unified_rsaca_second_cc_seed2222/snapshots/unified_rsaca_second_cc_seed2222_checkpoint_9000.pt",
+      "all_above_baseline": false
+    }
+  },
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-08-12T19:07:56+08:00",
+  "test_checkpoint": "experiments/unified_rsaca/unified_rsaca_second_cc_seed2222/snapshots/unified_rsaca_second_cc_seed2222_checkpoint_9000.pt",
+  "test_prediction_file": "experiments/unified_rsaca/unified_rsaca_second_cc_seed2222/test_output/captions/unified_locked/sc_results.json"
+}

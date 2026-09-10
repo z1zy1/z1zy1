@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/levir_mci_weak_pd05_lm003_ls0005_noreweight/snapshots/levir_mci_weak_pd05_lm003_ls0005_noreweight_checkpoint_6000.pt",
+  "result_json": "./experiments/levir_mci_weak_pd05_lm003_ls0005_noreweight/test_output/captions/paper_best/sc_results.json",
+  "group": "nochange",
+  "num_images": 965,
+  "metrics": {
+    "Bleu_1": 0.9417677642979303,
+    "Bleu_2": 0.9317042029333763,
+    "Bleu_3": 0.924377278484195,
+    "Bleu_4": 0.9171997945702761,
+    "METEOR": 0.6927730859456898,
+    "ROUGE_L": 0.9624037928714296,
+    "CIDEr": 0.0,
+    "SPICE": 0.42564847323762284
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

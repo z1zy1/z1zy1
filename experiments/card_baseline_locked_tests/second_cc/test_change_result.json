@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt",
+  "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/second_cc/test_output/captions/card_baseline_locked/sc_results.json",
+  "group": "change",
+  "num_images": 886,
+  "metrics": {
+    "Bleu_1": 0.5868270848442813,
+    "Bleu_2": 0.4056603043030773,
+    "Bleu_3": 0.2844017407269981,
+    "Bleu_4": 0.20147767500780214,
+    "METEOR": 0.1901854513268939,
+    "ROUGE_L": 0.3820182496324785,
+    "CIDEr": 0.37014222207731884,
+    "SPICE": 0.16145338074212917
+  },
+  "note": ""
+}

@@ -14,6 +14,7 @@ ONLY_DATASET=""
 ONLY_SEED=""
 DRY_RUN=0
 RESET_INCOMPLETE=0
+FORCE_SELECT=0
 
 usage() {
   cat >&2 <<'EOF'
@@ -25,6 +26,7 @@ Options:
   --seed 1111|2222|3333
   --dry-run
   --reset-incomplete  Archive an incomplete run directory before retraining.
+  --force-select      Refresh validation selection only when no locked test exists.
 
 The all stage runs preflight -> train -> validation selection -> locked test -> summary.
 Use DATA_ROOT/FEATURE_ROOT overrides only through the dataset-specific *_ROOT variables.
@@ -38,6 +40,7 @@ while [ "$#" -gt 0 ]; do
     --seed) ONLY_SEED="$2"; shift 2 ;;
     --dry-run|--dry_run) DRY_RUN=1; shift ;;
     --reset-incomplete|--reset_incomplete) RESET_INCOMPLETE=1; shift ;;
+    --force-select|--force_select) FORCE_SELECT=1; shift ;;
     -h|--help) usage; exit 0 ;;
     *) echo "Unknown argument: $1" >&2; usage; exit 2 ;;
   esac
@@ -82,7 +85,7 @@ configure_case() {
   export SEMANTIC_DIFF_ONLY=0 SEMANTIC_DIFF_BINARY=0 SEMANTIC_UNKNOWN_CHANGE_CLASS=6
   export SEMANTIC_MAP_ROOT= SEMANTIC_BEFORE_PHASE= SEMANTIC_AFTER_PHASE=
   export SEMANTIC_DIFF_ROOT= SEMANTIC_DIFF_PHASE=
-  export SEMANTIC_DIFF_CONFIDENCE_ROOT="${SEMANTIC_DIFF_CONFIDENCE_ROOT:-}"
+  export SEMANTIC_DIFF_CONFIDENCE_ROOT= SEMANTIC_DIFF_CONFIDENCE_PHASE=
   export SEMANTIC_DIFF_CONFIDENCE_PHASE="${SEMANTIC_DIFF_CONFIDENCE_PHASE:-}"
   case "$dataset" in
     levir_cc)
@@ -90,6 +93,7 @@ configure_case() {
       export FEATURE_ROOT="${LEVIR_CC_FEATURE_ROOT:-$DATA_ROOT/features}"
       export BASE_CFG=configs/dynamic/transformer_levir_cc_sgc_card.yaml
       export SEMANTIC_DIFF_ROOT="$DATA_ROOT/pseudo_masks" SEMANTIC_DIFF_ONLY=1 SEMANTIC_DIFF_BINARY=1
+      export SEMANTIC_DIFF_CONFIDENCE_ROOT="${LEVIR_CC_SEMANTIC_DIFF_CONFIDENCE_ROOT:-}"
       export ALLOW_MISSING_PSEUDO_MASK=1 ANNO="$DATA_ROOT/levir_cc_captions_reformat.json"
       ;;
     levir_mci)
@@ -175,10 +179,18 @@ with open(sys.argv[1], encoding='utf-8-sig') as f:
 raise SystemExit(0 if path and os.path.isfile(path) else 1)
 PY
     then
-      echo "Skipping validation selection: $output"
-      return
+      if [ "$FORCE_SELECT" -ne 1 ]; then
+        echo "Skipping validation selection: $output"
+        return
+      fi
+      if [ -f "$exp_path/test_unified_locked_result.json" ]; then
+        echo "Refusing to refresh selection after locked test: $exp_path/test_unified_locked_result.json" >&2
+        return 1
+      fi
+      echo "Refreshing validation selection before locked test: $output"
+    else
+      echo "Ignoring invalid validation selection: $output" >&2
     fi
-    echo "Ignoring invalid validation selection: $output" >&2
   fi
   run_or_print "$PYTHON" scripts/select_best_snapshot_for_paper.py \
     --exp_dir "$exp_path" --csv "$exp_path/val_metrics.csv" \
@@ -191,6 +203,12 @@ test_one() {
   local selection="$exp_path/best_snapshot_for_paper.json"
   local result="$exp_path/test_unified_locked_result.json"
   [ -s "$result" ] && { echo "Skipping immutable test: $result"; return; }
+  if [ "$DRY_RUN" -eq 1 ]; then
+    run_or_print bash scripts/test_specific_snapshot_sgc_card.sh \
+      --exp_dir "$exp_path" --checkpoint "$exp_path/best_for_paper.pth" \
+      --tag unified_locked --anno "$ANNO"
+    return
+  fi
   [ -s "$selection" ] || { echo "Missing validation selection: $selection" >&2; return 1; }
   local checkpoint
   checkpoint="$(selected_checkpoint "$selection")"
@@ -211,23 +229,26 @@ matrix() {
   done
 }
 
+summarize() {
+  local summary_datasets="${ONLY_DATASET:-levir_cc,levir_mci,second_cc}"
+  local summary_seeds="${ONLY_SEED:-1111,2222,3333}"
+  run_or_print "$PYTHON" scripts/summarize_unified_rsaca.py \
+    --run_root "$RUN_ROOT" --baseline "$BASELINE_SUMMARY" \
+    --datasets "$summary_datasets" --seeds "$summary_seeds" \
+    --output "$RUN_ROOT/summary.json"
+}
+
 case "$STAGE" in
   preflight) preflight ;;
   train) matrix train_one ;;
   select) matrix select_one ;;
   test) matrix test_one ;;
-  summary)
-    run_or_print "$PYTHON" scripts/summarize_unified_rsaca.py \
-      --run_root "$RUN_ROOT" --baseline "$BASELINE_SUMMARY" \
-      --output "$RUN_ROOT/summary.json"
-    ;;
+  summary) summarize ;;
   all)
     preflight
     matrix train_one
     matrix select_one
     matrix test_one
-    run_or_print "$PYTHON" scripts/summarize_unified_rsaca.py \
-      --run_root "$RUN_ROOT" --baseline "$BASELINE_SUMMARY" \
-      --output "$RUN_ROOT/summary.json"
+    summarize
     ;;
 esac

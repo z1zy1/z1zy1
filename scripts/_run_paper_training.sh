@@ -11,6 +11,7 @@ esac
 PYTORCH_GPU="${PYTORCH_GPU:-0}"
 PYTHON="${PYTHON:-python}"
 NUM_WORKERS="${NUM_WORKERS:-}"
+REQUIRE_CUDA="${REQUIRE_CUDA:-0}"
 EXP_DIR="${EXP_DIR:-./experiments}"
 EXP_NAME="${EXP_NAME:?EXP_NAME is required}"
 DATASET="${DATASET:?DATASET is required}"
@@ -101,6 +102,11 @@ bool_word() {
 is_true() {
   [ "$(bool_word "$1")" = "True" ]
 }
+
+if is_true "$REQUIRE_CUDA" && ! "$PYTHON" -c 'import torch; raise SystemExit(0 if torch.cuda.is_available() else 1)'; then
+  echo "CUDA is required for this experiment, but torch.cuda.is_available() is false." >&2
+  exit 2
+fi
 
 EXP_PATH="$EXP_DIR/$EXP_NAME"
 mkdir -p "$EXP_PATH"

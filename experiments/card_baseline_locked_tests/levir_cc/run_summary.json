@@ -1,0 +1,8 @@
+{
+  "status": "initialized",
+  "start_time": null,
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-07-29T10:12:16+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/card_levir_cc_baseline/snapshots/card_levir_cc_baseline_checkpoint_5000.pt",
+  "test_prediction_file": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_cc/test_output/captions/card_baseline_locked/sc_results.json"
+}

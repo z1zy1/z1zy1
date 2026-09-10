@@ -1,0 +1,286 @@
+{
+  "exp_dir": "experiments/levir_mci_card_mask_semantic",
+  "csv": "experiments/levir_mci_card_mask_semantic/eval_snapshots.csv",
+  "selection_metric": "paper_balanced",
+  "allow_negative_ablation": false,
+  "best_snapshot": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_5000.pt",
+  "copy_path": "experiments/levir_mci_card_mask_semantic/best_for_paper.pth",
+  "best": {
+    "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_5000.pt",
+    "paper_score": 1.198207744729802,
+    "caption_score": 1.1842436589132932,
+    "aux_tiebreak": 0.46546952721695994,
+    "negative_ablation": false,
+    "all_above_baseline": true,
+    "metrics": {
+      "Bleu_1": 0.8147147147146331,
+      "Bleu_2": 0.7225171402567774,
+      "Bleu_3": 0.6369792095667713,
+      "Bleu_4": 0.5605709158339637,
+      "METEOR": 0.3861510168287703,
+      "ROUGE_L": 0.740244241494693,
+      "CIDEr": 1.3401925277947833,
+      "SPICE": 0.3367473657799596
+    },
+    "aux_metrics": {
+      "Mask_F1": 0.5831791992108011,
+      "Mask_IoU": 0.4236766677189708,
+      "Mask_mIoU": 0.3895527147211079,
+      "IoU_road": 0.36032655628090826,
+      "IoU_building": 0.41877887316130746
+    }
+  },
+  "top_candidates": [
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_5000.pt",
+      "paper_score": 1.198207744729802,
+      "caption_score": 1.1842436589132932,
+      "aux_tiebreak": 0.46546952721695994,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.8147147147146331,
+        "Bleu_2": 0.7225171402567774,
+        "Bleu_3": 0.6369792095667713,
+        "Bleu_4": 0.5605709158339637,
+        "METEOR": 0.3861510168287703,
+        "ROUGE_L": 0.740244241494693,
+        "CIDEr": 1.3401925277947833,
+        "SPICE": 0.3367473657799596
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.5831791992108011,
+        "Mask_IoU": 0.4236766677189708,
+        "Mask_mIoU": 0.3895527147211079,
+        "IoU_road": 0.36032655628090826,
+        "IoU_building": 0.41877887316130746
+      }
+    },
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_10000.pt",
+      "paper_score": 1.1969697497655636,
+      "caption_score": 1.1826684454794196,
+      "aux_tiebreak": 0.4767101428714628,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.8168798930684726,
+        "Bleu_2": 0.7269192807376665,
+        "Bleu_3": 0.6468367086925338,
+        "Bleu_4": 0.5768415569135482,
+        "METEOR": 0.39210053837483777,
+        "ROUGE_L": 0.740295567549126,
+        "CIDEr": 1.3470387021285193,
+        "SPICE": 0.3228434897014374
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.592841566800608,
+        "Mask_IoU": 0.4335193712689068,
+        "Mask_mIoU": 0.4037694905448736,
+        "IoU_road": 0.3845653274958313,
+        "IoU_building": 0.42297365359391614
+      }
+    },
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_6000.pt",
+      "paper_score": 1.1964540582302459,
+      "caption_score": 1.1822561148414885,
+      "aux_tiebreak": 0.4732647796252447,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.8158903584434717,
+        "Bleu_2": 0.7256685716581408,
+        "Bleu_3": 0.643784970886722,
+        "Bleu_4": 0.5713493905270131,
+        "METEOR": 0.391583910746047,
+        "ROUGE_L": 0.7414414266658625,
+        "CIDEr": 1.3451462626869666,
+        "SPICE": 0.32558021047536684
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.5904370893786403,
+        "Mask_IoU": 0.43031968651061,
+        "Mask_mIoU": 0.39903756298648385,
+        "IoU_road": 0.3833796446374106,
+        "IoU_building": 0.4146954813355573
+      }
+    },
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_8000.pt",
+      "paper_score": 1.1884092922568834,
+      "caption_score": 1.1740193555917948,
+      "aux_tiebreak": 0.4796645555029533,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.8210868555503185,
+        "Bleu_2": 0.7323492788169683,
+        "Bleu_3": 0.655696586167244,
+        "Bleu_4": 0.5902409198591244,
+        "METEOR": 0.39530923165092735,
+        "ROUGE_L": 0.7405874352552047,
+        "CIDEr": 1.3419272427930107,
+        "SPICE": 0.30720670448779575
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.5962038702973124,
+        "Mask_IoU": 0.43651599082154063,
+        "Mask_mIoU": 0.40627380539000674,
+        "IoU_road": 0.3904659032519373,
+        "IoU_building": 0.4220817075280763
+      }
+    },
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_9000.pt",
+      "paper_score": 1.186632739885768,
+      "caption_score": 1.1722187081632354,
+      "aux_tiebreak": 0.4804677240844157,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.8224410898379213,
+        "Bleu_2": 0.7353820289967442,
+        "Bleu_3": 0.6597340906209602,
+        "Bleu_4": 0.5957228355903409,
+        "METEOR": 0.39599483251511947,
+        "ROUGE_L": 0.739444829523779,
+        "CIDEr": 1.3453074367527464,
+        "SPICE": 0.30170999254103814
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.5970698322605926,
+        "Mask_IoU": 0.4373351875588923,
+        "Mask_mIoU": 0.40699815243376203,
+        "IoU_road": 0.38934955098428664,
+        "IoU_building": 0.42464675388323736
+      }
+    },
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_7000.pt",
+      "paper_score": 1.1734092308267254,
+      "caption_score": 1.159008185088021,
+      "aux_tiebreak": 0.4800348579568139,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.8247404539854984,
+        "Bleu_2": 0.7395791188782506,
+        "Bleu_3": 0.6656385829304649,
+        "Bleu_4": 0.6042508311237257,
+        "METEOR": 0.4009565587122141,
+        "ROUGE_L": 0.740128607256712,
+        "CIDEr": 1.339531275802149,
+        "SPICE": 0.28293697999587264
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.5982366773518463,
+        "Mask_IoU": 0.43793338653051467,
+        "Mask_mIoU": 0.4039345099880806,
+        "IoU_road": 0.38605021671310447,
+        "IoU_building": 0.42181880326305676
+      }
+    },
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_4000.pt",
+      "paper_score": 1.1712001556970766,
+      "caption_score": 1.1572907983711072,
+      "aux_tiebreak": 0.4636452441989805,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.8267428367400851,
+        "Bleu_2": 0.7403691077885652,
+        "Bleu_3": 0.6665409947443092,
+        "Bleu_4": 0.6053140688922951,
+        "METEOR": 0.39584207417847905,
+        "ROUGE_L": 0.7373776425377015,
+        "CIDEr": 1.336034244054199,
+        "SPICE": 0.2843109754387519
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.5815355620502052,
+        "Mask_IoU": 0.4219144174043389,
+        "Mask_mIoU": 0.38748575314239775,
+        "IoU_road": 0.359183693353287,
+        "IoU_building": 0.4157878129315085
+      }
+    },
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_3000.pt",
+      "paper_score": 1.1361178125411389,
+      "caption_score": 1.133917443416386,
+      "aux_tiebreak": 0.07334563749176541,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.8188268735716023,
+        "Bleu_2": 0.73320540707769,
+        "Bleu_3": 0.659678622347646,
+        "Bleu_4": 0.5970541299768145,
+        "METEOR": 0.37581892011544954,
+        "ROUGE_L": 0.728143209287758,
+        "CIDEr": 1.2922631326663523,
+        "SPICE": 0.2856702670347284
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.1181532906670013,
+        "Mask_IoU": 0.06489894418007283,
+        "Mask_mIoU": 0.03698467762822214,
+        "IoU_road": 0.029856034697870598,
+        "IoU_building": 0.0441133205585737
+      }
+    },
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_2000.pt",
+      "paper_score": 1.1284553669809796,
+      "caption_score": 1.1265549821707952,
+      "aux_tiebreak": 0.06334616033947844,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.8157252598282136,
+        "Bleu_2": 0.7285773224338324,
+        "Bleu_3": 0.6553281205137997,
+        "Bleu_4": 0.5963769070227145,
+        "METEOR": 0.388081771833374,
+        "ROUGE_L": 0.7265407223877831,
+        "CIDEr": 1.2972152682410736,
+        "SPICE": 0.27161655686054453
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.1085866687778885,
+        "Mask_IoU": 0.0593313072694139,
+        "Mask_mIoU": 0.022120504971132944,
+        "IoU_road": 0.03166737376274896,
+        "IoU_building": 0.012573636179516932
+      }
+    },
+    {
+      "snapshot_path": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_1000.pt",
+      "paper_score": 1.104334453325283,
+      "caption_score": 1.1023993313831741,
+      "aux_tiebreak": 0.06450406473696187,
+      "negative_ablation": false,
+      "all_above_baseline": true,
+      "metrics": {
+        "Bleu_1": 0.7373776908022761,
+        "Bleu_2": 0.6392496874028916,
+        "Bleu_3": 0.5520454300676294,
+        "Bleu_4": 0.4718529561082769,
+        "METEOR": 0.35578154634294373,
+        "ROUGE_L": 0.7084205349778955,
+        "CIDEr": 1.2517401295553887,
+        "SPICE": 0.3350389880970043
+      },
+      "aux_metrics": {
+        "Mask_F1": 0.10817982648728891,
+        "Mask_IoU": 0.059288604797499124,
+        "Mask_mIoU": 0.026043762926097568,
+        "IoU_road": 0.0272991620973793,
+        "IoU_building": 0.02478836375481583
+      }
+    }
+  ],
+  "negative_ablation_policy": "hard_gate/reweight experiments are excluded unless --allow_negative_ablation is set."
+}

@@ -1,0 +1,46 @@
+{
+  "experiment_name": "unified_rsaca_second_cc_seed1111",
+  "dataset": "second_cc",
+  "run_id": "unified_rsaca_second_cc_seed1111",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-08-16T13:16:06+08:00",
+  "end_time": "2026-08-16T13:57:05+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "paper_balanced",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 8438,
+  "val_samples": 1190,
+  "total_parameters": 17334287,
+  "trainable_parameters": 17334287,
+  "device": "cuda:0",
+  "final_epoch": 38,
+  "final_global_step": 10000,
+  "total_training_seconds": 2458.7183015346527,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 0.7604417373708685,
+      "snapshot": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_9000.pt"
+    },
+    "spice": {
+      "score": 0.20449587630721092,
+      "snapshot": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_10000.pt"
+    },
+    "balanced": {
+      "score": 0.6628523278587809,
+      "snapshot": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_10000.pt",
+      "all_above_baseline": false
+    }
+  },
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-08-16T15:36:54+08:00",
+  "test_checkpoint": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_10000.pt",
+  "test_prediction_file": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_second_cc_seed1111/test_output/captions/unified_locked/sc_results.json"
+}

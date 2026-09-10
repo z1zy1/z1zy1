@@ -35,6 +35,16 @@ data:
     pseudo_mask_root: "./SECOND-CC-AUG/pseudo_masks"
     pseudo_mask_phase: ""
     allow_missing_pseudo_mask: False
+    use_semantic_maps: True
+    num_semantic_classes: 7
+    semantic_map_root: "./SECOND-CC-AUG"
+    semantic_before_phase: "sem/A"
+    semantic_after_phase: "sem/B"
+    semantic_diff_root: ""
+    semantic_diff_phase: ""
+    semantic_diff_only: False
+    semantic_diff_binary: False
+    semantic_unknown_change_class: 6
     eval_anno_path: "./SECOND-CC-AUG/second_cc_aug_captions_reformat.json"
     splits_json: "./SECOND-CC-AUG/splits.json"
     vocab_json: "./SECOND-CC-AUG/transformer_second_cc_aug_vocab.json"

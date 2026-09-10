@@ -1,0 +1,8 @@
+{
+  "status": "initialized",
+  "start_time": null,
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-07-30T16:35:26+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/snapshots/sgc_card_lm003_ls005_pd05_rw02_warmup_checkpoint_5000.pt",
+  "test_prediction_file": "experiments/levir_cc_7_6_val_pareto_locked/test_output/captions/7_6_locked/sc_results.json"
+}

@@ -1,0 +1,1430 @@
+{
+  "status": "validation_locked",
+  "selection_uses_test_metrics": false,
+  "created_at_utc": "2026-07-30T08:32:33.184797+00:00",
+  "project_dir": "/root/autodl-tmp/z1zy1",
+  "exp_root": "/root/autodl-tmp/z1zy1/experiments",
+  "dataset_roots": {
+    "levir_cc": "/root/autodl-tmp/z1zy1/Levir-CC",
+    "levir_mci": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset",
+    "second_cc": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG"
+  },
+  "baseline_artifacts": {
+    "levir_cc": {
+      "path": "/root/autodl-tmp/z1zy1/experiments/card_levir_cc_baseline/baseline_best_checkpoint.json",
+      "metrics": {
+        "Bleu_1": 0.7366404517038982,
+        "Bleu_2": 0.6170244116272472,
+        "Bleu_3": 0.5187637163805232,
+        "Bleu_4": 0.435706092585242,
+        "METEOR": 0.33566115026544174,
+        "ROUGE_L": 0.693103364579955,
+        "CIDEr": 1.2316900114492542,
+        "SPICE": 0.2544927116099807
+      },
+      "artifact": {
+        "role": "levir_cc_baseline_validation",
+        "path": "/root/autodl-tmp/z1zy1/experiments/card_levir_cc_baseline/baseline_best_checkpoint.json",
+        "size": 2397,
+        "sha256": "ed1e7468c374f22b8012bada4ba2f9afb86f18a3cf709e37a21dd2f9e1261c57"
+      },
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/card_levir_cc_baseline/snapshots/card_levir_cc_baseline_checkpoint_5000.pt",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/card_levir_cc_baseline/resolved_config.json"
+    },
+    "levir_mci": {
+      "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/baseline_best_checkpoint.json",
+      "metrics": {
+        "Bleu_1": 0.7200117889772355,
+        "Bleu_2": 0.5997335393975585,
+        "Bleu_3": 0.5044289842816043,
+        "Bleu_4": 0.42282685313161295,
+        "METEOR": 0.3336456453010349,
+        "ROUGE_L": 0.6861853567671866,
+        "CIDEr": 1.2188692074396106,
+        "SPICE": 0.25549991873653544
+      },
+      "artifact": {
+        "role": "levir_mci_baseline_validation",
+        "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/baseline_best_checkpoint.json",
+        "size": 2414,
+        "sha256": "997ecc07980ba555f583409d082239cf58f2c319435042d846bb8e511c73d25b"
+      },
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/snapshots/levir_mci_card_baseline_checkpoint_8000.pt",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/resolved_config.json"
+    },
+    "second_cc": {
+      "path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/baseline_best_checkpoint.json",
+      "metrics": {
+        "Bleu_1": 0.5638306550289123,
+        "Bleu_2": 0.39641285791725805,
+        "Bleu_3": 0.28998456227780256,
+        "Bleu_4": 0.21725453304055617,
+        "METEOR": 0.21093465549355517,
+        "ROUGE_L": 0.49514896138089093,
+        "CIDEr": 0.7052492471291172,
+        "SPICE": 0.1926513000927337
+      },
+      "artifact": {
+        "role": "second_cc_baseline_validation",
+        "path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/baseline_best_checkpoint.json",
+        "size": 2460,
+        "sha256": "9c54569722fb9e1cf95a69b158fc266cb01c716330069bf5ba76d1a7f84766b9"
+      },
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt",
+      "resolved_config": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/resolved_config.json"
+    }
+  },
+  "card_baseline_manifest": {
+    "role": "card_baseline_locked_manifest",
+    "path": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_manifest.json",
+    "size": 5845,
+    "sha256": "1e3d0be0788bf1493662548fecf97a887e16d8c23efa3c08da2623827bbef827"
+  },
+  "locks": [
+    {
+      "lock_id": "levir_cc",
+      "dataset": "levir_cc",
+      "seed": null,
+      "target_exp": "levir_cc_7_6_val_pareto_locked",
+      "selection_json": "/root/autodl-tmp/z1zy1/experiments/levir_cc_7_6_val_pareto_locked/best_checkpoint.json",
+      "selection_strategy": "val_baseline_pareto",
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/snapshots/sgc_card_lm003_ls005_pd05_rw02_warmup_checkpoint_5000.pt",
+      "selected_source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup",
+      "selected_source_exp_name": "sgc_card_lm003_ls005_pd05_rw02_warmup",
+      "source_config": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/resolved_config.json",
+      "source_config_artifact": "resolved_config.json",
+      "metrics_file": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/eval_snapshots.csv",
+      "selected_val_metrics": {
+        "Bleu_1": 0.7991231566360304,
+        "Bleu_2": 0.6983954466753169,
+        "Bleu_3": 0.607099898776688,
+        "Bleu_4": 0.5257258408910415,
+        "METEOR": 0.37948729921597985,
+        "ROUGE_L": 0.7325896461085727,
+        "CIDEr": 1.319694957386024,
+        "SPICE": 0.34685127818022404
+      },
+      "selected_metric_deltas": {
+        "Bleu_1": 0.06248270493213215,
+        "Bleu_2": 0.08137103504806975,
+        "Bleu_3": 0.08833618239616481,
+        "Bleu_4": 0.09001974830579945,
+        "METEOR": 0.0438261489505381,
+        "ROUGE_L": 0.03948628152861766,
+        "CIDEr": 0.08800494593676977,
+        "SPICE": 0.09235856657024333
+      },
+      "test_result": "/root/autodl-tmp/z1zy1/experiments/levir_cc_7_6_val_pareto_locked/test_7_6_locked_result.json",
+      "semantic_fusion_gamma_max": 0.0,
+      "method_signature": {},
+      "checkpoint_payload_audit": {
+        "model_cfg_checks": {
+          "data.dataset": "rcc_dataset_transformer_levir",
+          "train.seed": 1111,
+          "model.transformer_decoder.vocab_size": 860,
+          "model.transformer_decoder.seq_length": 41,
+          "data.eval_anno_path": "./Levir-CC/levir_cc_captions_reformat.json",
+          "data.vocab_json": "./Levir-CC/transformer_levir_vocab.json",
+          "data.h5_label_file": "./Levir-CC/transformer_levir_labels.h5",
+          "data.default_feature_dir": "./Levir-CC/features",
+          "data.semantic_feature_dir": "./Levir-CC/features"
+        },
+        "change_detector_state_keys": 40,
+        "speaker_state_keys": 42,
+        "speaker_vocab_shape_audit": {
+          "vocab_size": 860,
+          "embedding_key": "core.embed.weight",
+          "embedding_shape": [
+            860,
+            300
+          ],
+          "output_weight_shapes": {
+            "logit.weight": [
+              860,
+              512
+            ]
+          },
+          "share_wd_cls_weight": false
+        }
+      },
+      "data_audit": {
+        "artifacts": [
+          {
+            "role": "data.eval_anno_path",
+            "path": "/root/autodl-tmp/z1zy1/Levir-CC/levir_cc_captions_reformat.json",
+            "size": 7447047,
+            "sha256": "2216246659651d53fd98542103d4a41177f4f67e8f381019e024efac33473242"
+          },
+          {
+            "role": "data.vocab_json",
+            "path": "/root/autodl-tmp/z1zy1/Levir-CC/transformer_levir_vocab.json",
+            "size": 14879,
+            "sha256": "ea85207bbcd20bb8dca5b6d1051c6bf13c1ad218875ca354f14402b48786b9aa"
+          },
+          {
+            "role": "data.h5_label_file",
+            "path": "/root/autodl-tmp/z1zy1/Levir-CC/transformer_levir_labels.h5",
+            "size": 17094688,
+            "sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542"
+          },
+          {
+            "role": "data.splits_json",
+            "path": "/root/autodl-tmp/z1zy1/Levir-CC/splits.json",
+            "size": 622663,
+            "sha256": "74b4d8120ac5ed969a52e2aa6cdc48f63a7c69c50cfa8e5712cb5373479c207d"
+          },
+          {
+            "role": "train.semantic_tag_file",
+            "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+            "size": 177,
+            "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+          }
+        ],
+        "feature_directories": [
+          {
+            "path": "/root/autodl-tmp/z1zy1/Levir-CC/features",
+            "file_count": 22326,
+            "total_size": 17926527744,
+            "inventory_sha256": "1a16bda68aef7f27146886637e698747f1132dc4226dd479a703a7dd8419c44f",
+            "role": "data.default_feature_dir"
+          }
+        ],
+        "vocab_audit": {
+          "path": "/root/autodl-tmp/z1zy1/Levir-CC/transformer_levir_vocab.json",
+          "size": 860,
+          "min_index": 0,
+          "max_index": 859,
+          "indices_contiguous": true
+        },
+        "pseudo_mask_directories": [],
+        "semantic_map_directories": [],
+        "resolved_paths": {
+          "eval_anno_path": "/root/autodl-tmp/z1zy1/Levir-CC/levir_cc_captions_reformat.json",
+          "vocab_json": "/root/autodl-tmp/z1zy1/Levir-CC/transformer_levir_vocab.json",
+          "h5_label_file": "/root/autodl-tmp/z1zy1/Levir-CC/transformer_levir_labels.h5",
+          "splits_json": "/root/autodl-tmp/z1zy1/Levir-CC/splits.json",
+          "default_feature_dir": "/root/autodl-tmp/z1zy1/Levir-CC/features",
+          "semantic_feature_dir": "/root/autodl-tmp/z1zy1/Levir-CC/features",
+          "semantic_map_root": "",
+          "semantic_tag_file": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt"
+        }
+      },
+      "levir_cc_init_provenance": {
+        "manifest": {
+          "role": "levir_cc_init_7_5_manifest",
+          "path": "/root/autodl-tmp/z1zy1/experiments/7_5_locked_manifest.json",
+          "size": 4962,
+          "sha256": "662ca7ca997a592396c84d7be6e55173374648d0aaf87078ac3584b6bfba1e32"
+        },
+        "selection": {
+          "role": "levir_cc_init_7_5_selection",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_cc_7_5_val_pareto_locked/best_checkpoint.json",
+          "size": 3894,
+          "sha256": "61fafbda32e8924d837ad29e01934645e15ec7c36f4d367572625281a79f722f"
+        },
+        "checkpoint": {
+          "role": "levir_cc_init_checkpoint",
+          "path": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/snapshots/sgc_card_lm003_ls005_pd05_rw02_warmup_checkpoint_5000.pt",
+          "size": 65412498,
+          "sha256": "97f6d31cdb351710d7e2093f6a498961cad41b4b4b9977f25684a6831db03d54"
+        },
+        "source_config": {
+          "role": "levir_cc_init_source_config",
+          "path": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/resolved_config.json",
+          "size": 4163,
+          "sha256": "7b52333e419bb2d7f88fd610c8d5d7a4728043a91aa6479705e14819f78470e5"
+        },
+        "source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup",
+        "source_exp_name": "sgc_card_lm003_ls005_pd05_rw02_warmup"
+      },
+      "stability_window": {},
+      "stability_member_artifacts": [],
+      "artifacts": [
+        {
+          "role": "selection_json",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_cc_7_6_val_pareto_locked/best_checkpoint.json",
+          "size": 5473,
+          "sha256": "22b12963b85ad3cf98577f32c3f70a0bcdae66b6e75c3ba04aea56b7f7cdfd6d"
+        },
+        {
+          "role": "selected_checkpoint",
+          "path": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/snapshots/sgc_card_lm003_ls005_pd05_rw02_warmup_checkpoint_5000.pt",
+          "size": 65412498,
+          "sha256": "97f6d31cdb351710d7e2093f6a498961cad41b4b4b9977f25684a6831db03d54"
+        },
+        {
+          "role": "source_config",
+          "path": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/resolved_config.json",
+          "size": 4163,
+          "sha256": "7b52333e419bb2d7f88fd610c8d5d7a4728043a91aa6479705e14819f78470e5"
+        },
+        {
+          "role": "validation_metrics",
+          "path": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/eval_snapshots.csv",
+          "size": 3049,
+          "sha256": "10ffc12690dc66174fa915d00be59739583484cf4b8dc6965d54057beb5bf574"
+        },
+        {
+          "role": "data.eval_anno_path",
+          "path": "/root/autodl-tmp/z1zy1/Levir-CC/levir_cc_captions_reformat.json",
+          "size": 7447047,
+          "sha256": "2216246659651d53fd98542103d4a41177f4f67e8f381019e024efac33473242"
+        },
+        {
+          "role": "data.vocab_json",
+          "path": "/root/autodl-tmp/z1zy1/Levir-CC/transformer_levir_vocab.json",
+          "size": 14879,
+          "sha256": "ea85207bbcd20bb8dca5b6d1051c6bf13c1ad218875ca354f14402b48786b9aa"
+        },
+        {
+          "role": "data.h5_label_file",
+          "path": "/root/autodl-tmp/z1zy1/Levir-CC/transformer_levir_labels.h5",
+          "size": 17094688,
+          "sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542"
+        },
+        {
+          "role": "data.splits_json",
+          "path": "/root/autodl-tmp/z1zy1/Levir-CC/splits.json",
+          "size": 622663,
+          "sha256": "74b4d8120ac5ed969a52e2aa6cdc48f63a7c69c50cfa8e5712cb5373479c207d"
+        },
+        {
+          "role": "train.semantic_tag_file",
+          "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+          "size": 177,
+          "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+        },
+        {
+          "role": "levir_cc_init_7_5_manifest",
+          "path": "/root/autodl-tmp/z1zy1/experiments/7_5_locked_manifest.json",
+          "size": 4962,
+          "sha256": "662ca7ca997a592396c84d7be6e55173374648d0aaf87078ac3584b6bfba1e32"
+        },
+        {
+          "role": "levir_cc_init_7_5_selection",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_cc_7_5_val_pareto_locked/best_checkpoint.json",
+          "size": 3894,
+          "sha256": "61fafbda32e8924d837ad29e01934645e15ec7c36f4d367572625281a79f722f"
+        },
+        {
+          "role": "levir_cc_init_checkpoint",
+          "path": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/snapshots/sgc_card_lm003_ls005_pd05_rw02_warmup_checkpoint_5000.pt",
+          "size": 65412498,
+          "sha256": "97f6d31cdb351710d7e2093f6a498961cad41b4b4b9977f25684a6831db03d54"
+        },
+        {
+          "role": "levir_cc_init_source_config",
+          "path": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/resolved_config.json",
+          "size": 4163,
+          "sha256": "7b52333e419bb2d7f88fd610c8d5d7a4728043a91aa6479705e14819f78470e5"
+        }
+      ]
+    },
+    {
+      "lock_id": "levir_mci_seed1111",
+      "dataset": "levir_mci",
+      "seed": 1111,
+      "target_exp": "levir_mci_masksemantic_repro_seed1111_7_6_val_locked",
+      "selection_json": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111_7_6_val_locked/best_checkpoint.json",
+      "selection_strategy": "val_baseline_pareto",
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111/snapshots/levir_mci_masksemantic_repro_seed1111_checkpoint_5000.pt",
+      "selected_source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111",
+      "selected_source_exp_name": "levir_mci_masksemantic_repro_seed1111",
+      "source_config": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111/resolved_config.json",
+      "source_config_artifact": "resolved_config.json",
+      "metrics_file": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111/val_metrics.csv",
+      "selected_val_metrics": {
+        "Bleu_1": 0.7323957513767966,
+        "Bleu_2": 0.6131380621423663,
+        "Bleu_3": 0.5161483385247722,
+        "Bleu_4": 0.43449954264242413,
+        "METEOR": 0.3356250320051572,
+        "ROUGE_L": 0.688674482408916,
+        "CIDEr": 1.2266234206266797,
+        "SPICE": 0.2625997839895975
+      },
+      "selected_metric_deltas": {
+        "Bleu_1": 0.012383962399561077,
+        "Bleu_2": 0.013404522744807856,
+        "Bleu_3": 0.011719354243167834,
+        "Bleu_4": 0.011672689510811185,
+        "METEOR": 0.001979386704122288,
+        "ROUGE_L": 0.0024891256417294283,
+        "CIDEr": 0.007754213187069148,
+        "SPICE": 0.007099865253062054
+      },
+      "test_result": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111_7_6_val_locked/test_7_6_locked_result.json",
+      "semantic_fusion_gamma_max": 0.0,
+      "method_signature": {
+        "normalized_config_sha256": "f97b850f8ad8c574921bce01ad6d8545332690cd96a3c72cdfab15f75cbd3e18",
+        "critical_values": {
+          "model.type": "sgc_card",
+          "data.dataset": "levir_mci",
+          "data.use_change_mask": true,
+          "data.mask_type": "multiclass",
+          "model.enable_aux_mask": true,
+          "train.use_semantic_aux": true,
+          "model.semantic_input_mode": "aux",
+          "train.lambda_mask": 0.003,
+          "train.lambda_semantic": 0.005,
+          "train.use_feature_reweight": false,
+          "train.finetune_decoder_only": false,
+          "train.use_semantic_partial_detach": false,
+          "train.semantic_detach_ratio": 0.5,
+          "train.mask_loss_type": "ce_dice",
+          "train.semantic_loss_type": "multilabel_bce",
+          "train.use_aux_warmup": true,
+          "train.aux_warmup_start_ratio": 0.3,
+          "train.aux_warmup_end_ratio": 0.7,
+          "train.max_iter": 10000,
+          "train.total_steps": 10000,
+          "train.snapshot_interval": 1000,
+          "train.save_interval": 1000,
+          "train.eval_interval": 1000,
+          "train.optim.type": "adam",
+          "train.optim.lr": 0.0002,
+          "train.optim.weight_decay": 0.0,
+          "train.optim.step_size": 17,
+          "train.optim.gamma": 0.1,
+          "data.train.batch_size": 32
+        }
+      },
+      "checkpoint_payload_audit": {
+        "model_cfg_checks": {
+          "data.dataset": "levir_mci",
+          "train.seed": 1111,
+          "model.type": "sgc_card",
+          "model.semantic_input_mode": "aux",
+          "model.transformer_decoder.vocab_size": 860,
+          "model.transformer_decoder.seq_length": 41,
+          "data.eval_anno_path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+          "data.vocab_json": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "data.h5_label_file": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+          "data.default_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+          "data.semantic_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features"
+        },
+        "change_detector_state_keys": 40,
+        "speaker_state_keys": 42,
+        "speaker_vocab_shape_audit": {
+          "vocab_size": 860,
+          "embedding_key": "core.embed.weight",
+          "embedding_shape": [
+            860,
+            300
+          ],
+          "output_weight_shapes": {
+            "logit.weight": [
+              860,
+              512
+            ]
+          },
+          "share_wd_cls_weight": false
+        }
+      },
+      "data_audit": {
+        "artifacts": [
+          {
+            "role": "data.eval_anno_path",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+            "size": 7739304,
+            "sha256": "58ac690b9081eb45a5ff0bd625f9da9ff46360ecbdb50d9f3814221f20a93ec8"
+          },
+          {
+            "role": "data.vocab_json",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+            "size": 15740,
+            "sha256": "7e9843473ca46e323b64092923284f145d544e4401e9969d7bac26b0bc44d3aa"
+          },
+          {
+            "role": "data.h5_label_file",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+            "size": 17094688,
+            "sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542"
+          },
+          {
+            "role": "data.splits_json",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/splits.json",
+            "size": 652905,
+            "sha256": "e24c05ea5520eb03e9e2f2d10330ab6e447da8b827fa13ebda061350f7e7df2a"
+          },
+          {
+            "role": "data.changeflag_json",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/LevirCCcaptions.json",
+            "size": 9232677,
+            "sha256": "8c8c3f494867b796306b98713e16ff72cbae1cf4a0a0c36931da16af9602daed"
+          },
+          {
+            "role": "train.semantic_tag_file",
+            "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+            "size": 177,
+            "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+          }
+        ],
+        "feature_directories": [
+          {
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+            "file_count": 20154,
+            "total_size": 16182533376,
+            "inventory_sha256": "3f2eecff3c45619b9f1eb878f45871bce830d7c425c78bffef2097c45fd2d4fd",
+            "role": "data.default_feature_dir"
+          }
+        ],
+        "vocab_audit": {
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "size": 860,
+          "min_index": 0,
+          "max_index": 859,
+          "indices_contiguous": true
+        },
+        "pseudo_mask_directories": [
+          {
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/images",
+            "file_count": 40311,
+            "total_size": 2892538301,
+            "inventory_sha256": "8f450d4954bcb2c9cf63580fe80ea2c39ed849eaf551c78953c1b7676381cb17",
+            "role": "data.pseudo_mask_root"
+          }
+        ],
+        "semantic_map_directories": [],
+        "resolved_paths": {
+          "eval_anno_path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+          "vocab_json": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "h5_label_file": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+          "splits_json": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/splits.json",
+          "default_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+          "semantic_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+          "semantic_map_root": "",
+          "semantic_tag_file": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt"
+        }
+      },
+      "levir_cc_init_provenance": {},
+      "stability_window": {},
+      "stability_member_artifacts": [],
+      "artifacts": [
+        {
+          "role": "selection_json",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111_7_6_val_locked/best_checkpoint.json",
+          "size": 3558,
+          "sha256": "f9d36e83b64cf2ebd9725a11eb566f3ab6c798a342e22a6bf55a11a1696b81be"
+        },
+        {
+          "role": "selected_checkpoint",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111/snapshots/levir_mci_masksemantic_repro_seed1111_checkpoint_5000.pt",
+          "size": 65416641,
+          "sha256": "231e10cec4e02957e1588c5f925ab05284693d3040dbb78dfbc0301efc350784"
+        },
+        {
+          "role": "source_config",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111/resolved_config.json",
+          "size": 7108,
+          "sha256": "2ee2048f9ef667bcf8d6609a993380fd448d1a206717068589adf5667b6eeff1"
+        },
+        {
+          "role": "validation_metrics",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111/val_metrics.csv",
+          "size": 3341,
+          "sha256": "3f73058a42b29e450c1af9627acde08f059104a021588c8cdd1f5256194541e1"
+        },
+        {
+          "role": "data.eval_anno_path",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+          "size": 7739304,
+          "sha256": "58ac690b9081eb45a5ff0bd625f9da9ff46360ecbdb50d9f3814221f20a93ec8"
+        },
+        {
+          "role": "data.vocab_json",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "size": 15740,
+          "sha256": "7e9843473ca46e323b64092923284f145d544e4401e9969d7bac26b0bc44d3aa"
+        },
+        {
+          "role": "data.h5_label_file",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+          "size": 17094688,
+          "sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542"
+        },
+        {
+          "role": "data.splits_json",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/splits.json",
+          "size": 652905,
+          "sha256": "e24c05ea5520eb03e9e2f2d10330ab6e447da8b827fa13ebda061350f7e7df2a"
+        },
+        {
+          "role": "data.changeflag_json",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/LevirCCcaptions.json",
+          "size": 9232677,
+          "sha256": "8c8c3f494867b796306b98713e16ff72cbae1cf4a0a0c36931da16af9602daed"
+        },
+        {
+          "role": "train.semantic_tag_file",
+          "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+          "size": 177,
+          "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+        }
+      ]
+    },
+    {
+      "lock_id": "levir_mci_seed2222",
+      "dataset": "levir_mci",
+      "seed": 2222,
+      "target_exp": "levir_mci_masksemantic_repro_seed2222_7_6_val_locked",
+      "selection_json": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222_7_6_val_locked/best_checkpoint.json",
+      "selection_strategy": "val_baseline_pareto",
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/snapshots/levir_mci_masksemantic_repro_seed2222_checkpoint_9000.pt",
+      "selected_source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222",
+      "selected_source_exp_name": "levir_mci_masksemantic_repro_seed2222",
+      "source_config": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/resolved_config.json",
+      "source_config_artifact": "resolved_config.json",
+      "metrics_file": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/val_metrics.csv",
+      "selected_val_metrics": {
+        "Bleu_1": 0.7319474835885487,
+        "Bleu_2": 0.6099660781787787,
+        "Bleu_3": 0.5128200746755291,
+        "Bleu_4": 0.4282422016446097,
+        "METEOR": 0.3341176013884891,
+        "ROUGE_L": 0.6933765238742322,
+        "CIDEr": 1.2263908459767203,
+        "SPICE": 0.2608220327552191
+      },
+      "selected_metric_deltas": {
+        "Bleu_1": 0.011935694611313163,
+        "Bleu_2": 0.010232538781220213,
+        "Bleu_3": 0.008391090393924827,
+        "Bleu_4": 0.005415348512996743,
+        "METEOR": 0.00047195608745420614,
+        "ROUGE_L": 0.007191167107045593,
+        "CIDEr": 0.007521638537109743,
+        "SPICE": 0.005322114018683655
+      },
+      "test_result": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222_7_6_val_locked/test_7_6_locked_result.json",
+      "semantic_fusion_gamma_max": 0.0,
+      "method_signature": {
+        "normalized_config_sha256": "f97b850f8ad8c574921bce01ad6d8545332690cd96a3c72cdfab15f75cbd3e18",
+        "critical_values": {
+          "model.type": "sgc_card",
+          "data.dataset": "levir_mci",
+          "data.use_change_mask": true,
+          "data.mask_type": "multiclass",
+          "model.enable_aux_mask": true,
+          "train.use_semantic_aux": true,
+          "model.semantic_input_mode": "aux",
+          "train.lambda_mask": 0.003,
+          "train.lambda_semantic": 0.005,
+          "train.use_feature_reweight": false,
+          "train.finetune_decoder_only": false,
+          "train.use_semantic_partial_detach": false,
+          "train.semantic_detach_ratio": 0.5,
+          "train.mask_loss_type": "ce_dice",
+          "train.semantic_loss_type": "multilabel_bce",
+          "train.use_aux_warmup": true,
+          "train.aux_warmup_start_ratio": 0.3,
+          "train.aux_warmup_end_ratio": 0.7,
+          "train.max_iter": 10000,
+          "train.total_steps": 10000,
+          "train.snapshot_interval": 1000,
+          "train.save_interval": 1000,
+          "train.eval_interval": 1000,
+          "train.optim.type": "adam",
+          "train.optim.lr": 0.0002,
+          "train.optim.weight_decay": 0.0,
+          "train.optim.step_size": 17,
+          "train.optim.gamma": 0.1,
+          "data.train.batch_size": 32
+        }
+      },
+      "checkpoint_payload_audit": {
+        "model_cfg_checks": {
+          "data.dataset": "levir_mci",
+          "train.seed": 2222,
+          "model.type": "sgc_card",
+          "model.semantic_input_mode": "aux",
+          "model.transformer_decoder.vocab_size": 860,
+          "model.transformer_decoder.seq_length": 41,
+          "data.eval_anno_path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+          "data.vocab_json": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "data.h5_label_file": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+          "data.default_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+          "data.semantic_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features"
+        },
+        "change_detector_state_keys": 40,
+        "speaker_state_keys": 42,
+        "speaker_vocab_shape_audit": {
+          "vocab_size": 860,
+          "embedding_key": "core.embed.weight",
+          "embedding_shape": [
+            860,
+            300
+          ],
+          "output_weight_shapes": {
+            "logit.weight": [
+              860,
+              512
+            ]
+          },
+          "share_wd_cls_weight": false
+        }
+      },
+      "data_audit": {
+        "artifacts": [
+          {
+            "role": "data.eval_anno_path",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+            "size": 7739304,
+            "sha256": "58ac690b9081eb45a5ff0bd625f9da9ff46360ecbdb50d9f3814221f20a93ec8"
+          },
+          {
+            "role": "data.vocab_json",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+            "size": 15740,
+            "sha256": "7e9843473ca46e323b64092923284f145d544e4401e9969d7bac26b0bc44d3aa"
+          },
+          {
+            "role": "data.h5_label_file",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+            "size": 17094688,
+            "sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542"
+          },
+          {
+            "role": "data.splits_json",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/splits.json",
+            "size": 652905,
+            "sha256": "e24c05ea5520eb03e9e2f2d10330ab6e447da8b827fa13ebda061350f7e7df2a"
+          },
+          {
+            "role": "data.changeflag_json",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/LevirCCcaptions.json",
+            "size": 9232677,
+            "sha256": "8c8c3f494867b796306b98713e16ff72cbae1cf4a0a0c36931da16af9602daed"
+          },
+          {
+            "role": "train.semantic_tag_file",
+            "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+            "size": 177,
+            "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+          }
+        ],
+        "feature_directories": [
+          {
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+            "file_count": 20154,
+            "total_size": 16182533376,
+            "inventory_sha256": "3f2eecff3c45619b9f1eb878f45871bce830d7c425c78bffef2097c45fd2d4fd",
+            "role": "data.default_feature_dir"
+          }
+        ],
+        "vocab_audit": {
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "size": 860,
+          "min_index": 0,
+          "max_index": 859,
+          "indices_contiguous": true
+        },
+        "pseudo_mask_directories": [
+          {
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/images",
+            "file_count": 40311,
+            "total_size": 2892538301,
+            "inventory_sha256": "8f450d4954bcb2c9cf63580fe80ea2c39ed849eaf551c78953c1b7676381cb17",
+            "role": "data.pseudo_mask_root"
+          }
+        ],
+        "semantic_map_directories": [],
+        "resolved_paths": {
+          "eval_anno_path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+          "vocab_json": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "h5_label_file": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+          "splits_json": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/splits.json",
+          "default_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+          "semantic_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+          "semantic_map_root": "",
+          "semantic_tag_file": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt"
+        }
+      },
+      "levir_cc_init_provenance": {},
+      "stability_window": {},
+      "stability_member_artifacts": [],
+      "artifacts": [
+        {
+          "role": "selection_json",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222_7_6_val_locked/best_checkpoint.json",
+          "size": 3573,
+          "sha256": "0e967b0476f4cde4846d4a468d313f6ead7d8f7b9ff057178462498f469dfc7e"
+        },
+        {
+          "role": "selected_checkpoint",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/snapshots/levir_mci_masksemantic_repro_seed2222_checkpoint_9000.pt",
+          "size": 65416502,
+          "sha256": "ff8c7f99c9f266bcf18f5a32039ca942b265cd1e4a33461b2f0425ab5daa9b5c"
+        },
+        {
+          "role": "source_config",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/resolved_config.json",
+          "size": 7108,
+          "sha256": "883ab8e56261609ee8d1e5d5551e9fcf2dc26907874d66df2ae0d31624f9eff9"
+        },
+        {
+          "role": "validation_metrics",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/val_metrics.csv",
+          "size": 3332,
+          "sha256": "02bb9550967e30cc33e74620b0ba9d384942a61135c8d98ea7973d6b72516b47"
+        },
+        {
+          "role": "data.eval_anno_path",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+          "size": 7739304,
+          "sha256": "58ac690b9081eb45a5ff0bd625f9da9ff46360ecbdb50d9f3814221f20a93ec8"
+        },
+        {
+          "role": "data.vocab_json",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "size": 15740,
+          "sha256": "7e9843473ca46e323b64092923284f145d544e4401e9969d7bac26b0bc44d3aa"
+        },
+        {
+          "role": "data.h5_label_file",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+          "size": 17094688,
+          "sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542"
+        },
+        {
+          "role": "data.splits_json",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/splits.json",
+          "size": 652905,
+          "sha256": "e24c05ea5520eb03e9e2f2d10330ab6e447da8b827fa13ebda061350f7e7df2a"
+        },
+        {
+          "role": "data.changeflag_json",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/LevirCCcaptions.json",
+          "size": 9232677,
+          "sha256": "8c8c3f494867b796306b98713e16ff72cbae1cf4a0a0c36931da16af9602daed"
+        },
+        {
+          "role": "train.semantic_tag_file",
+          "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+          "size": 177,
+          "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+        }
+      ]
+    },
+    {
+      "lock_id": "levir_mci_seed3333",
+      "dataset": "levir_mci",
+      "seed": 3333,
+      "target_exp": "levir_mci_masksemantic_repro_seed3333_7_6_val_locked",
+      "selection_json": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333_7_6_val_locked/best_checkpoint.json",
+      "selection_strategy": "val_baseline_pareto",
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333/snapshots/levir_mci_masksemantic_repro_seed3333_checkpoint_10000.pt",
+      "selected_source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333",
+      "selected_source_exp_name": "levir_mci_masksemantic_repro_seed3333",
+      "source_config": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333/resolved_config.json",
+      "source_config_artifact": "resolved_config.json",
+      "metrics_file": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333/val_metrics.csv",
+      "selected_val_metrics": {
+        "Bleu_1": 0.7387378448104049,
+        "Bleu_2": 0.6151142643859344,
+        "Bleu_3": 0.5154006791876622,
+        "Bleu_4": 0.43224863310960754,
+        "METEOR": 0.3399550981212289,
+        "ROUGE_L": 0.6910544981914238,
+        "CIDEr": 1.2329132592760264,
+        "SPICE": 0.25974829382476444
+      },
+      "selected_metric_deltas": {
+        "Bleu_1": 0.01872605583316944,
+        "Bleu_2": 0.015380724988375949,
+        "Bleu_3": 0.010971694906057872,
+        "Bleu_4": 0.009421779977994593,
+        "METEOR": 0.006309452820194017,
+        "ROUGE_L": 0.004869141424237222,
+        "CIDEr": 0.014044051836415772,
+        "SPICE": 0.004248375088229006
+      },
+      "test_result": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333_7_6_val_locked/test_7_6_locked_result.json",
+      "semantic_fusion_gamma_max": 0.0,
+      "method_signature": {
+        "normalized_config_sha256": "f97b850f8ad8c574921bce01ad6d8545332690cd96a3c72cdfab15f75cbd3e18",
+        "critical_values": {
+          "model.type": "sgc_card",
+          "data.dataset": "levir_mci",
+          "data.use_change_mask": true,
+          "data.mask_type": "multiclass",
+          "model.enable_aux_mask": true,
+          "train.use_semantic_aux": true,
+          "model.semantic_input_mode": "aux",
+          "train.lambda_mask": 0.003,
+          "train.lambda_semantic": 0.005,
+          "train.use_feature_reweight": false,
+          "train.finetune_decoder_only": false,
+          "train.use_semantic_partial_detach": false,
+          "train.semantic_detach_ratio": 0.5,
+          "train.mask_loss_type": "ce_dice",
+          "train.semantic_loss_type": "multilabel_bce",
+          "train.use_aux_warmup": true,
+          "train.aux_warmup_start_ratio": 0.3,
+          "train.aux_warmup_end_ratio": 0.7,
+          "train.max_iter": 10000,
+          "train.total_steps": 10000,
+          "train.snapshot_interval": 1000,
+          "train.save_interval": 1000,
+          "train.eval_interval": 1000,
+          "train.optim.type": "adam",
+          "train.optim.lr": 0.0002,
+          "train.optim.weight_decay": 0.0,
+          "train.optim.step_size": 17,
+          "train.optim.gamma": 0.1,
+          "data.train.batch_size": 32
+        }
+      },
+      "checkpoint_payload_audit": {
+        "model_cfg_checks": {
+          "data.dataset": "levir_mci",
+          "train.seed": 3333,
+          "model.type": "sgc_card",
+          "model.semantic_input_mode": "aux",
+          "model.transformer_decoder.vocab_size": 860,
+          "model.transformer_decoder.seq_length": 41,
+          "data.eval_anno_path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+          "data.vocab_json": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "data.h5_label_file": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+          "data.default_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+          "data.semantic_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features"
+        },
+        "change_detector_state_keys": 40,
+        "speaker_state_keys": 42,
+        "speaker_vocab_shape_audit": {
+          "vocab_size": 860,
+          "embedding_key": "core.embed.weight",
+          "embedding_shape": [
+            860,
+            300
+          ],
+          "output_weight_shapes": {
+            "logit.weight": [
+              860,
+              512
+            ]
+          },
+          "share_wd_cls_weight": false
+        }
+      },
+      "data_audit": {
+        "artifacts": [
+          {
+            "role": "data.eval_anno_path",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+            "size": 7739304,
+            "sha256": "58ac690b9081eb45a5ff0bd625f9da9ff46360ecbdb50d9f3814221f20a93ec8"
+          },
+          {
+            "role": "data.vocab_json",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+            "size": 15740,
+            "sha256": "7e9843473ca46e323b64092923284f145d544e4401e9969d7bac26b0bc44d3aa"
+          },
+          {
+            "role": "data.h5_label_file",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+            "size": 17094688,
+            "sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542"
+          },
+          {
+            "role": "data.splits_json",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/splits.json",
+            "size": 652905,
+            "sha256": "e24c05ea5520eb03e9e2f2d10330ab6e447da8b827fa13ebda061350f7e7df2a"
+          },
+          {
+            "role": "data.changeflag_json",
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/LevirCCcaptions.json",
+            "size": 9232677,
+            "sha256": "8c8c3f494867b796306b98713e16ff72cbae1cf4a0a0c36931da16af9602daed"
+          },
+          {
+            "role": "train.semantic_tag_file",
+            "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+            "size": 177,
+            "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+          }
+        ],
+        "feature_directories": [
+          {
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+            "file_count": 20154,
+            "total_size": 16182533376,
+            "inventory_sha256": "3f2eecff3c45619b9f1eb878f45871bce830d7c425c78bffef2097c45fd2d4fd",
+            "role": "data.default_feature_dir"
+          }
+        ],
+        "vocab_audit": {
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "size": 860,
+          "min_index": 0,
+          "max_index": 859,
+          "indices_contiguous": true
+        },
+        "pseudo_mask_directories": [
+          {
+            "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/images",
+            "file_count": 40311,
+            "total_size": 2892538301,
+            "inventory_sha256": "8f450d4954bcb2c9cf63580fe80ea2c39ed849eaf551c78953c1b7676381cb17",
+            "role": "data.pseudo_mask_root"
+          }
+        ],
+        "semantic_map_directories": [],
+        "resolved_paths": {
+          "eval_anno_path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+          "vocab_json": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "h5_label_file": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+          "splits_json": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/splits.json",
+          "default_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+          "semantic_feature_dir": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/features",
+          "semantic_map_root": "",
+          "semantic_tag_file": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt"
+        }
+      },
+      "levir_cc_init_provenance": {},
+      "stability_window": {},
+      "stability_member_artifacts": [],
+      "artifacts": [
+        {
+          "role": "selection_json",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333_7_6_val_locked/best_checkpoint.json",
+          "size": 3578,
+          "sha256": "d64193141cc1261405b606c806877727b2a11293fd9a46cf930be3c34897b430"
+        },
+        {
+          "role": "selected_checkpoint",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333/snapshots/levir_mci_masksemantic_repro_seed3333_checkpoint_10000.pt",
+          "size": 65416624,
+          "sha256": "f1b3764251c493d956c2588ff910d276a611e19bf6829607c3bde77d99bff7e7"
+        },
+        {
+          "role": "source_config",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333/resolved_config.json",
+          "size": 7108,
+          "sha256": "2e9e10001cb1e9ce04beccb87bf5f93181ef82edf4a62aeb50d0350c6892b4fa"
+        },
+        {
+          "role": "validation_metrics",
+          "path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333/val_metrics.csv",
+          "size": 3341,
+          "sha256": "37ad4235b1876577e7be4770337f67d243284a28fa6b144e25c01f7a2fa97cbc"
+        },
+        {
+          "role": "data.eval_anno_path",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/levir_mci_captions_reformat.json",
+          "size": 7739304,
+          "sha256": "58ac690b9081eb45a5ff0bd625f9da9ff46360ecbdb50d9f3814221f20a93ec8"
+        },
+        {
+          "role": "data.vocab_json",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_vocab.json",
+          "size": 15740,
+          "sha256": "7e9843473ca46e323b64092923284f145d544e4401e9969d7bac26b0bc44d3aa"
+        },
+        {
+          "role": "data.h5_label_file",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/transformer_levir_mci_labels.h5",
+          "size": 17094688,
+          "sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542"
+        },
+        {
+          "role": "data.splits_json",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/splits.json",
+          "size": 652905,
+          "sha256": "e24c05ea5520eb03e9e2f2d10330ab6e447da8b827fa13ebda061350f7e7df2a"
+        },
+        {
+          "role": "data.changeflag_json",
+          "path": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset/LevirCCcaptions.json",
+          "size": 9232677,
+          "sha256": "8c8c3f494867b796306b98713e16ff72cbae1cf4a0a0c36931da16af9602daed"
+        },
+        {
+          "role": "train.semantic_tag_file",
+          "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+          "size": 177,
+          "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+        }
+      ]
+    },
+    {
+      "lock_id": "second_cc",
+      "dataset": "second_cc",
+      "seed": null,
+      "target_exp": "second_cc_7_6_stable_locked",
+      "selection_json": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_6_stable_locked/best_checkpoint.json",
+      "selection_strategy": "val_baseline_stable_window",
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_9000.pt",
+      "selected_source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn",
+      "selected_source_exp_name": "second_cc_card_semantic_crossattn",
+      "source_config": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/resolved_config.json",
+      "source_config_artifact": "resolved_config.json",
+      "metrics_file": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/eval_snapshots.csv",
+      "selected_val_metrics": {
+        "Bleu_1": 0.6540426567187856,
+        "Bleu_2": 0.5010254631125314,
+        "Bleu_3": 0.3919539958905213,
+        "Bleu_4": 0.3123563544835974,
+        "METEOR": 0.25205095927418153,
+        "ROUGE_L": 0.5620428957003997,
+        "CIDEr": 0.8458178101513545,
+        "SPICE": 0.26614246663512037
+      },
+      "selected_metric_deltas": {
+        "Bleu_1": 0.09021200168987331,
+        "Bleu_2": 0.10461260519527332,
+        "Bleu_3": 0.10196943361271876,
+        "Bleu_4": 0.09510182144304122,
+        "METEOR": 0.04111630378062636,
+        "ROUGE_L": 0.06689393431950874,
+        "CIDEr": 0.1405685630222373,
+        "SPICE": 0.07349116654238666
+      },
+      "test_result": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_6_stable_locked/test_7_6_locked_result.json",
+      "semantic_fusion_gamma_max": 0.0,
+      "method_signature": {},
+      "checkpoint_payload_audit": {
+        "model_cfg_checks": {
+          "data.dataset": "second_cc",
+          "train.seed": 1111,
+          "model.type": "sgc_card",
+          "model.semantic_input_mode": "cross_attention",
+          "model.transformer_decoder.vocab_size": 956,
+          "model.transformer_decoder.seq_length": 23,
+          "data.eval_anno_path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/second_cc_aug_captions_reformat.json",
+          "data.vocab_json": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/transformer_second_cc_aug_vocab.json",
+          "data.h5_label_file": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/transformer_second_cc_aug_labels.h5",
+          "data.default_feature_dir": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/features",
+          "data.semantic_feature_dir": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/features"
+        },
+        "change_detector_state_keys": 43,
+        "speaker_state_keys": 42,
+        "speaker_vocab_shape_audit": {
+          "vocab_size": 956,
+          "embedding_key": "core.embed.weight",
+          "embedding_shape": [
+            956,
+            300
+          ],
+          "output_weight_shapes": {
+            "logit.weight": [
+              956,
+              512
+            ]
+          },
+          "share_wd_cls_weight": false
+        }
+      },
+      "data_audit": {
+        "artifacts": [
+          {
+            "role": "data.eval_anno_path",
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/second_cc_aug_captions_reformat.json",
+            "size": 9587644,
+            "sha256": "9999e3b21e0608ba7befe7824907db9ac68c165fbc844b135ae11e1f74995499"
+          },
+          {
+            "role": "data.vocab_json",
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/transformer_second_cc_aug_vocab.json",
+            "size": 17664,
+            "sha256": "63805176a88f16b6e29e3729f77cb3b536c24679bb4b89b51e7b4d6d5a9dd4c0"
+          },
+          {
+            "role": "data.h5_label_file",
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/transformer_second_cc_aug_labels.h5",
+            "size": 10583600,
+            "sha256": "b523adfcbb6026bf858c5f7d1ed48903e6ab1e14c80d803feb510680dc386b52"
+          },
+          {
+            "role": "data.splits_json",
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/splits.json",
+            "size": 769550,
+            "sha256": "6c5e7dcf3e896e6e1da14cb8383e6399eba127c9795c20879502c4f792e1b4ec"
+          },
+          {
+            "role": "data.changeflag_json",
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/SECOND-CC-AUG.json",
+            "size": 37174356,
+            "sha256": "4c5d3d980707214dd74765e04d4247a7714ed1500a9b18e3c9daf2ca3faa39ce"
+          },
+          {
+            "role": "train.semantic_tag_file",
+            "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+            "size": 177,
+            "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+          }
+        ],
+        "feature_directories": [
+          {
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/features",
+            "file_count": 21710,
+            "total_size": 17431914240,
+            "inventory_sha256": "309088fd8700a7eb07c7b6f8fd7c196e0d323ed06e1cd0d5f0441dfd9289eee1",
+            "role": "data.default_feature_dir"
+          }
+        ],
+        "vocab_audit": {
+          "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/transformer_second_cc_aug_vocab.json",
+          "size": 956,
+          "min_index": 0,
+          "max_index": 955,
+          "indices_contiguous": true
+        },
+        "pseudo_mask_directories": [],
+        "semantic_map_directories": [
+          {
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/train/sem/A",
+            "file_count": 8438,
+            "total_size": 651484951,
+            "inventory_sha256": "f4d14aae93e9093331c22ac035cd25a36d72a618e32c26846c4bdca190574e5e",
+            "role": "data.semantic_map_root/semantic_before_phase/split_first/train"
+          },
+          {
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/val/sem/A",
+            "file_count": 1190,
+            "total_size": 90347444,
+            "inventory_sha256": "74e2fe42e0fbb85a161e36632cac0767f6bf3847aa4f9639078826a6a52feafe",
+            "role": "data.semantic_map_root/semantic_before_phase/split_first/val"
+          },
+          {
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/test/sem/A",
+            "file_count": 1227,
+            "total_size": 186806768,
+            "inventory_sha256": "8c11d5d0121895537464dd5032e6cdb0aaabeb3b20c304a6d83487ef96a1c73b",
+            "role": "data.semantic_map_root/semantic_before_phase/split_first/test"
+          },
+          {
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/train/sem/B",
+            "file_count": 8438,
+            "total_size": 651488524,
+            "inventory_sha256": "32c9e80873c125fd434dab753040e92720ceccdcf061cf73b108fde0146ae09b",
+            "role": "data.semantic_map_root/semantic_after_phase/split_first/train"
+          },
+          {
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/val/sem/B",
+            "file_count": 1190,
+            "total_size": 90350039,
+            "inventory_sha256": "9a2c311fb23af8349bb91a349ab9db72b61f438279986132d914337b05c004ef",
+            "role": "data.semantic_map_root/semantic_after_phase/split_first/val"
+          },
+          {
+            "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/test/sem/B",
+            "file_count": 1227,
+            "total_size": 186806768,
+            "inventory_sha256": "7ed8f7fa23ad512ebed616967f23aeff27af79bef2a13780c4db3e42328c9568",
+            "role": "data.semantic_map_root/semantic_after_phase/split_first/test"
+          }
+        ],
+        "resolved_paths": {
+          "eval_anno_path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/second_cc_aug_captions_reformat.json",
+          "vocab_json": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/transformer_second_cc_aug_vocab.json",
+          "h5_label_file": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/transformer_second_cc_aug_labels.h5",
+          "splits_json": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/splits.json",
+          "default_feature_dir": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/features",
+          "semantic_feature_dir": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/features",
+          "semantic_map_root": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG",
+          "semantic_tag_file": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt"
+        }
+      },
+      "levir_cc_init_provenance": {},
+      "stability_window": {
+        "size": 3,
+        "source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn",
+        "source_exp_name": "second_cc_card_semantic_crossattn",
+        "expected_step_gap": 1000,
+        "member_steps": [
+          8000,
+          9000,
+          10000
+        ],
+        "member_checkpoints": [
+          "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_8000.pt",
+          "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_9000.pt",
+          "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_10000.pt"
+        ],
+        "member_metrics": [
+          {
+            "Bleu_1": 0.664968152866189,
+            "Bleu_2": 0.517494230863964,
+            "Bleu_3": 0.4131616663706065,
+            "Bleu_4": 0.339630398210128,
+            "METEOR": 0.2587811595271187,
+            "ROUGE_L": 0.5658568167033272,
+            "CIDEr": 0.8444829307887971,
+            "SPICE": 0.24657133615770638
+          },
+          {
+            "Bleu_1": 0.6540426567187856,
+            "Bleu_2": 0.5010254631125314,
+            "Bleu_3": 0.3919539958905213,
+            "Bleu_4": 0.3123563544835974,
+            "METEOR": 0.25205095927418153,
+            "ROUGE_L": 0.5620428957003997,
+            "CIDEr": 0.8458178101513545,
+            "SPICE": 0.26614246663512037
+          },
+          {
+            "Bleu_1": 0.6580278128950175,
+            "Bleu_2": 0.5099330816840939,
+            "Bleu_3": 0.4084063114753886,
+            "Bleu_4": 0.33609808623851456,
+            "METEOR": 0.255323338119166,
+            "ROUGE_L": 0.5627560738536254,
+            "CIDEr": 0.8435538816640084,
+            "SPICE": 0.24598496299617661
+          }
+        ],
+        "member_metric_deltas": [
+          {
+            "Bleu_1": 0.10113749783727677,
+            "Bleu_2": 0.1210813729467059,
+            "Bleu_3": 0.12317710409280391,
+            "Bleu_4": 0.12237586516957186,
+            "METEOR": 0.04784650403356355,
+            "ROUGE_L": 0.07070785532243629,
+            "CIDEr": 0.13923368365967992,
+            "SPICE": 0.05392003606497267
+          },
+          {
+            "Bleu_1": 0.09021200168987331,
+            "Bleu_2": 0.10461260519527332,
+            "Bleu_3": 0.10196943361271876,
+            "Bleu_4": 0.09510182144304122,
+            "METEOR": 0.04111630378062636,
+            "ROUGE_L": 0.06689393431950874,
+            "CIDEr": 0.1405685630222373,
+            "SPICE": 0.07349116654238666
+          },
+          {
+            "Bleu_1": 0.09419715786610527,
+            "Bleu_2": 0.11352022376683585,
+            "Bleu_3": 0.11842174919758602,
+            "Bleu_4": 0.11884355319795839,
+            "METEOR": 0.044388682625610854,
+            "ROUGE_L": 0.06760711247273443,
+            "CIDEr": 0.13830463453489117,
+            "SPICE": 0.05333366290344291
+          }
+        ],
+        "metric_mean": {
+          "Bleu_1": 0.6590128741599974,
+          "Bleu_2": 0.5094842585535297,
+          "Bleu_3": 0.4045073245788388,
+          "Bleu_4": 0.32936161297741334,
+          "METEOR": 0.25538515230682207,
+          "ROUGE_L": 0.5635519287524507,
+          "CIDEr": 0.84461820753472,
+          "SPICE": 0.25289958859633443
+        },
+        "metric_sample_std": {
+          "Bleu_1": 0.005528957929714668,
+          "Bleu_2": 0.008243552599732319,
+          "Bleu_3": 0.01112847230811889,
+          "Bleu_4": 0.014832512238232783,
+          "METEOR": 0.0033655259034073176,
+          "ROUGE_L": 0.002027692560308697,
+          "CIDEr": 0.001138010499707692,
+          "SPICE": 0.011472415719183093
+        },
+        "metric_worst": {
+          "Bleu_1": 0.6540426567187856,
+          "Bleu_2": 0.5010254631125314,
+          "Bleu_3": 0.3919539958905213,
+          "Bleu_4": 0.3123563544835974,
+          "METEOR": 0.25205095927418153,
+          "ROUGE_L": 0.5620428957003997,
+          "CIDEr": 0.8435538816640084,
+          "SPICE": 0.24598496299617661
+        },
+        "all_members_complete_finite": true,
+        "all_members_preserve_validation_baseline": true,
+        "all_members_preserve_spice_gain": true,
+        "min_protected_relative_margin": 0.135098605746748
+      },
+      "stability_member_artifacts": [
+        {
+          "role": "stability_member_0",
+          "path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_8000.pt",
+          "size": 68841675,
+          "sha256": "ab8123407dd8c89d610ce782eafa0e5ecd0991ff1ac0adc44ec277e3e023ecad"
+        },
+        {
+          "role": "stability_member_1",
+          "path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_9000.pt",
+          "size": 68841675,
+          "sha256": "21de23d02b12383b97b15bfdebe5d1e0f0aa4d4315a6640321b3f5cd8beee858"
+        },
+        {
+          "role": "stability_member_2",
+          "path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_10000.pt",
+          "size": 68841675,
+          "sha256": "27cb806fac32a4f0feaf9b4287bcb5f8f72f240b2ec978d9ff774357894fce0c"
+        }
+      ],
+      "artifacts": [
+        {
+          "role": "selection_json",
+          "path": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_6_stable_locked/best_checkpoint.json",
+          "size": 7805,
+          "sha256": "8a5f8716fbb1bfebc345a193b9761ed7d8738844a02fac34f30f8d926bf8b572"
+        },
+        {
+          "role": "selected_checkpoint",
+          "path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_9000.pt",
+          "size": 68841675,
+          "sha256": "21de23d02b12383b97b15bfdebe5d1e0f0aa4d4315a6640321b3f5cd8beee858"
+        },
+        {
+          "role": "source_config",
+          "path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/resolved_config.json",
+          "size": 5272,
+          "sha256": "a46c2102a122613a1ba81064ba5f6ff6e3359fce270535e5cf6a25608c6263eb"
+        },
+        {
+          "role": "validation_metrics",
+          "path": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/eval_snapshots.csv",
+          "size": 3788,
+          "sha256": "f69b34f74967ea1be2d29b4d0250962b3ad1ca4d80d87d03c02a6d589ed151bc"
+        },
+        {
+          "role": "data.eval_anno_path",
+          "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/second_cc_aug_captions_reformat.json",
+          "size": 9587644,
+          "sha256": "9999e3b21e0608ba7befe7824907db9ac68c165fbc844b135ae11e1f74995499"
+        },
+        {
+          "role": "data.vocab_json",
+          "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/transformer_second_cc_aug_vocab.json",
+          "size": 17664,
+          "sha256": "63805176a88f16b6e29e3729f77cb3b536c24679bb4b89b51e7b4d6d5a9dd4c0"
+        },
+        {
+          "role": "data.h5_label_file",
+          "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/transformer_second_cc_aug_labels.h5",
+          "size": 10583600,
+          "sha256": "b523adfcbb6026bf858c5f7d1ed48903e6ab1e14c80d803feb510680dc386b52"
+        },
+        {
+          "role": "data.splits_json",
+          "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/splits.json",
+          "size": 769550,
+          "sha256": "6c5e7dcf3e896e6e1da14cb8383e6399eba127c9795c20879502c4f792e1b4ec"
+        },
+        {
+          "role": "data.changeflag_json",
+          "path": "/root/autodl-tmp/z1zy1/SECOND-CC-AUG/SECOND-CC-AUG.json",
+          "size": 37174356,
+          "sha256": "4c5d3d980707214dd74765e04d4247a7714ed1500a9b18e3c9daf2ca3faa39ce"
+        },
+        {
+          "role": "train.semantic_tag_file",
+          "path": "/root/autodl-tmp/z1zy1/configs/semantic_tags/levir_cc_object_action_tags.txt",
+          "size": 177,
+          "sha256": "8899492d8545b386c64e18f94df7270f810db8b041171cff75f9c7e03b4643f6"
+        }
+      ]
+    }
+  ]
+}

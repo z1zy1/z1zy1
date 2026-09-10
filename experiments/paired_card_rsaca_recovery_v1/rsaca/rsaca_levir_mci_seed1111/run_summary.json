@@ -1,0 +1,46 @@
+{
+  "experiment_name": "rsaca_levir_mci_seed1111",
+  "dataset": "levir_mci",
+  "run_id": "rsaca_levir_mci_seed1111",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-09-02T21:58:30+08:00",
+  "end_time": "2026-09-02T22:21:52+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "paper_balanced_no_spice",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 17256239,
+  "trainable_parameters": 17256239,
+  "device": "cuda:0",
+  "final_epoch": 47,
+  "final_global_step": 10000,
+  "total_training_seconds": 1402.5047817230225,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 1.271042984482555,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_10000.pt"
+    },
+    "spice": {
+      "score": 0.2688258106498693,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_10000.pt"
+    },
+    "balanced": {
+      "score": 1.027482172525672,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_10000.pt",
+      "all_above_baseline": true
+    }
+  },
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-09-09T16:37:29+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_whole_gate_v1/rsaca/rsaca_levir_mci_seed1111/snapshots/rsaca_levir_mci_seed1111_checkpoint_10000.pt",
+  "test_prediction_file": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1/rsaca/rsaca_levir_mci_seed1111/test_output/captions/paired_locked/sc_results.json"
+}

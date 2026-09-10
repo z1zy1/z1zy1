@@ -1,0 +1,242 @@
+{
+  "exp_dir": "experiments/second_cc_card_semantic_crossattn",
+  "csv": "experiments/second_cc_card_semantic_crossattn/eval_snapshots.csv",
+  "selection_metric": "paper_balanced",
+  "allow_negative_ablation": false,
+  "best_snapshot": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_9000.pt",
+  "copy_path": "experiments/second_cc_card_semantic_crossattn/best_for_paper.pth",
+  "best": {
+    "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_9000.pt",
+    "paper_score": 0.7998146542726543,
+    "caption_score": 0.7972433462140357,
+    "aux_tiebreak": 0.08571026862061921,
+    "negative_ablation": false,
+    "all_above_baseline": false,
+    "metrics": {
+      "Bleu_1": 0.6540426567187856,
+      "Bleu_2": 0.5010254631125314,
+      "Bleu_3": 0.3919539958905213,
+      "Bleu_4": 0.3123563544835974,
+      "METEOR": 0.25205095927418153,
+      "ROUGE_L": 0.5620428957003997,
+      "CIDEr": 0.8458178101513545,
+      "SPICE": 0.26614246663512037
+    },
+    "aux_metrics": {
+      "Semantic_mIoU": 0.08571026862061921
+    }
+  },
+  "top_candidates": [
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_9000.pt",
+      "paper_score": 0.7998146542726543,
+      "caption_score": 0.7972433462140357,
+      "aux_tiebreak": 0.08571026862061921,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6540426567187856,
+        "Bleu_2": 0.5010254631125314,
+        "Bleu_3": 0.3919539958905213,
+        "Bleu_4": 0.3123563544835974,
+        "METEOR": 0.25205095927418153,
+        "ROUGE_L": 0.5620428957003997,
+        "CIDEr": 0.8458178101513545,
+        "SPICE": 0.26614246663512037
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.08571026862061921
+      }
+    },
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_8000.pt",
+      "paper_score": 0.7968372918718362,
+      "caption_score": 0.7941568344759817,
+      "aux_tiebreak": 0.08934857986181602,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.664968152866189,
+        "Bleu_2": 0.517494230863964,
+        "Bleu_3": 0.4131616663706065,
+        "Bleu_4": 0.339630398210128,
+        "METEOR": 0.2587811595271187,
+        "ROUGE_L": 0.5658568167033272,
+        "CIDEr": 0.8444829307887971,
+        "SPICE": 0.24657133615770638
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.08934857986181602
+      }
+    },
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_7000.pt",
+      "paper_score": 0.7959604492552539,
+      "caption_score": 0.7931689702710102,
+      "aux_tiebreak": 0.0930492994747907,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6638814441115668,
+        "Bleu_2": 0.5164150038850115,
+        "Bleu_3": 0.4153461351941655,
+        "Bleu_4": 0.3439232623600323,
+        "METEOR": 0.2583790547980739,
+        "ROUGE_L": 0.5675271744611315,
+        "CIDEr": 0.8476312935308764,
+        "SPICE": 0.24262925911268962
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.0930492994747907
+      }
+    },
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_6000.pt",
+      "paper_score": 0.7927374435449944,
+      "caption_score": 0.7901977845574647,
+      "aux_tiebreak": 0.08465529958432412,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6601688895903511,
+        "Bleu_2": 0.5123958720035805,
+        "Bleu_3": 0.40916579305165784,
+        "Bleu_4": 0.3362796256095275,
+        "METEOR": 0.2584296518070525,
+        "ROUGE_L": 0.563454645187713,
+        "CIDEr": 0.8417160691856733,
+        "SPICE": 0.2452676261768628
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.08465529958432412
+      }
+    },
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_10000.pt",
+      "paper_score": 0.7923776264433225,
+      "caption_score": 0.789770577523526,
+      "aux_tiebreak": 0.08690163065988743,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6580278128950175,
+        "Bleu_2": 0.5099330816840939,
+        "Bleu_3": 0.4084063114753886,
+        "Bleu_4": 0.33609808623851456,
+        "METEOR": 0.255323338119166,
+        "ROUGE_L": 0.5627560738536254,
+        "CIDEr": 0.8435538816640084,
+        "SPICE": 0.24598496299617661
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.08690163065988743
+      }
+    },
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_5000.pt",
+      "paper_score": 0.7858145319101703,
+      "caption_score": 0.7833279176203753,
+      "aux_tiebreak": 0.08288714299316445,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6539296233141642,
+        "Bleu_2": 0.5048593047148014,
+        "Bleu_3": 0.4033516263767576,
+        "Bleu_4": 0.3306111692292272,
+        "METEOR": 0.25696565642137664,
+        "ROUGE_L": 0.5604294339878749,
+        "CIDEr": 0.8287545791513852,
+        "SPICE": 0.24523538963655536
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.08288714299316445
+      }
+    },
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_4000.pt",
+      "paper_score": 0.763436984149054,
+      "caption_score": 0.7613638372287412,
+      "aux_tiebreak": 0.06910489734376027,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6464522465012974,
+        "Bleu_2": 0.4810483486651401,
+        "Bleu_3": 0.37041942581220705,
+        "Bleu_4": 0.2922868254138894,
+        "METEOR": 0.23979396150717608,
+        "ROUGE_L": 0.5465160370814506,
+        "CIDEr": 0.8065332018911309,
+        "SPICE": 0.2562968776724214
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.06910489734376027
+      }
+    },
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_3000.pt",
+      "paper_score": 0.7447292787901343,
+      "caption_score": 0.7444707308996392,
+      "aux_tiebreak": 0.008618263016502278,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6433150536803396,
+        "Bleu_2": 0.49172874740917266,
+        "Bleu_3": 0.3899320811534108,
+        "Bleu_4": 0.32041264473484754,
+        "METEOR": 0.2473548121235774,
+        "ROUGE_L": 0.5485089499933353,
+        "CIDEr": 0.7871132948177181,
+        "SPICE": 0.2264111219734163
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.008618263016502278
+      }
+    },
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_2000.pt",
+      "paper_score": 0.7164966597326766,
+      "caption_score": 0.7161990813895565,
+      "aux_tiebreak": 0.009919278104004177,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6193415637859611,
+        "Bleu_2": 0.4738070807793885,
+        "Bleu_3": 0.37423852478696024,
+        "Bleu_4": 0.3065326939262845,
+        "METEOR": 0.2337868423557723,
+        "ROUGE_L": 0.5284010980557448,
+        "CIDEr": 0.7604481685415272,
+        "SPICE": 0.21963383619942325
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.009919278104004177
+      }
+    },
+    {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_1000.pt",
+      "paper_score": 0.6548196635527572,
+      "caption_score": 0.6544889706382137,
+      "aux_tiebreak": 0.011023097151450995,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.5825300660426856,
+        "Bleu_2": 0.42758841659143426,
+        "Bleu_3": 0.3318761936451178,
+        "Bleu_4": 0.2686664610865162,
+        "METEOR": 0.21686945072689143,
+        "ROUGE_L": 0.5126593283500611,
+        "CIDEr": 0.745202377602737,
+        "SPICE": 0.18741231295397306
+      },
+      "aux_metrics": {
+        "Semantic_mIoU": 0.011023097151450995
+      }
+    }
+  ],
+  "negative_ablation_policy": "hard_gate/reweight experiments are excluded unless --allow_negative_ablation is set."
+}

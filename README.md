@@ -3,6 +3,16 @@ This package contains the accompanying code for the following paper:
 
 Tu, Yunbin, et al. ["Context-aware Difference Distilling for Multi-change Captioning"](https://aclanthology.org/2024.acl-long.430.pdf), which has appeared as a long paper in ACL 2024 main conference. 
 
+## Experiment Claim Reference
+
+The current paper claim, authoritative experiment analyses, and unified RSACA
+protocol are maintained in [docs/EXPERIMENT_CLAIM_REFERENCE.md](docs/EXPERIMENT_CLAIM_REFERENCE.md).
+After changing experiment results or paper-facing behavior, regenerate it with:
+
+```bash
+python scripts/update_experiment_claim_reference.py
+```
+
 ## We illustrate the training and testing details as follows:
 
 ## Installation
@@ -95,5 +105,3 @@ If you find this helps your research, please consider citing:
 My email is tuyunbin1995@foxmail.com
 
 Any discussions and suggestions are welcome!
-
-

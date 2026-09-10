@@ -1,12 +1,16 @@
 Summary consistency report
-summary_csv: experiments/paper_required_experiments_summary.csv
-rows: 11
+summary_csv: ./experiments/paper_required_experiments_summary.csv
+rows: 34
 columns: 33
-issues: 0
-warnings: 0
+issues: 5
+warnings: 1
 
 [issues]
-- none
+- line 3 exp_name=levir_mci_weak_pd08_lm001_ls001_noreweight overall metrics exactly match change-only metrics while no-change metrics are non-empty
+- line 4 exp_name=levir_mci_weak_pd05_lm003_ls0005_noreweight overall metrics exactly match change-only metrics while no-change metrics are non-empty
+- line 6 exp_name=second_cc_crossattn_pd05_lsem0005 overall metrics exactly match change-only metrics while no-change metrics are non-empty
+- line 7 exp_name=second_cc_crossattn_pd05_lsem001 overall metrics exactly match change-only metrics while no-change metrics are non-empty
+- line 9 exp_name=second_cc_crossattn_pd08_lsem001 overall metrics exactly match change-only metrics while no-change metrics are non-empty
 
 [warnings]
-- none
+- skipped_existing metric-change check needs baseline snapshot: experiments/paper_required_experiments_summary.baseline.csv

@@ -1,0 +1,220 @@
+{
+  "exp_dir": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333",
+  "csv": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/val_metrics.csv",
+  "selection_metric": "paper_balanced",
+  "allow_negative_ablation": false,
+  "best_snapshot": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_10000.pt",
+  "copy_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/best_for_paper.pth",
+  "best": {
+    "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_10000.pt",
+    "paper_score": 1.0279980737106342,
+    "caption_score": 1.0279980737106342,
+    "aux_tiebreak": 0.0,
+    "negative_ablation": false,
+    "all_above_baseline": false,
+    "metrics": {
+      "Bleu_1": 0.7434337582077304,
+      "Bleu_2": 0.625923015233803,
+      "Bleu_3": 0.5285320091820711,
+      "Bleu_4": 0.44517044104329173,
+      "METEOR": 0.3483053429805023,
+      "ROUGE_L": 0.702246734672903,
+      "CIDEr": 1.2747346715955608,
+      "SPICE": 0.26871452224590503
+    },
+    "aux_metrics": {}
+  },
+  "top_candidates": [
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_10000.pt",
+      "paper_score": 1.0279980737106342,
+      "caption_score": 1.0279980737106342,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7434337582077304,
+        "Bleu_2": 0.625923015233803,
+        "Bleu_3": 0.5285320091820711,
+        "Bleu_4": 0.44517044104329173,
+        "METEOR": 0.3483053429805023,
+        "ROUGE_L": 0.702246734672903,
+        "CIDEr": 1.2747346715955608,
+        "SPICE": 0.26871452224590503
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_8000.pt",
+      "paper_score": 1.0218329130536818,
+      "caption_score": 1.0218329130536818,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7390500291998502,
+        "Bleu_2": 0.6217003660123497,
+        "Bleu_3": 0.5274886200450747,
+        "Bleu_4": 0.4508847283684288,
+        "METEOR": 0.34392754023876554,
+        "ROUGE_L": 0.6966371573544774,
+        "CIDEr": 1.2563555905441997,
+        "SPICE": 0.2671067981120074
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_7000.pt",
+      "paper_score": 1.0094206079728545,
+      "caption_score": 1.0094206079728545,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7421440840658036,
+        "Bleu_2": 0.6196645629200577,
+        "Bleu_3": 0.5219005769685201,
+        "Bleu_4": 0.4392142931075009,
+        "METEOR": 0.3385552708384215,
+        "ROUGE_L": 0.6934080159759325,
+        "CIDEr": 1.2405320779319915,
+        "SPICE": 0.2667250076118745
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_9000.pt",
+      "paper_score": 1.007020401992099,
+      "caption_score": 1.007020401992099,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7358343862376581,
+        "Bleu_2": 0.6154367977700791,
+        "Bleu_3": 0.5185327869341857,
+        "Bleu_4": 0.434416402199179,
+        "METEOR": 0.3407161096724261,
+        "ROUGE_L": 0.6921501449110391,
+        "CIDEr": 1.2414795457252816,
+        "SPICE": 0.2654563373975405
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_5000.pt",
+      "paper_score": 1.0055225549365965,
+      "caption_score": 1.0055225549365965,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7323971518986617,
+        "Bleu_2": 0.6175276521000048,
+        "Bleu_3": 0.5205365640026596,
+        "Bleu_4": 0.4400856498564256,
+        "METEOR": 0.33872833003069913,
+        "ROUGE_L": 0.6895381845133464,
+        "CIDEr": 1.2336306456884882,
+        "SPICE": 0.2645013490040877
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_6000.pt",
+      "paper_score": 1.0025447394998204,
+      "caption_score": 1.0025447394998204,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7400635165045962,
+        "Bleu_2": 0.6218513644031101,
+        "Bleu_3": 0.5244120363475261,
+        "Bleu_4": 0.4424799959251907,
+        "METEOR": 0.3428820338002026,
+        "ROUGE_L": 0.6944315194584147,
+        "CIDEr": 1.228289933614134,
+        "SPICE": 0.2589541320540857
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_4000.pt",
+      "paper_score": 0.9769274551772751,
+      "caption_score": 0.9769274551772751,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7160836388860652,
+        "Bleu_2": 0.5937018695760135,
+        "Bleu_3": 0.4963584403415472,
+        "Bleu_4": 0.4167005444924141,
+        "METEOR": 0.33053142633547417,
+        "ROUGE_L": 0.6798787456325902,
+        "CIDEr": 1.190374551216064,
+        "SPICE": 0.2620807167622701
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_2000.pt",
+      "paper_score": 0.9510171843627869,
+      "caption_score": 0.9510171843627869,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.7097025841052452,
+        "Bleu_2": 0.5924133485596599,
+        "Bleu_3": 0.5021492913368458,
+        "Bleu_4": 0.4310674320065065,
+        "METEOR": 0.3235363020657657,
+        "ROUGE_L": 0.6629572946935245,
+        "CIDEr": 1.1417490551857787,
+        "SPICE": 0.24636311415973267
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_3000.pt",
+      "paper_score": 0.9480249448374418,
+      "caption_score": 0.9480249448374418,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6993579603609659,
+        "Bleu_2": 0.5793430182480006,
+        "Bleu_3": 0.4822923176716083,
+        "Bleu_4": 0.39987851767259186,
+        "METEOR": 0.3284777204127621,
+        "ROUGE_L": 0.6776701434011642,
+        "CIDEr": 1.1857165203133686,
+        "SPICE": 0.24242823816665027
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_whole_gate_retry/unified_rsaca_levir_cc_seed3333/snapshots/unified_rsaca_levir_cc_seed3333_checkpoint_1000.pt",
+      "paper_score": 0.8719472395795956,
+      "caption_score": 0.8719472395795956,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.6743386794417127,
+        "Bleu_2": 0.5473714172372711,
+        "Bleu_3": 0.4486581106613716,
+        "Bleu_4": 0.36643779382885344,
+        "METEOR": 0.2941708104575701,
+        "ROUGE_L": 0.6401261934754393,
+        "CIDEr": 1.0868641101189256,
+        "SPICE": 0.22571059507018582
+      },
+      "aux_metrics": {}
+    }
+  ],
+  "negative_ablation_policy": "hard_gate/reweight experiments are excluded unless --allow_negative_ablation is set."
+}

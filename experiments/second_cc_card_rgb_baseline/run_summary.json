@@ -1,0 +1,42 @@
+{
+  "experiment_name": "second_cc_card_rgb_baseline",
+  "dataset": "second_cc",
+  "run_id": "second_cc_card_rgb_baseline",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-07-29T09:44:51+08:00",
+  "end_time": "2026-07-29T10:02:45+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "best_cider",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "card",
+  "train_samples": 8438,
+  "val_samples": 1190,
+  "total_parameters": 14956557,
+  "trainable_parameters": 14956557,
+  "device": "cuda:0",
+  "final_epoch": 38,
+  "final_global_step": 10000,
+  "total_training_seconds": 1073.3910465240479,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 0.7052492471291172,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt"
+    },
+    "spice": {
+      "score": 0.1926513000927337,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt"
+    },
+    "balanced": {
+      "score": 0.6280986520516555,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt",
+      "all_above_baseline": false
+    }
+  }
+}

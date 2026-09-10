@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd05_lr2e4_seed2222/snapshots/second_cc_mci_pd05_lr2e4_seed2222_checkpoint_10000.pt",
+  "result_json": "./experiments/second_cc_mci_pd05_locked_lr2e4_seed2222/test_output/captions/optimized_locked/sc_results.json",
+  "group": "nochange",
+  "num_images": 341,
+  "metrics": {
+    "Bleu_1": 0.8932451582423745,
+    "Bleu_2": 0.8717582917313739,
+    "Bleu_3": 0.8573584081373146,
+    "Bleu_4": 0.8428368291243106,
+    "METEOR": 0.6580398863800895,
+    "ROUGE_L": 0.9393902031040767,
+    "CIDEr": 0.0,
+    "SPICE": 0.4991669726015077
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

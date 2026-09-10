@@ -1,0 +1,80 @@
+{
+  "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_8000.pt",
+  "result_json": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_5_val_pareto_locked/test_output/captions/7_5_locked/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.5206364647025764,
+    "Bleu_2": 0.3508137876002002,
+    "Bleu_3": 0.24312418833030408,
+    "Bleu_4": 0.17487261977837507,
+    "METEOR": 0.1893434450207885,
+    "ROUGE_L": 0.3828606957207617,
+    "CIDEr": 0.37427849873001245,
+    "SPICE": 0.14879270644686154
+  },
+  "aux_metrics": {
+    "Semantic_mIoU": 0.025473068434242963,
+    "Semantic_IoU": 0.05188308810242107,
+    "Semantic_F1": 0.06662228278965338
+  },
+  "baseline_name": "test",
+  "num_images": 1227,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.30736353529742355,
+    "Bleu_2": -0.37718621239979977,
+    "Bleu_3": -0.39787581166969593,
+    "Bleu_4": -0.39012738022162485,
+    "METEOR": -0.2016565549792115,
+    "ROUGE_L": -0.3631393042792383,
+    "CIDEr": -0.9737215012699876,
+    "SPICE": -0.18720729355313848
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false,
+  "group_metrics": {
+    "change": {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_8000.pt",
+      "result_json": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_5_val_pareto_locked/test_output/captions/7_5_locked/sc_results.json",
+      "group": "change",
+      "num_images": 886,
+      "metrics": {
+        "Bleu_1": 0.5948059201339854,
+        "Bleu_2": 0.40721486874645896,
+        "Bleu_3": 0.2797173252094602,
+        "Bleu_4": 0.19669838844968293,
+        "METEOR": 0.18924661715963073,
+        "ROUGE_L": 0.39134580962970655,
+        "CIDEr": 0.36229994187951775,
+        "SPICE": 0.15605984498947065
+      },
+      "note": ""
+    },
+    "nochange": {
+      "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_8000.pt",
+      "result_json": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_5_val_pareto_locked/test_output/captions/7_5_locked/sc_results.json",
+      "group": "nochange",
+      "num_images": 341,
+      "metrics": {
+        "Bleu_1": 0.3022745957795828,
+        "Bleu_2": 0.18237645340578565,
+        "Bleu_3": 0.13302903072898833,
+        "Bleu_4": 0.10659252809357923,
+        "METEOR": 0.19001929320133584,
+        "ROUGE_L": 0.3608143293766998,
+        "CIDEr": 0.0,
+        "SPICE": 0.12991093299011186
+      },
+      "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+    }
+  },
+  "group_output_json": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_5_val_pareto_locked/test_overall_result.json",
+  "group_summary_csv": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_5_val_pareto_locked/test_group_summary.csv"
+}

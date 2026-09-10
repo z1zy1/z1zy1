@@ -5,16 +5,20 @@ import argparse
 import os
 
 import numpy as np
+from imageio.v2 import imread
 from imageio.v2 import imwrite
 
 
 def files(root, split):
     path = os.path.join(root, split)
-    return sorted(name for name in os.listdir(path) if name.lower().endswith('.npy'))
+    return sorted(name for name in os.listdir(path) if name.lower().endswith(('.npy', '.png')))
 
 
 def load_probability(path):
-    value = np.asarray(np.load(path), dtype=np.float32)
+    if path.lower().endswith('.png'):
+        value = np.asarray(imread(path), dtype=np.float32) / 255.0
+    else:
+        value = np.asarray(np.load(path), dtype=np.float32)
     if value.ndim == 3 and value.shape[0] == 1:
         value = value[0]
     if value.ndim != 2:

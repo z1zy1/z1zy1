@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/levir_mci_short_ft_keep_mask0005/snapshots/levir_mci_short_ft_keep_mask0005_checkpoint_250.pt",
+  "result_json": "./experiments/levir_mci_short_ft_keep_mask0005/test_output/captions/paper_best/sc_results.json",
+  "group": "change",
+  "num_images": 964,
+  "metrics": {
+    "Bleu_1": 0.7600715262437404,
+    "Bleu_2": 0.6083712661430706,
+    "Bleu_3": 0.4763955532096872,
+    "Bleu_4": 0.37099168090036844,
+    "METEOR": 0.28064347384164046,
+    "ROUGE_L": 0.5303860672179532,
+    "CIDEr": 0.6298038346695993,
+    "SPICE": 0.21967826539435098
+  },
+  "note": ""
+}

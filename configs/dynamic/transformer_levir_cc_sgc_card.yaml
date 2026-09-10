@@ -33,6 +33,13 @@ data:
     semantic_phase: "B"
     pseudo_mask_root: "./Levir-CC/pseudo_masks"
     allow_missing_pseudo_mask: True
+    use_semantic_maps: False
+    num_semantic_classes: 7
+    semantic_diff_root: "./Levir-CC/pseudo_masks"
+    semantic_diff_phase: ""
+    semantic_diff_only: False
+    semantic_diff_binary: False
+    semantic_unknown_change_class: 6
     eval_anno_path: "./Levir-CC/levir_cc_captions_reformat.json"
     splits_json: "./Levir-CC/splits.json"
     vocab_json: "./Levir-CC/transformer_levir_vocab.json"

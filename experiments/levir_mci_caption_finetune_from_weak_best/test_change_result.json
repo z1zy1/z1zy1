@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/levir_mci_caption_finetune_from_weak_best/snapshots/levir_mci_caption_finetune_from_weak_best_checkpoint_1000.pt",
+  "result_json": "./experiments/levir_mci_caption_finetune_from_weak_best/test_output/captions/paper_best/sc_results.json",
+  "group": "change",
+  "num_images": 964,
+  "metrics": {
+    "Bleu_1": 0.7430548383764595,
+    "Bleu_2": 0.5884377219971983,
+    "Bleu_3": 0.45887263069998796,
+    "Bleu_4": 0.3566365089252022,
+    "METEOR": 0.27840495753804306,
+    "ROUGE_L": 0.5212166468907738,
+    "CIDEr": 0.6153008444499176,
+    "SPICE": 0.22113980897486704
+  },
+  "note": ""
+}

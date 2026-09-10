@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/second_cc_card_rgb_baseline/best_for_paper.pth",
+  "result_json": "./experiments/second_cc_card_rgb_baseline/test_output/captions/paper_best/sc_results.json",
+  "group": "nochange",
+  "num_images": 341,
+  "metrics": {
+    "Bleu_1": 0.7856115107909901,
+    "Bleu_2": 0.7476813873121004,
+    "Bleu_3": 0.721343501425354,
+    "Bleu_4": 0.6907118872631147,
+    "METEOR": 0.587390151331539,
+    "ROUGE_L": 0.899026077868324,
+    "CIDEr": 0.0,
+    "SPICE": 0.5096194453965714
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/second_cc_card_semantic_crossattn/best_for_paper.pth",
+  "result_json": "./experiments/second_cc_card_semantic_crossattn/test_output/captions/paper_best/sc_results.json",
+  "group": "nochange",
+  "num_images": 341,
+  "metrics": {
+    "Bleu_1": 0.8593155893532037,
+    "Bleu_2": 0.8325301825490244,
+    "Bleu_3": 0.8138639935144635,
+    "Bleu_4": 0.7935042094997181,
+    "METEOR": 0.636951987111156,
+    "ROUGE_L": 0.9340566005001116,
+    "CIDEr": 0.0,
+    "SPICE": 0.5035353535353536
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

@@ -1,0 +1,220 @@
+{
+  "exp_dir": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111",
+  "csv": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/val_metrics.csv",
+  "selection_metric": "paper_balanced_no_spice",
+  "allow_negative_ablation": false,
+  "best_snapshot": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_10000.pt",
+  "copy_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/best_for_paper.pth",
+  "best": {
+    "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_10000.pt",
+    "paper_score": 0.6303859988006594,
+    "caption_score": 0.6571451287657893,
+    "aux_tiebreak": 0.0,
+    "negative_ablation": false,
+    "all_above_baseline": false,
+    "metrics": {
+      "Bleu_1": 0.5914893617020792,
+      "Bleu_2": 0.42111703538692574,
+      "Bleu_3": 0.3096867158223946,
+      "Bleu_4": 0.232566846549327,
+      "METEOR": 0.22204858924132198,
+      "ROUGE_L": 0.5189895853267545,
+      "CIDEr": 0.7606495984563092,
+      "SPICE": 0.20011211928578504
+    },
+    "aux_metrics": {}
+  },
+  "top_candidates": [
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_10000.pt",
+      "paper_score": 0.6303859988006594,
+      "caption_score": 0.6571451287657893,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.5914893617020792,
+        "Bleu_2": 0.42111703538692574,
+        "Bleu_3": 0.3096867158223946,
+        "Bleu_4": 0.232566846549327,
+        "METEOR": 0.22204858924132198,
+        "ROUGE_L": 0.5189895853267545,
+        "CIDEr": 0.7606495984563092,
+        "SPICE": 0.20011211928578504
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_9000.pt",
+      "paper_score": 0.6267779580705919,
+      "caption_score": 0.6585718392201243,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.5858675486004206,
+        "Bleu_2": 0.4150960847104753,
+        "Bleu_3": 0.30317370996053805,
+        "Bleu_4": 0.22759887103531154,
+        "METEOR": 0.2210711286728472,
+        "ROUGE_L": 0.5186690273017573,
+        "CIDEr": 0.7603053968331216,
+        "SPICE": 0.2045566263829291
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_8000.pt",
+      "paper_score": 0.6267314716244066,
+      "caption_score": 0.6582680636977924,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.5871108243264569,
+        "Bleu_2": 0.4179061672479372,
+        "Bleu_3": 0.30781574087908936,
+        "Bleu_4": 0.23186876700303008,
+        "METEOR": 0.22113411635355515,
+        "ROUGE_L": 0.515708255606087,
+        "CIDEr": 0.7544344571620305,
+        "SPICE": 0.20411327816396954
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_6000.pt",
+      "paper_score": 0.6252808815507619,
+      "caption_score": 0.6562244970044961,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.5849471114726944,
+        "Bleu_2": 0.4186565915997388,
+        "Bleu_3": 0.3102720678299566,
+        "Bleu_4": 0.23838609123616814,
+        "METEOR": 0.218340996077616,
+        "ROUGE_L": 0.5155448111942434,
+        "CIDEr": 0.742228632045294,
+        "SPICE": 0.2032983857830267
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_5000.pt",
+      "paper_score": 0.6147502581601269,
+      "caption_score": 0.6468710572651819,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.5729025033991384,
+        "Bleu_2": 0.40148542675109833,
+        "Bleu_3": 0.2933894587078712,
+        "Bleu_4": 0.22218301835506732,
+        "METEOR": 0.21844292529319,
+        "ROUGE_L": 0.5119099099331987,
+        "CIDEr": 0.7412275948523327,
+        "SPICE": 0.20202219630314286
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_7000.pt",
+      "paper_score": 0.6103092716070153,
+      "caption_score": 0.6384928285155412,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.5773637787486129,
+        "Bleu_2": 0.40654360601993755,
+        "Bleu_3": 0.29753544451101965,
+        "Bleu_4": 0.2225294467034859,
+        "METEOR": 0.21510832119721984,
+        "ROUGE_L": 0.5081610547705673,
+        "CIDEr": 0.7356614056247521,
+        "SPICE": 0.1966437626826096
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_4000.pt",
+      "paper_score": 0.5987335353038332,
+      "caption_score": 0.626875500580389,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.571109456440757,
+        "Bleu_2": 0.4031411063409288,
+        "Bleu_3": 0.29356066789317165,
+        "Bleu_4": 0.21840316663582932,
+        "METEOR": 0.21094512319501937,
+        "ROUGE_L": 0.5055667398453786,
+        "CIDEr": 0.7145604786989053,
+        "SPICE": 0.19418159176247676
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_3000.pt",
+      "paper_score": 0.5728281696553061,
+      "caption_score": 0.6039411210061968,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.5469893078221282,
+        "Bleu_2": 0.37512993651757165,
+        "Bleu_3": 0.27025799526732913,
+        "Bleu_4": 0.20007755592304347,
+        "METEOR": 0.20457629390271262,
+        "ROUGE_L": 0.48742981450078054,
+        "CIDEr": 0.691942869187934,
+        "SPICE": 0.19042910977300848
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_2000.pt",
+      "paper_score": 0.5469857069499212,
+      "caption_score": 0.5662305219536766,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.5229555832295124,
+        "Bleu_2": 0.355413427817811,
+        "Bleu_3": 0.25414709400090235,
+        "Bleu_4": 0.18778577526354331,
+        "METEOR": 0.19304807210693326,
+        "ROUGE_L": 0.4719943704694792,
+        "CIDEr": 0.6654328248066871,
+        "SPICE": 0.1713656800338787
+      },
+      "aux_metrics": {}
+    },
+    {
+      "snapshot_path": "experiments/reliability_sparse_rsaca_v1_new_masks_20260821/unified_rsaca_second_cc_seed1111/snapshots/unified_rsaca_second_cc_seed1111_checkpoint_1000.pt",
+      "paper_score": 0.519411923219459,
+      "caption_score": 0.5287868381638221,
+      "aux_tiebreak": 0.0,
+      "negative_ablation": false,
+      "all_above_baseline": false,
+      "metrics": {
+        "Bleu_1": 0.49792887268028,
+        "Bleu_2": 0.33339943883950235,
+        "Bleu_3": 0.2355587972249794,
+        "Bleu_4": 0.17035417447564605,
+        "METEOR": 0.18111673052044028,
+        "ROUGE_L": 0.46136278863297253,
+        "CIDEr": 0.639135250542495,
+        "SPICE": 0.15444184609391542
+      },
+      "aux_metrics": {}
+    }
+  ],
+  "negative_ablation_policy": "hard_gate/reweight experiments are excluded unless --allow_negative_ablation is set."
+}

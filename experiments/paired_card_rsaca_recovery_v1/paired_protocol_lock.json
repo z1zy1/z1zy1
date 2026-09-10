@@ -1,0 +1,28 @@
+{
+  "arms": {
+    "card": "semantic_input_mode=none",
+    "rsaca": "whole_adapter_gate_v1"
+  },
+  "cuda_visible_devices": "",
+  "datasets": [
+    "levir_cc",
+    "levir_mci",
+    "second_cc"
+  ],
+  "git_commit": "64be6e134fc3ecf6c251333cecfa26712b9af84d",
+  "num_workers": "8",
+  "omp_num_threads": "1",
+  "pair_root": "/root/autodl-tmp/z1zy1/experiments/paired_card_rsaca_recovery_v1",
+  "python": "/root/miniconda3/envs/card/bin/python3.8",
+  "pytorch_gpu": "0",
+  "schema_version": 1,
+  "seeds": [
+    1111,
+    2222,
+    3333
+  ],
+  "selection": "validation_only: paper_balanced_no_spice",
+  "source_digest_sha256": "2536b2f34999443aa66901b2588604f81db23a6e7a7bf2e99b14923b80229f4c",
+  "source_status_digest_sha256": "4b9152fe98d6b25edf5133beb6b335155ea2c392b4459a462c5cf24b1880454d",
+  "test_policy": "one immutable test per validation-selected checkpoint"
+}

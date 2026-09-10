@@ -1,0 +1,42 @@
+{
+  "experiment_name": "levir_cc_decft_cw102_s20_lr1e6",
+  "dataset": "levir_cc",
+  "run_id": "levir_cc_decft_cw102_s20_lr1e6",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-07-29T11:39:53+08:00",
+  "end_time": "2026-07-29T11:41:44+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "spice_constrained_balanced",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 16332099,
+  "trainable_parameters": 9261356,
+  "device": "cuda:0",
+  "final_epoch": 1,
+  "final_global_step": 20,
+  "total_training_seconds": 111.2999439239502,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 1.2163930419410238,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/levir_cc_decft_cw102_s20_lr1e6/snapshots/levir_cc_decft_cw102_s20_lr1e6_checkpoint_20.pt"
+    },
+    "spice": {
+      "score": 0.2604512771347192,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/levir_cc_decft_cw102_s20_lr1e6/snapshots/levir_cc_decft_cw102_s20_lr1e6_checkpoint_5.pt"
+    },
+    "balanced": {
+      "score": 0.9858094504811237,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/levir_cc_decft_cw102_s20_lr1e6/snapshots/levir_cc_decft_cw102_s20_lr1e6_checkpoint_20.pt",
+      "all_above_baseline": false
+    }
+  }
+}

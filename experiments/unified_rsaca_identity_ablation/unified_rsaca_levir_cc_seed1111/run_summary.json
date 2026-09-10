@@ -1,0 +1,42 @@
+{
+  "experiment_name": "unified_rsaca_levir_cc_seed1111",
+  "dataset": "levir_cc",
+  "run_id": "unified_rsaca_levir_cc_seed1111",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-08-13T14:19:46+08:00",
+  "end_time": "2026-08-13T14:42:23+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "val_baseline_stable_window",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 16729902,
+  "trainable_parameters": 16729902,
+  "device": "cuda:0",
+  "final_epoch": 47,
+  "final_global_step": 10000,
+  "total_training_seconds": 1356.998545885086,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 1.269664327999061,
+      "snapshot": "experiments/unified_rsaca_identity_ablation/unified_rsaca_levir_cc_seed1111/snapshots/unified_rsaca_levir_cc_seed1111_checkpoint_10000.pt"
+    },
+    "spice": {
+      "score": 0.2662705867011708,
+      "snapshot": "experiments/unified_rsaca_identity_ablation/unified_rsaca_levir_cc_seed1111/snapshots/unified_rsaca_levir_cc_seed1111_checkpoint_9000.pt"
+    },
+    "balanced": {
+      "score": 1.0202164921565446,
+      "snapshot": "experiments/unified_rsaca_identity_ablation/unified_rsaca_levir_cc_seed1111/snapshots/unified_rsaca_levir_cc_seed1111_checkpoint_10000.pt",
+      "all_above_baseline": true
+    }
+  }
+}

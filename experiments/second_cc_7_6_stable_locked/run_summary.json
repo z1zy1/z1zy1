@@ -1,0 +1,8 @@
+{
+  "status": "initialized",
+  "start_time": null,
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-07-30T16:41:58+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_9000.pt",
+  "test_prediction_file": "experiments/second_cc_7_6_stable_locked/test_output/captions/7_6_locked/sc_results.json"
+}

@@ -1,0 +1,80 @@
+{
+  "snapshot_path": "experiments/second_cc_crossattn_pd08_gamma005_lsem0005/snapshots/second_cc_crossattn_pd08_gamma005_lsem0005_checkpoint_3000.pt",
+  "result_json": "./experiments/second_cc_crossattn_pd08_gamma005_lsem0005/test_output/captions/paper_best/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.5814845821124193,
+    "Bleu_2": 0.42440497783625863,
+    "Bleu_3": 0.31750037576008483,
+    "Bleu_4": 0.23932929447622772,
+    "METEOR": 0.23213625669441054,
+    "ROUGE_L": 0.5194490884979746,
+    "CIDEr": 0.7466138048888212,
+    "SPICE": 0.2672970313980064
+  },
+  "aux_metrics": {
+    "Semantic_mIoU": 0.004334943025216148,
+    "Semantic_IoU": 0.14844692324741038,
+    "Semantic_F1": 0.21791723187153397
+  },
+  "baseline_name": "test",
+  "num_images": 1227,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.2465154178875807,
+    "Bleu_2": -0.30359502216374135,
+    "Bleu_3": -0.3234996242399152,
+    "Bleu_4": -0.3256707055237722,
+    "METEOR": -0.15886374330558947,
+    "ROUGE_L": -0.22655091150202544,
+    "CIDEr": -0.6013861951111789,
+    "SPICE": -0.0687029686019936
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false,
+  "group_metrics": {
+    "change": {
+      "snapshot_path": "experiments/second_cc_crossattn_pd08_gamma005_lsem0005/snapshots/second_cc_crossattn_pd08_gamma005_lsem0005_checkpoint_3000.pt",
+      "result_json": "./experiments/second_cc_crossattn_pd08_gamma005_lsem0005/test_output/captions/paper_best/sc_results.json",
+      "group": "change",
+      "num_images": 886,
+      "metrics": {
+        "Bleu_1": 0.5430312880942265,
+        "Bleu_2": 0.3654238945817271,
+        "Bleu_3": 0.24570229917763156,
+        "Bleu_4": 0.16307909910483917,
+        "METEOR": 0.188329851177048,
+        "ROUGE_L": 0.36363789933162194,
+        "CIDEr": 0.3053401480554712,
+        "SPICE": 0.16537381340078441
+      },
+      "note": ""
+    },
+    "nochange": {
+      "snapshot_path": "experiments/second_cc_crossattn_pd08_gamma005_lsem0005/snapshots/second_cc_crossattn_pd08_gamma005_lsem0005_checkpoint_3000.pt",
+      "result_json": "./experiments/second_cc_crossattn_pd08_gamma005_lsem0005/test_output/captions/paper_best/sc_results.json",
+      "group": "nochange",
+      "num_images": 341,
+      "metrics": {
+        "Bleu_1": 0.8146870379493274,
+        "Bleu_2": 0.777340591662027,
+        "Bleu_3": 0.7501502187987537,
+        "Bleu_4": 0.7176140855693794,
+        "METEOR": 0.6150900356483712,
+        "ROUGE_L": 0.924284025745448,
+        "CIDEr": 0.0,
+        "SPICE": 0.5321180611503191
+      },
+      "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+    }
+  },
+  "group_output_json": "./experiments/second_cc_crossattn_pd08_gamma005_lsem0005/test_overall_result.json",
+  "group_summary_csv": "./experiments/second_cc_crossattn_pd08_gamma005_lsem0005/test_group_summary.csv"
+}

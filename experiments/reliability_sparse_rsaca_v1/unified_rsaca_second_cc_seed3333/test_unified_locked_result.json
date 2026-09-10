@@ -1,0 +1,38 @@
+{
+  "snapshot_path": "experiments/reliability_sparse_rsaca_v1/unified_rsaca_second_cc_seed3333/snapshots/unified_rsaca_second_cc_seed3333_checkpoint_10000.pt",
+  "result_json": "./experiments/reliability_sparse_rsaca_v1/unified_rsaca_second_cc_seed3333/test_output/captions/unified_locked/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.6243251349729586,
+    "Bleu_2": 0.45196885197422376,
+    "Bleu_3": 0.3370643483743204,
+    "Bleu_4": 0.25612618422386907,
+    "METEOR": 0.23831806078988024,
+    "ROUGE_L": 0.5245997295107897,
+    "CIDEr": 0.7596909820476513,
+    "SPICE": 0.2595291270420833
+  },
+  "aux_metrics": {},
+  "baseline_name": "test",
+  "num_images": 1227,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.20367486502704135,
+    "Bleu_2": -0.2760311480257762,
+    "Bleu_3": -0.3039356516256796,
+    "Bleu_4": -0.3088738157761309,
+    "METEOR": -0.15268193921011977,
+    "ROUGE_L": -0.2214002704892103,
+    "CIDEr": -0.5883090179523488,
+    "SPICE": -0.07647087295791671
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false
+}

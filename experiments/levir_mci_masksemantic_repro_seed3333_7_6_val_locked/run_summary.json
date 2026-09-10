@@ -1,0 +1,8 @@
+{
+  "status": "initialized",
+  "start_time": null,
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-07-30T16:40:16+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed3333/snapshots/levir_mci_masksemantic_repro_seed3333_checkpoint_10000.pt",
+  "test_prediction_file": "experiments/levir_mci_masksemantic_repro_seed3333_7_6_val_locked/test_output/captions/7_6_locked/sc_results.json"
+}

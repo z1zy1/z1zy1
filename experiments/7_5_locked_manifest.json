@@ -1,0 +1,106 @@
+{
+  "status": "validation_locked",
+  "selection_uses_test_metrics": false,
+  "locked_at_utc": "2026-07-16T14:32:48.935106+00:00",
+  "datasets": {
+    "levir_cc": {
+      "target_exp": "levir_cc_7_5_val_pareto_locked",
+      "selection_json": "/root/autodl-tmp/z1zy1/experiments/levir_cc_7_5_val_pareto_locked/best_checkpoint.json",
+      "status": "done",
+      "selected_checkpoint": "experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/snapshots/sgc_card_lm003_ls005_pd05_rw02_warmup_checkpoint_5000.pt",
+      "selected_source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup",
+      "selected_source_exp_name": "sgc_card_lm003_ls005_pd05_rw02_warmup",
+      "selected_is_baseline": false,
+      "selected_val_metrics": {
+        "Bleu_1": 0.7991231566360304,
+        "Bleu_2": 0.6983954466753169,
+        "Bleu_3": 0.607099898776688,
+        "Bleu_4": 0.5257258408910415,
+        "METEOR": 0.37948729921597985,
+        "ROUGE_L": 0.7325896461085727,
+        "CIDEr": 1.319694957386024,
+        "SPICE": 0.34685127818022404
+      },
+      "selected_metric_deltas": {
+        "Bleu_1": 0.06248270493213215,
+        "Bleu_2": 0.08137103504806975,
+        "Bleu_3": 0.08833618239616481,
+        "Bleu_4": 0.09001974830579945,
+        "METEOR": 0.0438261489505381,
+        "ROUGE_L": 0.03948628152861766,
+        "CIDEr": 0.08800494593676977,
+        "SPICE": 0.09235856657024333
+      },
+      "source_config": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/resolved_config.json",
+      "source_config_artifact": "resolved_config.json",
+      "source_resolved_config": "/root/autodl-tmp/z1zy1/experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/resolved_config.json",
+      "semantic_fusion_gamma_max": 0.0
+    },
+    "levir_mci": {
+      "target_exp": "levir_mci_7_5_val_pareto_locked",
+      "selection_json": "/root/autodl-tmp/z1zy1/experiments/levir_mci_7_5_val_pareto_locked/best_checkpoint.json",
+      "status": "done",
+      "selected_checkpoint": "experiments/levir_mci_card_mask_semantic/snapshots/levir_mci_card_mask_semantic_checkpoint_5000.pt",
+      "selected_source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_mask_semantic",
+      "selected_source_exp_name": "levir_mci_card_mask_semantic",
+      "selected_is_baseline": false,
+      "selected_val_metrics": {
+        "Bleu_1": 0.8147147147146331,
+        "Bleu_2": 0.7225171402567774,
+        "Bleu_3": 0.6369792095667713,
+        "Bleu_4": 0.5605709158339637,
+        "METEOR": 0.3861510168287703,
+        "ROUGE_L": 0.740244241494693,
+        "CIDEr": 1.3401925277947833,
+        "SPICE": 0.3367473657799596
+      },
+      "selected_metric_deltas": {
+        "Bleu_1": 0.09470292573739758,
+        "Bleu_2": 0.12278360085921891,
+        "Bleu_3": 0.13255022528516702,
+        "Bleu_4": 0.13774406270235073,
+        "METEOR": 0.05250537152773538,
+        "ROUGE_L": 0.05405888472750642,
+        "CIDEr": 0.12132332035517268,
+        "SPICE": 0.08124744704342418
+      },
+      "source_config": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_mask_semantic/resolved_config.json",
+      "source_config_artifact": "resolved_config.json",
+      "source_resolved_config": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_mask_semantic/resolved_config.json",
+      "semantic_fusion_gamma_max": 0.0
+    },
+    "second_cc": {
+      "target_exp": "second_cc_7_5_val_pareto_locked",
+      "selection_json": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_5_val_pareto_locked/best_checkpoint.json",
+      "status": "done",
+      "selected_checkpoint": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_8000.pt",
+      "selected_source_exp_dir": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn",
+      "selected_source_exp_name": "second_cc_card_semantic_crossattn",
+      "selected_is_baseline": false,
+      "selected_val_metrics": {
+        "Bleu_1": 0.664968152866189,
+        "Bleu_2": 0.517494230863964,
+        "Bleu_3": 0.4131616663706065,
+        "Bleu_4": 0.339630398210128,
+        "METEOR": 0.2587811595271187,
+        "ROUGE_L": 0.5658568167033272,
+        "CIDEr": 0.8444829307887971,
+        "SPICE": 0.24657133615770638
+      },
+      "selected_metric_deltas": {
+        "Bleu_1": 0.016167582840114214,
+        "Bleu_2": 0.018318290351049704,
+        "Bleu_3": 0.01699262724579559,
+        "Bleu_4": 0.01673997754019163,
+        "METEOR": 0.008462799854506986,
+        "ROUGE_L": 0.018684056338317157,
+        "CIDEr": 0.016537571581977883,
+        "SPICE": 0.0038446986658801086
+      },
+      "source_config": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/resolved_config.json",
+      "source_config_artifact": "resolved_config.json",
+      "source_resolved_config": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_semantic_crossattn/resolved_config.json",
+      "semantic_fusion_gamma_max": 0.0
+    }
+  }
+}

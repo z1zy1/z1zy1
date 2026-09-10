@@ -1,0 +1,50 @@
+{
+  "status": "done",
+  "selection_uses_test_metrics": false,
+  "source_manifest": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_manifest.json",
+  "generated_at_utc": "2026-07-29T02:15:45.463248+00:00",
+  "results": [
+    {
+      "dataset": "levir_cc",
+      "exp_name": "card_levir_cc_baseline",
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/card_levir_cc_baseline/snapshots/card_levir_cc_baseline_checkpoint_5000.pt",
+      "test_result": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_cc/test_card_baseline_locked_result.json",
+      "Bleu_1": 0.8403699742024262,
+      "Bleu_2": 0.7498886119398153,
+      "Bleu_3": 0.6737983156059969,
+      "Bleu_4": 0.6125796195281634,
+      "METEOR": 0.40252493331225914,
+      "ROUGE_L": 0.7417245256127734,
+      "CIDEr": 1.3435072385949252,
+      "SPICE": 0.28176396789639135
+    },
+    {
+      "dataset": "levir_mci",
+      "exp_name": "levir_mci_card_baseline",
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/snapshots/levir_mci_card_baseline_checkpoint_8000.pt",
+      "test_result": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_mci/test_card_baseline_locked_result.json",
+      "Bleu_1": 0.821720195971637,
+      "Bleu_2": 0.7219042871860423,
+      "Bleu_3": 0.6359963537137664,
+      "Bleu_4": 0.5621341591494858,
+      "METEOR": 0.38893904389181366,
+      "ROUGE_L": 0.7419793409574119,
+      "CIDEr": 1.3379703139043375,
+      "SPICE": 0.3297080402711415
+    },
+    {
+      "dataset": "second_cc",
+      "exp_name": "second_cc_card_rgb_baseline",
+      "selected_checkpoint": "/root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline/snapshots/second_cc_card_rgb_baseline_checkpoint_9000.pt",
+      "test_result": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/second_cc/test_card_baseline_locked_result.json",
+      "Bleu_1": 0.6306730472367528,
+      "Bleu_2": 0.47482554308383945,
+      "Bleu_3": 0.37034256019401013,
+      "Bleu_4": 0.29527155103178454,
+      "METEOR": 0.23657273012093835,
+      "ROUGE_L": 0.5266291030740216,
+      "CIDEr": 0.7788705287216137,
+      "SPICE": 0.24914653962317462
+    }
+  ]
+}

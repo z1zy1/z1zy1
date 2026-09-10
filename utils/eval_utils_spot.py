@@ -1,5 +1,5 @@
 import sys
-COCO_PATH = '/data1/yunbin_tu/acl23/coco-caption_python3/' # i.e. /home/user/code/coco-caption
+COCO_PATH = '/root/miniconda3/envs/card/lib/python3.8/site-packages' # i.e. /home/user/code/coco-caption
 sys.path.insert(0, COCO_PATH)
 
 import json

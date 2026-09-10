@@ -1,0 +1,46 @@
+{
+  "snapshot_path": "experiments/levir_mci_wcsg_card_final/best_balanced.pth",
+  "result_json": "experiments/levir_mci_wcsg_card_final/test_output/captions/paper_best/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.836191529903446,
+    "Bleu_2": 0.7474137116610664,
+    "Bleu_3": 0.6695304177994662,
+    "Bleu_4": 0.6060954942437822,
+    "METEOR": 0.40270758903839304,
+    "ROUGE_L": 0.7438931420830666,
+    "CIDEr": 1.3411868060986696,
+    "SPICE": 0.28543090919626113
+  },
+  "aux_metrics": {
+    "Mask_Precision": 0.2736854039629287,
+    "Mask_Recall": 0.2942190879618407,
+    "Mask_F1": 0.26847419735849937,
+    "Mask_IoU": 0.20368808345456438,
+    "Mask_mIoU": 0.19235548766316365,
+    "IoU_road": 0.34802441481975377,
+    "IoU_building": 0.41894234343220804
+  },
+  "baseline_name": "test",
+  "num_images": 1929,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": 0.008191529903446071,
+    "Bleu_2": 0.019413711661066424,
+    "Bleu_3": 0.02853041779946619,
+    "Bleu_4": 0.04109549424378223,
+    "METEOR": 0.01170758903839303,
+    "ROUGE_L": -0.0021068579169334356,
+    "CIDEr": -0.006813193901330505,
+    "SPICE": -0.05056909080373889
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false
+}

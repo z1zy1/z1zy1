@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/levir_mci_card_mask_semantic/best_for_paper.pth",
+  "result_json": "./experiments/levir_mci_card_mask_semantic/test_output/captions/paper_best/sc_results.json",
+  "group": "change",
+  "num_images": 964,
+  "metrics": {
+    "Bleu_1": 0.7562389473505321,
+    "Bleu_2": 0.6116660101108627,
+    "Bleu_3": 0.48196845301636043,
+    "Bleu_4": 0.3754878987823073,
+    "METEOR": 0.28082798703770717,
+    "ROUGE_L": 0.5308753614963149,
+    "CIDEr": 0.62097963474906,
+    "SPICE": 0.21585712986852246
+  },
+  "note": ""
+}

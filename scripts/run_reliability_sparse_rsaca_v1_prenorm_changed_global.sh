@@ -22,6 +22,10 @@ export SEMANTIC_FUSION_GAMMA_MAX="${SEMANTIC_FUSION_GAMMA_MAX:-0.1}"
 export SEMANTIC_FUSION_RELIABILITY_GATE_BIAS="${SEMANTIC_FUSION_RELIABILITY_GATE_BIAS:--2.5}"
 export SELECTION_STRATEGY="${SELECTION_STRATEGY:-paper_balanced_no_spice}"
 export SELECTION_METRIC="${SELECTION_METRIC:-paper_balanced_no_spice}"
+# Confidence maps were generated only for LEVIR-CC. Keep the legacy generic
+# variable as an input alias, but prevent it from leaking into MCI/SECOND-CC.
+export LEVIR_CC_SEMANTIC_DIFF_CONFIDENCE_ROOT="${LEVIR_CC_SEMANTIC_DIFF_CONFIDENCE_ROOT:-${SEMANTIC_DIFF_CONFIDENCE_ROOT:-}}"
+unset SEMANTIC_DIFF_CONFIDENCE_ROOT
 
 printf '%s\n' 'V1 pre-norm RSACA: sparse=1 reliability_gate=1 global_token=changed_mean whole_adapter_gate=1'
 printf '%s\n' "V1 pre-norm RSACA: RUN_ROOT=$RUN_ROOT norm=$SEMANTIC_FUSION_NORM_MODE gamma_max=$SEMANTIC_FUSION_GAMMA_MAX gate_bias=$SEMANTIC_FUSION_RELIABILITY_GATE_BIAS visual_gate=$SEMANTIC_FUSION_VISUAL_CONSISTENCY_GATE fallback=$SEMANTIC_FUSION_VISUAL_FALLBACK warmup=$SEMANTIC_FUSION_WARMUP_STEPS selection=$SELECTION_METRIC"

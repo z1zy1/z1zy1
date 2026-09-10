@@ -1,0 +1,42 @@
+{
+  "experiment_name": "levir_mci_masksemantic_repro_seed1111",
+  "dataset": "levir_mci",
+  "run_id": "levir_mci_masksemantic_repro_seed1111",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-07-29T11:41:49+08:00",
+  "end_time": "2026-07-29T12:02:08+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "spice_constrained_balanced",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 16332613,
+  "trainable_parameters": 16332613,
+  "device": "cuda:0",
+  "final_epoch": 47,
+  "final_global_step": 10000,
+  "total_training_seconds": 1219.2889738082886,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 1.2266234206266797,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111/snapshots/levir_mci_masksemantic_repro_seed1111_checkpoint_5000.pt"
+    },
+    "spice": {
+      "score": 0.2625997839895975,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111/snapshots/levir_mci_masksemantic_repro_seed1111_checkpoint_5000.pt"
+    },
+    "balanced": {
+      "score": 0.9976685533937538,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed1111/snapshots/levir_mci_masksemantic_repro_seed1111_checkpoint_5000.pt",
+      "all_above_baseline": false
+    }
+  }
+}

@@ -1,0 +1,8 @@
+
+[2026-07-16 03:52:46] run_card_baselines_train start
+FAILED: second_cc training - refusing to overwrite non-empty incomplete directory: /root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline; archive it or choose another EXP_ROOT
+
+[2026-07-29 09:29:21] run_card_baselines_train start
+FAILED: second_cc training - refusing to overwrite non-empty incomplete directory: /root/autodl-tmp/z1zy1/experiments/second_cc_card_rgb_baseline; archive it or choose another EXP_ROOT
+
+[2026-07-29 09:44:48] run_card_baselines_train start

@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/levir_mci_ultrashort_caption_ft_80_lr003_dense10/snapshots/levir_mci_ultrashort_caption_ft_80_lr003_dense10_checkpoint_10.pt",
+  "result_json": "./experiments/levir_mci_ultrashort_grid_reselect_strict_nearest/test_output/captions/paper_best/sc_results.json",
+  "group": "nochange",
+  "num_images": 965,
+  "metrics": {
+    "Bleu_1": 0.9470120196375575,
+    "Bleu_2": 0.9372353907447395,
+    "Bleu_3": 0.93070392230081,
+    "Bleu_4": 0.9245610170599229,
+    "METEOR": 0.6982103003354122,
+    "ROUGE_L": 0.9635058208830031,
+    "CIDEr": 0.0,
+    "SPICE": 0.4157380020501019
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

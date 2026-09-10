@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/levir_mci_short_ft_keep_mask0005/snapshots/levir_mci_short_ft_keep_mask0005_checkpoint_250.pt",
+  "result_json": "./experiments/levir_mci_short_ft_keep_mask0005/test_output/captions/paper_best/sc_results.json",
+  "group": "nochange",
+  "num_images": 965,
+  "metrics": {
+    "Bleu_1": 0.9421664626681544,
+    "Bleu_2": 0.9313514409481048,
+    "Bleu_3": 0.9241453932522794,
+    "Bleu_4": 0.9182660298439603,
+    "METEOR": 0.6853506083410164,
+    "ROUGE_L": 0.9568417085611837,
+    "CIDEr": 0.0,
+    "SPICE": 0.37278483749986335
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

@@ -1,0 +1,23 @@
+{
+  "experiment_name": "rsaca_second_cc_seed1111",
+  "dataset": "second_cc",
+  "run_id": "rsaca_second_cc_seed1111",
+  "seed": 1111,
+  "status": "failed",
+  "start_time": "2026-09-04T13:02:17+08:00",
+  "end_time": "2026-09-04T13:31:06+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "",
+  "test_completed": false,
+  "failure_reason": "[enforce fail at inline_container.cc:274] . unexpected pos 61001984 vs 61001872",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 8438,
+  "val_samples": 1190,
+  "total_parameters": 17334287,
+  "trainable_parameters": 17334287,
+  "device": "cuda:0"
+}

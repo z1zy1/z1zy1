@@ -1,0 +1,46 @@
+{
+  "experiment_name": "unified_rsaca_levir_mci_seed1111",
+  "dataset": "levir_mci",
+  "run_id": "unified_rsaca_levir_mci_seed1111",
+  "seed": 1111,
+  "status": "completed",
+  "start_time": "2026-08-16T12:03:30+08:00",
+  "end_time": "2026-08-16T12:27:18+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "paper_balanced",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 17256239,
+  "trainable_parameters": 17256239,
+  "device": "cuda:0",
+  "final_epoch": 47,
+  "final_global_step": 10000,
+  "total_training_seconds": 1427.8246080875397,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 1.266834732765113,
+      "snapshot": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed1111/snapshots/unified_rsaca_levir_mci_seed1111_checkpoint_6000.pt"
+    },
+    "spice": {
+      "score": 0.2693356131801441,
+      "snapshot": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed1111/snapshots/unified_rsaca_levir_mci_seed1111_checkpoint_10000.pt"
+    },
+    "balanced": {
+      "score": 1.0266354183703577,
+      "snapshot": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed1111/snapshots/unified_rsaca_levir_mci_seed1111_checkpoint_9000.pt",
+      "all_above_baseline": true
+    }
+  },
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-08-16T15:32:53+08:00",
+  "test_checkpoint": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed1111/snapshots/unified_rsaca_levir_mci_seed1111_checkpoint_9000.pt",
+  "test_prediction_file": "experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/unified_rsaca_levir_mci_seed1111/test_output/captions/unified_locked/sc_results.json"
+}

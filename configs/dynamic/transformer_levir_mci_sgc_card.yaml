@@ -35,6 +35,13 @@ data:
     pseudo_mask_root: "./LEVIR-MCI-dataset/images"
     pseudo_mask_phase: "label"
     allow_missing_pseudo_mask: False
+    use_semantic_maps: False
+    num_semantic_classes: 7
+    semantic_diff_root: "./LEVIR-MCI-dataset/images"
+    semantic_diff_phase: "label"
+    semantic_diff_only: False
+    semantic_diff_binary: False
+    semantic_unknown_change_class: 6
     eval_anno_path: "./LEVIR-MCI-dataset/levir_mci_captions_reformat.json"
     splits_json: "./LEVIR-MCI-dataset/splits.json"
     vocab_json: "./LEVIR-MCI-dataset/transformer_levir_mci_vocab.json"

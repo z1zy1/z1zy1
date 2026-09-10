@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/levir_mci_weak_pd08_lm003_ls001_noreweight/snapshots/levir_mci_weak_pd08_lm003_ls001_noreweight_checkpoint_10000.pt",
+  "result_json": "./experiments/levir_mci_weak_pd08_lm003_ls001_noreweight/test_output/captions/paper_best/sc_results.json",
+  "group": "change",
+  "num_images": 964,
+  "metrics": {
+    "Bleu_1": 0.7536666309816129,
+    "Bleu_2": 0.6049728125752553,
+    "Bleu_3": 0.4746557241807285,
+    "Bleu_4": 0.370553623095981,
+    "METEOR": 0.28226787052083085,
+    "ROUGE_L": 0.5285905062265858,
+    "CIDEr": 0.6432941456786465,
+    "SPICE": 0.22182831256373806
+  },
+  "note": ""
+}

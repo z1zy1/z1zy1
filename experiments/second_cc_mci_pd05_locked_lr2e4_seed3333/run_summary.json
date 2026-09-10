@@ -1,0 +1,8 @@
+{
+  "status": "initialized",
+  "start_time": null,
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-08-08T08:13:56+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/mci_transfer_crossattn_matrix/second_cc_mci_pd05_lr2e4_seed3333/snapshots/second_cc_mci_pd05_lr2e4_seed3333_checkpoint_6000.pt",
+  "test_prediction_file": "experiments/second_cc_mci_pd05_locked_lr2e4_seed3333/test_output/captions/optimized_locked/sc_results.json"
+}

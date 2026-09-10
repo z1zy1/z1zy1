@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/second_cc_card_semantic_crossattn/snapshots/second_cc_card_semantic_crossattn_checkpoint_8000.pt",
+  "result_json": "/root/autodl-tmp/z1zy1/experiments/second_cc_7_5_val_pareto_locked/test_output/captions/7_5_locked/sc_results.json",
+  "group": "nochange",
+  "num_images": 341,
+  "metrics": {
+    "Bleu_1": 0.3022745957795828,
+    "Bleu_2": 0.18237645340578565,
+    "Bleu_3": 0.13302903072898833,
+    "Bleu_4": 0.10659252809357923,
+    "METEOR": 0.19001929320133584,
+    "ROUGE_L": 0.3608143293766998,
+    "CIDEr": 0.0,
+    "SPICE": 0.12991093299011186
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

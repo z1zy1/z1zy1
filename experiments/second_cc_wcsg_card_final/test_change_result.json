@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/second_cc_wcsg_card_final/best_balanced.pth",
+  "result_json": "experiments/second_cc_wcsg_card_final/test_output/captions/paper_best/sc_results.json",
+  "group": "change",
+  "num_images": 886,
+  "metrics": {
+    "Bleu_1": 0.5513159092978279,
+    "Bleu_2": 0.36044941243145284,
+    "Bleu_3": 0.24025728379854555,
+    "Bleu_4": 0.16087700102000208,
+    "METEOR": 0.170842441484873,
+    "ROUGE_L": 0.3643090519269605,
+    "CIDEr": 0.2654014670359098,
+    "SPICE": 0.12449826744089641
+  },
+  "note": ""
+}

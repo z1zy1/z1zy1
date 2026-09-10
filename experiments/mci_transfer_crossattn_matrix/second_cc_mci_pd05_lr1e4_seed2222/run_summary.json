@@ -1,0 +1,42 @@
+{
+  "experiment_name": "second_cc_mci_pd05_lr1e4_seed2222",
+  "dataset": "second_cc",
+  "run_id": "second_cc_mci_pd05_lr1e4_seed2222",
+  "seed": 2222,
+  "status": "completed",
+  "start_time": "2026-08-06T16:44:11+08:00",
+  "end_time": "2026-08-06T17:27:35+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "val_baseline_pareto",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 8438,
+  "val_samples": 1190,
+  "total_parameters": 16807950,
+  "trainable_parameters": 16807950,
+  "device": "cuda:0",
+  "final_epoch": 38,
+  "final_global_step": 10000,
+  "total_training_seconds": 2603.9485816955566,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 0.6738226626536309,
+      "snapshot": "/root/mci_transfer_experiments/second_cc_mci_pd05_lr1e4_seed2222/snapshots/second_cc_mci_pd05_lr1e4_seed2222_checkpoint_10000.pt"
+    },
+    "spice": {
+      "score": 0.1855009432896392,
+      "snapshot": "/root/mci_transfer_experiments/second_cc_mci_pd05_lr1e4_seed2222/snapshots/second_cc_mci_pd05_lr1e4_seed2222_checkpoint_7000.pt"
+    },
+    "balanced": {
+      "score": 0.5999791195655464,
+      "snapshot": "/root/mci_transfer_experiments/second_cc_mci_pd05_lr1e4_seed2222/snapshots/second_cc_mci_pd05_lr1e4_seed2222_checkpoint_9000.pt",
+      "all_above_baseline": false
+    }
+  }
+}

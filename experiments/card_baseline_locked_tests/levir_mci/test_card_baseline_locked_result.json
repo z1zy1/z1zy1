@@ -1,0 +1,76 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/snapshots/levir_mci_card_baseline_checkpoint_8000.pt",
+  "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_mci/test_output/captions/card_baseline_locked/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.821720195971637,
+    "Bleu_2": 0.7219042871860423,
+    "Bleu_3": 0.6359963537137664,
+    "Bleu_4": 0.5621341591494858,
+    "METEOR": 0.38893904389181366,
+    "ROUGE_L": 0.7419793409574119,
+    "CIDEr": 1.3379703139043375,
+    "SPICE": 0.3297080402711415
+  },
+  "aux_metrics": {},
+  "baseline_name": "test",
+  "num_images": 1929,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.006279804028362923,
+    "Bleu_2": -0.00609571281395771,
+    "Bleu_3": -0.005003646286233621,
+    "Bleu_4": -0.002865840850514112,
+    "METEOR": -0.0020609561081863514,
+    "ROUGE_L": -0.004020659042588082,
+    "CIDEr": -0.010029686095662571,
+    "SPICE": -0.006291959728858543
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false,
+  "group_metrics": {
+    "change": {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/snapshots/levir_mci_card_baseline_checkpoint_8000.pt",
+      "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_mci/test_output/captions/card_baseline_locked/sc_results.json",
+      "group": "change",
+      "num_images": 964,
+      "metrics": {
+        "Bleu_1": 0.7474198490543987,
+        "Bleu_2": 0.5954250260456901,
+        "Bleu_3": 0.4663517592081827,
+        "Bleu_4": 0.3643776849566223,
+        "METEOR": 0.27870307106436987,
+        "ROUGE_L": 0.5255680955467532,
+        "CIDEr": 0.6303229853545738,
+        "SPICE": 0.2227741839452102
+      },
+      "note": ""
+    },
+    "nochange": {
+      "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/snapshots/levir_mci_card_baseline_checkpoint_8000.pt",
+      "result_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_mci/test_output/captions/card_baseline_locked/sc_results.json",
+      "group": "nochange",
+      "num_images": 965,
+      "metrics": {
+        "Bleu_1": 0.9351090454056247,
+        "Bleu_2": 0.9225358844216262,
+        "Bleu_3": 0.9137950792731616,
+        "Bleu_4": 0.9049291150105236,
+        "METEOR": 0.6786096073688125,
+        "ROUGE_L": 0.958166326010132,
+        "CIDEr": 0.0,
+        "SPICE": 0.4365310843107246
+      },
+      "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+    }
+  },
+  "group_output_json": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_mci/test_overall_result.json",
+  "group_summary_csv": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_mci/test_group_summary.csv"
+}

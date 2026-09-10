@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "experiments/second_cc_card_semantic_crossattn/best_for_paper.pth",
+  "result_json": "./experiments/second_cc_card_semantic_crossattn/test_output/captions/paper_best/sc_results.json",
+  "group": "change",
+  "num_images": 886,
+  "metrics": {
+    "Bleu_1": 0.6040269458783716,
+    "Bleu_2": 0.4257730105949425,
+    "Bleu_3": 0.3011263483553666,
+    "Bleu_4": 0.21616776239693813,
+    "METEOR": 0.2015759144335898,
+    "ROUGE_L": 0.4047305916812728,
+    "CIDEr": 0.4103487312376375,
+    "SPICE": 0.1669426843389654
+  },
+  "note": ""
+}

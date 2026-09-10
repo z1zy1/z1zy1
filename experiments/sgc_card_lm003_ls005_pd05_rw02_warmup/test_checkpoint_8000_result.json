@@ -1,0 +1,36 @@
+{
+  "snapshot_path": "experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/snapshots/sgc_card_lm003_ls005_pd05_rw02_warmup_checkpoint_8000.pt",
+  "result_json": "experiments/sgc_card_lm003_ls005_pd05_rw02_warmup/test_output/captions/checkpoint_8000/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.8276041328220919,
+    "Bleu_2": 0.7323971132901027,
+    "Bleu_3": 0.6489502172964527,
+    "Bleu_4": 0.5784644845507053,
+    "METEOR": 0.39626552913444607,
+    "ROUGE_L": 0.7466468175502263,
+    "CIDEr": 1.3512566360426173,
+    "SPICE": 0.3162715956432466
+  },
+  "baseline_name": "test",
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.00039586717790807135,
+    "Bleu_2": 0.004397113290102728,
+    "Bleu_3": 0.007950217296452733,
+    "Bleu_4": 0.013464484550705369,
+    "METEOR": 0.005265529134446056,
+    "ROUGE_L": 0.0006468175502263307,
+    "CIDEr": 0.003256636042617167,
+    "SPICE": -0.019728404356753437
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false
+}

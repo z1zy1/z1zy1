@@ -1,0 +1,17 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/levir_mci_masksemantic_repro_seed2222/snapshots/levir_mci_masksemantic_repro_seed2222_checkpoint_9000.pt",
+  "result_json": "./experiments/levir_mci_masksemantic_repro_seed2222_7_6_val_locked/test_output/captions/7_6_locked/sc_results.json",
+  "group": "nochange",
+  "num_images": 965,
+  "metrics": {
+    "Bleu_1": 0.9413925822251676,
+    "Bleu_2": 0.9289384738451737,
+    "Bleu_3": 0.9200528112642926,
+    "Bleu_4": 0.9114729785711119,
+    "METEOR": 0.6882975741162506,
+    "ROUGE_L": 0.9615282358476134,
+    "CIDEr": 0.0,
+    "SPICE": 0.4311839973498004
+  },
+  "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+}

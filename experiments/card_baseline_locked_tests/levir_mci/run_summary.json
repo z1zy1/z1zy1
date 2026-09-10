@@ -1,0 +1,8 @@
+{
+  "status": "initialized",
+  "start_time": null,
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-07-29T10:13:34+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/levir_mci_card_baseline/snapshots/levir_mci_card_baseline_checkpoint_8000.pt",
+  "test_prediction_file": "/root/autodl-tmp/z1zy1/experiments/card_baseline_locked_tests/levir_mci/test_output/captions/card_baseline_locked/sc_results.json"
+}

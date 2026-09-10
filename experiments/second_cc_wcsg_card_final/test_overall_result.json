@@ -1,0 +1,78 @@
+{
+  "snapshot_path": "experiments/second_cc_wcsg_card_final/best_balanced.pth",
+  "result_json": "experiments/second_cc_wcsg_card_final/test_output/captions/paper_best/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.618433797779553,
+    "Bleu_2": 0.46393933994766484,
+    "Bleu_3": 0.36716382011297966,
+    "Bleu_4": 0.3013130094235432,
+    "METEOR": 0.22946717789816268,
+    "ROUGE_L": 0.5282542043431866,
+    "CIDEr": 0.7372669041343316,
+    "SPICE": 0.2084170229623932
+  },
+  "aux_metrics": {
+    "Semantic_mIoU": 0.002971781291081757,
+    "Semantic_IoU": 0.145181821630695,
+    "Semantic_F1": 0.21428555682594885
+  },
+  "baseline_name": "test",
+  "num_images": 1227,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": -0.20956620222044697,
+    "Bleu_2": -0.26406066005233514,
+    "Bleu_3": -0.27383617988702036,
+    "Bleu_4": -0.2636869905764567,
+    "METEOR": -0.16153282210183734,
+    "ROUGE_L": -0.2177457956568134,
+    "CIDEr": -0.6107330958656685,
+    "SPICE": -0.12758297703760682
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false,
+  "group_metrics": {
+    "change": {
+      "snapshot_path": "experiments/second_cc_wcsg_card_final/best_balanced.pth",
+      "result_json": "experiments/second_cc_wcsg_card_final/test_output/captions/paper_best/sc_results.json",
+      "group": "change",
+      "num_images": 886,
+      "metrics": {
+        "Bleu_1": 0.5513159092978279,
+        "Bleu_2": 0.36044941243145284,
+        "Bleu_3": 0.24025728379854555,
+        "Bleu_4": 0.16087700102000208,
+        "METEOR": 0.170842441484873,
+        "ROUGE_L": 0.3643090519269605,
+        "CIDEr": 0.2654014670359098,
+        "SPICE": 0.12449826744089641
+      },
+      "note": ""
+    },
+    "nochange": {
+      "snapshot_path": "experiments/second_cc_wcsg_card_final/best_balanced.pth",
+      "result_json": "experiments/second_cc_wcsg_card_final/test_output/captions/paper_best/sc_results.json",
+      "group": "nochange",
+      "num_images": 341,
+      "metrics": {
+        "Bleu_1": 0.9204918032783113,
+        "Bleu_2": 0.9043637824102191,
+        "Bleu_3": 0.8946133143744868,
+        "Bleu_4": 0.8860822016667118,
+        "METEOR": 0.6877266930834917,
+        "ROUGE_L": 0.9542231340815336,
+        "CIDEr": 0.0,
+        "SPICE": 0.4264581296839361
+      },
+      "note": "No-change CIDEr is reported for completeness and is not used as a core selection criterion."
+    }
+  }
+}

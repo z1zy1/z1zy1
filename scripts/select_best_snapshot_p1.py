@@ -68,6 +68,10 @@ def main():
     if args.reference_json:
         with open(args.reference_json, encoding='utf-8-sig') as handle:
             supplied = json.load(handle)
+        # The frozen protocol stores references under ``reference``; accepting
+        # a top-level mapping also keeps this utility usable with small pilot
+        # fixtures without changing the scoring rule.
+        supplied = supplied.get('reference', supplied)
         reference.update({key: float(supplied[key]) for key in METRICS})
     if any(not math.isfinite(reference[key]) or reference[key] <= 0 for key in METRICS):
         raise ValueError('P1 reference values must be finite and strictly positive')
@@ -75,6 +79,8 @@ def main():
     rows = []
     with open(csv_path, newline='', encoding='utf-8-sig') as handle:
         for row_number, row in enumerate(csv.DictReader(handle), start=2):
+            if not any(str(value or '').strip() for value in row.values()):
+                continue
             snapshot = resolve(row.get('snapshot_path', ''), exp_dir)
             if not snapshot:
                 raise ValueError('row %d has no existing snapshot_path' % row_number)

@@ -1,11 +1,11 @@
 {
   "protocol_id": "p1_rsaca_20260913",
-  "status": "training_rerun_starting",
-  "source_commit": "1bcc909b16a1f856d3f6543c06125f1f11df2d07",
+  "status": "training_running",
+  "source_commit": "b4fb7a81f2ccb4ec774d1196bde3c3b296b25ea5",
   "selection_rule": "five_metric_equal_weight_log",
   "selection_split": "validation",
   "selection_reference": "configs/protocols/p1_rsaca_20260913.json",
-  "runs": [{"stage": "train", "status": "failed_before_training", "pair_root": "experiments/p1_rsaca_20260913/paired_matrix", "reason": "boolean config value passed as integer"}, {"stage": "train", "status": "starting", "tmux": "p1_rsaca_train_r1", "pair_root": "experiments/p1_rsaca_20260913/paired_matrix_r1"}],
+  "runs": [{"stage": "train", "status": "failed_before_training", "pair_root": "experiments/p1_rsaca_20260913/paired_matrix", "reason": "boolean config value passed as integer"}, {"stage": "train", "status": "running", "tmux": "p1_rsaca_train_r1", "pair_root": "experiments/p1_rsaca_20260913/paired_matrix_r1", "current_run": "card_levir_cc_seed1111", "last_observed_step": 1400}],
   "next_action": "monitor tmux p1_rsaca_train_r1; then select validation checkpoints",
-  "last_checked_utc": "2026-09-13T15:56:00Z"
+  "last_checked_utc": "2026-09-13T07:58:58Z"
 }

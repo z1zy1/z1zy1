@@ -29,13 +29,13 @@ def checkpoint_number(path):
 def resolve(path, exp_dir):
     candidates = [path, os.path.join(exp_dir, path), os.path.join(exp_dir, 'snapshots', os.path.basename(path))]
     for candidate in candidates:
-        if candidate and os.path.isfile(candidate):
+        if candidate and os.path.isfile(candidate) and not os.path.islink(candidate):
             return os.path.abspath(os.path.normpath(candidate))
-    number = checkpoint_number(path)
-    if number is not None:
-        for name in os.listdir(os.path.join(exp_dir, 'snapshots')) if os.path.isdir(os.path.join(exp_dir, 'snapshots')) else ():
-            if str(number) in name and name.endswith(('.pt', '.pth')):
-                return os.path.abspath(os.path.join(exp_dir, 'snapshots', name))
+    # Training writes relative paths against the repository root.  Resolve
+    # those paths before falling back to the experiment-local candidates.
+    repo_candidate = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', path))
+    if os.path.isfile(repo_candidate) and not os.path.islink(repo_candidate):
+        return repo_candidate
     return None
 
 
@@ -95,9 +95,12 @@ def main():
     if os.path.lexists(copy_path):
         os.remove(copy_path)
     try:
-        os.symlink(os.path.abspath(best['snapshot_path']), copy_path)
-    except OSError:
+        # Keep the selected alias portable; the checkpoint itself remains in
+        # the immutable snapshots directory.  Never create a symlink at the
+        # selected snapshot path when a stale self-link is present.
         shutil.copy2(best['snapshot_path'], copy_path)
+    except OSError:
+        os.symlink(os.path.abspath(best['snapshot_path']), copy_path)
     payload = {
         'protocol_id': 'p1_rsaca_20260913',
         'selection_metric': 'five_metric_equal_weight_log',

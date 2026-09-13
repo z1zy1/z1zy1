@@ -292,20 +292,22 @@ def evaluate_caption_metrics_if_available(cfg, result_json_path):
 
 
 def _safe_update_best_checkpoint_alias(output_dir, snapshot_path, alias_name):
+    output_dir = os.path.abspath(output_dir)
+    snapshot_path = os.path.abspath(snapshot_path)
     alias_path = os.path.join(output_dir, alias_name)
     pointer_path = alias_path + '.txt'
     os.makedirs(output_dir, exist_ok=True)
     with open(pointer_path, 'w', encoding='utf-8') as f:
         f.write(os.path.normpath(snapshot_path) + '\n')
 
-    if os.path.exists(alias_path):
+    if os.path.lexists(alias_path):
         try:
             if os.path.samefile(alias_path, snapshot_path):
                 return
         except OSError:
             pass
         try:
-            os.remove(alias_path)
+            os.unlink(alias_path)
         except OSError as exc:
             print('Warning: could not remove old checkpoint alias %s: %s' % (alias_path, exc))
             return
@@ -334,8 +336,8 @@ def _safe_update_best_checkpoint_alias(output_dir, snapshot_path, alias_name):
                         % (alias_name, link_exc, symlink_exc, copy_exc, pointer_path)
                     )
                 try:
-                    if os.path.exists(alias_path):
-                        os.remove(alias_path)
+                    if os.path.lexists(alias_path):
+                        os.unlink(alias_path)
                 except OSError:
                     pass
 
@@ -1588,8 +1590,8 @@ while t < cfg.train.max_iter:
                 'speaker_state': speaker_state,
                 'model_cfg': cfg
             }
-            save_path = os.path.join(snapshot_dir,
-                                     snapshot_file_format % (exp_name, t))
+            save_path = os.path.abspath(os.path.join(
+                snapshot_dir, snapshot_file_format % (exp_name, t)))
             save_checkpoint(checkpoint, save_path)
 
             print('Running eval at iter %d' % t)

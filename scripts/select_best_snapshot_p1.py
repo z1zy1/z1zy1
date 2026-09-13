@@ -30,12 +30,12 @@ def resolve(path, exp_dir):
     candidates = [path, os.path.join(exp_dir, path), os.path.join(exp_dir, 'snapshots', os.path.basename(path))]
     for candidate in candidates:
         if candidate and os.path.isfile(candidate):
-            return os.path.normpath(candidate)
+            return os.path.abspath(os.path.normpath(candidate))
     number = checkpoint_number(path)
     if number is not None:
         for name in os.listdir(os.path.join(exp_dir, 'snapshots')) if os.path.isdir(os.path.join(exp_dir, 'snapshots')) else ():
             if str(number) in name and name.endswith(('.pt', '.pth')):
-                return os.path.join(exp_dir, 'snapshots', name)
+                return os.path.abspath(os.path.join(exp_dir, 'snapshots', name))
     return None
 
 

@@ -27,7 +27,7 @@ from utils.experiment_tracking import (
 )
 from utils.experiment_runtime import RunStateManager, StructuredMetricLogger
 from utils.logger import Logger
-from utils.seed import seed_everything
+from utils.seed import capture_rng_state, restore_rng_state, seeded_initialization, seed_everything
 from utils.semantic_label import build_content_word_token_ids
 from utils.semantic_warmup import get_effective_lambda_semantic
 from utils.utils import AverageMeter, accuracy, set_mode, save_checkpoint, load_checkpoint, \
@@ -45,6 +45,20 @@ BASELINE_EVAL = {
     "CIDEr": 1.2299,
     "SPICE": 0.2607,
 }
+
+
+def parameter_summary(module):
+    """Return stable parameter names, shapes, and hashes for run provenance."""
+    import hashlib
+    summary = {}
+    for name, parameter in module.named_parameters():
+        tensor = parameter.detach().cpu().contiguous().numpy().tobytes()
+        summary[name] = {
+            'shape': list(parameter.shape),
+            'dtype': str(parameter.dtype),
+            'sha256': hashlib.sha256(tensor).hexdigest(),
+        }
+    return summary
 
 
 def align_mask_tensor(tensor, spatial_size, mode):
@@ -969,12 +983,30 @@ if is_content_word_weighted_ce_enabled(cfg):
 else:
     cfg.train.content_word_token_ids = []
 
-# Create model
-change_detector = CARD(cfg)
+# Create model. P1 gives public modules independent initialization streams;
+# legacy runs retain their historical constructor behavior.
+if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913':
+    with seeded_initialization(int(cfg.train.seed) + 1001):
+        change_detector = CARD(cfg)
+else:
+    change_detector = CARD(cfg)
 change_detector.to(device)
 
-speaker = DynamicSpeaker(cfg)
+if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913':
+    with seeded_initialization(int(cfg.train.seed) + 2001):
+        speaker = DynamicSpeaker(cfg)
+else:
+    speaker = DynamicSpeaker(cfg)
 speaker.to(device)
+
+if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913':
+    with open(os.path.join(output_dir, 'initial_parameter_summary.json'), 'w', encoding='utf-8') as handle:
+        json.dump({
+            'protocol_id': str(cfg.train.protocol_id),
+            'seed': int(cfg.train.seed),
+            'change_detector': parameter_summary(change_detector),
+            'speaker': parameter_summary(speaker),
+        }, handle, indent=2, sort_keys=True)
 
 finetune_decoder_only = bool(getattr(cfg.train, 'finetune_decoder_only', False))
 init_checkpoint = str(getattr(cfg.train, 'init_checkpoint', '') or '')
@@ -1562,6 +1594,7 @@ while t < cfg.train.max_iter:
 
             print('Running eval at iter %d' % t)
             set_mode('eval', [change_detector, speaker])
+            validation_rng_state = capture_rng_state() if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913' else None
             with torch.no_grad():
                 test_iter_start_time = time.time()
 
@@ -1629,7 +1662,10 @@ while t < cfg.train.max_iter:
                         update_micro_f1_counts(val_f1_counts['relations'], relation_aux_logits['relations'], semantic_targets['relations'], threshold)
 
 
-                    speaker_output_pos, _ = speaker.sample(encoder_output)
+                    speaker_output_pos, _ = speaker.sample(
+                        encoder_output,
+                        sample_max=1 if bool(getattr(cfg.train, 'validation_greedy', False)) else 0,
+                    )
 
                     gen_sents_pos = decode_sequence_transformer(idx_to_word, speaker_output_pos[:, 1:]) # no start
 
@@ -1691,6 +1727,8 @@ while t < cfg.train.max_iter:
                         duration_seconds=test_iter_end_time,
                     )
 
+            if validation_rng_state is not None:
+                restore_rng_state(validation_rng_state)
             if finetune_decoder_only:
                 set_mode('eval', [change_detector])
                 set_mode('train', [speaker])

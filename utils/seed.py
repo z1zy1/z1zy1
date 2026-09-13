@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import random
+from contextlib import contextmanager
 from typing import Dict, Optional
 
 import numpy as np
@@ -49,3 +50,49 @@ def seed_worker(worker_id: int) -> None:
     worker_seed = int(torch.initial_seed()) % (2 ** 32)
     random.seed(worker_seed)
     np.random.seed(worker_seed)
+
+
+@contextmanager
+def seeded_initialization(seed: int):
+    """Construct a module from an isolated seed without consuming training RNG."""
+    seed = int(seed)
+    random_state = random.getstate()
+    numpy_state = np.random.get_state()
+    random.seed(seed)
+    np.random.seed(seed)
+    try:
+        import torch
+    except ModuleNotFoundError:
+        try:
+            yield
+        finally:
+            random.setstate(random_state)
+            np.random.set_state(numpy_state)
+        return
+    devices = list(range(torch.cuda.device_count())) if torch.cuda.is_available() else []
+    with torch.random.fork_rng(devices=devices, enabled=True):
+        torch.manual_seed(seed)
+        if devices:
+            torch.cuda.manual_seed_all(seed)
+        try:
+            yield
+        finally:
+            random.setstate(random_state)
+            np.random.set_state(numpy_state)
+
+
+def capture_rng_state():
+    import torch
+    state = {'python': random.getstate(), 'numpy': np.random.get_state(), 'torch': torch.get_rng_state()}
+    if torch.cuda.is_available():
+        state['cuda'] = torch.cuda.get_rng_state_all()
+    return state
+
+
+def restore_rng_state(state) -> None:
+    import torch
+    random.setstate(state['python'])
+    np.random.set_state(state['numpy'])
+    torch.set_rng_state(state['torch'])
+    if 'cuda' in state and torch.cuda.is_available():
+        torch.cuda.set_rng_state_all(state['cuda'])

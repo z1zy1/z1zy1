@@ -1,0 +1,14 @@
+{
+  "protocol_id": "p1_rsaca_20260913",
+  "selection_rule": "five_metric_equal_weight_log",
+  "reference": {
+    "Bleu_4": 0.4375,
+    "METEOR": 0.3377,
+    "ROUGE_L": 0.6942,
+    "CIDEr": 1.2299,
+    "SPICE": 0.2607
+  },
+  "tie_break": "earlier_step",
+  "selection_split": "validation",
+  "validation_steps": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000]
+}

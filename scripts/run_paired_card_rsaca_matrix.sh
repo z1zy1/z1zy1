@@ -18,6 +18,8 @@ RESET_INCOMPLETE=0
 FORCE_SELECT=0
 TEST_TAG="${TEST_TAG:-paired_locked}"
 REQUIRE_CUDA="${REQUIRE_CUDA:-1}"
+PROTOCOL_ID="${PROTOCOL_ID:-legacy}"
+P1_REFERENCE_JSON="${P1_REFERENCE_JSON:-configs/protocols/p1_rsaca_20260913.json}"
 
 usage() {
   cat >&2 <<'EOF'
@@ -81,7 +83,7 @@ source_digest() {
   {
     git ls-files -- models/CARD.py train_card_spot.py utils configs/dynamic scripts/_run_paper_training.sh \
       scripts/test_specific_snapshot_sgc_card.sh scripts/select_best_snapshot_for_paper.py
-    printf '%s\n' scripts/run_paired_card_rsaca_matrix.sh scripts/summarize_paired_card_rsaca_matrix.py
+    printf '%s\n' scripts/run_paired_card_rsaca_matrix.sh scripts/summarize_paired_card_rsaca_matrix.py scripts/select_best_snapshot_p1.py utils/seed.py datasets/datasets.py
   } | sort -u | while IFS= read -r path; do
     [ -f "$path" ] && sha256sum "$path"
   done | sha256sum | awk '{print $1}'
@@ -92,12 +94,25 @@ ensure_protocol_lock() {
   git_commit="$(git rev-parse HEAD)"
   source_hash="$(source_digest)"
   source_status="$(git status --porcelain -- models/CARD.py train_card_spot.py utils configs/dynamic scripts | sha256sum | awk '{print $1}')"
+  local reference_hash=""
+  if [ "$PROTOCOL_ID" = p1_rsaca_20260913 ]; then
+    reference_hash="$($PYTHON - "$P1_REFERENCE_JSON" <<'PY'
+import hashlib, json, sys
+with open(sys.argv[1], encoding='utf-8') as handle:
+    payload = json.load(handle)['reference']
+print(hashlib.sha256(json.dumps(payload, sort_keys=True, separators=(',', ':')).encode('utf-8')).hexdigest())
+PY
+    )"
+  fi
   run_or_print "$PYTHON" scripts/lock_paired_card_rsaca_protocol.py \
     --pair-root "$PAIR_ROOT" --git-commit "$git_commit" --source-digest "$source_hash" \
     --source-status-digest "$source_status" --python "$PYTHON" \
     --cuda-visible-devices "${CUDA_VISIBLE_DEVICES:-}" --pytorch-gpu "${PYTORCH_GPU:-0}" \
     --omp-num-threads "${OMP_NUM_THREADS:-}" --num-workers "${NUM_WORKERS:-default}" \
-    --datasets "$DATASETS" --seeds "$SEEDS" --rsaca-arm whole_adapter_gate_v1
+    --datasets "$DATASETS" --seeds "$SEEDS" --rsaca-arm whole_adapter_gate_v1 \
+    --protocol-id "$PROTOCOL_ID" \
+    --selection-rule "$( [ "$PROTOCOL_ID" = p1_rsaca_20260913 ] && printf five_metric_equal_weight_log || printf paper_balanced_no_spice )" \
+    --selection-reference-sha256 "$reference_hash"
 }
 
 configure_common() {
@@ -114,8 +129,15 @@ configure_common() {
   export SEMANTIC_MAP_ROOT= SEMANTIC_BEFORE_PHASE= SEMANTIC_AFTER_PHASE=
   export SEMANTIC_DIFF_ROOT= SEMANTIC_DIFF_PHASE= SEMANTIC_DIFF_CONFIDENCE_ROOT= SEMANTIC_DIFF_CONFIDENCE_PHASE=
   export PAPER_SELECTION_MODE=1
-  export SELECTION_STRATEGY="${SELECTION_STRATEGY:-paper_balanced_no_spice}"
-  export SELECTION_METRIC="${SELECTION_METRIC:-paper_balanced_no_spice}"
+  if [ "$PROTOCOL_ID" = p1_rsaca_20260913 ]; then
+    export SELECTION_STRATEGY=five_metric_equal_weight_log
+    export SELECTION_METRIC=five_metric_equal_weight_log
+    export VALIDATION_GREEDY=1 ISOLATE_LOADER_RNG=1 SEED_WORKERS=1
+  else
+    export SELECTION_STRATEGY="${SELECTION_STRATEGY:-paper_balanced_no_spice}"
+    export SELECTION_METRIC="${SELECTION_METRIC:-paper_balanced_no_spice}"
+    export VALIDATION_GREEDY=0 ISOLATE_LOADER_RNG=0
+  fi
   case "$dataset" in
     levir_cc)
       export DATA_ROOT="${LEVIR_CC_ROOT:-./Levir-CC}" FEATURE_ROOT="${LEVIR_CC_FEATURE_ROOT:-${LEVIR_CC_ROOT:-./Levir-CC}/features}"
@@ -211,8 +233,13 @@ select_one() {
       echo "Ignoring invalid validation selection: $output" >&2
     fi
   fi
-  run_or_print "$PYTHON" scripts/select_best_snapshot_for_paper.py --exp_dir "$exp_path" --csv "$exp_path/val_metrics.csv" \
-    --metric "$SELECTION_METRIC" --output_json "$output" --copy_path "$exp_path/best_for_paper.pth"
+  if [ "$PROTOCOL_ID" = p1_rsaca_20260913 ]; then
+    run_or_print "$PYTHON" scripts/select_best_snapshot_p1.py --exp-dir "$exp_path" --csv "$exp_path/val_metrics.csv" \
+      --output-json "$output" --copy-path "$exp_path/best_for_paper.pth" --reference-json "$P1_REFERENCE_JSON"
+  else
+    run_or_print "$PYTHON" scripts/select_best_snapshot_for_paper.py --exp_dir "$exp_path" --csv "$exp_path/val_metrics.csv" \
+      --metric "$SELECTION_METRIC" --output_json "$output" --copy_path "$exp_path/best_for_paper.pth"
+  fi
 }
 
 test_one() {

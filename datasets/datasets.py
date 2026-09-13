@@ -59,6 +59,12 @@ def create_dataset(cfg, split: str = 'train'):
         'num_workers': cfg.data.num_workers,
         'pin_memory': True,
     }
+    if bool(getattr(cfg.data, 'isolate_loader_rng', False)):
+        import torch
+        offsets = {'train': 101, 'val': 202, 'test': 303}
+        loader_kwargs['generator'] = torch.Generator().manual_seed(
+            int(getattr(cfg.train, 'seed', 0)) + offsets.get(split, 404)
+        )
     loader_kwargs.update(_loader_seed_kwargs(cfg))
     data_loader = loader_class(dataset, **loader_kwargs)
     return dataset, data_loader

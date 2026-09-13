@@ -1,0 +1,11 @@
+{
+  "protocol_id": "p1_rsaca_20260913",
+  "status": "code_ready_no_gpu_run",
+  "source_commit": "84bb0226f200bd0e55b4f44deb38b38a4b56404c",
+  "selection_rule": "five_metric_equal_weight_log",
+  "selection_split": "validation",
+  "selection_reference": "configs/protocols/p1_rsaca_20260913.json",
+  "runs": [],
+  "next_action": "GPU preflight then paired CARD/RSACA training",
+  "last_checked_utc": "2026-09-13T00:00:00Z"
+}

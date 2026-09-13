@@ -21,6 +21,9 @@ def parse_args():
     parser.add_argument('--datasets', required=True)
     parser.add_argument('--seeds', required=True)
     parser.add_argument('--rsaca-arm', required=True)
+    parser.add_argument('--protocol-id', default='legacy')
+    parser.add_argument('--selection-rule', default='paper_balanced_no_spice')
+    parser.add_argument('--selection-reference-sha256', default='')
     return parser.parse_args()
 
 
@@ -31,7 +34,7 @@ def canonical(path):
 def main():
     args = parse_args()
     payload = {
-        'schema_version': 1,
+        'schema_version': 2 if args.protocol_id != 'legacy' else 1,
         'pair_root': canonical(args.pair_root),
         'git_commit': args.git_commit,
         'source_digest_sha256': args.source_digest,
@@ -44,9 +47,15 @@ def main():
         'datasets': args.datasets.split(),
         'seeds': [int(value) for value in args.seeds.split()],
         'arms': {'card': 'semantic_input_mode=none', 'rsaca': args.rsaca_arm},
-        'selection': 'validation_only: paper_balanced_no_spice',
+        'selection': ({
+            'split': 'validation',
+            'rule': args.selection_rule,
+            'reference_sha256': args.selection_reference_sha256,
+        } if args.protocol_id != 'legacy' else 'validation_only: paper_balanced_no_spice'),
         'test_policy': 'one immutable test per validation-selected checkpoint',
     }
+    if args.protocol_id != 'legacy':
+        payload['protocol_id'] = args.protocol_id
     path = os.path.join(args.pair_root, 'paired_protocol_lock.json')
     if os.path.exists(path):
         with open(path, encoding='utf-8-sig') as handle:

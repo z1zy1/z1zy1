@@ -73,6 +73,8 @@ def verify_resolved_configs(card_path, rsaca_path):
 
 def load_arm(pair_root, arm, dataset, seed):
     exp_dir = os.path.join(pair_root, arm, '%s_%s_seed%d' % (arm, dataset, seed))
+    # P1 keeps the historical filename for runner compatibility, while the
+    # payload's protocol_id/selection fields identify the new rule.
     selection_path = os.path.join(exp_dir, 'best_snapshot_for_paper.json')
     test_path = os.path.join(exp_dir, 'test_paired_locked_result.json')
     resolved_path = os.path.join(exp_dir, 'resolved_config.json')
@@ -80,6 +82,10 @@ def load_arm(pair_root, arm, dataset, seed):
         if not os.path.isfile(path):
             raise FileNotFoundError('Missing paired artifact: %s' % path)
     selection = load_json(selection_path)
+    protocol_id = load_json(resolved_path).get('train', {}).get('protocol_id', 'legacy')
+    if protocol_id == 'p1_rsaca_20260913':
+        if selection.get('selection_strategy') != 'five_metric_equal_weight_log':
+            raise RuntimeError('P1 selection rule mismatch in %s' % selection_path)
     result = load_json(test_path)
     selected = selection.get('best_snapshot', '')
     tested = result.get('snapshot_path', '')

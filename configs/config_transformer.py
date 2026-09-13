@@ -132,6 +132,7 @@ __C.data.dataset = 'rcc_dataset'
 __C.data.data_root = ''
 __C.data.num_workers = 8
 __C.data.seed_workers = False
+__C.data.isolate_loader_rng = False
 __C.data.default_feature_dir = './data/features'
 __C.data.semantic_feature_dir = './data/sc_features'
 __C.data.nonsemantic_feature_dir = './data/nsc_features'
@@ -288,6 +289,8 @@ __C.train.normalize_content_word_weights = False
 __C.train.content_word_token_ids = []
 __C.train.paper_selection_mode = False
 __C.train.selection_strategy = 'spice_constrained_balanced'
+__C.train.protocol_id = 'legacy'
+__C.train.validation_greedy = False
 __C.train.init_checkpoint = ''
 
 

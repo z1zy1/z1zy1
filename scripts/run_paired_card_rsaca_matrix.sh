@@ -83,7 +83,7 @@ source_digest() {
   {
     git ls-files -- models/CARD.py train_card_spot.py utils configs/dynamic scripts/_run_paper_training.sh \
       scripts/test_specific_snapshot_sgc_card.sh scripts/select_best_snapshot_for_paper.py
-    printf '%s\n' scripts/run_paired_card_rsaca_matrix.sh scripts/summarize_paired_card_rsaca_matrix.py scripts/select_best_snapshot_p1.py utils/seed.py datasets/datasets.py
+    printf '%s\n' scripts/run_paired_card_rsaca_matrix.sh scripts/summarize_paired_card_rsaca_matrix.py scripts/select_best_snapshot_p1.py utils/checkpoint_integrity.py utils/seed.py datasets/datasets.py
   } | sort -u | while IFS= read -r path; do
     [ -f "$path" ] && sha256sum "$path"
   done | sha256sum | awk '{print $1}'
@@ -188,11 +188,32 @@ configure_common() {
 selected_checkpoint() {
   "$PYTHON" - "$1" <<'PY'
 import json, os, sys
+from utils.checkpoint_integrity import validate_checkpoint_file
 with open(sys.argv[1], encoding='utf-8-sig') as handle:
-    snapshot = json.load(handle).get('best_snapshot', '')
-if not snapshot or not os.path.isfile(snapshot):
-    raise SystemExit('Selected checkpoint is missing or is not a file: %s' % snapshot)
+    payload = json.load(handle)
+snapshot = payload.get('best_snapshot', '')
+try:
+    is_p1 = payload.get('protocol_id') == 'p1_rsaca_20260913'
+    digest = validate_checkpoint_file(
+        snapshot, require_checksum=is_p1, require_metadata=is_p1,
+        expected_step=payload.get('best', {}).get('iter') if is_p1 else None)
+except ValueError as exc:
+    raise SystemExit(str(exc))
+expected = payload.get('best_snapshot_sha256')
+if expected and digest != expected:
+    raise SystemExit('Selected checkpoint digest disagrees with selection record: %s' % snapshot)
 print(snapshot)
+PY
+}
+
+checkpoint_is_valid() {
+  "$PYTHON" - "$1" <<'PY'
+import sys
+from utils.checkpoint_integrity import validate_checkpoint_file
+try:
+    validate_checkpoint_file(sys.argv[1], require_checksum=True, require_metadata=True)
+except ValueError as exc:
+    raise SystemExit(str(exc))
 PY
 }
 
@@ -207,7 +228,13 @@ preflight() {
 
 train_one() {
   local exp_path="$EXP_DIR/$EXP_NAME"
-  if [ -f "$exp_path/snapshots/${EXP_NAME}_checkpoint_${MAX_ITER}.pt" ] || [ -f "$exp_path/snapshots/${EXP_NAME}_checkpoint_${MAX_ITER}.pth" ]; then
+  local completed_pt="$exp_path/snapshots/${EXP_NAME}_checkpoint_${MAX_ITER}.pt"
+  local completed_pth="$exp_path/snapshots/${EXP_NAME}_checkpoint_${MAX_ITER}.pth"
+  if [ "$PROTOCOL_ID" = p1_rsaca_20260913 ]; then
+    if checkpoint_is_valid "$completed_pt" 2>/dev/null || checkpoint_is_valid "$completed_pth" 2>/dev/null; then
+      echo "Skipping completed checksummed run: $EXP_NAME"; return
+    fi
+  elif [ -f "$completed_pt" ] || [ -f "$completed_pth" ]; then
     echo "Skipping completed run: $EXP_NAME"; return
   fi
   if [ -d "$exp_path" ] && find "$exp_path" -mindepth 1 -print -quit 2>/dev/null | grep -q .; then

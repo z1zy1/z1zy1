@@ -342,19 +342,21 @@ def _safe_update_best_checkpoint_alias(output_dir, snapshot_path, alias_name):
                     pass
 
 
-def update_best_training_checkpoints(output_dir, snapshot_path, metrics, best_records):
+def update_best_training_checkpoints(output_dir, snapshot_path, metrics, best_records, create_aliases=True):
     if metrics is None:
         return
 
     cider = float(metrics.get('CIDEr', -float('inf')))
     if cider > best_records['cider']['score']:
         best_records['cider'] = {'score': cider, 'snapshot': snapshot_path}
-        _safe_update_best_checkpoint_alias(output_dir, snapshot_path, 'best_cider.pth')
+        if create_aliases:
+            _safe_update_best_checkpoint_alias(output_dir, snapshot_path, 'best_cider.pth')
 
     spice = float(metrics.get('SPICE', -float('inf')))
     if spice > best_records['spice']['score']:
         best_records['spice'] = {'score': spice, 'snapshot': snapshot_path}
-        _safe_update_best_checkpoint_alias(output_dir, snapshot_path, 'best_spice.pth')
+        if create_aliases:
+            _safe_update_best_checkpoint_alias(output_dir, snapshot_path, 'best_spice.pth')
 
     balanced_score = float(metrics.get('balanced_score', -float('inf')))
     all_above = bool(metrics.get('all_above_baseline', False))
@@ -369,7 +371,8 @@ def update_best_training_checkpoints(output_dir, snapshot_path, metrics, best_re
             'snapshot': snapshot_path,
             'all_above_baseline': all_above,
         }
-        _safe_update_best_checkpoint_alias(output_dir, snapshot_path, 'best_balanced.pth')
+        if create_aliases:
+            _safe_update_best_checkpoint_alias(output_dir, snapshot_path, 'best_balanced.pth')
 
     record_path = os.path.join(output_dir, 'best_training_checkpoints.json')
     with open(record_path, 'w', encoding='utf-8') as f:
@@ -1588,11 +1591,19 @@ while t < cfg.train.max_iter:
             checkpoint = {
                 'change_detector_state': chg_det_state,
                 'speaker_state': speaker_state,
-                'model_cfg': cfg
+                'model_cfg': cfg,
+                'global_step': t,
             }
             save_path = os.path.abspath(os.path.join(
                 snapshot_dir, snapshot_file_format % (exp_name, t)))
-            save_checkpoint(checkpoint, save_path)
+            is_p1_protocol = str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913'
+            save_checkpoint(
+                checkpoint,
+                save_path,
+                immutable=is_p1_protocol,
+                write_checksum=is_p1_protocol,
+                expected_step=t if is_p1_protocol else None,
+            )
 
             print('Running eval at iter %d' % t)
             set_mode('eval', [change_detector, speaker])
@@ -1708,7 +1719,13 @@ while t < cfg.train.max_iter:
                             val_stats[metric_name] = float(caption_metrics[metric_name])
                     val_stats['balanced_score'] = float(caption_metrics['balanced_score'])
                     val_stats['ALL_ABOVE_BASELINE'] = float(caption_metrics['all_above_baseline'])
-                    update_best_training_checkpoints(output_dir, save_path, caption_metrics, best_training_records)
+                    update_best_training_checkpoints(
+                        output_dir,
+                        save_path,
+                        caption_metrics,
+                        best_training_records,
+                        create_aliases=not is_p1_protocol,
+                    )
                     csv_row = {'iter': t, 'snapshot_path': save_path}
                     csv_row.update({key: val_stats.get(key, '') for key in ('Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE', 'balanced_score', 'ALL_ABOVE_BASELINE')})
                     write_single_row_csv(

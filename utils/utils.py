@@ -4,6 +4,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 import json
 import math
+from utils.checkpoint_integrity import atomic_save_checkpoint
 
 class LabelSmoothingLoss(nn.Module):
     """
@@ -46,9 +47,17 @@ def load_cpu(path):
     """
     return torch.load(path, map_location=lambda storage, loc: storage)
 
-def save_checkpoint(checkpoint, filename):
+def save_checkpoint(
+        checkpoint, filename, immutable=False, write_checksum=False,
+        expected_step=None):
     print('Saving checkpoint to %s' % filename)
-    torch.save(checkpoint, filename)
+    return atomic_save_checkpoint(
+        checkpoint,
+        filename,
+        immutable=immutable,
+        write_checksum=write_checksum,
+        expected_step=expected_step,
+    )
 
 def load_checkpoint(filename):
     print('Loading checkpoint from %s' % filename)

@@ -12,7 +12,13 @@ import json
 import math
 import os
 import re
-import shutil
+import sys
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if ROOT not in sys.path:
+    sys.path.insert(0, ROOT)
+
+from utils.checkpoint_integrity import atomic_copy_checkpoint, atomic_write_text, validate_checkpoint_file
 
 METRICS = ('Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE')
 DEFAULT_REFERENCE = {
@@ -21,22 +27,25 @@ DEFAULT_REFERENCE = {
 }
 
 
-def checkpoint_number(path):
-    found = re.findall(r'(\d+)', os.path.basename(path or ''))
-    return int(found[-1]) if found else None
-
-
-def resolve(path, exp_dir):
-    candidates = [path, os.path.join(exp_dir, path), os.path.join(exp_dir, 'snapshots', os.path.basename(path))]
+def resolve(path, exp_dir, expected_iter):
+    snapshot_dir = os.path.realpath(os.path.join(exp_dir, 'snapshots'))
+    candidates = [path, os.path.join(exp_dir, path), os.path.join(snapshot_dir, os.path.basename(path))]
     for candidate in candidates:
         if candidate and os.path.isfile(candidate) and not os.path.islink(candidate):
-            return os.path.abspath(os.path.normpath(candidate))
-    # Training writes relative paths against the repository root.  Resolve
-    # those paths before falling back to the experiment-local candidates.
-    repo_candidate = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', path))
-    if os.path.isfile(repo_candidate) and not os.path.islink(repo_candidate):
-        return repo_candidate
-    return None
+            resolved = os.path.abspath(os.path.normpath(candidate))
+            if os.path.commonpath((snapshot_dir, os.path.realpath(resolved))) != snapshot_dir:
+                continue
+            match = re.search(r'_checkpoint_(\d+)\.(?:pt|pth)$', os.path.basename(resolved))
+            if not match or int(match.group(1)) != expected_iter:
+                continue
+            try:
+                digest = validate_checkpoint_file(
+                    resolved, require_checksum=True, require_metadata=True,
+                    expected_step=expected_iter)
+            except ValueError:
+                continue
+            return resolved, digest, os.path.getsize(resolved)
+    return None, None, None
 
 
 def finite_metric(row, name):
@@ -61,9 +70,16 @@ def main():
     parser.add_argument('--reference-json', default=None)
     args = parser.parse_args()
     exp_dir = os.path.abspath(args.exp_dir)
-    csv_path = args.csv or os.path.join(exp_dir, 'val_metrics.csv')
-    output_path = args.output_json or os.path.join(exp_dir, 'best_snapshot_p1.json')
-    copy_path = args.copy_path or os.path.join(exp_dir, 'best_for_p1.pth')
+    csv_path = os.path.abspath(args.csv or os.path.join(exp_dir, 'val_metrics.csv'))
+    output_path = os.path.abspath(args.output_json or os.path.join(exp_dir, 'best_snapshot_p1.json'))
+    copy_path = os.path.abspath(args.copy_path or os.path.join(exp_dir, 'best_for_p1.pth'))
+    if os.path.commonpath((exp_dir, output_path)) != exp_dir:
+        raise ValueError('selection output must remain inside exp_dir')
+    if os.path.commonpath((exp_dir, copy_path)) != exp_dir:
+        raise ValueError('selected checkpoint copy must remain inside exp_dir')
+    snapshot_dir = os.path.realpath(os.path.join(exp_dir, 'snapshots'))
+    if os.path.commonpath((snapshot_dir, os.path.realpath(copy_path))) == snapshot_dir:
+        raise ValueError('selected checkpoint copy must remain outside snapshots directory')
     reference = dict(DEFAULT_REFERENCE)
     if args.reference_json:
         with open(args.reference_json, encoding='utf-8-sig') as handle:
@@ -81,38 +97,50 @@ def main():
         for row_number, row in enumerate(csv.DictReader(handle), start=2):
             if not any(str(value or '').strip() for value in row.values()):
                 continue
-            snapshot = resolve(row.get('snapshot_path', ''), exp_dir)
+            try:
+                iteration = int(row.get('iter', ''))
+            except (TypeError, ValueError):
+                raise ValueError('row %d has invalid iter' % row_number)
+            snapshot, snapshot_sha256, snapshot_size = resolve(
+                row.get('snapshot_path', ''), exp_dir, iteration)
             if not snapshot:
-                raise ValueError('row %d has no existing snapshot_path' % row_number)
+                raise ValueError(
+                    'row %d has no valid checksummed snapshot for iter %d' % (row_number, iteration))
             metrics = {name: finite_metric(row, name) for name in METRICS}
             score = sum(math.log(max(metrics[name], 1e-12) / reference[name]) for name in METRICS) / len(METRICS)
-            rows.append({'row': row_number, 'iter': int(float(row.get('iter', 0))), 'snapshot_path': snapshot, 'metrics': metrics, 'score': score})
+            rows.append({
+                'row': row_number, 'iter': iteration, 'snapshot_path': snapshot,
+                'snapshot_sha256': snapshot_sha256, 'snapshot_size_bytes': snapshot_size,
+                'metrics': metrics, 'score': score,
+            })
     if not rows:
         raise RuntimeError('no validation rows in %s' % csv_path)
+    actual_steps = [row['iter'] for row in rows]
+    expected_steps = list(range(1000, 10001, 1000))
+    if sorted(actual_steps) != expected_steps:
+        raise ValueError(
+            'P1 validation grid must contain each step 1000..10000 exactly once; got %s'
+            % sorted(actual_steps))
     # Higher score wins; ties are resolved by the earlier validation step.
     best = sorted(rows, key=lambda item: (-item['score'], item['iter']))[0]
     os.makedirs(os.path.dirname(copy_path), exist_ok=True)
-    if os.path.lexists(copy_path):
-        os.remove(copy_path)
-    try:
-        # Keep the selected alias portable; the checkpoint itself remains in
-        # the immutable snapshots directory.  Never create a symlink at the
-        # selected snapshot path when a stale self-link is present.
-        shutil.copy2(best['snapshot_path'], copy_path)
-    except OSError:
-        os.symlink(os.path.abspath(best['snapshot_path']), copy_path)
+    selected_sha256 = atomic_copy_checkpoint(
+        best['snapshot_path'], copy_path, require_checksum=True,
+        require_metadata=True, expected_step=best['iter'])
     payload = {
         'protocol_id': 'p1_rsaca_20260913',
         'selection_metric': 'five_metric_equal_weight_log',
         'selection_strategy': 'five_metric_equal_weight_log',
         'selection_metric_split': 'validation',
         'selection': {'split': 'validation', 'rule': 'five_metric_equal_weight_log', 'reference': reference, 'reference_sha256': reference_sha, 'tie_break': 'earlier_step'},
-        'exp_dir': exp_dir, 'csv': os.path.abspath(csv_path), 'best_snapshot': best['snapshot_path'], 'copy_path': os.path.abspath(copy_path),
+        'exp_dir': exp_dir, 'csv': os.path.abspath(csv_path), 'best_snapshot': best['snapshot_path'],
+        'best_snapshot_sha256': selected_sha256,
+        'best_snapshot_size_bytes': best['snapshot_size_bytes'],
+        'copy_path': os.path.abspath(copy_path),
         'best': best, 'candidates': rows,
     }
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    with open(output_path, 'w', encoding='utf-8') as handle:
-        json.dump(payload, handle, indent=2, sort_keys=True)
+    atomic_write_text(output_path, json.dumps(payload, indent=2, sort_keys=True) + '\n')
     print(json.dumps(payload, indent=2, sort_keys=True))
 
 

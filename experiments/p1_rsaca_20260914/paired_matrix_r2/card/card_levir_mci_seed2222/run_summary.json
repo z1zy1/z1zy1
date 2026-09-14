@@ -1,0 +1,46 @@
+{
+  "experiment_name": "card_levir_mci_seed2222",
+  "dataset": "levir_mci",
+  "run_id": "card_levir_mci_seed2222",
+  "seed": 2222,
+  "status": "completed",
+  "start_time": "2026-09-14T18:59:13+08:00",
+  "end_time": "2026-09-14T19:17:59+08:00",
+  "best_epoch": null,
+  "best_checkpoint": "",
+  "selection_metric": "five_metric_equal_weight_log",
+  "test_completed": false,
+  "failure_reason": "",
+  "experiment_group": "",
+  "description": "",
+  "tags": [],
+  "model_name": "sgc_card",
+  "train_samples": 6815,
+  "val_samples": 1333,
+  "total_parameters": 14878509,
+  "trainable_parameters": 14878509,
+  "device": "cuda:0",
+  "final_epoch": 47,
+  "final_global_step": 10000,
+  "total_training_seconds": 1126.0407769680023,
+  "checkpoint_selection_deferred": true,
+  "training_best_records": {
+    "cider": {
+      "score": 1.3654227073090335,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/p1_rsaca_20260914/paired_matrix_r2/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_9000.pt"
+    },
+    "spice": {
+      "score": 0.35303427552268923,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/p1_rsaca_20260914/paired_matrix_r2/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_6000.pt"
+    },
+    "balanced": {
+      "score": 1.197442121733696,
+      "snapshot": "/root/autodl-tmp/z1zy1/experiments/p1_rsaca_20260914/paired_matrix_r2/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_9000.pt",
+      "all_above_baseline": true
+    }
+  },
+  "test_inference_completed": true,
+  "test_inference_end_time": "2026-09-14T23:56:10+08:00",
+  "test_checkpoint": "/root/autodl-tmp/z1zy1/experiments/p1_rsaca_20260914/paired_matrix_r2/card/card_levir_mci_seed2222/snapshots/card_levir_mci_seed2222_checkpoint_9000.pt",
+  "test_prediction_file": "/root/autodl-tmp/z1zy1/experiments/p1_rsaca_20260914/paired_matrix_r2/card/card_levir_mci_seed2222/test_output/captions/paired_locked/sc_results.json"
+}

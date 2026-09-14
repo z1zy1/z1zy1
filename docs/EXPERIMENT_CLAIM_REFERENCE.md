@@ -2,7 +2,7 @@
 
 > 本文档是模型实现、实验设计和论文结论的统一语义来源。修改 CARD/RSACA、数据输入、训练协议、选点策略、测试结果或论文主张后，必须运行 `python scripts/update_experiment_claim_reference.py` 并复核结论。
 
-结果快照时间：`2026-09-02 11:13:48 UTC`
+结果快照时间：`2026-09-14 16:10:04 UTC`
 
 ## 1. 原始论文主张
 
@@ -47,7 +47,10 @@ second_cc：均值 0/8 指标高于 CARD，seed 全指标通过 0/3；忽略 SPI
 相对旧 LEVIR-CC pre-norm changed-global 结果，B4/CIDEr/SPICE 均值变化为 -0.0210/-0.0090/+0.0205；新掩码在该条件下未带来整体提升。
 该对照关闭 confidence、visual gate、fallback 和 warmup，并恢复 `paper_balanced`；但新运行 `num_workers=0`、旧运行 `num_workers=8`，且两次提交不同，故它是反对“新掩码更好”的直接证据，但不能把全部差异严格归因于掩码本身。
 
-严格配对的 `3 datasets x 2 models x 3 seeds` 主实验矩阵已锁定但尚未完成：当前只有 1/9 个 seed-pair（2/18 个 arm）同时具备验证选择和锁定测试记录。因此没有生成正式 `summary.json`，不得把该矩阵写成已完成或用于主表。已完成 pair：levir_mci seed 3333。入口 `scripts/run_paired_card_rsaca_matrix.sh` 会将 CARD 与 whole-adapter RSACA 固定在同一 Git commit、源码摘要、Python/CUDA/worker 设置、训练日程和验证选点协议下，仅允许语义融合臂不同；汇总器拒绝缺失、测试选点或协议不一致的结果。
+严格配对的 `3 datasets x 2 models x 3 seeds` 矩阵已完成；总体验收：**未通过**。
+levir_cc：配对 B4/CIDEr/SPICE delta=+0.0029/+0.0220/+0.0154；主要指标逐 seed 非劣=否；8 项均值严格提升=是。
+levir_mci：配对 B4/CIDEr/SPICE delta=+0.0134/+0.0464/+0.0090；主要指标逐 seed 非劣=否；8 项均值严格提升=是。
+second_cc：配对 B4/CIDEr/SPICE delta=+0.0107/+0.0583/+0.0168；主要指标逐 seed 非劣=是；8 项均值严格提升=是。
 
 主实验必须从 scratch 分别训练 CARD 与 RSACA，避免用 MCI 初始化混淆结构增益。固定 3 个 seed（1111、2222、3333），形成 `3 datasets x 2 models x 3 seeds = 18` 次主实验。MCI-transfer 结果只能作为独立迁移实验。
 
@@ -149,6 +152,6 @@ python scripts/update_experiment_claim_reference.py
 - `experiments/7_6_locked_test_summary.json`：LEVIR-CC、LEVIR-MCI 和旧 SECOND-CC 锁定结果。
 - `experiments/second_cc_current_mci_test_summary.json`：SECOND-CC 的 MCI-transfer 三 seed 结果，只能作为迁移证据。
 - `experiments/unified_rsaca/summary.json`：统一 RSACA scratch 三 seed 矩阵结果；存在时作为当前统一结论的直接依据。
-- `experiments/paired_card_rsaca_whole_gate_v1/summary.json`：严格 CARD/whole-adapter RSACA 配对 `3 x 2 x 3` 矩阵；存在时优先用于主结论。
+- `experiments/p1_rsaca_20260914/paired_matrix_r2/summary.json`：P1 严格 CARD/whole-adapter RSACA 配对 `3 x 2 x 3` 矩阵；这是当前最新主实验结果。
 - `experiments/reliability_sparse_rsaca_v1_new_masks_20260821/summary.json`：新 LEVIR-CC 共识掩码候选的三数据集三 seed 锁定汇总，仅作为候选负结果证据。
 - `experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/summary.json`：新 LEVIR-CC 掩码匹配对照的三 seed 锁定汇总，仅作为掩码效果的受限负结果证据。

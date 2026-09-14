@@ -21,7 +21,7 @@ NEW_MASKS_SUMMARY = 'experiments/reliability_sparse_rsaca_v1_new_masks_20260821/
 MATCHED_CONTROL_SUMMARY = 'experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/summary.json'
 PRENORM_CHANGED_GLOBAL_SUMMARY = 'experiments/reliability_sparse_rsaca_v1_prenorm_changed_global/summary.json'
 V2_VALIDATION_ROOT = 'experiments/reliability_sparse_rsaca_v2_detached_gate'
-PAIRED_MATRIX_ROOT = 'experiments/paired_card_rsaca_whole_gate_v1'
+PAIRED_MATRIX_ROOT = 'experiments/p1_rsaca_20260914/paired_matrix_r2'
 
 EXPERIMENT_NOTES = {
     'levir_mci_card_baseline': 'LEVIR-MCI 的审计基线；所有该数据集改进实验应与它比较。',
@@ -364,7 +364,7 @@ def main():
         '- `experiments/7_6_locked_test_summary.json`：LEVIR-CC、LEVIR-MCI 和旧 SECOND-CC 锁定结果。',
         '- `experiments/second_cc_current_mci_test_summary.json`：SECOND-CC 的 MCI-transfer 三 seed 结果，只能作为迁移证据。',
         '- `experiments/unified_rsaca/summary.json`：统一 RSACA scratch 三 seed 矩阵结果；存在时作为当前统一结论的直接依据。',
-        '- `experiments/paired_card_rsaca_whole_gate_v1/summary.json`：严格 CARD/whole-adapter RSACA 配对 `3 x 2 x 3` 矩阵；存在时优先用于主结论。',
+        '- `experiments/p1_rsaca_20260914/paired_matrix_r2/summary.json`：P1 严格 CARD/whole-adapter RSACA 配对 `3 x 2 x 3` 矩阵；这是当前最新主实验结果。',
         '- `experiments/reliability_sparse_rsaca_v1_new_masks_20260821/summary.json`：新 LEVIR-CC 共识掩码候选的三数据集三 seed 锁定汇总，仅作为候选负结果证据。',
         '- `experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/summary.json`：新 LEVIR-CC 掩码匹配对照的三 seed 锁定汇总，仅作为掩码效果的受限负结果证据。',
         ''])

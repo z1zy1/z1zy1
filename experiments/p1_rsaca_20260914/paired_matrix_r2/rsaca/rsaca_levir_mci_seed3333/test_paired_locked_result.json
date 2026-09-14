@@ -1,0 +1,38 @@
+{
+  "snapshot_path": "/root/autodl-tmp/z1zy1/experiments/p1_rsaca_20260914/paired_matrix_r2/rsaca/rsaca_levir_mci_seed3333/snapshots/rsaca_levir_mci_seed3333_checkpoint_6000.pt",
+  "result_json": "/root/autodl-tmp/z1zy1/experiments/p1_rsaca_20260914/paired_matrix_r2/rsaca/rsaca_levir_mci_seed3333/test_output/captions/paired_locked/sc_results.json",
+  "metrics": {
+    "Bleu_1": 0.837713561976388,
+    "Bleu_2": 0.7320223441089757,
+    "Bleu_3": 0.6372975931913233,
+    "Bleu_4": 0.5521574090972297,
+    "METEOR": 0.39072823364587445,
+    "ROUGE_L": 0.7520189783908101,
+    "CIDEr": 1.3539014164226113,
+    "SPICE": 0.35381791702684057
+  },
+  "aux_metrics": {},
+  "baseline_name": "test",
+  "num_images": 1929,
+  "baseline": {
+    "Bleu_1": 0.828,
+    "Bleu_2": 0.728,
+    "Bleu_3": 0.641,
+    "Bleu_4": 0.565,
+    "METEOR": 0.391,
+    "ROUGE_L": 0.746,
+    "CIDEr": 1.348,
+    "SPICE": 0.336
+  },
+  "deltas": {
+    "Bleu_1": 0.009713561976388063,
+    "Bleu_2": 0.004022344108975728,
+    "Bleu_3": -0.003702406808676728,
+    "Bleu_4": -0.01284259090277029,
+    "METEOR": -0.0002717663541255688,
+    "ROUGE_L": 0.006018978390810115,
+    "CIDEr": 0.0059014164226112165,
+    "SPICE": 0.017817917026840546
+  },
+  "ALL_TEST_METRICS_ABOVE_BASELINE": false
+}

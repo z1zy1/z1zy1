@@ -1,0 +1,33 @@
+{
+  "arms": {
+    "card": "semantic_input_mode=none",
+    "rsaca": "whole_adapter_gate_v1"
+  },
+  "cuda_visible_devices": "",
+  "datasets": [
+    "levir_cc",
+    "levir_mci",
+    "second_cc"
+  ],
+  "git_commit": "fc9e7096d473bc9cb4e7682f7287a9597c45f87c",
+  "num_workers": "default",
+  "omp_num_threads": "0",
+  "pair_root": "/root/autodl-tmp/z1zy1/experiments/p1_rsaca_20260914/paired_matrix_r2",
+  "protocol_id": "p1_rsaca_20260913",
+  "python": "python",
+  "pytorch_gpu": "0",
+  "schema_version": 2,
+  "seeds": [
+    1111,
+    2222,
+    3333
+  ],
+  "selection": {
+    "reference_sha256": "165278678a2bf58b0ff9fc2cd580219f2b0395ea6e0266c676ed801dd0b9b6f1",
+    "rule": "five_metric_equal_weight_log",
+    "split": "validation"
+  },
+  "source_digest_sha256": "c263b566a26fd3f6793226485b602c720830b9f646c991658aefe996d3004b8f",
+  "source_status_digest_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "test_policy": "one immutable test per validation-selected checkpoint"
+}

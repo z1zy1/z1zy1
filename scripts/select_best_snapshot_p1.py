@@ -72,13 +72,13 @@ def main():
     exp_dir = os.path.abspath(args.exp_dir)
     csv_path = os.path.abspath(args.csv or os.path.join(exp_dir, 'val_metrics.csv'))
     output_path = os.path.abspath(args.output_json or os.path.join(exp_dir, 'best_snapshot_p1.json'))
-    copy_path = os.path.abspath(args.copy_path or os.path.join(exp_dir, 'best_for_p1.pth'))
+    copy_path = os.path.abspath(args.copy_path) if args.copy_path else None
     if os.path.commonpath((exp_dir, output_path)) != exp_dir:
         raise ValueError('selection output must remain inside exp_dir')
-    if os.path.commonpath((exp_dir, copy_path)) != exp_dir:
+    if copy_path and os.path.commonpath((exp_dir, copy_path)) != exp_dir:
         raise ValueError('selected checkpoint copy must remain inside exp_dir')
     snapshot_dir = os.path.realpath(os.path.join(exp_dir, 'snapshots'))
-    if os.path.commonpath((snapshot_dir, os.path.realpath(copy_path))) == snapshot_dir:
+    if copy_path and os.path.commonpath((snapshot_dir, os.path.realpath(copy_path))) == snapshot_dir:
         raise ValueError('selected checkpoint copy must remain outside snapshots directory')
     reference = dict(DEFAULT_REFERENCE)
     if args.reference_json:
@@ -123,10 +123,11 @@ def main():
             % sorted(actual_steps))
     # Higher score wins; ties are resolved by the earlier validation step.
     best = sorted(rows, key=lambda item: (-item['score'], item['iter']))[0]
-    os.makedirs(os.path.dirname(copy_path), exist_ok=True)
-    selected_sha256 = atomic_copy_checkpoint(
-        best['snapshot_path'], copy_path, require_checksum=True,
-        require_metadata=True, expected_step=best['iter'])
+    selected_sha256 = best['snapshot_sha256']
+    if copy_path:
+        selected_sha256 = atomic_copy_checkpoint(
+            best['snapshot_path'], copy_path, require_checksum=True,
+            require_metadata=True, expected_step=best['iter'])
     payload = {
         'protocol_id': 'p1_rsaca_20260913',
         'selection_metric': 'five_metric_equal_weight_log',
@@ -136,7 +137,7 @@ def main():
         'exp_dir': exp_dir, 'csv': os.path.abspath(csv_path), 'best_snapshot': best['snapshot_path'],
         'best_snapshot_sha256': selected_sha256,
         'best_snapshot_size_bytes': best['snapshot_size_bytes'],
-        'copy_path': os.path.abspath(copy_path),
+        'copy_path': os.path.abspath(copy_path) if copy_path else '',
         'best': best, 'candidates': rows,
     }
     os.makedirs(os.path.dirname(output_path), exist_ok=True)

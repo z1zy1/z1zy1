@@ -232,6 +232,12 @@ train_one() {
   local completed_pth="$exp_path/snapshots/${EXP_NAME}_checkpoint_${MAX_ITER}.pth"
   if [ "$PROTOCOL_ID" = p1_rsaca_20260913 ]; then
     if checkpoint_is_valid "$completed_pt" 2>/dev/null || checkpoint_is_valid "$completed_pth" 2>/dev/null; then
+      if [ ! -s "$exp_path/run_summary.json" ] || ! "$PYTHON" - "$exp_path/run_summary.json" "$MAX_ITER" <<'PY'
+import json, sys
+d=json.load(open(sys.argv[1], encoding='utf-8'))
+raise SystemExit(0 if d.get('status') == 'completed' and int(d.get('final_global_step', -1)) == int(sys.argv[2]) else 1)
+PY
+      then echo "Refusing skip: run summary is incomplete: $EXP_NAME" >&2; return 1; fi
       echo "Skipping completed checksummed run: $EXP_NAME"; return
     fi
   elif [ -f "$completed_pt" ] || [ -f "$completed_pth" ]; then
@@ -262,7 +268,7 @@ select_one() {
   fi
   if [ "$PROTOCOL_ID" = p1_rsaca_20260913 ]; then
     run_or_print "$PYTHON" scripts/select_best_snapshot_p1.py --exp-dir "$exp_path" --csv "$exp_path/val_metrics.csv" \
-      --output-json "$output" --copy-path "$exp_path/best_for_paper.pth" --reference-json "$P1_REFERENCE_JSON"
+      --output-json "$output" --reference-json "$P1_REFERENCE_JSON"
   else
     run_or_print "$PYTHON" scripts/select_best_snapshot_for_paper.py --exp_dir "$exp_path" --csv "$exp_path/val_metrics.csv" \
       --metric "$SELECTION_METRIC" --output_json "$output" --copy_path "$exp_path/best_for_paper.pth"

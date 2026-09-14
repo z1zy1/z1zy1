@@ -77,6 +77,8 @@ def atomic_save_checkpoint(
         raise RuntimeError('refusing to write checkpoint through symlink: %s' % filename)
     if immutable and os.path.lexists(filename):
         raise FileExistsError('refusing to overwrite immutable checkpoint: %s' % filename)
+    if immutable and write_checksum and (os.path.lexists(filename + CHECKSUM_SUFFIX) or os.path.lexists(filename + METADATA_SUFFIX)):
+        raise FileExistsError('refusing to write checkpoint with existing integrity sidecar: %s' % filename)
 
     descriptor, temp_path = tempfile.mkstemp(
         prefix='.%s.' % os.path.basename(filename), suffix='.tmp', dir=directory)

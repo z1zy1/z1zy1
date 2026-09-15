@@ -2,6 +2,7 @@ import os
 import argparse
 import json
 import time
+from pathlib import Path
 import numpy as np
 import torch
 torch.backends.cudnn.enabled  = True
@@ -25,11 +26,14 @@ from utils.experiment_runtime import (
     update_run_summary,
 )
 from utils.semantic_label import build_content_word_token_ids
+from utils.semantic_control_audit import enforce_test_admission
 
 from utils.utils import AverageMeter, accuracy, set_mode, load_checkpoint, \
                         decode_sequence, decode_sequence_transformer, coco_gen_format_save
 from utils.vis_utils import visualize_att
 from tqdm import tqdm
+
+PROJECT = Path(os.environ.get('PROJECT_DIR') or Path(__file__).resolve().parent).resolve()
 
 
 def unpack_batch(batch):
@@ -333,10 +337,6 @@ exp_dir = cfg.exp_dir
 exp_name = cfg.exp_name
 
 output_dir = os.path.join(exp_dir, exp_name)
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
-install_error_hook(output_dir)
-stage_logger = create_stage_logger(output_dir, args.split)
 
 if args.result_json is not None:
     result_save_path_pos = os.path.normpath(args.result_json)
@@ -346,21 +346,10 @@ if args.result_json is not None:
     eval_output_dir = os.path.dirname(os.path.dirname(caption_output_path))
 else:
     eval_output_dir = os.path.join(output_dir, '%s_output' % args.split)
-    if not os.path.exists(eval_output_dir):
-        os.makedirs(eval_output_dir)
     caption_output_path = os.path.join(eval_output_dir, 'captions', args.split)
-    if not os.path.exists(caption_output_path):
-        os.makedirs(caption_output_path)
     result_save_path_pos = os.path.join(caption_output_path, 'sc_results.json')
 
 att_output_path = os.path.join(eval_output_dir, 'attentions', args.split)
-if not os.path.exists(att_output_path):
-    os.makedirs(att_output_path)
-
-if args.visualize:
-    visualize_save_dir = os.path.join(eval_output_dir, 'visualizations')
-    if not os.path.exists(visualize_save_dir):
-        os.makedirs(visualize_save_dir)
 
 snapshot_path_arg = args.snapshot_path or args.checkpoint
 if args.snapshot_path is not None and args.checkpoint is not None:
@@ -375,6 +364,30 @@ elif args.snapshot is not None:
     snapshot_full_path = os.path.join(snapshot_dir, snapshot_file)
 else:
     raise ValueError('Either --snapshot, --snapshot_path, or --checkpoint must be provided.')
+
+admission = enforce_test_admission(PROJECT, cfg, snapshot_full_path, result_save_path_pos) \
+    if args.split == 'test' else 'not_controls_protocol'
+if admission == 'complete':
+    print('Already completed with matching frozen identity; skipping inference.')
+    raise SystemExit(0)
+if admission == 'prediction_only':
+    print('Matching predictions exist without scoring; skipping inference so the scorer may resume.')
+    raise SystemExit(0)
+
+if not os.path.exists(output_dir):
+    os.makedirs(output_dir)
+install_error_hook(output_dir)
+stage_logger = create_stage_logger(output_dir, args.split)
+if not os.path.exists(eval_output_dir):
+    os.makedirs(eval_output_dir)
+if not os.path.exists(caption_output_path):
+    os.makedirs(caption_output_path)
+if not os.path.exists(att_output_path):
+    os.makedirs(att_output_path)
+if args.visualize:
+    visualize_save_dir = os.path.join(eval_output_dir, 'visualizations')
+    if not os.path.exists(visualize_save_dir):
+        os.makedirs(visualize_save_dir)
 save_resolved_config(output_dir, cfg, args=args, checkpoint_path=snapshot_full_path, phase=args.split, log_path=os.path.join(output_dir, 'eval_log.txt'))
 structured_metrics = StructuredMetricLogger(output_dir)
 test_metrics_csv_path = os.path.join(output_dir, 'test_metrics.csv')
@@ -532,4 +545,3 @@ with torch.no_grad():
             '%s_prediction_file' % args.split: result_save_path_pos,
         }
     )
-

@@ -54,6 +54,8 @@ python scripts/run_semantic_controls.py --stage summary
 python scripts/update_experiment_claim_reference.py
 ```
 
+正式 `split=test` 测试即使直接调用 `test_card_spot.py` 也会执行同一套冻结准入：必须匹配协议锁、冻结清单、实际配置、输入清单、选定 checkpoint 及其 checksum/metadata，并且输出必须位于对应冻结运行目录。冻结前、checkpoint 不匹配、配置或输入变化、身份缺失或已有工件不一致都会在创建日志/数据加载器/模型之前拒绝。已有匹配预测但尚未评分时不会重复推理；应由统一入口继续评分。验证集诊断脚本仍是独立的 `split=val` 前向诊断，不要求新协议冻结。
+
 不要用分号或忽略退出码的方式在 freeze 失败后强行执行测试。测试入口自身也会拒绝没有冻结凭据的运行。
 
 训练、选点、测试和汇总支持筛选，例如：

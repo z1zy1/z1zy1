@@ -19,7 +19,7 @@ sys.path.insert(0, str(PROJECT))
 from utils.semantic_controls import ARMS, DATASETS, SEEDS, PROTOCOL, configuration
 from utils.semantic_control_audit import (read, write, matrix, metrics, statistics_report,
     historical_report, source_identity, input_manifest, verify_initialization,
-    prediction_identity, verify_frozen_files)
+    prediction_identity, verify_frozen_files, enforce_test_admission)
 from utils.checkpoint_integrity import sha256_file, validate_checkpoint_file
 from utils.experiment_tracking import cfg_to_plain, stable_hash
 
@@ -272,9 +272,17 @@ def train_one(root, lock, dataset, seed, arm, run):
 
 def test_one(root, frozen, dataset, seed, arm, run):
     verify_frozen_files(frozen)
+    cfg = read(run/'request_config.json')
+    # Keep the wrapper and low-level test entry point on the same admission path.
+    class _Node(dict):
+        __getattr__ = dict.__getitem__
+    def node(value):
+        return _Node({k: node(v) if isinstance(v, dict) else v for k, v in value.items()}) if isinstance(value, dict) else value
+    enforce_test_admission(PROJECT, node(cfg),
+                           read(run/'best_snapshot_p1.json')['best_snapshot'],
+                           run/'test_output/captions/controls_locked/sc_results.json')
     selected = read(run/'best_snapshot_p1.json')
     checkpoint = selected['best_snapshot']
-    cfg = read(run/'request_config.json')
     prediction = run/'test_output/captions/controls_locked/sc_results.json'
     annotation = cfg['data']['eval_anno_path']
     expected_ids = [r['sample_id'] for r in read(root/('inputs_'+dataset+'.json'))['samples'] if r['split'] == 'test']

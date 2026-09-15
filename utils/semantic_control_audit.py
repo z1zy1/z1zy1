@@ -227,3 +227,94 @@ def verify_frozen_files(frozen):
     for path, digest in frozen['files'].items():
         if not Path(path).is_file() or sha256_file(path) != digest:
             raise ValueError('Frozen evidence changed or missing: '+path)
+
+
+def enforce_test_admission(project, cfg, checkpoint, result_path):
+    """Enforce frozen controls admission before test-side effects.
+
+    This is intentionally a pure filesystem/config check shared by the wrapper
+    and the low-level test entry point.  Legacy/P1 runs and validation
+    diagnostics are left untouched.
+    """
+    protocol_id = str(getattr(cfg.train, 'protocol_id', 'legacy'))
+    if protocol_id != PROTOCOL:
+        return 'not_controls_protocol'
+    if str(getattr(cfg, 'exp_name', '')) == '' or str(getattr(cfg, 'exp_dir', '')) == '':
+        raise ValueError('Controls test requires an experiment directory and name')
+    run = (Path(str(cfg.exp_dir)).resolve() / str(cfg.exp_name)).resolve()
+    protocol_root = Path(str(cfg.exp_dir)).resolve().parent
+    if protocol_root.name != PROTOCOL:
+        raise ValueError('Controls run is not under the frozen protocol root')
+    frozen_path = protocol_root / 'frozen.json'
+    frozen_identity_path = protocol_root / 'frozen_identity.json'
+    lock_path = protocol_root / 'protocol.json'
+    if not frozen_path.is_file() or not frozen_identity_path.is_file() or not lock_path.is_file():
+        raise ValueError('Semantic controls test requires protocol.json, frozen.json and frozen_identity.json')
+    if read(frozen_identity_path).get('sha256') != sha256_file(frozen_path):
+        raise ValueError('Frozen manifest changed')
+    frozen = read(frozen_path)
+    lock = read(lock_path)
+    if frozen.get('protocol_id') != PROTOCOL or lock.get('protocol_id') != PROTOCOL:
+        raise ValueError('Frozen protocol identity mismatch')
+    current_source = source_identity(project)
+    if current_source.get('dirty_execution') or current_source != lock.get('source'):
+        raise ValueError('Execution source identity differs from the frozen protocol lock')
+    if frozen.get('source') != lock.get('source'):
+        raise ValueError('Frozen source identity differs from the protocol lock')
+    verify_frozen_files(frozen)
+
+    from utils.experiment_tracking import cfg_to_plain
+    rel_run = str(run.relative_to(protocol_root))
+    configurations = lock.get('configurations', {})
+    if rel_run not in configurations or cfg_to_plain(cfg) != configurations[rel_run]:
+        raise ValueError('CLI/configuration does not match frozen run identity')
+    selection_path = run / 'best_snapshot_p1.json'
+    if not selection_path.is_file():
+        raise ValueError('Frozen run selection is missing')
+    selection = read(selection_path)
+    if selection.get('protocol_id') != PROTOCOL or selection.get('selection_metric_split') != 'validation':
+        raise ValueError('Frozen run selection protocol mismatch')
+    selected = Path(str(selection.get('best_snapshot', ''))).resolve()
+    requested = Path(str(checkpoint)).resolve()
+    if requested != selected:
+        raise ValueError('Requested checkpoint is not the frozen selected checkpoint')
+    if str(selection_path.resolve()) not in frozen.get('files', {}):
+        raise ValueError('Frozen manifest does not bind the run selection')
+    manifest_path = protocol_root / ('inputs_' + str(cfg.data.dataset) + '.json')
+    if not manifest_path.is_file():
+        raise ValueError('Frozen input manifest is missing')
+    manifest = read(manifest_path)
+    actual_manifest = input_manifest(cfg, manifest.get('source_kind', 'unknown'))
+    if actual_manifest != manifest or actual_manifest.get('missing'):
+        raise ValueError('Frozen input manifest no longer matches dataset resolution')
+    from utils.checkpoint_integrity import validate_checkpoint_file
+    digest = validate_checkpoint_file(str(requested), require_checksum=True,
+                                      require_metadata=True, expected_step=selection['best']['iter'])
+    if digest != selection.get('best_snapshot_sha256'):
+        raise ValueError('Selected checkpoint hash differs from frozen selection')
+
+    expected_output = run / 'test_output' / 'captions' / 'controls_locked' / 'sc_results.json'
+    if Path(str(result_path)).resolve() != expected_output.resolve():
+        raise ValueError('Controls test output must remain in the frozen run directory')
+    prediction = expected_output
+    identity_path = run / 'test_prediction_identity.json'
+    score = run / 'test_metrics.json'
+    receipt = run / 'test_score_identity.json'
+    if prediction.exists():
+        if not identity_path.is_file():
+            raise ValueError('Existing predictions lack frozen-run identity; refusing to overwrite')
+        expected_ids = [row['sample_id'] for row in manifest['samples'] if row['split'] == 'test']
+        observed = prediction_identity(prediction, cfg.data.eval_anno_path, expected_ids)
+        recorded = read(identity_path)
+        recorded_checkpoint = recorded.get('checkpoint_sha256')
+        observed['checkpoint_sha256'] = selection['best_snapshot_sha256']
+        if recorded != observed or recorded_checkpoint != digest:
+            raise ValueError('Existing predictions/reference/checkpoint identity changed')
+        if score.exists():
+            if not receipt.is_file() or read(receipt) != {'score_sha256': sha256_file(score), 'identity': observed}:
+                raise ValueError('Existing score lacks a matching frozen identity receipt')
+            return 'complete'
+        return 'prediction_only'
+    if identity_path.exists() or score.exists() or receipt.exists():
+        raise ValueError('Partial test artifacts without predictions; refusing regeneration')
+    return 'new'

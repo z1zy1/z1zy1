@@ -51,7 +51,12 @@ class P1CheckpointIntegrityTest(unittest.TestCase):
             target = os.path.join(root, 'target.pt')
             torch.save({'kept': True}, target)
             destination = os.path.join(root, 'checkpoint.pt')
-            os.symlink(target, destination)
+            try:
+                os.symlink(target, destination)
+            except OSError as exc:
+                if getattr(exc, 'winerror', None) == 1314:
+                    self.skipTest('Windows account lacks symlink privilege; run this case on AutoDL/Linux')
+                raise
             with self.assertRaisesRegex(RuntimeError, 'symlink'):
                 atomic_save_checkpoint({}, destination)
             self.assertEqual(torch.load(target, map_location='cpu'), {'kept': True})

@@ -24,11 +24,15 @@ def sha256_file(path, chunk_size=8 * 1024 * 1024):
 
 
 def _fsync_file(path):
-    with open(path, 'rb') as handle:
+    with open(path, 'r+b' if os.name == 'nt' else 'rb') as handle:
         os.fsync(handle.fileno())
 
 
 def _fsync_directory(path):
+    if os.name == 'nt':
+        # Windows does not allow opening directories via os.open. File fsync
+        # and atomic publication still apply; Linux retains directory fsync.
+        return
     descriptor = os.open(path, os.O_RDONLY)
     try:
         os.fsync(descriptor)

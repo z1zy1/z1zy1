@@ -208,7 +208,7 @@ class SemanticCrossAttentionFusion(nn.Module):
                  use_global_semantic_token=False, global_token_mode='all_mean',
                  gate_whole_adapter=False, use_visual_consistency_gate=False,
                  use_visual_fallback=False, fusion_warmup_steps=0,
-                 detach_reliability_inputs=False):
+                 detach_reliability_inputs=False, fixed_nonempty_gate=False):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_semantic_classes = max(1, int(num_semantic_classes))
@@ -227,6 +227,9 @@ class SemanticCrossAttentionFusion(nn.Module):
         self.use_global_semantic_token = bool(use_global_semantic_token)
         self.global_token_mode = str(global_token_mode).lower()
         self.gate_whole_adapter = bool(gate_whole_adapter)
+        self.fixed_nonempty_gate = bool(fixed_nonempty_gate)
+        if self.fixed_nonempty_gate and not (use_reliability_gate and gate_whole_adapter):
+            raise ValueError('Fixed gate requires the whole adapter reliability gate')
         self.detach_reliability_inputs = bool(detach_reliability_inputs)
         self.use_visual_consistency_gate = bool(use_visual_consistency_gate)
         self.use_visual_fallback = bool(use_visual_fallback)
@@ -478,6 +481,9 @@ class SemanticCrossAttentionFusion(nn.Module):
                 # an empty semantic map disables the adapter unless the explicit
                 # visual fallback switch is enabled.
                 reliability = semantic_reliability * (coverage > 0).float()
+        if self.fixed_nonempty_gate:
+            # Keep the C0 module/state layout, but sever learned-gate gradients.
+            reliability = (coverage > 0).to(query.dtype)
         self.last_reliability_gate = reliability.detach()
         reliability_scale = reliability.view(batch_size, 1, 1)
         if self.gate_whole_adapter:
@@ -624,6 +630,9 @@ class CARD(nn.Module):
                     ),
                     gate_whole_adapter=bool(
                         getattr(cfg.model, 'semantic_fusion_gate_whole_adapter', False)
+                    ),
+                    fixed_nonempty_gate=bool(
+                        getattr(cfg.model, 'semantic_fusion_fixed_nonempty_gate', False)
                     ),
                     detach_reliability_inputs=bool(
                         getattr(cfg.model, 'semantic_fusion_detach_reliability_inputs', False)

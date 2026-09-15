@@ -68,8 +68,14 @@ def main():
     parser.add_argument('--output-json', default=None)
     parser.add_argument('--copy-path', default=None)
     parser.add_argument('--reference-json', default=None)
+    parser.add_argument('--protocol-id', default='p1_rsaca_20260913',
+                        choices=('p1_rsaca_20260913', 'p1_semantic_controls_20260915'))
     args = parser.parse_args()
     exp_dir = os.path.abspath(args.exp_dir)
+    if args.protocol_id == 'p1_semantic_controls_20260915':
+        protocol_root = os.path.dirname(os.path.dirname(exp_dir))
+        if os.path.exists(os.path.join(protocol_root, 'frozen.json')):
+            raise ValueError('Semantic controls are frozen; reselection is forbidden')
     csv_path = os.path.abspath(args.csv or os.path.join(exp_dir, 'val_metrics.csv'))
     output_path = os.path.abspath(args.output_json or os.path.join(exp_dir, 'best_snapshot_p1.json'))
     copy_path = os.path.abspath(args.copy_path) if args.copy_path else None
@@ -129,7 +135,7 @@ def main():
             best['snapshot_path'], copy_path, require_checksum=True,
             require_metadata=True, expected_step=best['iter'])
     payload = {
-        'protocol_id': 'p1_rsaca_20260913',
+        'protocol_id': args.protocol_id,
         'selection_metric': 'five_metric_equal_weight_log',
         'selection_strategy': 'five_metric_equal_weight_log',
         'selection_metric_split': 'validation',

@@ -810,6 +810,9 @@ apply_cli_overrides(args, cfg)
 sync_wcsg_config_aliases(cfg)
 apply_train_step_aliases(cfg)
 validate_resolved_config(cfg, phase='train')
+if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_semantic_controls_20260915':
+    if os.path.exists(os.path.join(cfg.exp_dir, '..', 'frozen.json')):
+        raise ValueError('Semantic controls are frozen; further training is forbidden')
 
 # Device configuration
 use_cuda = torch.cuda.is_available()
@@ -988,23 +991,32 @@ if is_content_word_weighted_ce_enabled(cfg):
 else:
     cfg.train.content_word_token_ids = []
 
+from utils.semantic_controls import PROTOCOL as CONTROLS_PROTOCOL, P1_PROTOCOLS, build_control_models
+
 # Create model. P1 gives public modules independent initialization streams;
 # legacy runs retain their historical constructor behavior.
-if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913':
+if cfg.train.protocol_id == CONTROLS_PROTOCOL:
+    change_detector, speaker = build_control_models(cfg, CARD, DynamicSpeaker)
+    # Vocabulary and sequence length are now the actual dataset values.
+    with open(os.path.join(output_dir, 'actual_model_config.json'), 'w', encoding='utf-8') as handle:
+        json.dump(cfg, handle, indent=2, sort_keys=True)
+elif str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913':
     with seeded_initialization(int(cfg.train.seed) + 1001):
         change_detector = CARD(cfg)
 else:
     change_detector = CARD(cfg)
 change_detector.to(device)
 
-if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913':
+if cfg.train.protocol_id == CONTROLS_PROTOCOL:
+    pass  # Already constructed in an isolated stream and explicitly paired.
+elif str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913':
     with seeded_initialization(int(cfg.train.seed) + 2001):
         speaker = DynamicSpeaker(cfg)
 else:
     speaker = DynamicSpeaker(cfg)
 speaker.to(device)
 
-if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913':
+if str(getattr(cfg.train, 'protocol_id', 'legacy')) in P1_PROTOCOLS:
     with open(os.path.join(output_dir, 'initial_parameter_summary.json'), 'w', encoding='utf-8') as handle:
         json.dump({
             'protocol_id': str(cfg.train.protocol_id),
@@ -1596,7 +1608,7 @@ while t < cfg.train.max_iter:
             }
             save_path = os.path.abspath(os.path.join(
                 snapshot_dir, snapshot_file_format % (exp_name, t)))
-            is_p1_protocol = str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913'
+            is_p1_protocol = str(getattr(cfg.train, 'protocol_id', 'legacy')) in P1_PROTOCOLS
             save_checkpoint(
                 checkpoint,
                 save_path,
@@ -1607,7 +1619,7 @@ while t < cfg.train.max_iter:
 
             print('Running eval at iter %d' % t)
             set_mode('eval', [change_detector, speaker])
-            validation_rng_state = capture_rng_state() if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913' else None
+            validation_rng_state = capture_rng_state() if str(getattr(cfg.train, 'protocol_id', 'legacy')) in P1_PROTOCOLS else None
             with torch.no_grad():
                 test_iter_start_time = time.time()
 
@@ -1701,6 +1713,19 @@ while t < cfg.train.max_iter:
                 test_iter_end_time = time.time() - test_iter_start_time
                 result_save_path_pos = os.path.join(sent_save_dir, 'sc_results.json')
                 coco_gen_format_save(result_sents_pos, result_save_path_pos)
+                if cfg.train.protocol_id == CONTROLS_PROTOCOL:
+                    from utils.semantic_control_audit import read as read_evidence, write as write_evidence, prediction_identity
+                    expected_ids = [os.path.basename(val_dataset.idx_to_filename[str(index)])
+                                    for index in val_dataset.split_idxs]
+                    identity = prediction_identity(result_save_path_pos, cfg.data.eval_anno_path, expected_ids)
+                    identity.update(prediction=os.path.abspath(result_save_path_pos),
+                                    reference=os.path.abspath(cfg.data.eval_anno_path))
+                    identity_path = os.path.join(output_dir, 'validation_prediction_identity.json')
+                    identities = read_evidence(identity_path) if os.path.exists(identity_path) else {}
+                    if str(t) in identities:
+                        raise ValueError('Duplicate controls validation step')
+                    identities[str(t)] = identity
+                    write_evidence(identity_path, identities)
                 val_stats = {}
                 if cfg.train.use_relation_aux:
                     val_stats.update({

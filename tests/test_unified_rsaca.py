@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shutil
 import csv
 import json
 import tempfile
@@ -10,6 +11,7 @@ from torch import nn
 from models.CARD import SemanticCrossAttentionFusion
 
 
+BASH = shutil.which('bash') or 'bash'
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -18,7 +20,7 @@ def test_unified_runner_dry_run_contains_all_three_datasets():
         env = os.environ.copy()
         env['RUN_ROOT'] = root
         command = [
-            'bash', 'scripts/run_unified_rsaca_experiments.sh',
+            BASH, 'scripts/run_unified_rsaca_experiments.sh',
             '--stage', 'train', '--dry-run',
         ]
         result = subprocess.run(command, cwd=ROOT, check=True, capture_output=True, text=True, env=env)
@@ -28,13 +30,13 @@ def test_unified_runner_dry_run_contains_all_three_datasets():
         assert result.stdout.count('DRY RUN:') == 9
 
 
-def test_identity_residual_candidate_is_explicit_in_dry_run():
+def test_identity_residual_candidate_is_explicit_in_dry_run(tmp_path):
     env = os.environ.copy()
-    env['RUN_ROOT'] = './experiments/unified_rsaca_identity_ablation'
+    env['RUN_ROOT'] = str(tmp_path/'unified_rsaca_identity_ablation')
     env['SEMANTIC_FUSION_NORM_MODE'] = 'context_pre_norm'
     result = subprocess.run(
         [
-            'bash', 'scripts/run_unified_rsaca_experiments.sh',
+            BASH, 'scripts/run_unified_rsaca_experiments.sh',
             '--stage', 'train', '--dataset', 'levir_cc', '--seed', '1111', '--dry-run',
         ],
         cwd=ROOT, check=True, capture_output=True, text=True, env=env,
@@ -58,7 +60,7 @@ def test_paired_card_rsaca_runner_dry_run_contains_both_arms():
         env['REQUIRE_CUDA'] = '0'
         result = subprocess.run(
             [
-                'bash', 'scripts/run_paired_card_rsaca_matrix.sh',
+                BASH, 'scripts/run_paired_card_rsaca_matrix.sh',
                 '--stage', 'train', '--dataset', 'levir_cc', '--seed', '1111', '--dry-run',
             ],
             cwd=ROOT, check=True, capture_output=True, text=True, env=env,
@@ -136,39 +138,42 @@ def test_paired_summary_requires_matching_protocol_and_resolved_configs():
         assert 'outside the semantic-arm allowlist' in rejected.stderr
 
 
-def test_reliability_sparse_v1_runner_dry_run_is_isolated_and_enabled():
+def test_reliability_sparse_v1_runner_dry_run_is_isolated_and_enabled(tmp_path):
     result = subprocess.run(
         [
-            'bash', 'scripts/run_reliability_sparse_rsaca_v1.sh',
+            BASH, 'scripts/run_reliability_sparse_rsaca_v1.sh',
             '--stage', 'train', '--dataset', 'levir_cc', '--seed', '1111', '--dry-run',
         ],
         cwd=ROOT, check=True, capture_output=True, text=True,
+        env=dict(os.environ, RUN_ROOT=str(tmp_path/'reliability_sparse_rsaca_v1')),
     )
     assert 'reliability_sparse_rsaca_v1' in result.stdout
     assert 'SEMANTIC_FUSION_SPARSE_CHANGE_TOKENS=1' in result.stdout
     assert 'SEMANTIC_FUSION_RELIABILITY_GATE=1' in result.stdout
 
 
-def test_reliability_sparse_whole_adapter_runner_dry_run_is_enabled():
+def test_reliability_sparse_whole_adapter_runner_dry_run_is_enabled(tmp_path):
     result = subprocess.run(
         [
-            'bash', 'scripts/run_reliability_sparse_rsaca_v1_whole_gate.sh',
+            BASH, 'scripts/run_reliability_sparse_rsaca_v1_whole_gate.sh',
             '--stage', 'train', '--dataset', 'second_cc', '--seed', '1111', '--dry-run',
         ],
         cwd=ROOT, check=True, capture_output=True, text=True,
+        env=dict(os.environ, RUN_ROOT=str(tmp_path/'reliability_sparse_rsaca_v1_whole_gate')),
     )
     assert 'reliability_sparse_rsaca_v1_whole_gate' in result.stdout
-    assert 'SEMANTIC_FUSION_GLOBAL_TOKEN=1' in result.stdout
-    assert 'SEMANTIC_FUSION_GATE_WHOLE_ADAPTER=1' in result.stdout
+    assert 'global_token=1' in result.stdout
+    assert 'whole_adapter_gate=1' in result.stdout
 
 
-def test_reliability_sparse_prenorm_changed_global_runner_dry_run_is_enabled():
+def test_reliability_sparse_prenorm_changed_global_runner_dry_run_is_enabled(tmp_path):
     result = subprocess.run(
         [
-            'bash', 'scripts/run_reliability_sparse_rsaca_v1_prenorm_changed_global.sh',
+            BASH, 'scripts/run_reliability_sparse_rsaca_v1_prenorm_changed_global.sh',
             '--stage', 'train', '--dataset', 'levir_cc', '--seed', '1111', '--dry-run',
         ],
         cwd=ROOT, check=True, capture_output=True, text=True,
+        env=dict(os.environ, RUN_ROOT=str(tmp_path/'reliability_sparse_rsaca_v1_prenorm_changed_global')),
     )
     assert 'reliability_sparse_rsaca_v1_prenorm_changed_global' in result.stdout
     assert 'norm=context_pre_norm' in result.stdout
@@ -183,7 +188,7 @@ def test_detached_gate_runner_dry_run_is_isolated_and_enabled():
         env['RUN_ROOT'] = root
         result = subprocess.run(
             [
-                'bash', 'scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh',
+                BASH, 'scripts/run_reliability_sparse_rsaca_v2_detached_gate.sh',
                 '--stage', 'train', '--dataset', 'levir_cc', '--seed', '3333', '--dry-run',
             ],
             cwd=ROOT, check=True, capture_output=True, text=True, env=env,
@@ -268,7 +273,7 @@ def test_detached_gate_paired_control_dry_run_is_isolated_and_disabled():
         env['RUN_ROOT'] = root
         result = subprocess.run(
             [
-                'bash', 'scripts/run_reliability_sparse_rsaca_v2_paired_control.sh',
+                BASH, 'scripts/run_reliability_sparse_rsaca_v2_paired_control.sh',
                 '--stage', 'train', '--dataset', 'levir_cc', '--seed', '3333', '--dry-run',
             ],
             cwd=ROOT, check=True, capture_output=True, text=True, env=env,

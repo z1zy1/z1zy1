@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """Regenerate the living experiment/claim reference from authoritative JSON results."""
 
 import json
 import os
+import sys
 from datetime import datetime, timezone
 
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
 OUTPUT = os.path.join(ROOT, 'docs', 'EXPERIMENT_CLAIM_REFERENCE.md')
 METRICS = ['Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE']
 SOURCE_FILES = [
@@ -368,6 +371,38 @@ def main():
         '- `experiments/reliability_sparse_rsaca_v1_new_masks_20260821/summary.json`：新 LEVIR-CC 共识掩码候选的三数据集三 seed 锁定汇总，仅作为候选负结果证据。',
         '- `experiments/reliability_sparse_rsaca_v1_levir_cc_new_masks_matched_control_retry_20260826/summary.json`：新 LEVIR-CC 掩码匹配对照的三 seed 锁定汇总，仅作为掩码效果的受限负结果证据。',
         ''])
+    # Keep old assertions explicitly historical. Current claims are recomputed
+    # from the latest R2 per-run scoring artifacts, never their wrapper deltas.
+    from utils.semantic_control_audit import historical_report
+    from utils.semantic_controls import METRICS as FIVE_METRICS, DATASETS
+    evidence = historical_report(os.path.join(ROOT, PAIRED_MATRIX_ROOT))
+    stats = evidence['statistics']
+    current = ['# 实验主张与结果分析参考文档', '',
+        '## 当前依据：P1 R2 配对实验', '',
+        '来源：`%s/*/*/test_paired_locked_result.json`；逐运行重新计算，不使用文件内相对旧单 seed 基线的 deltas。' % PAIRED_MATRIX_ROOT, '',
+        '五项指标均值严格提高：**%s/15**；逐 seed 指标提高：**%s/%s**。均值目标：**%s**。' %
+        (stats.get('positive_mean_metrics', '缺失'), stats['positive_seed_metrics'], stats['paired_seed_metrics'],
+         '达到（历史 R2 数值证据）' if stats['mean_goal'] else '未达到或证据不完整'), '',
+        '| 数据集 | 指标 | CARD 均值 ± 样本标准差 | RSACA 均值 ± 样本标准差 | 配对差均值 ± 样本标准差 |',
+        '|---|---|---:|---:|---:|']
+    for dataset in DATASETS:
+        item = stats['datasets'][dataset]
+        if 'rsaca-card' not in item['paired']:
+            continue
+        for metric in FIVE_METRICS:
+            b, c, delta = item['arms']['card'], item['arms']['rsaca'], item['paired']['rsaca-card']
+            current.append('| %s | %s | %.6f ± %.6f | %.6f ± %.6f | %+.6f ± %.6f |' %
+                ('SECOND-CC-AUG' if dataset == 'second_cc' else dataset, metric,
+                 b['mean'][metric], b['sample_std'][metric], c['mean'][metric], c['sample_std'][metric],
+                 delta['mean'][metric], delta['sample_std'][metric]))
+    scored = sum(r['scoring_completed_from_artifact'] for r in evidence['runs'])
+    current += ['', '评分工件已完成：%d/18。旧 run_summary 的 test_completed 标记不覆盖实际评分状态；不能据此重复训练或推理。原始工件与旧验收字段保持不变。' % scored, '',
+        'R2 支持在其既有实验条件下三数据集五项均值改善，不证明每个 seed 全部改善、统计显著或全部收益来自融合结构。历史源码、初始化和输入来源的可追溯缺口需要独立核查；dirty 标记本身不是重训理由。', '',
+        '当前后续实验：`p1_semantic_controls_20260915`，详见 [AutoDL 执行协议](SEMANTIC_CONTROLS_AUTODL.md)。B/D/C0/G 分别分离普通语义使用收益、定制融合额外收益和学习门控贡献。R2 不自动并入新协议。新配置冻结前要求验证均值 15/15 改善；不能用已有 R2 测试集开发记录声称测试集重新未见。', '',
+        '均值改善、实际意义与统计显著是不同结论；不能保证投稿录用。当前没有新四组训练结果。', '',
+        '## 历史材料（以下为旧方案和旧验收定义，不代表当前 R2 结论）', '',
+        '旧结果、旧失败结论、旧 8 项及 3 项验收口径仅用于追溯；不得覆盖上文五项指标复算。', '']
+    lines = current + [line.replace('当前', '历史阶段').replace('最新主实验结果', '该阶段主实验结果') for line in lines[1:]]
     os.makedirs(os.path.dirname(OUTPUT), exist_ok=True)
     with open(OUTPUT, 'w', encoding='utf-8') as handle:
         handle.write('\n'.join(lines))

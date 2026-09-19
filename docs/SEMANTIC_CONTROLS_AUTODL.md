@@ -93,6 +93,50 @@ python scripts/diagnose_semantic_controls.py \
 
 D 的 coverage 为实现中 dense attention 的覆盖统计，不等同于语义变化面积；空图不应据此与 C0/G 的变化 coverage 混读。
 
+## 低成本诊断入口
+
+诊断工具只读取历史运行，并把机器可读 JSON 与中文 Markdown 写入指定的独立目录；它不会重写 `val_metrics.csv`、`best_snapshot_p1.json`、预测、评分或冻结文件。历史运行的 `git_info.txt`、配置和命令身份与本次诊断工具的 commit/文件哈希分开记录。
+
+```bash
+# 工件清点：可按组、数据集、seed、step 筛选；dry-run 不创建输出目录。
+python scripts/diagnose_semantic_controls.py inventory \
+  --experiment-root experiments/p1_semantic_controls_20260915 \
+  --output-dir experiments/analysis/semantic_controls_inventory \
+  --arms card rsaca --datasets levir_cc levir_mci second_cc \
+  --seeds 1111 2222 3333 --dry-run
+
+# 曲线、原协议选点和完整配对统计；缺 checkpoint 时仍可用 --no-checkpoint-validation 复算 CSV。
+python scripts/diagnose_semantic_controls.py curves \
+  --experiment-root experiments/p1_semantic_controls_20260915 \
+  --output-dir experiments/analysis/semantic_controls_curves \
+  --no-checkpoint-validation
+
+# 已有预测独立评分。命令中的 {prediction}/{reference}/{output} 会由工具替换。
+python scripts/diagnose_semantic_controls.py score \
+  --prediction experiments/.../val_prediction.json \
+  --reference ./Levir-CC/annotations.json \
+  --output-dir experiments/analysis/score_cc \
+  --scorer-command python tools/score_predictions.py --annotation {reference} --predictions {prediction} --stage val --run-dir experiments/analysis/score_cc --output-json {output}
+
+# 验证集 checkpoint 行为复现（显式调用才运行，可使用 CPU；不进入 test）。
+python scripts/diagnose_semantic_controls.py infer \
+  --cfg experiments/.../request_config.json \
+  --checkpoint experiments/.../snapshots/..._checkpoint_7000.pt \
+  --output experiments/analysis/infer_cc_1111_7000.json \
+  --sample-seed 1111 --count 16 --device cpu
+
+# 综合报告；预测/融合输入使用 ARM=PATH，样本抽样规则固定且失败样本与概览样本分开记录。
+python scripts/diagnose_semantic_controls.py report \
+  --experiment-root experiments/p1_semantic_controls_20260915 \
+  --output-dir experiments/analysis/semantic_controls_report \
+  --prediction B=experiments/.../val_prediction.json C0=experiments/.../val_prediction.json \
+  --reference ./Levir-CC/annotations.json
+```
+
+优先失败诊断点为 LEVIR-CC seed1111 的 7000/9000、LEVIR-MCI seed2222 的 8000/10000，以及 SECOND-CC-AUG seed3333 的 2000/10000；这些样本只用于局部诊断，不能直接当作数据集总体结论。`score` 的 ID 集合必须完全一致，重复、缺失或多余 ID 会阻止评分；SPICE 由实际 scorer/Java 状态单独记录。`infer` 只读验证集，记录 checkpoint checksum、配置、global step、Python/NumPy/PyTorch、eval/greedy 和 RNG 指纹，并在 `--repeat` 下比较预测与 hook 记录；小样本分数不能冒充完整验证集分数。
+
+`inventory`、`curves`、`content` 和不带 scorer 的 `report` 只需 CPU；普通 BLEU/METEOR/ROUGE-L/CIDEr/SPICE 评分按项目 scorer 执行，SPICE 还需 Java；`infer` 可用 CPU 做小样本复现，但真实 checkpoint 批量验证通常需要 GPU。所有输出写入独立诊断目录，预测、评分、checkpoint 和原选点文件保持不变。
+
 ## 历史依据、预算与验证边界
 
 R2 原始评分复算为三数据集五项 **15/15 均值提升、41/45 逐 seed 提升**；旧状态标记不否定已完成的评分。其当前已上传的配置、初始化、源码恢复和 checkpoint 证据不足以自动认证为本协议运行，因此保持独立。新协议是 36 次完整矩阵；兼容复用必须有逐项证据，不把 R2 自动混入。

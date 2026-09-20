@@ -116,7 +116,7 @@ python scripts/diagnose_semantic_controls.py score \
   --prediction experiments/.../val_prediction.json \
   --reference ./Levir-CC/annotations.json \
   --output-dir experiments/analysis/score_cc \
-  --scorer-command python tools/score_predictions.py --annotation {reference} --predictions {prediction} --stage val --run-dir experiments/analysis/score_cc --output-json {output}
+  --scorer-command python tools/score_predictions.py --annotation {reference} --predictions {prediction} --stage val --run-dir {run_dir} --output-json {output}
 
 # 验证集 checkpoint 行为复现（显式调用才运行，可使用 CPU；不进入 test）。
 python scripts/diagnose_semantic_controls.py infer \
@@ -146,3 +146,39 @@ R2 已记录的 18 次训练合计约 7.47 小时（含训练过程中的验证�
 本次实施的本地测试使用隔离 CPU 环境，覆盖真实模型前向/反向、保存加载、初始化 RNG、配置差分、路径、选点与冻结规则和 R2 复算。AutoDL 的实际数据、CUDA/Java/SPICE 环境与完整训练需在服务器按上述命令验证；本地 CPU 测试不代表这些已经完成。
 
 实施验证记录（2026-09-15）：新增协议测试 31 项、相关历史回归 24 项通过；另 1 项真实符号链接测试因本机 Windows 账户缺少权限而跳过，应在 Linux 上补验。13 个相关 Python 文件通过 AST 语法检查。使用隔离 Python 3.9 / PyTorch 2.8 CPU 环境；历史 shell 回归由 Git Bash 执行。现有 attention mask dtype 的 PyTorch 弃用提示保留，不在本次变更中改动历史计算。服务器环境验证：未执行；完整训练：未执行。
+
+
+## 2026-09-20 诊断核验修复
+
+诊断输出必须位于历史实验根目录之外，且目录不存在或为空；已有报告拒绝覆盖。
+`score`、`content`、`infer` 可显式传入 `--experiment-root` 保护历史目录；
+工具也会识别输入文件所属的协议目录。每次诊断使用一个新的输出目录。
+`--dry-run` 不创建输出。
+
+COCO 多参考描述允许同一 image_id 出现多次，预测 ID 仍必须唯一。
+完整参考文件包含其他划分时，`score --expected-ids-file` 必须提供验证集 ID 列表
+（JSON 数组或 `{"sample_ids": [...]}`）；不能通过取交集掩盖样本缺失。
+
+评分命令中的 `{output}` 指向独立的 `metrics.json`，`{run_dir}` 指向该次评分目录。
+stdout/stderr 分别保存在 `stdout.log`/`stderr.log`；组合报告为每个输入分配独立子目录。
+若指定 `--run-dir`，它必须位于该次评分目录内。评分环境信息包含启动器包版本、
+命令文件哈希和可选 Java 信息；不据此宣称历史环境相同，也不宣称外部 SPICE 缓存已隔离。
+`status=match` 仅表示分数在容差内相等。
+
+`curves` 同时核验选点规则、参考值及哈希、完整候选网格、指标、路径和已有 checkpoint 哈希。
+`selected_rows/statistics` 仅纳入选点核验通过且 checkpoint 身份可验证的运行。
+只有 CSV 时，`--no-checkpoint-validation` 的数值结果放在
+`recomputed_rows/recomputed_statistics`，不能替代冻结凭据或正式测试结果。
+`--steps` 只筛选展示的逐步比较，选点仍核验完整 1000—10000 网格。
+
+推理配置核对覆盖全部模型字段、训练字段及语义数据接口设置；历史词表内容和执行源码
+身份尚未独立核实时明确标为 unverified，不以当前代码或词表维度冒充证明。
+缺失 checkpoint 配置需要显式 `--allow-unverified-checkpoint`，配置冲突仍拒绝推理。
+严格模式下解码器加载失败直接报错；兼容模式下缺失预测不能被记为重复推理成功。
+诊断恢复调用前 RNG、全局配置和工作目录，重复结果保存在 `repeat_evidence`。
+
+融合统计支持 `[B, 1]` 的 gate/coverage，拒绝非有限值；缺少必要 hook 字段记为 incomplete。
+文本样例在 `sample_captions` 中展示；对象、动作、属性与关系错误仍需结合参考文本
+采用明确的人工或解析协议判定，不能由长度或词频直接推断。
+
+本次只修复诊断和回归测试，未改变训练配置、模型实现、历史 R2 指标或正式测试准入。

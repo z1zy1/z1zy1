@@ -345,17 +345,29 @@ def test_prediction_ids_reject_duplicates_and_incomplete(tmp_path):
 
 
 def test_freeze_test_skips_existing_scoring_and_rejects_tamper(tmp_path, monkeypatch):
-    from utils.experiment_tracking import stable_hash
-    run = tmp_path/'run'
-    run.mkdir()
-    checkpoint = run/'checkpoint'
-    checkpoint.write_text('fixed')
-    frozen = {'files': {str(checkpoint): sha256_file(checkpoint)}}
-    write(run/'best_snapshot_p1.json', {'best_snapshot': str(checkpoint), 'best_snapshot_sha256': sha256_file(checkpoint)})
+    from test_semantic_control_admission import _fixture
+    from utils.experiment_tracking import cfg_to_plain
+    import utils.semantic_control_audit as audit_module
+    original_verify = audit_module.verify_frozen_files
+    cfg, checkpoint, _ = _fixture(tmp_path, monkeypatch)
+    run = checkpoint.parent.parent
+    root = run.parent.parent
     annotation = run/'refs.json'
     write(annotation, {'annotations': [{'image_id': 'a'}]})
-    write(run/'request_config.json', {'data': {'eval_anno_path': str(annotation)}})
-    write(tmp_path/'inputs_levir_cc.json', {'samples': [{'split': 'test', 'sample_id': 'a'}]})
+    cfg.data.eval_anno_path = str(annotation)
+    write(run/'request_config.json', cfg_to_plain(cfg))
+    manifest = {'source_kind': 'unknown', 'samples': [{'split': 'test', 'sample_id': 'a'}], 'missing': []}
+    write(root/'inputs_levir_cc.json', manifest)
+    monkeypatch.setattr(audit_module, 'input_manifest', lambda cfg, source: manifest)
+    monkeypatch.setattr(audit_module, 'verify_frozen_files', original_verify)
+    lock = read(root/'protocol.json')
+    lock['configurations'][str(run.relative_to(root))] = cfg_to_plain(cfg)
+    write(root/'protocol.json', lock)
+    frozen = read(root/'frozen.json')
+    frozen['files'] = {str(path.resolve()): sha256_file(path) for path in
+                       (checkpoint, run/'best_snapshot_p1.json', root/'protocol.json', root/'inputs_levir_cc.json')}
+    write(root/'frozen.json', frozen)
+    write(root/'frozen_identity.json', {'sha256': sha256_file(root/'frozen.json')})
     prediction = run/'test_output/captions/controls_locked/sc_results.json'
     write(prediction, [{'image_id': 'a', 'caption': 'a building'}])
     identity = prediction_identity(prediction, annotation, ['a'])
@@ -364,10 +376,10 @@ def test_freeze_test_skips_existing_scoring_and_rejects_tamper(tmp_path, monkeyp
     write(run/'test_metrics.json', {'metrics': {m: 1.0 for m in METRICS}})
     write(run/'test_score_identity.json', {'score_sha256': sha256_file(run/'test_metrics.json'), 'identity': identity})
     monkeypatch.setattr(runner, 'execute', lambda *args: pytest.fail('Must not repeat inference or scoring'))
-    runner.test_one(tmp_path, frozen, 'levir_cc', 1111, 'card', run)
+    runner.test_one(root, frozen, 'levir_cc', 1111, 'rsaca', run)
     prediction.write_text('[]')
     with pytest.raises(ValueError):
-        runner.test_one(tmp_path, frozen, 'levir_cc', 1111, 'card', run)
+        runner.test_one(root, frozen, 'levir_cc', 1111, 'rsaca', run)
 
 
 def test_fixed_sample_diagnostic_real_checkpoint(tmp_path):

@@ -144,40 +144,54 @@ def _normalise_path(path: Any, base: Path) -> Optional[Path]:
     return candidate.resolve()
 
 
+class HashRegistrations(dict):
+    def __init__(self):
+        super().__init__()
+        self.issues = []
+        self.conflicts = set()
+
+
 def _registered_hashes(root: Path) -> Dict[str, str]:
-    """Read hash registrations without assuming one historical audit schema."""
-    result: Dict[str, str] = {}
+    result = HashRegistrations()
     for path in sorted(root.rglob("*.json")):
         if "audit" not in path.name.lower() and path.name not in {"protocol.json", "frozen.json"}:
             continue
-        try:
-            payload = read_json(path)
-        except (OSError, ValueError):
-            continue
-
-        def visit(value: Any) -> None:
+        def register(candidate, digest):
+            if not isinstance(digest, str) or not re.fullmatch(r"[0-9a-fA-F]{64}", digest):
+                result.issues.append({"source": str(path), "error": "invalid digest", "path": str(candidate)})
+                return
+            key = str(_normalise_path(candidate, path.parent))
+            if key in result and result[key] != digest.lower():
+                result.conflicts.add(key)
+                result.issues.append({"source": str(path), "error": "conflicting registrations", "path": key})
+            else:
+                result[key] = digest.lower()
+        def visit(value):
             if isinstance(value, Mapping):
-                for key, item in value.items():
-                    key_text = str(key).lower()
-                    if key_text in {"sha256", "hash", "digest"} and isinstance(item, str) and len(item) == 64:
-                        result[str(path.resolve())] = item.lower()
-                    if isinstance(item, Mapping):
-                        candidate = item.get("path") or item.get("file")
-                        digest = item.get("sha256") or item.get("hash") or item.get("digest")
-                        if candidate and isinstance(digest, str) and len(digest) == 64:
-                            resolved = _normalise_path(candidate, path.parent)
-                            if resolved:
-                                result[str(resolved)] = digest.lower()
+                candidate = value.get("path") or value.get("file")
+                digest = value.get("sha256") or value.get("hash") or value.get("digest")
+                if candidate and digest:
+                    register(candidate, digest)
+                files = value.get("files")
+                if isinstance(files, Mapping):
+                    for candidate, digest in files.items():
+                        if isinstance(digest, str):
+                            register(candidate, digest)
+                for item in value.values():
                     visit(item)
             elif isinstance(value, list):
                 for item in value:
                     visit(item)
-
-        visit(payload)
+        try:
+            visit(read_json(path))
+        except (OSError, ValueError) as exc:
+            result.issues.append({"source": str(path), "error": str(exc)})
     return result
 
 
 def _hash_registration(path: Path, registrations: Mapping[str, str]) -> Dict[str, Any]:
+    if str(path.resolve()) in getattr(registrations, "conflicts", set()):
+        return {"status": "conflict"}
     digest = registrations.get(str(path.resolve()))
     if digest is None:
         return {"status": "unregistered"}
@@ -205,7 +219,7 @@ def _checkpoint_identity(path: Path, registrations: Mapping[str, str], step: Opt
         result["sha256"] = sha256_file(str(path))
         return result
     result.update({"status": "verified", "sha256": digest, "size_bytes": path.stat().st_size})
-    if result["registration"].get("status") == "mismatch":
+    if result["registration"].get("status") in {"mismatch", "conflict"}:
         result["status"] = "identity_mismatch"
     return result
 
@@ -265,7 +279,7 @@ def inventory_artifacts(
         statuses = list(_status_values(artifacts))
         if not run.is_dir():
             status = "missing_run"
-        elif any(item in {"damaged_or_unverifiable", "identity_mismatch", "mismatch", "unverifiable"} for item in statuses):
+        elif any(item in {"damaged_or_unverifiable", "identity_mismatch", "mismatch", "unverifiable", "conflict"} for item in statuses):
             status = "damaged_or_identity_mismatch"
         elif any(item in {"missing", "registered_missing"} for item in statuses):
             status = "incomplete"
@@ -294,6 +308,7 @@ def inventory_artifacts(
                      "seeds": list(seeds) if seeds is not None else list(SEEDS),
                      "steps": selected_steps},
         "audit_registrations": len(registrations),
+        "registration_issues": registrations.issues,
         "diagnostic_source": source_identity(project or Path(__file__).resolve().parents[1]),
         "runs": runs,
         "summary": counts,
@@ -429,6 +444,8 @@ def recompute_selection(
     """Reproduce the frozen selector's exact score and early-step tie-break."""
     reference = dict(reference or {"Bleu_4": 0.4375, "METEOR": 0.3377,
                                    "ROUGE_L": 0.6942, "CIDEr": 1.2299, "SPICE": 0.2607})
+    if any(key not in reference or not math.isfinite(float(reference[key])) or float(reference[key]) <= 0 for key in METRICS):
+        raise ValueError("reference metrics must be finite and positive")
     result: Dict[str, Any] = {"rule": "five_metric_equal_weight_log", "reference": reference,
                               "tie_break": "earlier_step", "status": "invalid", "candidates": [], "errors": []}
     if curve.get("errors"):
@@ -478,7 +495,7 @@ def compare_selection(recomputed: Mapping[str, Any], selection_path: os.PathLike
         result["mismatches"].append("recomputed selection is not valid")
         return result
     best = recomputed["best"]
-    if recorded.get("protocol_id") != PROTOCOL and recorded.get("protocol_id") != "p1_rsaca_20260913":
+    if recorded.get("protocol_id") != PROTOCOL:
         result["mismatches"].append("protocol_id mismatch")
     recorded_best = recorded.get("best", {})
     for key in ("iter", "score"):
@@ -494,6 +511,35 @@ def compare_selection(recomputed: Mapping[str, Any], selection_path: os.PathLike
     if recorded.get("best_snapshot_sha256") and best.get("snapshot_sha256"):
         if recorded["best_snapshot_sha256"] != best["snapshot_sha256"]:
             result["mismatches"].append("best_snapshot_sha256 differs")
+    metadata = recorded.get("selection", {})
+    for key, expected in (("split", "validation"), ("rule", "five_metric_equal_weight_log"), ("tie_break", "earlier_step"), ("reference", recomputed["reference"]), ("reference_sha256", stable_hash(recomputed["reference"]))):
+        if metadata.get(key) != expected:
+            result["mismatches"].append("selection." + key + " differs or is missing")
+    if recorded.get("selection_metric_split") != "validation":
+        result["mismatches"].append("selection_metric_split differs or is missing")
+    if recorded_best.get("metrics") != best.get("metrics"):
+        result["mismatches"].append("best.metrics differs")
+    candidates = recorded.get("candidates", [])
+    if len(candidates) != len(recomputed["candidates"]):
+        result["mismatches"].append("candidate grid differs")
+    else:
+        for left, right in zip(candidates, recomputed["candidates"]):
+            for key in ("iter", "metrics", "score"):
+                equal = left.get(key) == right.get(key)
+                if key == "score":
+                    try:
+                        equal = math.isclose(float(left[key]), float(right[key]), rel_tol=0.0, abs_tol=1e-12)
+                    except (KeyError, TypeError, ValueError):
+                        equal = False
+                if not equal:
+                    result["mismatches"].append("candidate " + key + " differs")
+            if left.get("snapshot_path") != right.get("snapshot_path_original", right.get("snapshot_path")):
+                result["mismatches"].append("candidate snapshot path differs")
+            if right.get("snapshot_sha256") and left.get("snapshot_sha256") != right["snapshot_sha256"]:
+                result["mismatches"].append("candidate snapshot hash differs")
+    if recorded_best.get("snapshot_path") != recorded.get("best_snapshot") or recorded_best.get("snapshot_sha256") != recorded.get("best_snapshot_sha256"):
+        result["mismatches"].append("selected checkpoint internal identity differs")
+    result["checkpoint_identity_verified"] = bool(best.get("snapshot_sha256") and recorded.get("best_snapshot_sha256") == best.get("snapshot_sha256"))
     result["status"] = "match" if not result["mismatches"] else "mismatch"
     return result
 
@@ -508,17 +554,24 @@ def _metrics_from_selection(selection: Mapping[str, Any]) -> Optional[Dict[str, 
 
 def curve_report(inventory: Mapping[str, Any], *, require_checkpoints: bool = True) -> Dict[str, Any]:
     rows: List[Dict[str, Any]] = []
+    recomputed_rows = []
     run_reports = []
     for item in inventory.get("runs", []):
         run = Path(item["run"])
         curve = parse_validation_curve(run / "val_metrics.csv")
-        selection = recompute_selection(curve, run, require_checkpoints=require_checkpoints)
+        try:
+            reference = read_json(run / "best_snapshot_p1.json").get("selection", {}).get("reference")
+        except (OSError, ValueError):
+            reference = None
+        selection = recompute_selection(curve, run, reference=reference, require_checkpoints=require_checkpoints)
         selection_check = compare_selection(selection, run / "best_snapshot_p1.json")
         if selection.get("status") == "ok":
             metrics = _metrics_from_selection(selection)
             if metrics is not None:
-                rows.append({"dataset": item["dataset"], "seed": item["seed"], "arm": item["arm"], "metrics": metrics,
+                recomputed_rows.append({"dataset": item["dataset"], "seed": item["seed"], "arm": item["arm"], "metrics": metrics,
                              "source": str(run / "val_metrics.csv"), "step": selection["selected_step"]})
+        if recomputed_rows and selection_check.get("status") == "match" and selection_check.get("checkpoint_identity_verified"):
+            rows.append(recomputed_rows[-1])
         run_reports.append({"dataset": item["dataset"], "seed": item["seed"], "arm": item["arm"],
                             "run": str(run), "curve": curve, "selection": selection,
                             "selection_check": selection_check})
@@ -534,7 +587,7 @@ def curve_report(inventory: Mapping[str, Any], *, require_checkpoints: bool = Tr
         dataset_payload: Dict[str, Any] = {}
         for dataset in DATASETS:
             step_payload: Dict[str, Any] = {}
-            for step in EXPECTED_STEPS:
+            for step in inventory.get("filters", {}).get("steps", EXPECTED_STEPS):
                 seeds = sorted(set(seed for (d, s, arm, seed) in curve_values
                                     if d == dataset and s == step and arm == candidate) &
                                set(seed for (d, s, arm, seed) in curve_values
@@ -561,7 +614,7 @@ def curve_report(inventory: Mapping[str, Any], *, require_checkpoints: bool = Tr
     for dataset in DATASETS:
         for arm in ARMS:
             step_payload = {}
-            for step in EXPECTED_STEPS:
+            for step in inventory.get("filters", {}).get("steps", EXPECTED_STEPS):
                 seeds = sorted(seed for (d, s, a, seed) in curve_values if d == dataset and s == step and a == arm)
                 if not seeds:
                     continue
@@ -589,13 +642,13 @@ def curve_report(inventory: Mapping[str, Any], *, require_checkpoints: bool = Tr
                     per_dataset[dataset] = paired
             comparisons[label] = {"direction": "%s minus %s" % (candidate, baseline), "datasets": per_dataset}
     return {"schema": DIAGNOSTIC_SCHEMA, "kind": "validation_curves", "runs": run_reports,
-            "selected_rows": rows, "statistics": statistics_payload, "comparisons": comparisons,
+            "selected_rows": rows, "recomputed_rows": recomputed_rows, "recomputed_statistics": statistics_report(recomputed_rows), "statistics": statistics_payload, "comparisons": comparisons,
             "same_step_comparisons": same_step,
             "late_trajectory": {"status": "exploratory", "unit": "seed; validation steps are not independent repetitions",
                                 "datasets": trajectory},
             "selection_rule": "five_metric_equal_weight_log", "legacy_balanced_score_used": False,
             "historical_acceptance_fields_used_for_selection": False,
-            "split": "validation", "seed_count": len(SEEDS)}
+            "split": "validation", "seed_count": len({item["seed"] for item in run_reports})}
 
 
 def _prediction_rows(payload: Any) -> List[Mapping[str, Any]]:
@@ -621,20 +674,22 @@ def validate_prediction_ids(
 ) -> Dict[str, Any]:
     prediction = _prediction_rows(read_json(prediction_path))
     reference = _reference_ids(read_json(reference_path))
-    predicted_ids = [str(row.get("image_id")) for row in prediction]
-    prediction_missing_id = [index for index, row in enumerate(prediction) if not row.get("image_id")]
+    predicted_ids = [str(row.get("image_id")) for row in prediction if isinstance(row, Mapping)]
+    prediction_missing_id = [index for index, row in enumerate(prediction) if not isinstance(row, Mapping) or row.get("image_id") in (None, "")]
     reference_payload = read_json(reference_path)
     reference_rows = reference_payload.get("annotations", []) if isinstance(reference_payload, Mapping) else []
     reference_missing_id = [index for index, row in enumerate(reference_rows)
-                            if not isinstance(row, Mapping) or not row.get("image_id")]
+                            if not isinstance(row, Mapping) or row.get("image_id") in (None, "")]
     duplicates = sorted({item for item in predicted_ids if predicted_ids.count(item) > 1})
     reference_duplicates = sorted({item for item in reference if reference.count(item) > 1})
-    expected = [str(item) for item in (expected_ids if expected_ids is not None else reference)]
+    annotation_ids = [str(row["id"]) for row in reference_rows if isinstance(row, Mapping) and "id" in row]
+    annotation_duplicates = sorted({item for item in annotation_ids if annotation_ids.count(item) > 1})
+    expected = [str(item) for item in (expected_ids if expected_ids is not None else sorted(set(reference)))]
     expected_duplicates = sorted({item for item in expected if expected.count(item) > 1})
     missing = sorted(set(expected) - set(predicted_ids))
     extra = sorted(set(predicted_ids) - set(expected))
     reference_missing = sorted(set(predicted_ids) - set(reference))
-    status = "ok" if not (prediction_missing_id or reference_missing_id or duplicates or reference_duplicates
+    status = "ok" if not (prediction_missing_id or reference_missing_id or duplicates or annotation_duplicates
                            or expected_duplicates or missing or extra or reference_missing) else "invalid"
     return {"status": status, "prediction_count": len(predicted_ids), "reference_count": len(reference),
             "expected_count": len(expected), "duplicates": duplicates, "missing_ids": missing,
@@ -642,6 +697,7 @@ def validate_prediction_ids(
             "prediction_missing_id_rows": prediction_missing_id,
             "reference_missing_id_rows": reference_missing_id,
             "reference_duplicates": reference_duplicates,
+            "annotation_duplicates": annotation_duplicates,
             "expected_duplicates": expected_duplicates,
             "prediction_sha256": sha256_file(str(prediction_path)), "reference_sha256": sha256_file(str(reference_path)),
             "sample_ids_sha256": stable_hash(sorted(predicted_ids))}
@@ -654,6 +710,7 @@ def _render_command(command: Sequence[str], prediction: Path, reference: Path, o
         "{prediction}": str(prediction),
         "{reference}": str(reference),
         "{output}": str(output),
+        "{run_dir}": str(output.parent),
     }
     rendered = []
     for argument in command:
@@ -669,7 +726,13 @@ def _parse_score_output(text: str) -> Dict[str, float]:
     stripped = text.strip()
     if stripped:
         candidates.append(stripped)
-        candidates.extend(line.strip() for line in stripped.splitlines()[::-1])
+        decoder = json.JSONDecoder()
+        for match in re.finditer(r"\{", stripped):
+            try:
+                value, _ = decoder.raw_decode(stripped[match.start():])
+                candidates.append(json.dumps(value))
+            except ValueError:
+                pass
     for candidate in candidates:
         try:
             payload = json.loads(candidate)
@@ -736,7 +799,7 @@ def reproduce_scores(
         result["issues"].append("no scorer command supplied; historical scores were not replaced")
         return result
     if dry_run:
-        planned_output = Path(output_dir or "<diagnostic-output>").resolve() / "scorer.stdout.txt"
+        planned_output = Path(output_dir or "<diagnostic-output>").resolve() / "metrics.json"
         result["scorer"]["command"] = _render_command(scorer_command, prediction, reference, planned_output)
         result["status"] = "dry_run"
         result["issues"].append("scorer command was planned but not executed")
@@ -744,27 +807,46 @@ def reproduce_scores(
     if output_dir is None:
         raise ValueError("output_dir is required when running a scorer")
     output = Path(output_dir).resolve()
-    output.mkdir(parents=True, exist_ok=True)
-    scorer_output = output / "scorer.stdout.txt"
+    if output.exists() and any(output.iterdir()):
+        raise ValueError("scorer output directory must be empty")
+    scorer_output = output / "metrics.json"
     command = _render_command(scorer_command, prediction, reference, scorer_output)
+    for index, argument in enumerate(command):
+        if argument == "--run-dir" and index + 1 < len(command):
+            run_dir = Path(command[index + 1]).resolve()
+            if run_dir != output and output not in run_dir.parents:
+                raise ValueError("scorer --run-dir must be inside its diagnostic output directory")
+    output.mkdir(parents=True, exist_ok=True)
+    result["scorer"]["command_files"] = []
+    for argument in command:
+        try:
+            if Path(argument).is_file():
+                result["scorer"]["command_files"].append(file_identity(argument))
+        except OSError:
+            pass
     started = time.time()
     process = subprocess.run(command, capture_output=True, text=True, check=False)
-    scorer_output.write_text(process.stdout, encoding="utf-8")
+    stdout_path = output / "stdout.log"
+    stdout_path.write_text(process.stdout, encoding="utf-8")
+    (output / "stderr.log").write_text(process.stderr, encoding="utf-8")
+    result["scorer"]["launcher_runtime"] = capture_runtime_identity()
+    result["scorer"]["historical_environment_verified"] = False
+    result["scorer"]["cache_isolation"] = "not_guaranteed_by_wrapper"
     result["scorer"].update({"command": command, "returncode": process.returncode,
                               "elapsed_seconds": time.time() - started,
-                              "stdout_sha256": sha256_file(str(scorer_output))})
+                              "stdout_sha256": sha256_file(str(stdout_path))})
     if process.returncode != 0:
         result["status"] = "scorer_error"
         result["issues"].append("scorer returned non-zero status")
         result["scorer"]["stderr"] = process.stderr[-4000:]
         return result
     try:
-        metrics = _parse_score_output(process.stdout)
+        metrics = _parse_score_output(scorer_output.read_text(encoding="utf-8") if scorer_output.exists() else process.stdout)
     except ValueError as exc:
         result["status"] = "parse_error"
         result["issues"].append(str(exc))
         return result
-    result["recomputed"] = {"metrics": metrics, "stdout_path": str(scorer_output)}
+    result["recomputed"] = {"metrics": metrics, "stdout_path": str(stdout_path), "metrics_path": str(scorer_output) if scorer_output.exists() else None}
     if "original" in result and "metrics" in result["original"]:
         result["absolute_difference"] = {metric: abs(metrics[metric] - result["original"]["metrics"][metric]) for metric in METRICS}
         result["status"] = "match" if all(delta <= tolerance for delta in result["absolute_difference"].values()) else "different"
@@ -775,7 +857,13 @@ def reproduce_scores(
 
 
 def capture_runtime_identity() -> Dict[str, Any]:
-    result = {"python": sys.version, "platform": sys.platform}
+    from importlib.metadata import version, PackageNotFoundError
+    result = {"python": sys.version, "platform": sys.platform, "packages": {}}
+    for package in ("pycocotools", "pycocoevalcap", "numpy", "torch"):
+        try:
+            result["packages"][package] = version(package)
+        except PackageNotFoundError:
+            result["packages"][package] = "unavailable"
     try:
         import numpy as np
         result["numpy"] = np.__version__
@@ -859,7 +947,7 @@ def analyze_content(prediction_paths: Mapping[str, os.PathLike[str] | str], *, s
         except (OSError, ValueError) as exc:
             issues.append({"arm": arm, "status": "unverifiable", "error": str(exc)})
     id_sets = {arm: [str(row.get("image_id")) for row in rows] for arm, rows in loaded.items()}
-    missing_ids = {arm: [index for index, row in enumerate(rows) if not row.get("image_id")]
+    missing_ids = {arm: [index for index, row in enumerate(rows) if not isinstance(row, Mapping) or row.get("image_id") in (None, "")]
                    for arm, rows in loaded.items()}
     duplicate_ids = {arm: sorted({item for item in ids if ids.count(item) > 1}) for arm, ids in id_sets.items()}
     distinct_sets = {arm: set(ids) for arm, ids in id_sets.items()}
@@ -878,6 +966,8 @@ def analyze_content(prediction_paths: Mapping[str, os.PathLike[str] | str], *, s
                      for arm, path in prediction_paths.items() if arm in loaded},
             "id_counts": id_sets, "missing_id_rows": missing_ids, "duplicate_ids": duplicate_ids, "same_id_set": same_ids,
             "common_ids": common, "samples": selections, "issues": issues,
+            "sample_captions": {arm: {str(row.get("image_id")): _caption_text(row) for row in rows if str(row.get("image_id")) in selections["failure_cases"] + selections["overview_sample"]} for arm, rows in loaded.items()},
+            "object_action_attribute_relation_errors": "not_computed; requires references and a validated annotation or parsing protocol",
             "interpretation": "Text statistics are descriptive; they do not establish causality or model superiority."}
 
 
@@ -891,7 +981,7 @@ def analyze_fusion(records_by_arm: Mapping[str, os.PathLike[str] | str]) -> Dict
             continue
         records = payload.get("records", []) if isinstance(payload, Mapping) else []
         if not records:
-            result["arms"][arm] = {"status": "not_applicable", "reason": "no fusion hook records"}
+            result["arms"][arm] = {"status": "incomplete", "reason": "no fusion hook records; disabled module is not established"}
             continue
         if all(row.get("hook_status") == "not_applicable" for row in records):
             result["arms"][arm] = {
@@ -905,15 +995,20 @@ def analyze_fusion(records_by_arm: Mapping[str, os.PathLike[str] | str]) -> Dict
         stats = {}
         for key, values in present.items():
             flattened = []
-            for value in values:
-                if isinstance(value, list):
-                    flattened.extend(float(x) for x in value if isinstance(x, (int, float)))
-                elif isinstance(value, (int, float)):
+            def flatten(value):
+                if isinstance(value, (list, tuple)):
+                    for item in value:
+                        flatten(item)
+                elif isinstance(value, (int, float)) and math.isfinite(float(value)):
                     flattened.append(float(value))
+                else:
+                    raise ValueError("fusion hook contains a non-finite or non-numeric value")
+            for value in values:
+                flatten(value)
             if flattened:
                 stats[key] = {"count": len(flattened), "mean": statistics.mean(flattened),
                               "sample_std": statistics.stdev(flattened) if len(flattened) > 1 else None}
-        result["arms"][arm] = {"status": "ok", "record_count": len(records), "available": sorted(stats), "stats": stats,
+        result["arms"][arm] = {"status": "ok" if all(key in stats for key in ("gamma", "gate", "coverage", "relative_residual")) else "incomplete", "record_count": len(records), "available": sorted(stats), "stats": stats,
                                 "relative_residual_definition": "||fusion_after-fusion_before||_2 / max(||fusion_before||_2, 1e-12)"}
     return result
 

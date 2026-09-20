@@ -13,7 +13,7 @@ import argparse
 import hashlib
 import json
 import os
-import pickle
+import copy
 from pathlib import Path
 import random
 import sys
@@ -51,14 +51,38 @@ def _parse_ints(values: Optional[Iterable[str]], allowed: Iterable[int]) -> Opti
 
 def _write_json(path: Path, payload: Mapping[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(jsonable(payload), indent=2, sort_keys=True, ensure_ascii=False) + "\n", encoding="utf-8")
+    with path.open("x", encoding="utf-8") as handle:
+        handle.write(json.dumps(jsonable(payload), indent=2, sort_keys=True, ensure_ascii=False) + "\n")
 
 
 def _write_outputs(output_dir: Path, payload: Mapping[str, Any], *, markdown: Optional[str] = None) -> None:
     output_dir.mkdir(parents=True, exist_ok=True)
     _write_json(output_dir / "diagnostic_report.json", payload)
     if markdown is not None:
-        (output_dir / "diagnostic_report.md").write_text(markdown, encoding="utf-8")
+        with (output_dir / "diagnostic_report.md").open("x", encoding="utf-8") as handle:
+            handle.write(markdown)
+
+
+def _guard_output(args):
+    output = Path(getattr(args, "output_dir", None) or args.output).resolve()
+    root = getattr(args, "experiment_root", None)
+    protected = [Path(root).resolve()] if root else []
+    for key in ("checkpoint", "prediction", "reference", "cfg", "original_score"):
+        value = getattr(args, key, None)
+        for item in (value if isinstance(value, list) else [value]):
+            if not item:
+                continue
+            source = Path(str(item).split("=", 1)[-1]).resolve()
+            if source == output:
+                raise ValueError("output collides with an input file")
+            for parent in source.parents:
+                if (parent / "protocol.json").exists() or parent.name == PROTOCOL:
+                    protected.append(parent)
+    for historical in protected:
+        if output == historical or historical in output.parents:
+            raise ValueError("diagnostic output must be outside historical experiment root")
+    if output.exists() and (output.is_file() or any(output.iterdir())):
+        raise ValueError("diagnostic output already exists and is nonempty")
 
 
 def _filters(args: argparse.Namespace) -> Dict[str, Any]:
@@ -90,7 +114,7 @@ def _parse_key_value_paths(values: Optional[Iterable[str]]) -> Dict[str, str]:
         arm, path = value.split("=", 1)
         if arm not in ARMS and arm not in aliases:
             raise ValueError("unknown arm %s" % arm)
-        result[arm] = path
+        result[aliases.get(arm, arm)] = path
     return result
 
 
@@ -158,28 +182,40 @@ def _checkpoint_config_compatibility(payload_config: Any, runtime_config: Any) -
     """
     if payload_config is None:
         return {"status": "unverifiable", "reason": "checkpoint has no model_cfg/config payload"}
-    fields = (
-        "train.protocol_id", "model.type", "model.semantic_input_mode",
-        "model.semantic_fusion_norm_mode", "model.semantic_fusion_sparse_change_tokens",
-        "model.semantic_fusion_reliability_gate", "model.semantic_fusion_global_token",
-        "model.semantic_fusion_gate_whole_adapter", "model.semantic_fusion_fixed_nonempty_gate",
-        "model.semantic_fusion_heads", "model.num_semantic_classes",
-        "model.transformer_decoder.vocab_size", "model.transformer_decoder.seq_length",
-        "data.use_semantic_maps", "data.semantic_diff_only", "data.semantic_diff_binary",
-    )
+    def leaf_fields(value, prefix):
+        if isinstance(value, Mapping):
+            return [field for key, item in value.items() for field in leaf_fields(item, prefix + "." + str(key))]
+        return [prefix]
+    fields = set(leaf_fields(_config_value(payload_config, "model"), "model")) | set(leaf_fields(_config_value(runtime_config, "model"), "model"))
+    fields.update(("train.protocol_id", "data.use_semantic_maps", "data.semantic_diff_only", "data.semantic_diff_binary"))
+    fields.update(set(leaf_fields(_config_value(payload_config, "train"), "train")) | set(leaf_fields(_config_value(runtime_config, "train"), "train")))
+    for config in (payload_config, runtime_config):
+        for field in leaf_fields(_config_value(config, "data"), "data"):
+            if "semantic" in field and not any(word in field for word in ("path", "root", "file", "dir")):
+                fields.add(field)
+    fields = sorted(fields)
     mismatches = []
     for field in fields:
         recorded = jsonable(_config_value(payload_config, field))
         runtime = jsonable(_config_value(runtime_config, field))
         if recorded != runtime:
             mismatches.append({"field": field, "checkpoint": recorded, "runtime": runtime})
-    return {"status": "match" if not mismatches else "mismatch", "checked_fields": list(fields),
-            "mismatches": mismatches}
+    missing = [field for field in fields if _config_value(payload_config, field) is None or _config_value(runtime_config, field) is None]
+    return {"status": "mismatch" if mismatches else ("unverifiable" if missing else "match"), "missing_fields": missing, "checked_fields": list(fields),
+            "mismatches": mismatches, "vocabulary_mapping_identity": "unverified", "historical_executing_source_identity": "unverified"}
 
 
 def _rng_fingerprint(state: Mapping[str, Any]) -> str:
     """Record RNG state without putting large binary state into the report."""
-    return hashlib.sha256(pickle.dumps(state, protocol=4)).hexdigest()
+    def plain(value):
+        if isinstance(value, Mapping):
+            return {str(key): plain(item) for key, item in value.items()}
+        if isinstance(value, (list, tuple)):
+            return [plain(item) for item in value]
+        if hasattr(value, "tolist"):
+            return value.tolist()
+        return value
+    return hashlib.sha256(json.dumps(plain(state), sort_keys=True).encode()).hexdigest()
 
 
 def _unpack_change_detector_output(outputs: Any) -> Any:
@@ -191,6 +227,20 @@ def _unpack_change_detector_output(outputs: Any) -> Any:
 
 
 def run_fixed_forward_diagnostic(args: argparse.Namespace) -> Dict[str, Any]:
+    from configs.config_transformer import cfg
+    from utils.seed import seeded_initialization
+    saved = copy.deepcopy(cfg)
+    cwd = Path.cwd()
+    try:
+        with seeded_initialization(args.sample_seed):
+            return _run_fixed_forward_diagnostic(args)
+    finally:
+        cfg.clear()
+        cfg.update(saved)
+        os.chdir(cwd)
+
+
+def _run_fixed_forward_diagnostic(args: argparse.Namespace) -> Dict[str, Any]:
     """Run the existing validation-only hook without importing a train script."""
     import torch
 
@@ -220,6 +270,8 @@ def run_fixed_forward_diagnostic(args: argparse.Namespace) -> Dict[str, Any]:
     config_compatibility = _checkpoint_config_compatibility(loaded["payload"].get("config"), cfg)
     if config_compatibility.get("status") == "mismatch":
         raise ValueError("checkpoint model config is incompatible: %s" % config_compatibility["mismatches"])
+    if args.require_checkpoint_integrity and config_compatibility.get("status") != "match":
+        raise ValueError("checkpoint configuration is unverified; explicit --allow-unverified-checkpoint is required")
     before_rng = capture_rng_state()
     with seeded_initialization(args.sample_seed):
         model = CARD(cfg).to(args.device).eval()
@@ -231,6 +283,8 @@ def run_fixed_forward_diagnostic(args: argparse.Namespace) -> Dict[str, Any]:
     try:
         speaker.load_state_dict(speaker_state, strict=True)
     except RuntimeError as exc:
+        if args.require_checkpoint_integrity:
+            raise
         # Keep the existing hook-only diagnostic useful for legacy fixtures,
         # while making a vocabulary/config mismatch explicit rather than
         # silently loading a partial decoder.
@@ -322,7 +376,7 @@ def _run_report(args: argparse.Namespace, output_dir: Optional[Path]) -> Dict[st
         "kind": "semantic_control_report",
         "experiment_root": str(Path(args.experiment_root).resolve()),
         "diagnostic_source": source_identity(args.project),
-        "historical_claim_boundary": "training_completed_validation_admission_failed_formal_test_not_entered",
+        "historical_claim_boundary": "unknown; consult original audit, training logs and frozen admission artifacts",
         "inventory": inventory,
         "curves": curves,
         "scoring": [],
@@ -335,11 +389,11 @@ def _run_report(args: argparse.Namespace, output_dir: Optional[Path]) -> Dict[st
         },
     }
     if args.prediction and args.reference:
-        for value in args.prediction:
+        for index, value in enumerate(args.prediction):
             prediction_path = value.split("=", 1)[1] if "=" in value else value
             score = reproduce_scores(
                 prediction_path, args.reference, scorer_command=args.scorer_command,
-                original_score_path=args.original_score, output_dir=output_dir,
+                original_score_path=args.original_score, output_dir=output_dir / ("score_%03d" % index) if output_dir else None,
                 tolerance=args.tolerance, spice=args.spice, dry_run=output_dir is None)
             report["scoring"].append({"arm": value.split("=", 1)[0] if "=" in value else "unknown", **score})
         report["content"] = analyze_content(_parse_key_value_paths(args.prediction), sample_seed=args.sample_seed,
@@ -381,6 +435,7 @@ def _build_parser() -> argparse.ArgumentParser:
     _add_common_filters(curves)
     curves.add_argument("--no-checkpoint-validation", action="store_true")
     score = sub.add_parser("score", help="re-score existing predictions")
+    score.add_argument("--experiment-root")
     score.add_argument("--prediction", required=True)
     score.add_argument("--reference", required=True)
     score.add_argument("--output-dir", required=True)
@@ -393,6 +448,7 @@ def _build_parser() -> argparse.ArgumentParser:
     score.add_argument("--tolerance", type=float, default=1e-12)
     score.add_argument("--dry-run", action="store_true")
     content = sub.add_parser("content", help="compare descriptions and fusion hook records")
+    content.add_argument("--experiment-root")
     content.add_argument("--prediction", nargs="+", required=True)
     content.add_argument("--fusion", nargs="+")
     content.add_argument("--sample-seed", type=int, default=1111)
@@ -401,6 +457,7 @@ def _build_parser() -> argparse.ArgumentParser:
     content.add_argument("--output-dir", required=True)
     content.add_argument("--dry-run", action="store_true")
     infer = sub.add_parser("infer", help="repeat validation-only checkpoint inference")
+    infer.add_argument("--experiment-root")
     infer.add_argument("--cfg", required=True)
     infer.add_argument("--checkpoint", required=True)
     infer.add_argument("--output", required=True)
@@ -432,12 +489,16 @@ def main(argv: Optional[list[str]] = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     if argv and argv[0].startswith("--"):
         args = _legacy_parser().parse_args(argv)
+        _guard_output(args)
         payload = run_fixed_forward_diagnostic(args)
         _write_json(Path(args.output), payload)
         return 0
     parser = _build_parser()
     args = parser.parse_args(argv)
     try:
+        _guard_output(args)
+        if args.command == "infer" and args.repeat < 1:
+            raise ValueError("repeat must be positive")
         if args.command == "inventory":
             payload = _run_inventory(args)
         elif args.command == "curves":
@@ -471,9 +532,10 @@ def main(argv: Optional[list[str]] = None) -> int:
                 payload["repeat"] = {
                     "requested": len(repeats),
                     "records_identical": all(item.get("records", []) == first_records for item in repeats[1:]),
-                    "predictions_identical": all(item.get("predictions", []) == repeats[0].get("predictions", []) for item in repeats[1:]),
+                    "predictions_identical": bool(repeats[0].get("predictions")) and all(item.get("predictions", []) == repeats[0].get("predictions", []) for item in repeats[1:]),
                     "comparison": "exact JSON equality of fixed validation records and greedy predictions",
                 }
+            payload["repeat_evidence"] = repeats[1:]
             _write_json(Path(args.output).resolve(), payload)
             print(json.dumps(jsonable(payload), indent=2, ensure_ascii=False, sort_keys=True))
             return 0

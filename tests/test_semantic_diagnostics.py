@@ -267,6 +267,41 @@ def test_forward_config_changes_detected():
     assert _checkpoint_config_compatibility({}, {})['status'] == 'unverifiable'
 
 
+def test_runtime_global_step_is_not_a_persistent_config_mismatch():
+    from scripts.diagnose_semantic_controls import _checkpoint_config_compatibility
+    recorded = {'model': {'semantic_fusion_gamma_max': .5}, 'train': {'protocol_id': 'p1'}}
+    runtime = {'model': {'semantic_fusion_gamma_max': .5},
+               'train': {'protocol_id': 'p1', 'global_step': 9000}}
+    result = _checkpoint_config_compatibility(recorded, runtime)
+    assert result['status'] == 'unverifiable'
+    assert not result['mismatches']
+    assert 'train.global_step' not in result['checked_fields']
+
+
+def test_runtime_step_is_loaded_from_checkpoint_and_strictly_verified(tmp_path):
+    from scripts.diagnose_semantic_controls import _load_checkpoint_for_diagnostic
+    path = tmp_path / 'model_checkpoint_9000.pt'
+    atomic_save_checkpoint({'global_step': 9000, 'model_cfg': {'model': {}}}, str(path),
+                           immutable=True, write_checksum=True, expected_step=9000)
+    loaded = _load_checkpoint_for_diagnostic(path, require_integrity=True)
+    assert loaded['identity']['global_step'] == 9000
+    assert loaded['identity']['runtime_step_status'] == 'verified'
+
+
+def test_strict_runtime_step_missing_or_conflicting_is_rejected(tmp_path):
+    from scripts.diagnose_semantic_controls import _load_checkpoint_for_diagnostic
+    missing = tmp_path / 'model_checkpoint_9000.pt'
+    atomic_save_checkpoint({'model_cfg': {'model': {}}}, str(missing),
+                           immutable=True, write_checksum=True, expected_step=9000)
+    with pytest.raises(ValueError, match='global_step is missing'):
+        _load_checkpoint_for_diagnostic(missing, require_integrity=True)
+    conflict = tmp_path / 'other_checkpoint_9000.pt'
+    atomic_save_checkpoint({'global_step': 8000, 'model_cfg': {'model': {}}}, str(conflict),
+                           immutable=True, write_checksum=True, expected_step=9000)
+    with pytest.raises(ValueError, match='global_step conflicts'):
+        _load_checkpoint_for_diagnostic(conflict, require_integrity=True)
+
+
 def test_nested_fusion_values_and_nonfinite_rejected(tmp_path):
     p = tmp_path/'hooks.json'
     record = {'gamma': .5, 'gate': [[.2]], 'coverage': [[.3]], 'relative_residual': .1}

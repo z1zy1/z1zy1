@@ -102,7 +102,11 @@ def test_real_model_forward_backward_save_load(tmp_path, arm):
     atomic_save_checkpoint({'change_detector_state': detector.state_dict(), 'speaker_state': speaker.state_dict()},
                            str(path), immutable=True, write_checksum=True, expected_step=1000)
     restored_detector, restored_speaker = build_control_models(cfg, CARD, DynamicSpeaker)
-    saved = torch.load(path, weights_only=True)
+    # PyTorch 1.10 does not expose the weights_only keyword.  This checkpoint
+    # is produced by the test itself, so use the project's loader compatibility
+    # helper and retain strict state/parameter assertions below.
+    from utils.checkpointing import load_checkpoint_file
+    saved = load_checkpoint_file(str(path), map_location='cpu')
     restored_detector.load_state_dict(saved['change_detector_state'], strict=True)
     restored_speaker.load_state_dict(saved['speaker_state'], strict=True)
     detector.eval()

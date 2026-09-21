@@ -16,6 +16,7 @@ import os
 import copy
 from pathlib import Path
 import random
+import re
 import sys
 from typing import Any, Dict, Iterable, Mapping, Optional
 
@@ -145,9 +146,12 @@ def _load_checkpoint_for_diagnostic(path: Path, *, require_integrity: bool) -> D
     from utils.checkpointing import load_checkpoint_file
 
     identity: Dict[str, Any] = {"path": str(path.resolve()), "sha256": sha256_file(str(path))}
+    filename_match = re.search(r'_checkpoint_(\d+)\.(?:pt|pth)$', path.name)
+    filename_step = int(filename_match.group(1)) if filename_match else None
     try:
         integrity_digest = validate_checkpoint_file(
-            str(path), require_checksum=require_integrity, require_metadata=require_integrity)
+            str(path), require_checksum=require_integrity, require_metadata=require_integrity,
+            expected_step=filename_step)
         identity["integrity"] = "verified"
         identity["integrity_sha256"] = integrity_digest
     except (OSError, ValueError) as exc:
@@ -155,8 +159,33 @@ def _load_checkpoint_for_diagnostic(path: Path, *, require_integrity: bool) -> D
             raise
         identity["integrity"] = "unverified"
         identity["integrity_error"] = str(exc)
+    # Keep the pre-normalized mapping so the legacy loader's default ``0``
+    # cannot turn a missing runtime field into a falsely verified step.
+    import torch
+    try:
+        raw_payload = torch.load(str(path), map_location="cpu", weights_only=False)
+    except TypeError:
+        # PyTorch 1.10 has no weights_only keyword; do not hide other load
+        # failures, which must remain visible as checkpoint corruption.
+        raw_payload = torch.load(str(path), map_location="cpu")
     payload = load_checkpoint_file(str(path), map_location="cpu")
-    identity["global_step"] = int(payload.get("global_step", 0) or 0)
+    raw_step = raw_payload.get("global_step") if isinstance(raw_payload, Mapping) else None
+    if raw_step is None:
+        if require_integrity:
+            raise ValueError("checkpoint global_step is missing; strict runtime-state verification is unavailable")
+        identity["global_step"] = None
+        identity["runtime_step_status"] = "unverified"
+    else:
+        try:
+            identity["global_step"] = int(raw_step)
+        except (TypeError, ValueError) as exc:
+            raise ValueError("checkpoint global_step is invalid: %r" % (raw_step,)) from exc
+        if filename_step is not None and identity["global_step"] != filename_step:
+            raise ValueError("checkpoint global_step conflicts with filename step: %s != %s" %
+                             (identity["global_step"], filename_step))
+        identity["runtime_step_status"] = "verified" if filename_step is not None else "unverified"
+    if require_integrity and identity.get("runtime_step_status") != "verified":
+        raise ValueError("checkpoint runtime step cannot be strictly verified from filename metadata")
     identity["payload_config_present"] = payload.get("config") is not None
     return {"payload": payload, "identity": identity}
 
@@ -171,6 +200,20 @@ def _config_value(config: Any, dotted: str) -> Any:
         else:
             current = getattr(current, part, None)
     return current
+
+
+def _config_has(config: Any, dotted: str) -> bool:
+    current = config
+    for part in dotted.split("."):
+        if isinstance(current, Mapping):
+            if part not in current:
+                return False
+            current = current[part]
+        else:
+            if not hasattr(current, part):
+                return False
+            current = getattr(current, part)
+    return True
 
 
 def _checkpoint_config_compatibility(payload_config: Any, runtime_config: Any) -> Dict[str, Any]:
@@ -188,7 +231,11 @@ def _checkpoint_config_compatibility(payload_config: Any, runtime_config: Any) -
         return [prefix]
     fields = set(leaf_fields(_config_value(payload_config, "model"), "model")) | set(leaf_fields(_config_value(runtime_config, "model"), "model"))
     fields.update(("train.protocol_id", "data.use_semantic_maps", "data.semantic_diff_only", "data.semantic_diff_binary"))
-    fields.update(set(leaf_fields(_config_value(payload_config, "train"), "train")) | set(leaf_fields(_config_value(runtime_config, "train"), "train")))
+    runtime_state_fields = {"train.global_step"}
+    fields.update(field for field in
+                  (set(leaf_fields(_config_value(payload_config, "train"), "train")) |
+                   set(leaf_fields(_config_value(runtime_config, "train"), "train")))
+                  if field not in runtime_state_fields)
     for config in (payload_config, runtime_config):
         for field in leaf_fields(_config_value(config, "data"), "data"):
             if "semantic" in field and not any(word in field for word in ("path", "root", "file", "dir")):
@@ -200,7 +247,10 @@ def _checkpoint_config_compatibility(payload_config: Any, runtime_config: Any) -
         runtime = jsonable(_config_value(runtime_config, field))
         if recorded != runtime:
             mismatches.append({"field": field, "checkpoint": recorded, "runtime": runtime})
-    missing = [field for field in fields if _config_value(payload_config, field) is None or _config_value(runtime_config, field) is None]
+    # ``None`` is a legitimate explicit value for optional controls such as
+    # start_from.  Only an absent key is missing evidence.
+    missing = [field for field in fields
+               if not _config_has(payload_config, field) or not _config_has(runtime_config, field)]
     return {"status": "mismatch" if mismatches else ("unverifiable" if missing else "match"), "missing_fields": missing, "checked_fields": list(fields),
             "mismatches": mismatches, "vocabulary_mapping_identity": "unverified", "historical_executing_source_identity": "unverified"}
 
@@ -290,7 +340,7 @@ def _run_fixed_forward_diagnostic(args: argparse.Namespace) -> Dict[str, Any]:
         # silently loading a partial decoder.
         speaker = None
         speaker_load_error = str(exc)
-    if hasattr(model, "set_global_step"):
+    if loaded["identity"].get("global_step") is not None and hasattr(model, "set_global_step"):
         model.set_global_step(loaded["identity"]["global_step"])
     records = []
     active: Dict[str, Any] = {}

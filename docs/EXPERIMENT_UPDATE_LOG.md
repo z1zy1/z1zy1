@@ -1,5 +1,11 @@
 # Experiment Update Log
 
+## 2026-09-24 P1 semantic controls recovery
+
+- The `p1_semantic_controls_20260915` matrix completed all 36 protocol runs at 10,000 steps using the locked Python/PyTorch/NumPy/CUDA runtime.
+- The original disk-full failure was preserved, archived, and retrained from scratch without changing the protocol lock; all 36 run summaries now pass the completion condition.
+- Validation-only selection and protocol audit passed structurally, but the validation mean goal is `14/15`, so `freeze` and formal `test` remain blocked. See `docs/P1_SEMANTIC_CONTROLS_20260921_RESULTS.md`.
+
 ## 2026-09-08 audit correction
 
 - Old behavior: `summarize_unified_rsaca.py` and `summarize_paired_card_rsaca_matrix.py` emitted `0.0` sample standard deviation when only one seed was present.

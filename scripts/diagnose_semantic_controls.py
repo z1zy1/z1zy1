@@ -344,31 +344,45 @@ def _run_fixed_forward_diagnostic(args: argparse.Namespace) -> Dict[str, Any]:
         model.set_global_step(loaded["identity"]["global_step"])
     records = []
     active: Dict[str, Any] = {}
+    hook_events = []
     inference_rng = capture_rng_state()
 
-    def observe(module: Any, inputs: Any, output: Any) -> None:
-        query = inputs[0]
+    def observe(module: Any, module_name: str, inputs: Any, output: Any) -> None:
+        query = inputs[0] if torch.is_tensor(inputs[0]) else None
+        fused = output if torch.is_tensor(output) else None
+        event = {"module": module_name, "module_class": module.__class__.__name__, "call_index": len(hook_events)}
+        if query is None or fused is None or query.shape != fused.shape:
+            event.update({"hook_status": "unavailable", "reason": "query/output tensor unavailable"})
+            hook_events.append(event)
+            return
         gate = getattr(module, "last_reliability_gate", None)
         coverage = getattr(module, "last_change_coverage", None)
-        delta = output - query
-        query_norm = query.norm().clamp_min(1e-12)
-        active.update({
+        delta = fused - query
+        query_norm = query.norm()
+        residual_norm = delta.norm()
+        finite = bool(torch.isfinite(query_norm) and torch.isfinite(residual_norm) and torch.isfinite(delta).all())
+        event.update({
             "gamma": float(module.gamma.detach()),
             "gate": gate.detach().cpu().tolist() if gate is not None else None,
             "coverage": coverage.detach().cpu().tolist() if coverage is not None else None,
-            "residual_l2": float(delta.norm()),
-            "query_l2": float(query.norm()),
-            "relative_residual": float(delta.norm() / query_norm),
-            "hook_status": "available",
+            "residual_l2": float(residual_norm) if finite else None,
+            "query_l2": float(query_norm) if finite else None,
+            "relative_residual": float(residual_norm / query_norm.clamp_min(1e-12)) if finite else None,
+            "relative_residual_status": "zero_query_norm" if float(query_norm) == 0 else ("finite" if finite else "non_finite"),
+            "hook_status": "available" if finite else "non_finite",
         })
+        hook_events.append(event)
+        active.update(event)
 
-    handles = [module.register_forward_hook(observe) for module in model.modules()
+    handles = [module.register_forward_hook(lambda mod, inputs, output, name=name: observe(mod, name, inputs, output))
+               for name, module in model.named_modules()
                if module.__class__.__name__ == "SemanticCrossAttentionFusion"]
     indices = sorted(random.Random(args.sample_seed).sample(range(len(dataset)), min(args.count, len(dataset))))
     try:
         with torch.no_grad():
             for index in indices:
                 active = {}
+                hook_events = []
                 sample = dataset[index]
 
                 def tensor(key: str) -> Any:
@@ -386,6 +400,10 @@ def _run_fixed_forward_diagnostic(args: argparse.Namespace) -> Dict[str, Any]:
                     record["prediction"] = prediction
                 if active:
                     record.update(active)
+                    record["fusion_hooks"] = [dict(event, sample_id=sample["image_id"],
+                                                   seed=args.sample_seed,
+                                                   step=loaded["identity"].get("global_step"))
+                                              for event in hook_events]
                 else:
                     record.update({"hook_status": "not_applicable", "reason": "no SemanticCrossAttentionFusion module enabled"})
                 records.append(record)

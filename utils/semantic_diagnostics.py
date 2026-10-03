@@ -455,7 +455,12 @@ def recompute_selection(
     for row in curve.get("rows", []):
         candidate = dict(row)
         candidate["snapshot_path_original"] = row.get("snapshot_path", "")
-        path, digest, size = _resolve_snapshot(run_path, str(row.get("snapshot_path", "")), int(row["iter"]))
+        if require_checkpoints:
+            path, digest, size = _resolve_snapshot(run_path, str(row.get("snapshot_path", "")), int(row["iter"]))
+        else:
+            # CSV-only numerical recomputation must not hash/load checkpoint
+            # payloads.  Keep the recorded path as a value, not verified identity.
+            path, digest, size = None, None, None
         if require_checkpoints and path is None:
             result["errors"].append("row %s has no valid checksummed snapshot for iter %s" % (row.get("row"), row.get("iter")))
             continue
@@ -570,8 +575,15 @@ def curve_report(inventory: Mapping[str, Any], *, require_checkpoints: bool = Tr
             if metrics is not None:
                 recomputed_rows.append({"dataset": item["dataset"], "seed": item["seed"], "arm": item["arm"], "metrics": metrics,
                              "source": str(run / "val_metrics.csv"), "step": selection["selected_step"]})
-        if recomputed_rows and selection_check.get("status") == "match" and selection_check.get("checkpoint_identity_verified"):
-            rows.append(recomputed_rows[-1])
+        # Only the current run may contribute a selected row.  Using the last
+        # global recomputed row here could attribute a previous run's metrics
+        # to an otherwise invalid current run.
+        if selection.get("status") == "ok" and selection_check.get("status") == "match" and selection_check.get("checkpoint_identity_verified"):
+            current_metrics = _metrics_from_selection(selection)
+            if current_metrics is not None:
+                rows.append({"dataset": item["dataset"], "seed": item["seed"], "arm": item["arm"],
+                             "metrics": current_metrics, "source": str(run / "val_metrics.csv"),
+                             "step": selection["selected_step"]})
         run_reports.append({"dataset": item["dataset"], "seed": item["seed"], "arm": item["arm"],
                             "run": str(run), "curve": curve, "selection": selection,
                             "selection_check": selection_check})

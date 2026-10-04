@@ -1,0 +1,1 @@
+/root/miniconda3/envs/card/bin/python scripts/run_semantic_controls.py --stage select --root /root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z 

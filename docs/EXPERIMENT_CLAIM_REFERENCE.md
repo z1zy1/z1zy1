@@ -39,7 +39,11 @@ R2 支持在其既有实验条件下三数据集五项均值改善，不证明�
 
 > 本文档是模型实现、实验设计和论文结论的统一语义来源。修改 CARD/RSACA、数据输入、训练协议、选点策略、测试结果或论文主张后，必须运行 `python scripts/update_experiment_claim_reference.py` 并复核结论。
 
-结果快照时间：`2026-09-15 11:53:01 UTC`
+结果快照时间：`2026-09-20 06:38:53 UTC`
+
+## 当前 GPU 批次（2026-10-03）
+
+本批 `experiments/p1_semantic_controls_gpu_20261003T142855Z` 已完成 36/36 个训练运行，协议审计通过，但 `RSACA−CARD` 验证均值目标为 **11/15**，未达到 15/15 冻结准入。因此本批没有生成 `frozen.json` 或正式 test 结果，不能改写上方历史 R2 主张。完整分析见 [`P1_SEMANTIC_CONTROLS_GPU_20261003_RESULTS.md`](P1_SEMANTIC_CONTROLS_GPU_20261003_RESULTS.md)，轻量证据见 [`results/p1_semantic_controls_gpu_20261003T142855Z`](../results/p1_semantic_controls_gpu_20261003T142855Z/)。
 
 ## 1. 原始论文主张
 

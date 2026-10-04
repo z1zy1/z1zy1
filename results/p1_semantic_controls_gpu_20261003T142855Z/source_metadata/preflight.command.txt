@@ -1,0 +1,1 @@
+/root/miniconda3/envs/card/bin/python scripts/run_semantic_controls.py --stage preflight --root /root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z --semantic-source levir_cc=unknown --semantic-source levir_mci=unknown --semantic-source second_cc=unknown 

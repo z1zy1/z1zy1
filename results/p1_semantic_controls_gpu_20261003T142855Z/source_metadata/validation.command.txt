@@ -1,0 +1,1 @@
+/root/miniconda3/envs/card/bin/python scripts/semantic_controls_evidence.py validation --experiment-root /root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z --output-dir /root/autodl-tmp/z1zy1_v1_accept_20260920/run_logs/semantic_controls_20261003T142855Z/validation_evidence 

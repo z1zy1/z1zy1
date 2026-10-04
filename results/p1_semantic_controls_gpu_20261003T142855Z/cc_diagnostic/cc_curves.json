@@ -1,0 +1,1838 @@
+{
+  "schema": "semantic_controls_evidence.cc_diagnostic.v1",
+  "dataset": "levir_cc",
+  "runs": [
+    {
+      "dataset": "levir_cc",
+      "seed": 1111,
+      "arm": "card",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.5383769424932404,
+            "METEOR": 0.36387868792154304,
+            "ROUGE_L": 0.6933474979135763,
+            "CIDEr": 1.192570618607512,
+            "SPICE": 0.2575953685531548
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5345219178917829,
+            "METEOR": 0.3687979528322853,
+            "ROUGE_L": 0.711564275781566,
+            "CIDEr": 1.2640362268075942,
+            "SPICE": 0.29422380047242636
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5719581253690142,
+            "METEOR": 0.3941277242634372,
+            "ROUGE_L": 0.7249585580698644,
+            "CIDEr": 1.3022554109101403,
+            "SPICE": 0.2845677143970945
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.5426664650095528,
+            "METEOR": 0.3761367668647006,
+            "ROUGE_L": 0.7274870471898971,
+            "CIDEr": 1.3097409987511253,
+            "SPICE": 0.3419551548658915
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.48621801039226814,
+            "METEOR": 0.3559749793092251,
+            "ROUGE_L": 0.7301161078226196,
+            "CIDEr": 1.418896707017005,
+            "SPICE": 0.2797316491585698
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5187898770422409,
+            "METEOR": 0.3744051713760273,
+            "ROUGE_L": 0.7229521902726701,
+            "CIDEr": 1.2923334845061438,
+            "SPICE": 0.3409297875675889
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.6143832022518733,
+            "METEOR": 0.4044622375334662,
+            "ROUGE_L": 0.7428273360367393,
+            "CIDEr": 1.3561904302698413,
+            "SPICE": 0.28596313498009457
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5446163273582547,
+            "METEOR": 0.3821429804693457,
+            "ROUGE_L": 0.73595091302248,
+            "CIDEr": 1.3307808785501885,
+            "SPICE": 0.3443394368122014
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5447655192739655,
+            "METEOR": 0.3846769016261149,
+            "ROUGE_L": 0.7331544482616806,
+            "CIDEr": 1.3365373891635952,
+            "SPICE": 0.33708336023767654
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed1111/snapshots/card_levir_cc_seed1111_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.590911322032184,
+            "METEOR": 0.3971399002555938,
+            "ROUGE_L": 0.7378888839384832,
+            "CIDEr": 1.3408965703722708,
+            "SPICE": 0.29422086477636056
+          }
+        }
+      ],
+      "selected_step": 7000,
+      "selected_score": 0.15557708874498183,
+      "selected_metrics": {
+        "Bleu_4": 0.6143832022518733,
+        "METEOR": 0.4044622375334662,
+        "ROUGE_L": 0.7428273360367393,
+        "CIDEr": 1.3561904302698413,
+        "SPICE": 0.28596313498009457
+      },
+      "spice_by_step": {
+        "1000": 0.2575953685531548,
+        "2000": 0.29422380047242636,
+        "3000": 0.2845677143970945,
+        "4000": 0.3419551548658915,
+        "5000": 0.2797316491585698,
+        "6000": 0.3409297875675889,
+        "7000": 0.28596313498009457,
+        "8000": 0.3443394368122014,
+        "9000": 0.33708336023767654,
+        "10000": 0.29422086477636056
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 1111,
+      "arm": "plain_fusion",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.5594530696034022,
+            "METEOR": 0.37268616844878305,
+            "ROUGE_L": 0.7119943563123413,
+            "CIDEr": 1.2378426364796997,
+            "SPICE": 0.2780793670392
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5438569982199836,
+            "METEOR": 0.3669294252545896,
+            "ROUGE_L": 0.7067881080008356,
+            "CIDEr": 1.2719739315974132,
+            "SPICE": 0.28013788393475797
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5893966643722345,
+            "METEOR": 0.39804372328956134,
+            "ROUGE_L": 0.7353473582496961,
+            "CIDEr": 1.3323028351813504,
+            "SPICE": 0.2892688284816678
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.5344690140739442,
+            "METEOR": 0.3763634545990539,
+            "ROUGE_L": 0.7262659319968839,
+            "CIDEr": 1.309340281239754,
+            "SPICE": 0.3454250173818893
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.4849665552999159,
+            "METEOR": 0.35788037312590654,
+            "ROUGE_L": 0.7279711544330888,
+            "CIDEr": 1.4187047825945371,
+            "SPICE": 0.2791047927147257
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.518109985714101,
+            "METEOR": 0.3778858920122046,
+            "ROUGE_L": 0.7270886527801332,
+            "CIDEr": 1.3120236819475377,
+            "SPICE": 0.3423127151052605
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.6072768953535606,
+            "METEOR": 0.4030653082988571,
+            "ROUGE_L": 0.7410329853338672,
+            "CIDEr": 1.3500046572399145,
+            "SPICE": 0.28714383659620446
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5564926918886004,
+            "METEOR": 0.3836705167529384,
+            "ROUGE_L": 0.73716306975787,
+            "CIDEr": 1.3377268974144054,
+            "SPICE": 0.3401013939970269
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5594379139400015,
+            "METEOR": 0.3875526301788779,
+            "ROUGE_L": 0.7360648227743924,
+            "CIDEr": 1.3422087849489517,
+            "SPICE": 0.336576777133654
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed1111/snapshots/plain_fusion_levir_cc_seed1111_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.5946898349330888,
+            "METEOR": 0.3991892253612898,
+            "ROUGE_L": 0.7378567221007677,
+            "CIDEr": 1.354218147322591,
+            "SPICE": 0.298492217889924
+          }
+        }
+      ],
+      "selected_step": 9000,
+      "selected_score": 0.15698947424004137,
+      "selected_metrics": {
+        "Bleu_4": 0.5594379139400015,
+        "METEOR": 0.3875526301788779,
+        "ROUGE_L": 0.7360648227743924,
+        "CIDEr": 1.3422087849489517,
+        "SPICE": 0.336576777133654
+      },
+      "spice_by_step": {
+        "1000": 0.2780793670392,
+        "2000": 0.28013788393475797,
+        "3000": 0.2892688284816678,
+        "4000": 0.3454250173818893,
+        "5000": 0.2791047927147257,
+        "6000": 0.3423127151052605,
+        "7000": 0.28714383659620446,
+        "8000": 0.3401013939970269,
+        "9000": 0.336576777133654,
+        "10000": 0.298492217889924
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 1111,
+      "arm": "rsaca",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.5166767727271598,
+            "METEOR": 0.37172210840698794,
+            "ROUGE_L": 0.6984078510935786,
+            "CIDEr": 1.1931957359831167,
+            "SPICE": 0.2727322779957356
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.52613588296427,
+            "METEOR": 0.36623434794335125,
+            "ROUGE_L": 0.7105958197139467,
+            "CIDEr": 1.262173377399617,
+            "SPICE": 0.30277490267018453
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.6074497870449224,
+            "METEOR": 0.40394075033984367,
+            "ROUGE_L": 0.7462453625670545,
+            "CIDEr": 1.355553738708455,
+            "SPICE": 0.2862774072499249
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.5359053040576871,
+            "METEOR": 0.3797348078091346,
+            "ROUGE_L": 0.7334806606347076,
+            "CIDEr": 1.3289433794966041,
+            "SPICE": 0.34870572229506125
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.49733322746104464,
+            "METEOR": 0.3595689874039312,
+            "ROUGE_L": 0.7319752024385262,
+            "CIDEr": 1.4372988742811987,
+            "SPICE": 0.28026566739719616
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5342768785722295,
+            "METEOR": 0.385753267944462,
+            "ROUGE_L": 0.7323695933139989,
+            "CIDEr": 1.3295980932820346,
+            "SPICE": 0.3440523658782687
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.6144947252640872,
+            "METEOR": 0.4065248796331093,
+            "ROUGE_L": 0.7473187869635078,
+            "CIDEr": 1.3538716235559138,
+            "SPICE": 0.28556981702226236
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5538750892308212,
+            "METEOR": 0.3849213547270853,
+            "ROUGE_L": 0.7427644455969207,
+            "CIDEr": 1.348785093760325,
+            "SPICE": 0.3410319366338556
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5662856700665044,
+            "METEOR": 0.3904956738411523,
+            "ROUGE_L": 0.7408080129534936,
+            "CIDEr": 1.3578873286603905,
+            "SPICE": 0.3345489331729071
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed1111/snapshots/rsaca_levir_cc_seed1111_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.6067975076965456,
+            "METEOR": 0.4011158654267058,
+            "ROUGE_L": 0.7400592537461826,
+            "CIDEr": 1.363846125807702,
+            "SPICE": 0.29066617232875075
+          }
+        }
+      ],
+      "selected_step": 9000,
+      "selected_score": 0.16333446991557038,
+      "selected_metrics": {
+        "Bleu_4": 0.5662856700665044,
+        "METEOR": 0.3904956738411523,
+        "ROUGE_L": 0.7408080129534936,
+        "CIDEr": 1.3578873286603905,
+        "SPICE": 0.3345489331729071
+      },
+      "spice_by_step": {
+        "1000": 0.2727322779957356,
+        "2000": 0.30277490267018453,
+        "3000": 0.2862774072499249,
+        "4000": 0.34870572229506125,
+        "5000": 0.28026566739719616,
+        "6000": 0.3440523658782687,
+        "7000": 0.28556981702226236,
+        "8000": 0.3410319366338556,
+        "9000": 0.3345489331729071,
+        "10000": 0.29066617232875075
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 1111,
+      "arm": "fixed_gate",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.554873159520145,
+            "METEOR": 0.3802942998834492,
+            "ROUGE_L": 0.7134907493103878,
+            "CIDEr": 1.2392879475375367,
+            "SPICE": 0.2740686351301029
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5189128209979658,
+            "METEOR": 0.3611896555690246,
+            "ROUGE_L": 0.704166624419114,
+            "CIDEr": 1.2573141304001954,
+            "SPICE": 0.3010547670711234
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5829175064577522,
+            "METEOR": 0.3943449949357552,
+            "ROUGE_L": 0.7289374695161406,
+            "CIDEr": 1.3143777003013406,
+            "SPICE": 0.2841875122040613
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.51626439290288,
+            "METEOR": 0.3711848567229551,
+            "ROUGE_L": 0.7197200311072993,
+            "CIDEr": 1.2985523374113945,
+            "SPICE": 0.34471590045701733
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.47336814738976013,
+            "METEOR": 0.3519810093354542,
+            "ROUGE_L": 0.7240559693587348,
+            "CIDEr": 1.4072209235948376,
+            "SPICE": 0.2818930991293922
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5214824490065902,
+            "METEOR": 0.37948258521066885,
+            "ROUGE_L": 0.7299224533544295,
+            "CIDEr": 1.3184678242290278,
+            "SPICE": 0.35009017488157484
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.6128901952931761,
+            "METEOR": 0.4037796982797991,
+            "ROUGE_L": 0.7450812594783207,
+            "CIDEr": 1.352819793504221,
+            "SPICE": 0.28685619168174886
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5506606373962304,
+            "METEOR": 0.3809652127135893,
+            "ROUGE_L": 0.7369396787279832,
+            "CIDEr": 1.3371691001331103,
+            "SPICE": 0.3427452112821493
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5663622539390354,
+            "METEOR": 0.38923547377835105,
+            "ROUGE_L": 0.7386719606894616,
+            "CIDEr": 1.3470765498301716,
+            "SPICE": 0.33157165649793674
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed1111/snapshots/fixed_gate_levir_cc_seed1111_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.5990612596155074,
+            "METEOR": 0.3994321820120046,
+            "ROUGE_L": 0.7421061531105141,
+            "CIDEr": 1.3489081927295372,
+            "SPICE": 0.29209748765896804
+          }
+        }
+      ],
+      "selected_step": 9000,
+      "selected_score": 0.158751012658467,
+      "selected_metrics": {
+        "Bleu_4": 0.5663622539390354,
+        "METEOR": 0.38923547377835105,
+        "ROUGE_L": 0.7386719606894616,
+        "CIDEr": 1.3470765498301716,
+        "SPICE": 0.33157165649793674
+      },
+      "spice_by_step": {
+        "1000": 0.2740686351301029,
+        "2000": 0.3010547670711234,
+        "3000": 0.2841875122040613,
+        "4000": 0.34471590045701733,
+        "5000": 0.2818930991293922,
+        "6000": 0.35009017488157484,
+        "7000": 0.28685619168174886,
+        "8000": 0.3427452112821493,
+        "9000": 0.33157165649793674,
+        "10000": 0.29209748765896804
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 2222,
+      "arm": "card",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.5444735776305459,
+            "METEOR": 0.36814223511541366,
+            "ROUGE_L": 0.6969198801921451,
+            "CIDEr": 1.220625257843203,
+            "SPICE": 0.2645586231105412
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5146689706359092,
+            "METEOR": 0.36694997153598446,
+            "ROUGE_L": 0.7187551458213769,
+            "CIDEr": 1.2807643440011562,
+            "SPICE": 0.3327933934010211
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5863089385781427,
+            "METEOR": 0.38360442612053874,
+            "ROUGE_L": 0.7220029998390406,
+            "CIDEr": 1.313052379631939,
+            "SPICE": 0.2860319092252785
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.5490906295490269,
+            "METEOR": 0.38569482956050705,
+            "ROUGE_L": 0.7282995682416538,
+            "CIDEr": 1.2971498902754695,
+            "SPICE": 0.3094537582473209
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.6064546370784833,
+            "METEOR": 0.40310895295637944,
+            "ROUGE_L": 0.7420061484298514,
+            "CIDEr": 1.3530604730209543,
+            "SPICE": 0.28410416635847674
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5248249207649646,
+            "METEOR": 0.3823410742486349,
+            "ROUGE_L": 0.7341266680251866,
+            "CIDEr": 1.347927165262785,
+            "SPICE": 0.35238003479903085
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.5515006921387219,
+            "METEOR": 0.38467433849388993,
+            "ROUGE_L": 0.7443770715404385,
+            "CIDEr": 1.3509976125913046,
+            "SPICE": 0.3452037949276699
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5806064185233089,
+            "METEOR": 0.39224320851913963,
+            "ROUGE_L": 0.7395738915805371,
+            "CIDEr": 1.359358650099833,
+            "SPICE": 0.31701848391669935
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5644620959238367,
+            "METEOR": 0.38762908047180195,
+            "ROUGE_L": 0.7389631253707962,
+            "CIDEr": 1.3586518141529635,
+            "SPICE": 0.3367100196598152
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed2222/snapshots/card_levir_cc_seed2222_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.5468647258277469,
+            "METEOR": 0.38709784519934853,
+            "ROUGE_L": 0.742409488709161,
+            "CIDEr": 1.367671213387648,
+            "SPICE": 0.3502602870260648
+          }
+        }
+      ],
+      "selected_step": 10000,
+      "selected_score": 0.1656536010303847,
+      "selected_metrics": {
+        "Bleu_4": 0.5468647258277469,
+        "METEOR": 0.38709784519934853,
+        "ROUGE_L": 0.742409488709161,
+        "CIDEr": 1.367671213387648,
+        "SPICE": 0.3502602870260648
+      },
+      "spice_by_step": {
+        "1000": 0.2645586231105412,
+        "2000": 0.3327933934010211,
+        "3000": 0.2860319092252785,
+        "4000": 0.3094537582473209,
+        "5000": 0.28410416635847674,
+        "6000": 0.35238003479903085,
+        "7000": 0.3452037949276699,
+        "8000": 0.31701848391669935,
+        "9000": 0.3367100196598152,
+        "10000": 0.3502602870260648
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 2222,
+      "arm": "plain_fusion",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.5605440144963499,
+            "METEOR": 0.36276441979105145,
+            "ROUGE_L": 0.6981618257572981,
+            "CIDEr": 1.2333780983489788,
+            "SPICE": 0.26010510684580207
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5523856693082353,
+            "METEOR": 0.3788572086450237,
+            "ROUGE_L": 0.7235267299528495,
+            "CIDEr": 1.2909554655208832,
+            "SPICE": 0.311817977217399
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5226491334996651,
+            "METEOR": 0.36586024820704155,
+            "ROUGE_L": 0.7160232467313465,
+            "CIDEr": 1.304433472633258,
+            "SPICE": 0.3420022756380304
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.5335573047946337,
+            "METEOR": 0.3834278755510825,
+            "ROUGE_L": 0.7247254217475908,
+            "CIDEr": 1.2996391236373723,
+            "SPICE": 0.3178727128060544
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.60455755215004,
+            "METEOR": 0.40010986065403886,
+            "ROUGE_L": 0.7373092856041685,
+            "CIDEr": 1.343344491603271,
+            "SPICE": 0.27933737658722746
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5184760438817165,
+            "METEOR": 0.3789577025040728,
+            "ROUGE_L": 0.7305359428320772,
+            "CIDEr": 1.3367152085815657,
+            "SPICE": 0.3453416223822124
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.5390120603187767,
+            "METEOR": 0.3784916347982755,
+            "ROUGE_L": 0.731382198615229,
+            "CIDEr": 1.3277004795416785,
+            "SPICE": 0.3420658353415315
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5687220074080847,
+            "METEOR": 0.38818478883320895,
+            "ROUGE_L": 0.736398851724319,
+            "CIDEr": 1.3401049013849777,
+            "SPICE": 0.31756935449635887
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5570400174843501,
+            "METEOR": 0.3893022556621887,
+            "ROUGE_L": 0.7383970857700677,
+            "CIDEr": 1.3529585272376783,
+            "SPICE": 0.336952999116391
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed2222/snapshots/plain_fusion_levir_cc_seed2222_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.5390291921282352,
+            "METEOR": 0.38402809956351563,
+            "ROUGE_L": 0.7367025030858249,
+            "CIDEr": 1.3460801777512756,
+            "SPICE": 0.34472621058756725
+          }
+        }
+      ],
+      "selected_step": 9000,
+      "selected_score": 0.15948281856925933,
+      "selected_metrics": {
+        "Bleu_4": 0.5570400174843501,
+        "METEOR": 0.3893022556621887,
+        "ROUGE_L": 0.7383970857700677,
+        "CIDEr": 1.3529585272376783,
+        "SPICE": 0.336952999116391
+      },
+      "spice_by_step": {
+        "1000": 0.26010510684580207,
+        "2000": 0.311817977217399,
+        "3000": 0.3420022756380304,
+        "4000": 0.3178727128060544,
+        "5000": 0.27933737658722746,
+        "6000": 0.3453416223822124,
+        "7000": 0.3420658353415315,
+        "8000": 0.31756935449635887,
+        "9000": 0.336952999116391,
+        "10000": 0.34472621058756725
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 2222,
+      "arm": "rsaca",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.5795161322977631,
+            "METEOR": 0.3722442638503647,
+            "ROUGE_L": 0.7090503177079623,
+            "CIDEr": 1.2498952926590163,
+            "SPICE": 0.2604602057033583
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5213545477161498,
+            "METEOR": 0.3787959215409151,
+            "ROUGE_L": 0.7320718019772268,
+            "CIDEr": 1.3044078538537522,
+            "SPICE": 0.33599431719314493
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5318345631097019,
+            "METEOR": 0.37223636299604634,
+            "ROUGE_L": 0.7176707631222938,
+            "CIDEr": 1.2988734004208198,
+            "SPICE": 0.3399536738130955
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.5291187759084616,
+            "METEOR": 0.37707602648858585,
+            "ROUGE_L": 0.7178773047449649,
+            "CIDEr": 1.277877235902727,
+            "SPICE": 0.31293362914847384
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.6113940225385217,
+            "METEOR": 0.4020562884570359,
+            "ROUGE_L": 0.7432375826610007,
+            "CIDEr": 1.3406236687458224,
+            "SPICE": 0.2770764459983385
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5287321709694601,
+            "METEOR": 0.3812034565600562,
+            "ROUGE_L": 0.7312751763899555,
+            "CIDEr": 1.3298261711978687,
+            "SPICE": 0.34630471691075465
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.5444476874662634,
+            "METEOR": 0.38255943194205283,
+            "ROUGE_L": 0.7361278429274378,
+            "CIDEr": 1.341702101562024,
+            "SPICE": 0.34166130086450053
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5896226315078922,
+            "METEOR": 0.3958166034687178,
+            "ROUGE_L": 0.7364268222064007,
+            "CIDEr": 1.3562738066190365,
+            "SPICE": 0.3084650385640684
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5552667696885729,
+            "METEOR": 0.3892915624643791,
+            "ROUGE_L": 0.7365020997160516,
+            "CIDEr": 1.351053843871729,
+            "SPICE": 0.33428026093008223
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed2222/snapshots/rsaca_levir_cc_seed2222_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.536790070129173,
+            "METEOR": 0.3873864855504203,
+            "ROUGE_L": 0.7379265534287213,
+            "CIDEr": 1.3468501895754286,
+            "SPICE": 0.3486409859764515
+          }
+        }
+      ],
+      "selected_step": 10000,
+      "selected_score": 0.15687754019413647,
+      "selected_metrics": {
+        "Bleu_4": 0.536790070129173,
+        "METEOR": 0.3873864855504203,
+        "ROUGE_L": 0.7379265534287213,
+        "CIDEr": 1.3468501895754286,
+        "SPICE": 0.3486409859764515
+      },
+      "spice_by_step": {
+        "1000": 0.2604602057033583,
+        "2000": 0.33599431719314493,
+        "3000": 0.3399536738130955,
+        "4000": 0.31293362914847384,
+        "5000": 0.2770764459983385,
+        "6000": 0.34630471691075465,
+        "7000": 0.34166130086450053,
+        "8000": 0.3084650385640684,
+        "9000": 0.33428026093008223,
+        "10000": 0.3486409859764515
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 2222,
+      "arm": "fixed_gate",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.5550550783696473,
+            "METEOR": 0.3582968430288789,
+            "ROUGE_L": 0.6885677364448403,
+            "CIDEr": 1.2185720595176557,
+            "SPICE": 0.2587283154879828
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5398318911403996,
+            "METEOR": 0.3729287448009038,
+            "ROUGE_L": 0.7170633186386952,
+            "CIDEr": 1.2911274287792558,
+            "SPICE": 0.3207581327258271
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5160233900279005,
+            "METEOR": 0.3639040523820003,
+            "ROUGE_L": 0.7085306429304211,
+            "CIDEr": 1.274523486067538,
+            "SPICE": 0.3344890289107
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.5081672386450696,
+            "METEOR": 0.3766149375307482,
+            "ROUGE_L": 0.7209846969160069,
+            "CIDEr": 1.2919528679413594,
+            "SPICE": 0.33436783882136056
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.5982221187100424,
+            "METEOR": 0.38923500314383,
+            "ROUGE_L": 0.7324077399499878,
+            "CIDEr": 1.3247597813669973,
+            "SPICE": 0.277970056170023
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5231396358098421,
+            "METEOR": 0.3786341838186269,
+            "ROUGE_L": 0.730431032006927,
+            "CIDEr": 1.3343739600114721,
+            "SPICE": 0.350210830174105
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.5491291847306813,
+            "METEOR": 0.3850124269458255,
+            "ROUGE_L": 0.7385412244385926,
+            "CIDEr": 1.355823793519302,
+            "SPICE": 0.34606884157171675
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5841616119430698,
+            "METEOR": 0.39308286387472385,
+            "ROUGE_L": 0.7393127538539078,
+            "CIDEr": 1.3597539527826588,
+            "SPICE": 0.31307398360378436
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5522007356804538,
+            "METEOR": 0.38714115073720234,
+            "ROUGE_L": 0.7374586588287798,
+            "CIDEr": 1.3615182304426499,
+            "SPICE": 0.33722019376094825
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed2222/snapshots/fixed_gate_levir_cc_seed2222_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.5408031952972564,
+            "METEOR": 0.3884202450537795,
+            "ROUGE_L": 0.7375544097210512,
+            "CIDEr": 1.367625458562721,
+            "SPICE": 0.34748062520031586
+          }
+        }
+      ],
+      "selected_step": 10000,
+      "selected_score": 0.16119402675577882,
+      "selected_metrics": {
+        "Bleu_4": 0.5408031952972564,
+        "METEOR": 0.3884202450537795,
+        "ROUGE_L": 0.7375544097210512,
+        "CIDEr": 1.367625458562721,
+        "SPICE": 0.34748062520031586
+      },
+      "spice_by_step": {
+        "1000": 0.2587283154879828,
+        "2000": 0.3207581327258271,
+        "3000": 0.3344890289107,
+        "4000": 0.33436783882136056,
+        "5000": 0.277970056170023,
+        "6000": 0.350210830174105,
+        "7000": 0.34606884157171675,
+        "8000": 0.31307398360378436,
+        "9000": 0.33722019376094825,
+        "10000": 0.34748062520031586
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 3333,
+      "arm": "card",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.44901740150103253,
+            "METEOR": 0.3215265587384056,
+            "ROUGE_L": 0.6840249221828191,
+            "CIDEr": 1.2721947395830966,
+            "SPICE": 0.19891275724727753
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5196545774602601,
+            "METEOR": 0.37000302500042836,
+            "ROUGE_L": 0.7094234383103853,
+            "CIDEr": 1.2504986182029894,
+            "SPICE": 0.3050491916976946
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5599898563333037,
+            "METEOR": 0.3792280277209223,
+            "ROUGE_L": 0.734819265001832,
+            "CIDEr": 1.314685060744461,
+            "SPICE": 0.3298931651062926
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.5949751488986159,
+            "METEOR": 0.39162094309669815,
+            "ROUGE_L": 0.726380888611414,
+            "CIDEr": 1.3024664673650723,
+            "SPICE": 0.27287137237187986
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.5957496880877919,
+            "METEOR": 0.38844302427757593,
+            "ROUGE_L": 0.7278578239983152,
+            "CIDEr": 1.295567907594164,
+            "SPICE": 0.27699228293001843
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5878883406977378,
+            "METEOR": 0.3906215708892294,
+            "ROUGE_L": 0.7409439320411213,
+            "CIDEr": 1.3395405078197826,
+            "SPICE": 0.3205009812002172
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.5567113491806644,
+            "METEOR": 0.3904332910877918,
+            "ROUGE_L": 0.7366892148699382,
+            "CIDEr": 1.3311357622121913,
+            "SPICE": 0.3179534190492977
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5557944652545332,
+            "METEOR": 0.38550011610491924,
+            "ROUGE_L": 0.7360147183607721,
+            "CIDEr": 1.335240087563237,
+            "SPICE": 0.3308735594724788
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5306825405483214,
+            "METEOR": 0.380371536883025,
+            "ROUGE_L": 0.7301573702653161,
+            "CIDEr": 1.3192458550556236,
+            "SPICE": 0.3437431109913435
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/card/card_levir_cc_seed3333/snapshots/card_levir_cc_seed3333_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.5317936695851377,
+            "METEOR": 0.38149036516366336,
+            "ROUGE_L": 0.7334318456223304,
+            "CIDEr": 1.3278308986811056,
+            "SPICE": 0.34745943902398846
+          }
+        }
+      ],
+      "selected_step": 6000,
+      "selected_score": 0.15962305954794842,
+      "selected_metrics": {
+        "Bleu_4": 0.5878883406977378,
+        "METEOR": 0.3906215708892294,
+        "ROUGE_L": 0.7409439320411213,
+        "CIDEr": 1.3395405078197826,
+        "SPICE": 0.3205009812002172
+      },
+      "spice_by_step": {
+        "1000": 0.19891275724727753,
+        "2000": 0.3050491916976946,
+        "3000": 0.3298931651062926,
+        "4000": 0.27287137237187986,
+        "5000": 0.27699228293001843,
+        "6000": 0.3205009812002172,
+        "7000": 0.3179534190492977,
+        "8000": 0.3308735594724788,
+        "9000": 0.3437431109913435,
+        "10000": 0.34745943902398846
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 3333,
+      "arm": "plain_fusion",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.4479061581812407,
+            "METEOR": 0.32642386787942607,
+            "ROUGE_L": 0.6999882506619874,
+            "CIDEr": 1.3272809105513237,
+            "SPICE": 0.1941788972538556
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5537812906177653,
+            "METEOR": 0.37796303210391397,
+            "ROUGE_L": 0.7142668888678354,
+            "CIDEr": 1.2658009202302478,
+            "SPICE": 0.28431127892394703
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5668711184769049,
+            "METEOR": 0.3805042805661377,
+            "ROUGE_L": 0.7394161639894541,
+            "CIDEr": 1.3306556260635427,
+            "SPICE": 0.334243259775622
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.6070046190661794,
+            "METEOR": 0.4002692622258751,
+            "ROUGE_L": 0.7336900239141388,
+            "CIDEr": 1.328427224058296,
+            "SPICE": 0.28043649155139827
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.6222295945266763,
+            "METEOR": 0.4022418796443013,
+            "ROUGE_L": 0.7405071442314279,
+            "CIDEr": 1.3477055387565948,
+            "SPICE": 0.28691570122256355
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.572176643836638,
+            "METEOR": 0.3830609028753351,
+            "ROUGE_L": 0.7331133335661083,
+            "CIDEr": 1.3300106097493354,
+            "SPICE": 0.32759230820998214
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.5612600025487471,
+            "METEOR": 0.38867958061597635,
+            "ROUGE_L": 0.729378257246824,
+            "CIDEr": 1.3374635286550096,
+            "SPICE": 0.3134153328699439
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5737035004035321,
+            "METEOR": 0.392632081574805,
+            "ROUGE_L": 0.737113032659633,
+            "CIDEr": 1.3484902610373317,
+            "SPICE": 0.32420816376323
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5431770999289646,
+            "METEOR": 0.3853830615898729,
+            "ROUGE_L": 0.7289708674157597,
+            "CIDEr": 1.3382602834510016,
+            "SPICE": 0.34144008799663444
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/plain_fusion/plain_fusion_levir_cc_seed3333/snapshots/plain_fusion_levir_cc_seed3333_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.5468509460301376,
+            "METEOR": 0.3845744006912056,
+            "ROUGE_L": 0.7327442071715142,
+            "CIDEr": 1.3464492762176137,
+            "SPICE": 0.3418952491475445
+          }
+        }
+      ],
+      "selected_step": 8000,
+      "selected_score": 0.158360093034639,
+      "selected_metrics": {
+        "Bleu_4": 0.5737035004035321,
+        "METEOR": 0.392632081574805,
+        "ROUGE_L": 0.737113032659633,
+        "CIDEr": 1.3484902610373317,
+        "SPICE": 0.32420816376323
+      },
+      "spice_by_step": {
+        "1000": 0.1941788972538556,
+        "2000": 0.28431127892394703,
+        "3000": 0.334243259775622,
+        "4000": 0.28043649155139827,
+        "5000": 0.28691570122256355,
+        "6000": 0.32759230820998214,
+        "7000": 0.3134153328699439,
+        "8000": 0.32420816376323,
+        "9000": 0.34144008799663444,
+        "10000": 0.3418952491475445
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 3333,
+      "arm": "rsaca",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.47530872013376557,
+            "METEOR": 0.3270900169790074,
+            "ROUGE_L": 0.7104837742121168,
+            "CIDEr": 1.3405409627085747,
+            "SPICE": 0.1992711419904686
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.586386581215001,
+            "METEOR": 0.3845950757921876,
+            "ROUGE_L": 0.7279685405052664,
+            "CIDEr": 1.2884898622305954,
+            "SPICE": 0.2730767100571682
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5826898742866045,
+            "METEOR": 0.3922046874411463,
+            "ROUGE_L": 0.7522381759358605,
+            "CIDEr": 1.3577926194824688,
+            "SPICE": 0.3408742238733753
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.6026168367900989,
+            "METEOR": 0.39981838699367817,
+            "ROUGE_L": 0.7324747344408373,
+            "CIDEr": 1.333692996124938,
+            "SPICE": 0.2826745254109045
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.6054872120195542,
+            "METEOR": 0.3930253555619605,
+            "ROUGE_L": 0.7339570619322283,
+            "CIDEr": 1.3248659912157839,
+            "SPICE": 0.27979953726811474
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5645719880443777,
+            "METEOR": 0.3896418692151356,
+            "ROUGE_L": 0.7419701760351469,
+            "CIDEr": 1.3611345774474253,
+            "SPICE": 0.348016049634621
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.566458402534593,
+            "METEOR": 0.39297728184278957,
+            "ROUGE_L": 0.7360454971735177,
+            "CIDEr": 1.3472075580354161,
+            "SPICE": 0.3139948362140321
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5704252262930901,
+            "METEOR": 0.3889129851614803,
+            "ROUGE_L": 0.7377671303748679,
+            "CIDEr": 1.3449994888185537,
+            "SPICE": 0.3241560922182319
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5485628502473581,
+            "METEOR": 0.38422580260624384,
+            "ROUGE_L": 0.73577792745087,
+            "CIDEr": 1.3487206708824202,
+            "SPICE": 0.3460639470054388
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/rsaca/rsaca_levir_cc_seed3333/snapshots/rsaca_levir_cc_seed3333_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.5431586886066923,
+            "METEOR": 0.38306291398880177,
+            "ROUGE_L": 0.7358695727056755,
+            "CIDEr": 1.347410002777158,
+            "SPICE": 0.35034585778131755
+          }
+        }
+      ],
+      "selected_step": 3000,
+      "selected_score": 0.17671358158810196,
+      "selected_metrics": {
+        "Bleu_4": 0.5826898742866045,
+        "METEOR": 0.3922046874411463,
+        "ROUGE_L": 0.7522381759358605,
+        "CIDEr": 1.3577926194824688,
+        "SPICE": 0.3408742238733753
+      },
+      "spice_by_step": {
+        "1000": 0.1992711419904686,
+        "2000": 0.2730767100571682,
+        "3000": 0.3408742238733753,
+        "4000": 0.2826745254109045,
+        "5000": 0.27979953726811474,
+        "6000": 0.348016049634621,
+        "7000": 0.3139948362140321,
+        "8000": 0.3241560922182319,
+        "9000": 0.3460639470054388,
+        "10000": 0.35034585778131755
+      },
+      "selection_status": "ok"
+    },
+    {
+      "dataset": "levir_cc",
+      "seed": 3333,
+      "arm": "fixed_gate",
+      "run": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333",
+      "curve": [
+        {
+          "row": 3,
+          "iter": 1000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_1000.pt",
+          "metrics": {
+            "Bleu_4": 0.4442253341579188,
+            "METEOR": 0.3214889069996819,
+            "ROUGE_L": 0.6963792594453854,
+            "CIDEr": 1.3057650030072594,
+            "SPICE": 0.19190748387738055
+          }
+        },
+        {
+          "row": 4,
+          "iter": 2000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_2000.pt",
+          "metrics": {
+            "Bleu_4": 0.5482007075815682,
+            "METEOR": 0.38404568990717336,
+            "ROUGE_L": 0.7196691331442139,
+            "CIDEr": 1.271156144321426,
+            "SPICE": 0.2859687189161597
+          }
+        },
+        {
+          "row": 5,
+          "iter": 3000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_3000.pt",
+          "metrics": {
+            "Bleu_4": 0.5731267797341131,
+            "METEOR": 0.38497063740684956,
+            "ROUGE_L": 0.7424572983259887,
+            "CIDEr": 1.332534043954219,
+            "SPICE": 0.3333991170024349
+          }
+        },
+        {
+          "row": 6,
+          "iter": 4000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_4000.pt",
+          "metrics": {
+            "Bleu_4": 0.6023557396869473,
+            "METEOR": 0.401275986459574,
+            "ROUGE_L": 0.7366786224429073,
+            "CIDEr": 1.3402533941995836,
+            "SPICE": 0.2890488756490429
+          }
+        },
+        {
+          "row": 7,
+          "iter": 5000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_5000.pt",
+          "metrics": {
+            "Bleu_4": 0.6244358719190671,
+            "METEOR": 0.3929506618281752,
+            "ROUGE_L": 0.7386755812481988,
+            "CIDEr": 1.3428017753688826,
+            "SPICE": 0.28271896177717565
+          }
+        },
+        {
+          "row": 8,
+          "iter": 6000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_6000.pt",
+          "metrics": {
+            "Bleu_4": 0.5680323897272349,
+            "METEOR": 0.3853781642258525,
+            "ROUGE_L": 0.7335819937079078,
+            "CIDEr": 1.3437356573945818,
+            "SPICE": 0.327997068857055
+          }
+        },
+        {
+          "row": 9,
+          "iter": 7000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_7000.pt",
+          "metrics": {
+            "Bleu_4": 0.5747789400284112,
+            "METEOR": 0.39323070645693703,
+            "ROUGE_L": 0.7358429850905188,
+            "CIDEr": 1.3473219650047121,
+            "SPICE": 0.30594244144742533
+          }
+        },
+        {
+          "row": 10,
+          "iter": 8000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_8000.pt",
+          "metrics": {
+            "Bleu_4": 0.5651495038149694,
+            "METEOR": 0.39018735694332607,
+            "ROUGE_L": 0.7366828205829242,
+            "CIDEr": 1.364167095973663,
+            "SPICE": 0.3296765997503607
+          }
+        },
+        {
+          "row": 11,
+          "iter": 9000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_9000.pt",
+          "metrics": {
+            "Bleu_4": 0.5531527621499513,
+            "METEOR": 0.3848744288158945,
+            "ROUGE_L": 0.7346845388908152,
+            "CIDEr": 1.3527280172134268,
+            "SPICE": 0.3422631761503521
+          }
+        },
+        {
+          "row": 12,
+          "iter": 10000,
+          "snapshot_path": "/root/autodl-tmp/z1zy1_v1_accept_20260920/experiments/p1_semantic_controls_gpu_20261003T142855Z/fixed_gate/fixed_gate_levir_cc_seed3333/snapshots/fixed_gate_levir_cc_seed3333_checkpoint_10000.pt",
+          "metrics": {
+            "Bleu_4": 0.546826224274556,
+            "METEOR": 0.38278808788328034,
+            "ROUGE_L": 0.7357791704240013,
+            "CIDEr": 1.355060296742931,
+            "SPICE": 0.3456935608585185
+          }
+        }
+      ],
+      "selected_step": 8000,
+      "selected_score": 0.15964661430258442,
+      "selected_metrics": {
+        "Bleu_4": 0.5651495038149694,
+        "METEOR": 0.39018735694332607,
+        "ROUGE_L": 0.7366828205829242,
+        "CIDEr": 1.364167095973663,
+        "SPICE": 0.3296765997503607
+      },
+      "spice_by_step": {
+        "1000": 0.19190748387738055,
+        "2000": 0.2859687189161597,
+        "3000": 0.3333991170024349,
+        "4000": 0.2890488756490429,
+        "5000": 0.28271896177717565,
+        "6000": 0.327997068857055,
+        "7000": 0.30594244144742533,
+        "8000": 0.3296765997503607,
+        "9000": 0.3422631761503521,
+        "10000": 0.3456935608585185
+      },
+      "selection_status": "ok"
+    }
+  ],
+  "sample_ids": [
+    "val_000001.png",
+    "val_000002.png",
+    "val_000003.png",
+    "val_000004.png",
+    "val_000005.png",
+    "val_000006.png",
+    "val_000007.png",
+    "val_000008.png",
+    "val_000009.png",
+    "val_000010.png",
+    "val_000011.png",
+    "val_000012.png",
+    "val_000013.png",
+    "val_000014.png",
+    "val_000015.png",
+    "val_000016.png"
+  ],
+  "sample_selection": "first sorted IDs from seed1111 step1000 prediction; no semantic filtering",
+  "spice_interpretation": "SPICE values are descriptive curves; no causal or human error label is inferred.",
+  "review_status": "unlabelled",
+  "stratification": {
+    "change_status": "unavailable_without_validated_annotations",
+    "change_area": "unavailable",
+    "semantic_empty": "unavailable"
+  },
+  "spice_selected_delta_rsaca_minus_card": {
+    "1111": 0.04858579819281256,
+    "2222": -0.0016193010496133309,
+    "3333": 0.0203732426731581
+  },
+  "spice_pattern": "mixed: negative for 1/3 seeds"
+}

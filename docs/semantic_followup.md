@@ -29,6 +29,10 @@ stage预检列出缺失/非法参数、前置receipt状态与能构造的评分/
 - `data_environment`：显式填写工厂支持的各数据根目录/feature目录变量、PYTORCH_GPU、NUM_WORKERS；生成配置必须匹配 manifest。不会从启动 shell 偷取未登记路径覆盖。
 - `expected_ids`：非空、无重复的验证 ID JSON 列表；P1a/P1b 必须覆盖完整 val split，不取交集、不用少量例子充当完整复评。
 
+配置中的相对reference及输入路径以仓库PROJECT根目录解析，与实际解码子进程cwd一致，不以配置文件目录或调用者cwd为基准。P1a/P1b与预检使用同一reference路径比较，仍核验实际文件hash。旧input_manifest解析只在同步调用期间进入PROJECT，正常或异常退出都恢复调用者cwd；登记配置和manifest的原始字节/路径表示不变。此局部cwd上下文面向单线程CLI，不用于并发线程的目录管理。
+
+register和receipt仅复用同一次已计算的Path/digest；没有跨阶段缓存。阶段完成时及下一次依赖校验仍重新读取文件，以发现执行期间或两次调用之间的变更。
+
 ## 阶段与进入条件
 
 | 阶段 | 实际工作和产物 | 放行规则 |
@@ -62,8 +66,35 @@ P1d image_manifest格式为 `{"样本ID":{"before":"前图工件名","after":"�
 
 ## 本地测试
 
+使用当前Python环境中的pytest、torch、numpy、PyYAML、h5py、imageio及Pillow即可从任意目录运行仓库内便携入口；脚本不安装包、不硬编码本机依赖路径、不运行服务器实验：
+
+```bash
+python /absolute/path/to/CARD/scripts/run_semantic_tests.py
+# 仅复跑本轮边界也可传pytest筛选参数：
+python /absolute/path/to/CARD/scripts/run_semantic_tests.py -k 'reference_paths or reference_mismatch or dataset_cwd or hash_once or stage_end'
+```
+
+若新建环境，先用标准 `python -m venv` 隔离，并按目标平台安装上述测试依赖和适用的CPU版torch；记录最终版本。仓库requirements.txt已经声明pytest，但包含历史Linux本地torch wheel路径，不应直接当作跨平台测试安装清单。本轮复用了现成CPU依赖，没有安装或修改全局环境；新环境安装尚未实测。也可从仓库根目录使用原命令：
+
 ```bash
 python -m pytest -q tests/test_semantic_followup.py tests/test_semantic_controls.py tests/test_semantic_control_admission.py tests/test_semantic_diagnostics.py tests/test_p1_checkpoint_integrity.py
 ```
 
 小张量验证门控公式/梯度/空图/ignore/shared-init/default-state；阶段生命周期使用小工件和模拟scorer/decoder，不能冒充真实效果。旧测试覆盖原协议锁/准入/选点/checksum/诊断。CPU测试不证明服务器GPU环境复现成功。
+
+## 一组真实服务器完整val验收（待执行）
+
+先选一个明确条件/seed，准备实际配置、完整输入manifest/源文件、实际初始化摘要、选中checkpoint及其checksum/metadata、该checkpoint保存的全val预测、原五指标、references、完整val ID清单和评分资源。给所有文件登记实际路径/hash，并登记目标服务器采集的完整环境身份；明确评分容差和解码变化阈值。没有这些材料时保留NOT_RUN，不能用合成fixture或小样本替代。
+
+1. 新建登记及output_root，预检P0并执行，检查实际数据/模型/文件身份；失败先补证，不继续下游。
+2. 预检并执行P1a，用同一全val预测重评分；核对命令、五项差值、ID集合、资源及receipt。只有实际match才作为复现PASS。
+3. 预检并执行P1b，使用同一checkpoint完整val解码；确认所有输出隔离，逐ID文本比较、checkpoint身份和输入映射吻合。
+4. 收集registration、P0/P1a/P1b receipt、命令日志、实际环境、输出及哈希，以实际状态记录PASS/DIFFERENT/FAILED。此链路不启动P1c/P2/P3训练，也不执行正式test。
+
+小样本可以先排查依赖，但不能称完整val通过。本轮尚未取得/执行这组服务器链路；扩展矩阵前应先完成它。
+
+## 外部存档与预登记时间（按需，尚未执行）
+
+本地hash锁证明内容一致性，不独立证明谁在何时登记。需要对外证明预登记时序时，在实验前把封存registration、源码版本、对应SHA256提交至独立存档或受保护远程记录，保存可核查的服务接收/存档时间、权限与保留策略；实验后另存最终manifest及输出hash并关联原登记。普通Git作者/commit时间可自行设定，不能单独充当可信预登记时间。
+
+验收应检查登记hash与存档一致、独立接收记录早于实验、篡改内容能检出。仅在确有第三方身份验证需求时再设计隔离私钥签章；本轮没有新增签章系统，也未声称已有外部时间锚。外部存档或签名都不能证明实验实际执行或科学结论正确。

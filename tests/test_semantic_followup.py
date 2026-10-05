@@ -1,6 +1,8 @@
 """Synthetic CPU checks; no research model is trained or scored here."""
 import copy
+import collections
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -368,3 +370,115 @@ def test_complete_matrix_uses_selected_candidate_with_matched_fixed(monkeypatch,
     for _, _, _, arm, _, cfg in plans:
         assert cfg.train.protocol_id == FOLLOWUP_PROTOCOL
         assert cfg.model.semantic_fusion_dense_local_access == (arm in ('rsaca', 'fixed_gate'))
+
+
+@pytest.mark.parametrize('stage', ['P1a', 'P1b'])
+@pytest.mark.parametrize('spelling', ['absolute', 'relative', 'dot_segments'])
+def test_reference_paths_from_nonproject_cwd_reach_actual_handlers(registered, monkeypatch, stage, spelling):
+    _, spec, tmp_path = registered
+    reference = Path(spec['artifacts']['reference']['path'])
+    relative = os.path.relpath(reference, followup.PROJECT)
+    value = str(reference) if spelling == 'absolute' else relative
+    if spelling == 'dot_segments':
+        (reference.parent/'existing_segment').mkdir()
+        value = str(reference.parent/'existing_segment/../reference.json')
+    config_path = Path(spec['artifacts']['config']['path'])
+    config = followup.read(config_path)
+    config['data']['eval_anno_path'] = value
+    config_path.write_text(json.dumps(config), encoding='utf-8')
+    spec['artifacts']['config']['sha256'] = sha256_file(str(config_path))
+    config_bytes = config_path.read_bytes()
+    manifest_path = Path(spec['artifacts']['manifest']['path'])
+    manifest_bytes = manifest_path.read_bytes()
+    manifest = followup.read(manifest_path)
+    visited = []
+    def resolver(cfg, source_kind):
+        visited.append(Path.cwd())
+        assert Path.cwd() == followup.PROJECT
+        # Exercise the legacy resolver's ordinary cwd-relative file opening.
+        assert followup.read(cfg.data.eval_anno_path)['annotations']
+        return copy.deepcopy(manifest)
+    monkeypatch.setattr(followup, 'input_manifest', resolver)
+    synthetic_score(monkeypatch); synthetic_decode(monkeypatch, spec)
+    caller = tmp_path/'caller'; caller.mkdir(); monkeypatch.chdir(caller)
+    monkeypatch.setattr(followup, 'receipt', lambda *a, **k: {'status': 'PASS'})
+    preview = followup.preview_stage({'spec': spec}, stage)
+    assert preview['readiness'] == 'READY_FOR_EXECUTION_CHECKS', preview['issues']
+    assert not (Path(spec['output_root'])/stage).exists()
+    assert Path.cwd() == caller
+    output = Path(spec['output_root'])/stage; output.mkdir()
+    result = (followup._p1a if stage == 'P1a' else followup._p1b)(spec, spec['stages'][stage], output)
+    assert followup._receipt_status(stage, result) == 'PASS'
+    assert Path.cwd() == caller
+    if stage == 'P1b':
+        assert visited == [followup.PROJECT]
+    assert config_path.read_bytes() == config_bytes
+    assert manifest_path.read_bytes() == manifest_bytes
+
+
+@pytest.mark.parametrize('stage', ['P1a', 'P1b'])
+def test_reference_mismatch_blocked_in_preview_and_handler(registered, monkeypatch, stage):
+    _, spec, tmp_path = registered
+    config_path = Path(spec['artifacts']['config']['path'])
+    config = followup.read(config_path)
+    other = tmp_path/'other_reference.json'; other.write_text('{}', encoding='utf-8')
+    config['data']['eval_anno_path'] = str(other)
+    config_path.write_text(json.dumps(config), encoding='utf-8')
+    spec['artifacts']['config']['sha256'] = sha256_file(str(config_path))
+    monkeypatch.setattr(followup, 'receipt', lambda *a, **k: {'status': 'PASS'})
+    preview = followup.preview_stage({'spec': spec}, stage)
+    assert preview['readiness'] == 'BLOCKED'
+    assert any('references differ' in issue for issue in preview['issues'])
+    with pytest.raises(ValueError, match='references differ'):
+        (followup._p1a if stage == 'P1a' else followup._p1b)(spec, spec['stages'][stage], tmp_path/'never_created')
+    assert not (tmp_path/'never_created').exists()
+
+
+def test_dataset_cwd_restored_on_exception(registered, monkeypatch):
+    _, spec, tmp_path = registered
+    caller = tmp_path/'caller'; caller.mkdir(); monkeypatch.chdir(caller)
+    def fail(cfg, source_kind):
+        assert Path.cwd() == followup.PROJECT
+        raise RuntimeError('resolver fixture failure')
+    monkeypatch.setattr(followup, 'input_manifest', fail)
+    cfg = followup._cfg(followup.artifact(spec, 'config'))
+    with pytest.raises(RuntimeError, match='resolver fixture failure'):
+        followup.verify_dataset(spec, 'levir_cc', cfg)
+    assert Path.cwd() == caller
+
+
+def test_register_and_receipt_hash_once_but_next_validation_is_fresh(registered, monkeypatch):
+    registration, spec, tmp_path = registered
+    counts = collections.Counter()
+    original = followup.sha256_file
+    def counted(path):
+        counts[str(Path(path).resolve())] += 1
+        return original(path)
+    monkeypatch.setattr(followup, 'sha256_file', counted)
+    new_spec = copy.deepcopy(spec); new_spec['output_root'] = str(tmp_path/'uncreated_registration')
+    spec_path = tmp_path/'new_spec.json'; spec_path.write_text(json.dumps(new_spec), encoding='utf-8')
+    followup.register(spec_path, tmp_path/'uncreated_registration/registration.json', execute=False)
+    assert all(counts[str(Path(item['path']).resolve())] == 1 for item in spec['artifacts'].values())
+    assert not (tmp_path/'uncreated_registration').exists()
+    result = followup.execute_stage(registration, 'P0', execute=True)
+    assert result['status'] == 'PASS'
+    lock = followup.load_registration(registration)
+    counts.clear()
+    followup.receipt(lock, 'P0')
+    assert all(counts[str(Path(spec['artifacts'][name]['path']).resolve())] == 1 for name in result['inputs'])
+    initial = Path(spec['artifacts']['initial']['path'])
+    initial.write_text('{}', encoding='utf-8')
+    with pytest.raises(ValueError, match='changed registered artifact'):
+        followup.receipt(lock, 'P0')
+
+
+def test_stage_end_still_rehashes_used_input(registered, monkeypatch):
+    registration, spec, _ = registered
+    def mutate_after_first_validation(spec, settings):
+        path = followup.artifact(spec, 'initial')
+        path.write_text('{}', encoding='utf-8')
+        return {'verified': True}
+    monkeypatch.setattr(followup, '_p0', mutate_after_first_validation)
+    result = followup.execute_stage(registration, 'P0', execute=True)
+    assert result['status'] == 'FAILED'
+    assert 'changed registered artifact' in result['result']['error']

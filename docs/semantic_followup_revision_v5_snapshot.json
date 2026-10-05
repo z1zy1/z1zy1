@@ -1,0 +1,15 @@
+{
+  "plan": "PLAN-v5",
+  "base": "b7fd1074e2445ae534c7d01cd17bdb479d8863a7",
+  "files": {
+    "docs/semantic_followup.md": "7559752e80328b0d1d765951514c479f2bc0eb5ee07cc85805f57d12e53f4c66",
+    "docs/semantic_followup_revision_v5.md": "0f372d9f8163c91462f29b4393683224135058c8b2f20dc2084c90a1ec84787b",
+    "scripts/run_semantic_tests.py": "0b7f65eeabee31425a2bd74d89ec83d84f1abf12aeab4829d5f1f89e9131f308",
+    "tests/test_semantic_followup.py": "95216b135e28f88c86097a3fe1410d04f7db89ca3d42358bd36282098e3f318c",
+    "utils/semantic_followup.py": "852f3fa120e4de66410ae33a5997c65897e096d9652522162623c969da4b9af4"
+  },
+  "b_verification": "109 passed, 1 skipped, 4 warnings; portable entry from non-project cwd; targeted 11 passed",
+  "research_runs": "NOT_RUN",
+  "scope": "Path semantics and local hash reuse; no cross-stage cache",
+  "c_verification": "40 passed, 70 deselected, 66.67s; portable entry from a different non-project cwd; source/test/entry hashes unchanged"
+}

@@ -14,6 +14,7 @@ import platform
 import subprocess
 import sys
 import time
+from contextlib import contextmanager
 from contextvars import ContextVar
 
 from utils.semantic_controls import (ARMS, DATASETS, SEEDS, METRICS, PROTOCOL,
@@ -55,14 +56,52 @@ def runtime_identity():
     return result
 
 
-def artifact(spec, name):
+def _verified_artifact(spec, name):
+    """Return both identity values from one fresh file traversal."""
     record = spec['artifacts'][name]
     path = Path(record['path'])
-    if not path.is_absolute() or not path.is_file() or sha256_file(str(path)) != record['sha256']:
+    if not path.is_absolute() or not path.is_file():
+        raise ValueError('Missing/changed registered artifact: ' + name)
+    digest = sha256_file(str(path))
+    if digest != record['sha256']:
         raise ValueError('Missing/changed registered artifact: ' + name)
     if _INPUTS.get() is not None:
         _INPUTS.get()[name] = record['sha256']
-    return path
+    return path, digest
+
+
+def artifact(spec, name):
+    return _verified_artifact(spec, name)[0]
+
+
+def _project_path(value):
+    """Resolve configuration paths using the real subprocess working directory."""
+    path = Path(value)
+    return (path if path.is_absolute() else PROJECT/path).resolve()
+
+
+def _compare_reference(reference, cfg):
+    if reference.resolve() != _project_path(cfg.data.eval_anno_path):
+        raise ValueError('Inference/scoring and comparison references differ')
+
+
+def _verify_reference(spec, name, cfg):
+    reference = artifact(spec, name)
+    _compare_reference(reference, cfg)
+    return reference
+
+
+@contextmanager
+def _dataset_working_directory():
+    # The runner is a synchronous, single-threaded CLI. Limit the process-wide
+    # cwd change to the legacy input resolver and restore it even on failure;
+    # cfg/manifest path strings must retain their registered representation.
+    previous = Path.cwd()
+    try:
+        os.chdir(PROJECT)
+        yield
+    finally:
+        os.chdir(previous)
 
 
 def _number(value, name, low=0, high=None):
@@ -92,8 +131,8 @@ def register(spec_path, output, execute=False):
     if root.exists() and any(root.iterdir()):
         raise ValueError('Use a fresh follow-up output_root')
     for name in spec.get('artifacts', {}):
-        artifact(spec, name)
-        if root == artifact(spec, name).parent or root in artifact(spec, name).parents:
+        path = artifact(spec, name)
+        if root == path.parent or root in path.parents:
             raise ValueError('Inputs must be outside output_root')
     result = {'schema': 1, 'spec': spec, 'spec_sha256': stable_hash(spec), 'code': code_identity()}
     if execute:
@@ -148,7 +187,8 @@ def receipt(lock, stage, required=('PASS',)):
         raise ValueError('Receipt identity/execution mismatch: ' + stage)
     _stage_runtime(spec, stage, record['runtime'])
     for name, digest in record['inputs'].items():
-        if sha256_file(str(artifact(spec, name))) != digest:
+        _, actual_digest = _verified_artifact(spec, name)
+        if actual_digest != digest:
             raise ValueError('Receipt input changed')
     for name, digest in record['outputs'].items():
         output = Path(spec['output_root']) / stage / name
@@ -206,7 +246,8 @@ def verify_dataset(spec, dataset, cfg):
         raise ValueError('Registered condition and resolved configuration differ')
     item = spec['datasets'][dataset]
     expected = read(artifact(spec, item['manifest']))
-    actual = input_manifest(cfg, item['source_kind'])
+    with _dataset_working_directory():
+        actual = input_manifest(cfg, item['source_kind'])
     if not cfg.data.use_semantic_maps:
         expected = copy.deepcopy(expected)
         for row in expected['samples']:
@@ -400,7 +441,13 @@ def preview_stage(lock, stage):
             else:
                 item = spec['datasets'][job['dataset']]
                 manifest_path = source(item.get('manifest'))
-                source(item.get('config'))
+                dataset_config = source(item.get('config'))
+                reference_config = paths.get('config') if stage == 'P1b' else dataset_config
+                if reference_config and paths['reference']:
+                    try:
+                        _compare_reference(paths['reference'], _cfg(reference_config))
+                    except (KeyError, TypeError, OSError, ValueError) as exc:
+                        issues.append(str(exc))
                 if manifest_path and paths['expected_ids']:
                     try:
                         ids = _ids(spec, job['expected_ids'])
@@ -562,8 +609,7 @@ def _p1a(spec, settings, output):
         if sorted(ids) != sorted(r['sample_id'] for r in manifest['samples'] if r['split'] == 'val'):
             raise ValueError('Scoring IDs must cover the registered validation split')
         config = _cfg(artifact(spec, spec['datasets'][dataset]['config']))
-        if Path(config.data.eval_anno_path).resolve() != artifact(spec, job['reference']).resolve():
-            raise ValueError('Scoring reference differs from registered input mapping')
+        reference = _verify_reference(spec, job['reference'], config)
         # Use the same interpreter and project scorer. Actual scorer dependencies
         # and declared resources are bound, rather than a user PASS or command.
         if not job.get('scorer_resources'):
@@ -571,7 +617,7 @@ def _p1a(spec, settings, output):
         for name in job['scorer_resources']:
             artifact(spec, name)
         command = _score_command()
-        result = reproduce_scores(artifact(spec, job['prediction']), artifact(spec, job['reference']),
+        result = reproduce_scores(artifact(spec, job['prediction']), reference,
                     expected_ids=ids, scorer_command=command,
                     original_score_path=artifact(spec, job['original_metrics']),
                     tolerance=tolerance, spice=True, output_dir=output/('score_%d' % i))
@@ -593,9 +639,7 @@ def _p1b(spec, settings, output):
         ids = _ids(spec, job['expected_ids'])
         if sorted(ids) != sorted(r['sample_id'] for r in manifest['samples'] if r['split'] == 'val'):
             raise ValueError('P1b IDs must cover the entire registered validation split')
-        reference = artifact(spec, job['reference'])
-        if str(reference) != str(Path(cfg.data.eval_anno_path)):
-            raise ValueError('Inference and comparison references differ')
+        reference = _verify_reference(spec, job['reference'], cfg)
         checkpoint = artifact(spec, job['checkpoint'])
         loaded = _load_checkpoint_for_diagnostic(checkpoint, require_integrity=True)
         recorded = copy.deepcopy(loaded['payload']['config'])

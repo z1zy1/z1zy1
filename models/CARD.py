@@ -208,7 +208,8 @@ class SemanticCrossAttentionFusion(nn.Module):
                  use_global_semantic_token=False, global_token_mode='all_mean',
                  gate_whole_adapter=False, use_visual_consistency_gate=False,
                  use_visual_fallback=False, fusion_warmup_steps=0,
-                 detach_reliability_inputs=False, fixed_nonempty_gate=False):
+                 detach_reliability_inputs=False, fixed_nonempty_gate=False,
+                 fixed_gate_value=1.0, dense_local_access=False):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_semantic_classes = max(1, int(num_semantic_classes))
@@ -228,6 +229,14 @@ class SemanticCrossAttentionFusion(nn.Module):
         self.global_token_mode = str(global_token_mode).lower()
         self.gate_whole_adapter = bool(gate_whole_adapter)
         self.fixed_nonempty_gate = bool(fixed_nonempty_gate)
+        self.fixed_gate_value = float(fixed_gate_value)
+        if not math.isfinite(self.fixed_gate_value) or not 0 <= self.fixed_gate_value <= 1:
+            raise ValueError('Fixed gate value must be finite and in [0, 1]')
+        if self.fixed_gate_value != 1.0 and not self.fixed_nonempty_gate:
+            raise ValueError('A constant gate value requires fixed_nonempty_gate')
+        self.dense_local_access = bool(dense_local_access)
+        if self.dense_local_access and not self.use_sparse_change_tokens:
+            raise ValueError('Dense local access requires the RSACA token path')
         if self.fixed_nonempty_gate and not (use_reliability_gate and gate_whole_adapter):
             raise ValueError('Fixed gate requires the whole adapter reliability gate')
         self.detach_reliability_inputs = bool(detach_reliability_inputs)
@@ -336,7 +345,8 @@ class SemanticCrossAttentionFusion(nn.Module):
             changed = before_ids != after_ids
         return (valid & changed).flatten(1)
 
-    def _sparse_semantic_context(self, query, sem_diff_feat, change_mask, change_weights=None):
+    def _sparse_semantic_context(self, query, sem_diff_feat, change_mask, change_weights=None,
+                                 local_valid_mask=None):
         # A learned fallback keeps attention well-defined for no-change images;
         # key_padding_mask excludes every unchanged semantic location.
         batch_size = query.size(0)
@@ -350,6 +360,15 @@ class SemanticCrossAttentionFusion(nn.Module):
         # pixel from a reliable semantic label.
         key_values = [sem_diff_feat * change_weights.unsqueeze(-1)]
         padding_masks = [~change_mask]
+        if self.dense_local_access:
+            # Only local access changes: global/fallback tokens, coverage and
+            # gate summaries keep the original RSACA definitions. Unchanged
+            # local tokens must retain their values rather than becoming zero.
+            local_weights = torch.where(change_mask, change_weights, torch.ones_like(change_weights))
+            key_values = [sem_diff_feat * local_weights.unsqueeze(-1)]
+            if local_valid_mask is None:
+                raise ValueError('Dense local access requires a valid-location mask')
+            padding_masks = [~local_valid_mask]
         if self.use_global_semantic_token:
             # Preserve context without letting the unchanged background dilute
             # the signal from the semantic locations selected by sparse attention.
@@ -428,9 +447,14 @@ class SemanticCrossAttentionFusion(nn.Module):
                 change_weights = change_mask.float()
             else:
                 change_weights = confidence * change_mask.float()
+            local_valid_mask = None
+            if self.dense_local_access:
+                _, before_valid = self._class_ids_and_valid(sem_before, spatial_size)
+                _, after_valid = self._class_ids_and_valid(sem_after, spatial_size)
+                local_valid_mask = (before_valid & after_valid).flatten(1)
             sem_context, attn, coverage, semantic_summary, semantic_quality = self._sparse_semantic_context(
-                query, sem_diff_feat, change_mask, change_weights=change_weights
-            )
+                query, sem_diff_feat, change_mask, change_weights=change_weights,
+                local_valid_mask=local_valid_mask)
         else:
             query_t = query.transpose(0, 1).contiguous()
             sem_diff_t = sem_diff_feat.transpose(0, 1).contiguous()
@@ -483,7 +507,7 @@ class SemanticCrossAttentionFusion(nn.Module):
                 reliability = semantic_reliability * (coverage > 0).float()
         if self.fixed_nonempty_gate:
             # Keep the C0 module/state layout, but sever learned-gate gradients.
-            reliability = (coverage > 0).to(query.dtype)
+            reliability = self.fixed_gate_value * (coverage > 0).to(query.dtype)
         self.last_reliability_gate = reliability.detach()
         reliability_scale = reliability.view(batch_size, 1, 1)
         if self.gate_whole_adapter:
@@ -634,6 +658,8 @@ class CARD(nn.Module):
                     fixed_nonempty_gate=bool(
                         getattr(cfg.model, 'semantic_fusion_fixed_nonempty_gate', False)
                     ),
+                    fixed_gate_value=float(getattr(cfg.model, 'semantic_fusion_fixed_gate_value', 1.0)),
+                    dense_local_access=bool(getattr(cfg.model, 'semantic_fusion_dense_local_access', False)),
                     detach_reliability_inputs=bool(
                         getattr(cfg.model, 'semantic_fusion_detach_reliability_inputs', False)
                     ),

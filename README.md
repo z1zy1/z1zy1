@@ -105,3 +105,5 @@ If you find this helps your research, please consider citing:
 My email is tuyunbin1995@foxmail.com
 
 Any discussions and suggestions are welcome!
+
+Validation-only follow-up experiments: see [the follow-up guide](docs/semantic_followup.md). The historical frozen protocol remains separate.

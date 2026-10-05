@@ -810,7 +810,11 @@ apply_cli_overrides(args, cfg)
 sync_wcsg_config_aliases(cfg)
 apply_train_step_aliases(cfg)
 validate_resolved_config(cfg, phase='train')
-if str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_semantic_controls_20260915':
+from utils.semantic_controls import CONTROL_PROTOCOLS, FOLLOWUP_PROTOCOL
+if str(getattr(cfg.train, 'protocol_id', 'legacy')) == FOLLOWUP_PROTOCOL:
+    from utils.semantic_followup import validate_training_registration
+    validate_training_registration(cfg)
+if str(getattr(cfg.train, 'protocol_id', 'legacy')) in CONTROL_PROTOCOLS:
     if os.path.exists(os.path.join(cfg.exp_dir, '..', 'frozen.json')):
         raise ValueError('Semantic controls are frozen; further training is forbidden')
 
@@ -995,7 +999,7 @@ from utils.semantic_controls import PROTOCOL as CONTROLS_PROTOCOL, P1_PROTOCOLS,
 
 # Create model. P1 gives public modules independent initialization streams;
 # legacy runs retain their historical constructor behavior.
-if cfg.train.protocol_id == CONTROLS_PROTOCOL:
+if cfg.train.protocol_id in CONTROL_PROTOCOLS:
     change_detector, speaker = build_control_models(cfg, CARD, DynamicSpeaker)
     # Vocabulary and sequence length are now the actual dataset values.
     with open(os.path.join(output_dir, 'actual_model_config.json'), 'w', encoding='utf-8') as handle:
@@ -1007,7 +1011,7 @@ else:
     change_detector = CARD(cfg)
 change_detector.to(device)
 
-if cfg.train.protocol_id == CONTROLS_PROTOCOL:
+if cfg.train.protocol_id in CONTROL_PROTOCOLS:
     pass  # Already constructed in an isolated stream and explicitly paired.
 elif str(getattr(cfg.train, 'protocol_id', 'legacy')) == 'p1_rsaca_20260913':
     with seeded_initialization(int(cfg.train.seed) + 2001):
@@ -1024,6 +1028,11 @@ if str(getattr(cfg.train, 'protocol_id', 'legacy')) in P1_PROTOCOLS:
             'change_detector': parameter_summary(change_detector),
             'speaker': parameter_summary(speaker),
         }, handle, indent=2, sort_keys=True)
+
+if str(getattr(cfg.train, 'protocol_id', 'legacy')) == FOLLOWUP_PROTOCOL:
+    from utils.semantic_followup import validate_initialization_registration
+    with open(os.path.join(output_dir, 'initial_parameter_summary.json'), encoding='utf-8') as handle:
+        validate_initialization_registration(cfg, json.load(handle))
 
 finetune_decoder_only = bool(getattr(cfg.train, 'finetune_decoder_only', False))
 init_checkpoint = str(getattr(cfg.train, 'init_checkpoint', '') or '')
@@ -1713,7 +1722,7 @@ while t < cfg.train.max_iter:
                 test_iter_end_time = time.time() - test_iter_start_time
                 result_save_path_pos = os.path.join(sent_save_dir, 'sc_results.json')
                 coco_gen_format_save(result_sents_pos, result_save_path_pos)
-                if cfg.train.protocol_id == CONTROLS_PROTOCOL:
+                if cfg.train.protocol_id in CONTROL_PROTOCOLS:
                     from utils.semantic_control_audit import read as read_evidence, write as write_evidence, prediction_identity
                     expected_ids = [os.path.basename(val_dataset.idx_to_filename[str(index)])
                                     for index in val_dataset.split_idxs]

@@ -7,7 +7,7 @@ import statistics
 import subprocess
 from pathlib import Path
 
-from utils.semantic_controls import ARMS, DATASETS, SEEDS, METRICS, PROTOCOL
+from utils.semantic_controls import ARMS, DATASETS, SEEDS, METRICS, PROTOCOL, FOLLOWUP_PROTOCOL
 from utils.checkpoint_integrity import sha256_file, atomic_write_text
 from utils.experiment_tracking import stable_hash
 
@@ -237,6 +237,8 @@ def enforce_test_admission(project, cfg, checkpoint, result_path):
     diagnostics are left untouched.
     """
     protocol_id = str(getattr(cfg.train, 'protocol_id', 'legacy'))
+    if protocol_id == FOLLOWUP_PROTOCOL:
+        raise ValueError('Follow-up development protocol is validation-only; formal test is prohibited')
     if protocol_id != PROTOCOL:
         return 'not_controls_protocol'
     if str(getattr(cfg, 'exp_name', '')) == '' or str(getattr(cfg, 'exp_dir', '')) == '':

@@ -8,7 +8,9 @@ from pathlib import Path
 from types import SimpleNamespace
 
 PROTOCOL = 'p1_semantic_controls_20260915'
-P1_PROTOCOLS = ('p1_rsaca_20260913', PROTOCOL)
+FOLLOWUP_PROTOCOL = 'semantic_controls_followup_20261005'
+CONTROL_PROTOCOLS = (PROTOCOL, FOLLOWUP_PROTOCOL)
+P1_PROTOCOLS = ('p1_rsaca_20260913',) + CONTROL_PROTOCOLS
 ARMS = ('card', 'plain_fusion', 'rsaca', 'fixed_gate')
 DATASETS = ('levir_cc', 'levir_mci', 'second_cc')
 SEEDS = (1111, 2222, 3333)
@@ -133,7 +135,7 @@ def parameter_summary(module):
 def build_control_models(cfg, card_factory, speaker_factory):
     """Copy random initial tensors, including constructor-wide Xavier resets."""
     from utils.seed import seeded_initialization
-    if cfg.train.protocol_id != PROTOCOL or cfg.train.init_checkpoint:
+    if cfg.train.protocol_id not in CONTROL_PROTOCOLS or cfg.train.init_checkpoint:
         raise ValueError('Controls initialization requires fresh controls protocol')
     seed = int(cfg.train.seed)
     public_cfg = copy.deepcopy(cfg)
@@ -151,6 +153,7 @@ def build_control_models(cfg, card_factory, speaker_factory):
                     'semantic_fusion_global_token', 'semantic_fusion_gate_whole_adapter'):
             template_cfg.model[key] = True
         template_cfg.model.semantic_fusion_fixed_nonempty_gate = False
+        template_cfg.model.semantic_fusion_fixed_gate_value = 1.0
         with seeded_initialization(seed + 3001):
             template = card_factory(template_cfg)
         with seeded_initialization(seed + 4001):

@@ -61,6 +61,20 @@ def validate_resolved_config(cfg, *, phase='train'):
         getattr(cfg.model, 'semantic_fusion_gamma_init', 0.1),
         'model.semantic_fusion_gamma_init',
     )
+    fixed_value = _finite_number(getattr(cfg.model, 'semantic_fusion_fixed_gate_value', 1.0),
+                                 'model.semantic_fusion_fixed_gate_value', minimum=0.0, maximum=1.0)
+    fixed_gate = bool(getattr(cfg.model, 'semantic_fusion_fixed_nonempty_gate', False))
+    if fixed_value != 1.0 and not fixed_gate:
+        raise ValueError('A constant gate value requires fixed_nonempty_gate.')
+    if fixed_gate and not (getattr(cfg.model, 'semantic_fusion_reliability_gate', False)
+                           and getattr(cfg.model, 'semantic_fusion_gate_whole_adapter', False)):
+        raise ValueError('Fixed gate requires the whole adapter reliability gate.')
+    if getattr(cfg.model, 'semantic_fusion_dense_local_access', False) and not getattr(
+            cfg.model, 'semantic_fusion_sparse_change_tokens', False):
+        raise ValueError('Dense local access requires the RSACA token path.')
+    from utils.semantic_controls import FOLLOWUP_PROTOCOL
+    if phase == 'test' and getattr(cfg.train, 'protocol_id', '') == FOLLOWUP_PROTOCOL:
+        raise ValueError('Follow-up development protocol is validation-only; formal test is prohibited.')
     _finite_number(
         getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0),
         'model.semantic_fusion_gamma_max',

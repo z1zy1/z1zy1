@@ -69,10 +69,10 @@ def main():
     parser.add_argument('--copy-path', default=None)
     parser.add_argument('--reference-json', default=None)
     parser.add_argument('--protocol-id', default='p1_rsaca_20260913',
-                        choices=('p1_rsaca_20260913', 'p1_semantic_controls_20260915'))
+                        choices=('p1_rsaca_20260913', 'p1_semantic_controls_20260915', 'semantic_controls_followup_20261005'))
     args = parser.parse_args()
     exp_dir = os.path.abspath(args.exp_dir)
-    if args.protocol_id == 'p1_semantic_controls_20260915':
+    if args.protocol_id in ('p1_semantic_controls_20260915', 'semantic_controls_followup_20261005'):
         protocol_root = os.path.dirname(os.path.dirname(exp_dir))
         if os.path.exists(os.path.join(protocol_root, 'frozen.json')):
             raise ValueError('Semantic controls are frozen; reselection is forbidden')

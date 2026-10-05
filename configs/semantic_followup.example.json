@@ -1,0 +1,56 @@
+{
+  "protocol_id": "semantic_controls_followup_20261005",
+  "validation_only": true,
+  "output_root": null,
+  "environments": {"registered_server": null},
+  "data_environment": {},
+  "artifacts": {},
+  "datasets": {
+    "levir_cc": {"config": "cc_resolved_config", "manifest": "cc_actual_inputs", "source_kind": null}
+  },
+  "stages": {
+    "P0": {
+      "environment": "registered_server",
+      "required_artifacts": ["old_protocol", "new_protocol"],
+      "protocol_pairs": [{"first": "old_protocol", "second": "new_protocol"}],
+      "initialization_summaries": ["card_initial", "rsaca_initial"],
+      "checkpoints": [{"artifact": "rsaca_checkpoint", "step": null}]
+    },
+    "P1a": {
+      "environment": "registered_server", "metric_tolerance": null,
+      "jobs": [{"dataset": "levir_cc", "prediction": "rsaca_validation_predictions",
+        "reference": "cc_references", "expected_ids": "cc_validation_ids",
+        "original_metrics": "rsaca_original_metrics", "scorer_resources": []}]
+    },
+    "P1b": {
+      "environment": "registered_server", "max_changed_fraction": null,
+      "jobs": [{"dataset": "levir_cc", "config": "rsaca_actual_config",
+        "checkpoint": "rsaca_checkpoint", "prediction": "rsaca_validation_predictions",
+        "reference": "cc_references", "expected_ids": "cc_validation_ids"}]
+    },
+    "P1c": {
+      "environment": "registered_server", "budget_steps": null,
+      "selection_rule": "five_metric_equal_weight_log",
+      "datasets": null, "seeds": null,
+      "candidates": [{"name": "original", "model": {}}],
+      "initialization_references": {}
+    },
+    "P1d": {
+      "environment": "registered_server", "sample_count": null, "sample_seed": null,
+      "expected_ids": "cc_validation_ids", "reference": "cc_references",
+      "image_manifest": "cc_images", "failure_ids": [],
+      "predictions": {"CARD": "card_validation_predictions", "RSACA": "rsaca_validation_predictions"}
+    },
+    "P2": {
+      "environment": "registered_server", "budget_steps": null,
+      "selection_rule": "five_metric_equal_weight_log",
+      "datasets": null, "seeds": null, "candidates": null, "constant_gates": null
+    },
+    "P3": {
+      "environment": "registered_server", "budget_steps": null,
+      "selection_rule": "five_metric_equal_weight_log",
+      "datasets": ["levir_cc", "levir_mci", "second_cc"],
+      "seeds": [1111, 2222, 3333]
+    }
+  }
+}

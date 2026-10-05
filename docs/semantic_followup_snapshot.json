@@ -1,0 +1,23 @@
+{
+  "plan": "PLAN-v3",
+  "review_round": 1,
+  "base": "01c27adf916447d187335f449ff4fe0cdf9d1241",
+  "frozen_files": {
+    "README.md": "3d9defb9e5496e6f62564f9a40fa5efe47ef16ff442176b3106eadf442426ec2",
+    "configs/config_transformer.py": "eded1fe73a6441e15ed572ef81124b9fbb0fb6b1d97192085caaa416fb8391ce",
+    "configs/semantic_followup.example.json": "44d9f85e919b2b33e3a0396660a05e923bfe53c7aa92f868e899940627d7e635",
+    "docs/semantic_followup.md": "38a1fe8311385a1c0fe700215b8a5e2abbb27b6bb326847b58f4308f70e24cf5",
+    "docs/semantic_followup_implementation.md": "5b1f8aa5ea5cd38d1699ac12ec1231a981a18e272696488d7a66c2c07fd81011",
+    "models/CARD.py": "37a72ded01ef02d0ef6e3abed5a39ebe174a5347910a157e8a2e4f9a3f4bbec3",
+    "scripts/run_semantic_followup.py": "cb727e71641c4cb8b1f996e88c62ef83791b874b4bb15ae74640d02e86e75f48",
+    "scripts/select_best_snapshot_p1.py": "de070d239e84af0b32a51f9140202be015cb4b4207879e3b05860aa410e03da6",
+    "tests/test_semantic_followup.py": "6e9ec2b5342cdc00cf7794e295c2162a7df08e2f2fe92b5256757ec5bacb1f65",
+    "train_card_spot.py": "d0c94142368c1e2a8c0eee3d17ebee3c0b9a966a597100ad74a41c3a38ab5975",
+    "utils/config_validation.py": "e01741bf9d1704d5f20c4a643166e230fe973796375d8b0e65efa541cff8bb8c",
+    "utils/semantic_control_audit.py": "4d0059adeddfd0317188cc91680b79c799f0898f553048c389622051528bddef",
+    "utils/semantic_controls.py": "2bc8622ec2ba41b52bc2f9af9170b121499cd7a7b5adcbc177ffe180a5b50b79",
+    "utils/semantic_followup.py": "9399f66fbd70d392e300992c31b760ab38da923521e00fef9ffce60698c8edc0"
+  },
+  "validation": "Final affected suite:29 passed; prior related legacy suite:69 passed,1 Windows symlink skip; full independent C regression pending",
+  "research_runs": "NOT_RUN"
+}

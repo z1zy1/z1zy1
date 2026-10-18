@@ -1,0 +1,56 @@
+{
+  "config_kind": "registered effective override; runtime parser output not generated because resource preflight blocked before training",
+  "arm": "N1",
+  "protocol_id": "exploratory_norm_context_pre_20261015",
+  "base_config": "configs/dynamic/transformer_levir_cc_sgc_card.yaml (CC); configs/dynamic/transformer_levir_mci_sgc_card.yaml (MCI)",
+  "dataset_scope": ["levir_cc", "levir_mci"],
+  "seed_scope": [1111, 2222, 3333],
+  "model": {
+    "type": "sgc_card",
+    "semantic_input_mode": "cross_attention",
+    "semantic_fusion_norm_mode": "context_pre_norm",
+    "semantic_fusion_sparse_change_tokens": true,
+    "semantic_fusion_reliability_gate": true,
+    "semantic_fusion_global_token": true,
+    "semantic_fusion_global_token_mode": "all_mean",
+    "semantic_fusion_gate_whole_adapter": true,
+    "semantic_fusion_gamma_init": 0.01,
+    "semantic_fusion_gamma_max": 0.5,
+    "semantic_fusion_reliability_gate_bias": -1.5,
+    "semantic_fusion_detach_reliability_inputs": false,
+    "semantic_fusion_visual_consistency_gate": false,
+    "semantic_fusion_visual_fallback": false,
+    "semantic_fusion_warmup_steps": 0
+  },
+  "data": {
+    "runtime_semantic_class_setting": 7,
+    "class_derivation": "retain standard data-factory 7-to-8 derivation",
+    "semantic_sources": "LEViR-CC pseudo_masks with normal CC difference-map behavior; LEVIR-MCI images/label with normal MCI semantic inputs",
+    "loader_rng_isolation": true,
+    "seed_workers": true
+  },
+  "train": {
+    "steps": 10000,
+    "batch_size": 32,
+    "optimizer": "adam",
+    "learning_rate": 0.0002,
+    "scheduler": "warmup_cosine",
+    "warmup_steps": 500,
+    "min_lr_ratio": 0.05,
+    "validation_steps": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000],
+    "use_semantic_partial_detach": true,
+    "semantic_detach_ratio": 0.5,
+    "use_aux_mask": false,
+    "use_semantic_aux": false,
+    "lambda_mask": 0.0,
+    "lambda_semantic": 0.0,
+    "use_feature_reweight": false,
+    "init_checkpoint": ""
+  },
+  "selection": {
+    "split": "validation",
+    "rule": "five_metric_equal_weight_log",
+    "reference": {"Bleu_4": 0.4375, "METEOR": 0.3377, "ROUGE_L": 0.6942, "CIDEr": 1.2299, "SPICE": 0.2607},
+    "tie_break": "earlier_step"
+  }
+}

@@ -9,8 +9,9 @@ from types import SimpleNamespace
 
 PROTOCOL = 'p1_semantic_controls_20260915'
 FOLLOWUP_PROTOCOL = 'semantic_controls_followup_20261005'
+EXPLORATORY_NORM_PROTOCOL = 'exploratory_norm_context_pre_20261015'
 CONTROL_PROTOCOLS = (PROTOCOL, FOLLOWUP_PROTOCOL)
-P1_PROTOCOLS = ('p1_rsaca_20260913',) + CONTROL_PROTOCOLS
+P1_PROTOCOLS = ('p1_rsaca_20260913',) + CONTROL_PROTOCOLS + (EXPLORATORY_NORM_PROTOCOL,)
 ARMS = ('card', 'plain_fusion', 'rsaca', 'fixed_gate')
 DATASETS = ('levir_cc', 'levir_mci', 'second_cc')
 SEEDS = (1111, 2222, 3333)

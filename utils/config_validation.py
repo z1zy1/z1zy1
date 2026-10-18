@@ -72,9 +72,11 @@ def validate_resolved_config(cfg, *, phase='train'):
     if getattr(cfg.model, 'semantic_fusion_dense_local_access', False) and not getattr(
             cfg.model, 'semantic_fusion_sparse_change_tokens', False):
         raise ValueError('Dense local access requires the RSACA token path.')
-    from utils.semantic_controls import FOLLOWUP_PROTOCOL
-    if phase == 'test' and getattr(cfg.train, 'protocol_id', '') == FOLLOWUP_PROTOCOL:
-        raise ValueError('Follow-up development protocol is validation-only; formal test is prohibited.')
+    from utils.semantic_controls import EXPLORATORY_NORM_PROTOCOL, FOLLOWUP_PROTOCOL
+    if phase == 'test' and getattr(cfg.train, 'protocol_id', '') in (
+        FOLLOWUP_PROTOCOL, EXPLORATORY_NORM_PROTOCOL,
+    ):
+        raise ValueError('Development protocol is validation-only; formal test is prohibited.')
     _finite_number(
         getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0),
         'model.semantic_fusion_gamma_max',

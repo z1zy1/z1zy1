@@ -1,0 +1,316 @@
+diff --git a/docs/EXPERIMENT_CLAIM_REFERENCE.md b/docs/EXPERIMENT_CLAIM_REFERENCE.md
+index bdf9deb..b0005b1 100644
+--- a/docs/EXPERIMENT_CLAIM_REFERENCE.md
++++ b/docs/EXPERIMENT_CLAIM_REFERENCE.md
+@@ -39,7 +39,7 @@ R2 支持在其既有实验条件下三数据集五项均值改善，不证明
+ 
+ > 本文档是模型实现、实验设计和论文结论的统一语义来源。修改 CARD/RSACA、数据输入、训练协议、选点策略、测试结果或论文主张后，必须运行 `python scripts/update_experiment_claim_reference.py` 并复核结论。
+ 
+-结果快照时间：`2026-09-28 02:47:48 UTC`
++结果快照时间：`2026-10-15 13:01:07 UTC`
+ 
+ ## 1. 原始论文主张
+ 
+diff --git a/scripts/compare_exploratory_initialization.py b/scripts/compare_exploratory_initialization.py
+new file mode 100755
+index 0000000..85992fb
+--- /dev/null
++++ b/scripts/compare_exploratory_initialization.py
+@@ -0,0 +1,51 @@
++#!/usr/bin/env python3
++"""Require exact initial detector and decoder parameter identity for a pair."""
++import argparse
++import json
++import os
++import sys
++
++PROTOCOL = 'exploratory_norm_context_pre_20261015'
++
++
++def load(path):
++    with open(path, encoding='utf-8') as handle:
++        value = json.load(handle)
++    if value.get('protocol_id') != PROTOCOL:
++        raise ValueError('%s has the wrong protocol_id' % path)
++    return value
++
++
++def compare(left, right):
++    if left.get('seed') != right.get('seed'):
++        raise ValueError('paired initialization summaries have different seeds')
++    differences = []
++    for module in ('change_detector', 'speaker'):
++        a, b = left.get(module), right.get(module)
++        if not isinstance(a, dict) or not isinstance(b, dict) or set(a) != set(b):
++            differences.append('%s parameter names differ' % module)
++            continue
++        for name in sorted(a):
++            if a[name] != b[name]:
++                differences.append('%s.%s differs' % (module, name))
++    return {'protocol_id': PROTOCOL, 'seed': left['seed'],
++            'matched': not differences, 'differences': differences}
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('c0_summary')
++    parser.add_argument('n1_summary')
++    parser.add_argument('--output', required=True)
++    args = parser.parse_args()
++    result = compare(load(args.c0_summary), load(args.n1_summary))
++    os.makedirs(os.path.dirname(os.path.abspath(args.output)), exist_ok=True)
++    with open(args.output, 'w', encoding='utf-8') as handle:
++        json.dump(result, handle, indent=2, sort_keys=True)
++        handle.write('\n')
++    print(json.dumps(result, indent=2, sort_keys=True))
++    return 0 if result['matched'] else 1
++
++
++if __name__ == '__main__':
++    sys.exit(main())
+diff --git a/scripts/run_exploratory_norm_pair.sh b/scripts/run_exploratory_norm_pair.sh
+new file mode 100755
+index 0000000..c20466e
+--- /dev/null
++++ b/scripts/run_exploratory_norm_pair.sh
+@@ -0,0 +1,84 @@
++#!/usr/bin/env bash
++set -euo pipefail
++
++PROJECT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
++cd "$PROJECT_DIR"
++PROTOCOL_ID="exploratory_norm_context_pre_20261015"
++OUTPUT_ROOT="${EXPLORATORY_OUTPUT_ROOT:-$(cd "$PROJECT_DIR/.." && pwd)}"
++PYTHON="${PYTHON:-/root/miniconda3/envs/card/bin/python}"
++export PYTHON
++
++usage() { echo "Usage: $0 C0|N1 levir_cc|levir_mci 1111|2222|3333 smoke|train|select" >&2; }
++if [ "$#" -ne 4 ]; then usage; exit 2; fi
++ARM="$1" DATASET="$2" SEED="$3" ACTION="$4"
++case "$ARM" in C0|N1) ;; *) usage; exit 2 ;; esac
++case "$DATASET" in levir_cc|levir_mci) ;; *) usage; exit 2 ;; esac
++case "$SEED" in 1111|2222|3333) ;; *) usage; exit 2 ;; esac
++case "$ACTION" in smoke|train|select) ;; *) echo "Formal test is prohibited by $PROTOCOL_ID" >&2; exit 2 ;; esac
++
++if [ "$ACTION" = smoke ] || [ "$ACTION" = train ]; then
++  "$PYTHON" -c 'import torch; raise SystemExit(0 if torch.cuda.is_available() else 3)' || {
++    echo "RESOURCE_BLOCKED: CUDA is required; no training was started." >&2
++    exit 3
++  }
++fi
++
++if [ "$ACTION" = smoke ]; then
++  RUN_ROOT="${EXPLORATORY_OUTPUT_ROOT:-$(cd "$PROJECT_DIR/.." && pwd)}/smoke/$ARM/$DATASET"
++  TRAIN_STEPS=100
++  SNAPSHOT_STEPS=100
++  WARMUP_STEPS=50
++else
++  RUN_ROOT="${EXPLORATORY_OUTPUT_ROOT:-$(cd "$PROJECT_DIR/.." && pwd)}/runs/$ARM/$DATASET"
++  TRAIN_STEPS=10000
++  SNAPSHOT_STEPS=1000
++  WARMUP_STEPS=500
++fi
++EXP_NAME="norm_${ARM}_${DATASET}_seed${SEED}"
++export PROJECT_DIR RUN_ROOT EXP_DIR="$RUN_ROOT" EXP_NAME DATASET SEED
++export MODEL_TYPE=sgc_card REQUIRE_CUDA=1 PYTORCH_GPU=0 PROTOCOL_ID
++export ISOLATE_LOADER_RNG=1 SEED_WORKERS=1 VALIDATION_GREEDY=1
++export MAX_ITER="$TRAIN_STEPS" SNAPSHOT_INTERVAL="$SNAPSHOT_STEPS"
++export SAVE_INTERVAL="$SNAPSHOT_STEPS" EVAL_INTERVAL="$SNAPSHOT_STEPS"
++export BATCH_SIZE=32 NUM_WORKERS=8 LR=0.0002 LR_SCHEDULER=warmup_cosine
++export LR_WARMUP_STEPS="$WARMUP_STEPS" MIN_LR_RATIO=0.05
++export USE_CHANGE_MASK=0 ENABLE_AUX_MASK=0 USE_AUX_SEMANTIC=0
++export USE_SEMANTIC_MAPS=1 SEMANTIC_INPUT_MODE=cross_attention NUM_SEMANTIC_CLASSES=7
++export USE_SEMANTIC_PARTIAL_DETACH=1 SEMANTIC_DETACH_RATIO=0.5
++export USE_FEATURE_REWEIGHT=0 LMASK=0 LSEM=0 INIT_CHECKPOINT=
++export SEMANTIC_FUSION_GAMMA_INIT=0.01 SEMANTIC_FUSION_GAMMA_MAX=0.5
++export SEMANTIC_FUSION_NORM_MODE=legacy_post_norm
++export SEMANTIC_FUSION_SPARSE_CHANGE_TOKENS=1 SEMANTIC_FUSION_RELIABILITY_GATE=1
++export SEMANTIC_FUSION_GLOBAL_TOKEN=1 SEMANTIC_FUSION_GLOBAL_TOKEN_MODE=all_mean
++export SEMANTIC_FUSION_GATE_WHOLE_ADAPTER=1 SEMANTIC_FUSION_RELIABILITY_GATE_BIAS=-1.5
++export SEMANTIC_FUSION_DETACH_RELIABILITY_INPUTS=0
++export SEMANTIC_FUSION_VISUAL_CONSISTENCY_GATE=0 SEMANTIC_FUSION_VISUAL_FALLBACK=0
++export SEMANTIC_FUSION_WARMUP_STEPS=0
++export SELECTION_STRATEGY=five_metric_equal_weight_log SELECTION_METRIC=five_metric_equal_weight_log
++export PAPER_SELECTION_MODE=1
++if [ "$ARM" = N1 ]; then export SEMANTIC_FUSION_NORM_MODE=context_pre_norm; fi
++
++case "$DATASET" in
++  levir_cc)
++    export LEVIR_CC_ROOT="${LEVIR_CC_ROOT:-/root/autodl-tmp/z1zy1/Levir-CC}"
++    export DATA_ROOT="$LEVIR_CC_ROOT"
++    export FEATURE_ROOT="${LEVIR_CC_FEATURE_ROOT:-$DATA_ROOT/features}"
++    export BASE_CFG=configs/dynamic/transformer_levir_cc_sgc_card.yaml
++    export SEMANTIC_DIFF_ROOT="$DATA_ROOT/pseudo_masks" SEMANTIC_DIFF_ONLY=1 SEMANTIC_DIFF_BINARY=1
++    export SEMANTIC_UNKNOWN_CHANGE_CLASS=6 ALLOW_MISSING_PSEUDO_MASK=1
++    ;;
++  levir_mci)
++    export LEVIR_MCI_ROOT="${LEVIR_MCI_ROOT:-/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset}"
++    export DATA_ROOT="$LEVIR_MCI_ROOT"
++    export FEATURE_ROOT="${LEVIR_MCI_FEATURE_ROOT:-$DATA_ROOT/features}"
++    export BASE_CFG=configs/dynamic/transformer_levir_mci_sgc_card.yaml
++    export SEMANTIC_DIFF_ROOT="$DATA_ROOT/images" SEMANTIC_DIFF_PHASE=label SEMANTIC_DIFF_ONLY=1
++    export SEMANTIC_DIFF_BINARY=0 ALLOW_MISSING_PSEUDO_MASK=0
++    ;;
++esac
++
++if [ "$ACTION" = smoke ] || [ "$ACTION" = train ]; then exec bash scripts/_run_paper_training.sh; fi
++exec "$PYTHON" scripts/select_best_snapshot_p1.py \
++  --exp-dir "$RUN_ROOT/$EXP_NAME" --protocol-id "$PROTOCOL_ID" \
++  --output-json "$RUN_ROOT/$EXP_NAME/selection.json" \
++  --copy-path "$RUN_ROOT/$EXP_NAME/selected_checkpoint.pth"
+diff --git a/scripts/select_best_snapshot_p1.py b/scripts/select_best_snapshot_p1.py
+index 5f8c6ba..ce2a401 100644
+--- a/scripts/select_best_snapshot_p1.py
++++ b/scripts/select_best_snapshot_p1.py
+@@ -69,7 +69,9 @@ def main():
+     parser.add_argument('--copy-path', default=None)
+     parser.add_argument('--reference-json', default=None)
+     parser.add_argument('--protocol-id', default='p1_rsaca_20260913',
+-                        choices=('p1_rsaca_20260913', 'p1_semantic_controls_20260915', 'semantic_controls_followup_20261005'))
++                        choices=('p1_rsaca_20260913', 'p1_semantic_controls_20260915',
++                                 'semantic_controls_followup_20261005',
++                                 'exploratory_norm_context_pre_20261015'))
+     args = parser.parse_args()
+     exp_dir = os.path.abspath(args.exp_dir)
+     if args.protocol_id in ('p1_semantic_controls_20260915', 'semantic_controls_followup_20261005'):
+diff --git a/tests/test_exploratory_norm_protocol.py b/tests/test_exploratory_norm_protocol.py
+new file mode 100644
+index 0000000..38a25f5
+--- /dev/null
++++ b/tests/test_exploratory_norm_protocol.py
+@@ -0,0 +1,101 @@
++import json
++from pathlib import Path
++import sys
++import unittest
++from types import SimpleNamespace
++
++sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
++
++from scripts.compare_exploratory_initialization import compare
++from utils.config_validation import validate_resolved_config
++from utils.semantic_controls import EXPLORATORY_NORM_PROTOCOL, P1_PROTOCOLS
++
++
++def minimal_config(protocol_id):
++    model = SimpleNamespace(
++        semantic_input_mode='none', semantic_fusion_gamma_init=0.01,
++        semantic_fusion_gamma_max=0.5, semantic_fusion_norm_mode='legacy_post_norm',
++        semantic_fusion_reliability_gate_bias=-1.5,
++    )
++    data = SimpleNamespace(dataset='levir_cc', num_semantic_classes=0,
++                           semantic_diff_only=False, semantic_diff_root='',
++                           semantic_unknown_change_class=6, semantic_diff_binary=False)
++    train = SimpleNamespace(protocol_id=protocol_id, semantic_detach_ratio=0.5,
++                            lambda_mask=0.0, lambda_semantic=0.0,
++                            aux_warmup_start_ratio=0.0, aux_warmup_end_ratio=1.0,
++                            max_iter=10000, snapshot_interval=1000,
++                            use_semantic_detach=False, use_semantic_partial_detach=False)
++    return SimpleNamespace(exp_name='test', data=data, model=model, train=train)
++
++
++class ExploratoryNormProtocolTest(unittest.TestCase):
++    def test_registered_arm_configs_differ_only_in_norm_mode(self):
++        root = Path(__file__).resolve().parents[2]
++        with (root / 'configs/C0.json').open(encoding='utf-8') as handle:
++            c0 = json.load(handle)
++        with (root / 'configs/N1.json').open(encoding='utf-8') as handle:
++            n1 = json.load(handle)
++
++        def flatten(value, prefix=''):
++            result = {}
++            for key, item in value.items():
++                path = prefix + key
++                if isinstance(item, dict):
++                    result.update(flatten(item, path + '.'))
++                else:
++                    result[path] = item
++            return result
++
++        left, right = flatten(c0), flatten(n1)
++        self.assertEqual(set(left), set(right))
++        self.assertEqual(left['arm'], 'C0')
++        self.assertEqual(right['arm'], 'N1')
++        left.pop('arm')
++        right.pop('arm')
++        self.assertEqual(
++            [key for key in left if left[key] != right[key]],
++            ['model.semantic_fusion_norm_mode'],
++        )
++
++    def test_protocol_is_registered_for_immutable_validation_artifacts(self):
++        self.assertIn(EXPLORATORY_NORM_PROTOCOL, P1_PROTOCOLS)
++
++    def test_protocol_is_rejected_by_formal_test_validation(self):
++        with self.assertRaisesRegex(ValueError, 'formal test is prohibited'):
++            validate_resolved_config(minimal_config(EXPLORATORY_NORM_PROTOCOL), phase='test')
++
++    def test_old_followup_formal_test_guard_remains_unchanged(self):
++        with self.assertRaisesRegex(ValueError, 'formal test is prohibited'):
++            validate_resolved_config(
++                minimal_config('semantic_controls_followup_20261005'), phase='test'
++            )
++
++    def test_existing_p1_protocol_is_not_reclassified_as_exploratory(self):
++        cfg = minimal_config('p1_rsaca_20260913')
++        self.assertIs(validate_resolved_config(cfg, phase='test'), cfg)
++
++    def test_smoke_runner_has_a_hard_100_step_cap_and_separate_output_root(self):
++        root = Path(__file__).resolve().parents[1]
++        script = (root / 'scripts/run_exploratory_norm_pair.sh').read_text(encoding='utf-8')
++        self.assertIn('RUN_ROOT="${EXPLORATORY_OUTPUT_ROOT:-$(cd "$PROJECT_DIR/.." && pwd)}/smoke/$ARM/$DATASET"', script)
++        self.assertIn('TRAIN_STEPS=100', script)
++        self.assertIn('SNAPSHOT_STEPS=100', script)
++        self.assertIn('WARMUP_STEPS=50', script)
++        self.assertIn('WARMUP_STEPS=500', script)
++
++    def test_initialization_comparison_detects_any_tensor_difference(self):
++        left = {
++            'protocol_id': EXPLORATORY_NORM_PROTOCOL, 'seed': 2222,
++            'change_detector': {'p': {'shape': [2], 'dtype': 'float32', 'sha256': 'abc'}},
++            'speaker': {'q': {'shape': [1], 'dtype': 'float32', 'sha256': 'def'}},
++        }
++        right = json.loads(json.dumps(left))
++        self.assertTrue(compare(left, right)['matched'])
++        right['speaker']['q']['sha256'] = 'changed'
++        result = compare(left, right)
++        self.assertFalse(result['matched'])
++        self.assertEqual(result['differences'], ['speaker.q differs'])
++
++
++if __name__ == '__main__':
++    unittest.main()
+diff --git a/utils/config_validation.py b/utils/config_validation.py
+index 957b757..9000bac 100644
+--- a/utils/config_validation.py
++++ b/utils/config_validation.py
+@@ -72,9 +72,11 @@ def validate_resolved_config(cfg, *, phase='train'):
+     if getattr(cfg.model, 'semantic_fusion_dense_local_access', False) and not getattr(
+             cfg.model, 'semantic_fusion_sparse_change_tokens', False):
+         raise ValueError('Dense local access requires the RSACA token path.')
+-    from utils.semantic_controls import FOLLOWUP_PROTOCOL
+-    if phase == 'test' and getattr(cfg.train, 'protocol_id', '') == FOLLOWUP_PROTOCOL:
+-        raise ValueError('Follow-up development protocol is validation-only; formal test is prohibited.')
++    from utils.semantic_controls import EXPLORATORY_NORM_PROTOCOL, FOLLOWUP_PROTOCOL
++    if phase == 'test' and getattr(cfg.train, 'protocol_id', '') in (
++        FOLLOWUP_PROTOCOL, EXPLORATORY_NORM_PROTOCOL,
++    ):
++        raise ValueError('Development protocol is validation-only; formal test is prohibited.')
+     _finite_number(
+         getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0),
+         'model.semantic_fusion_gamma_max',
+diff --git a/utils/semantic_controls.py b/utils/semantic_controls.py
+index 19209dc..30c908b 100644
+--- a/utils/semantic_controls.py
++++ b/utils/semantic_controls.py
+@@ -9,8 +9,9 @@ from types import SimpleNamespace
+ 
+ PROTOCOL = 'p1_semantic_controls_20260915'
+ FOLLOWUP_PROTOCOL = 'semantic_controls_followup_20261005'
++EXPLORATORY_NORM_PROTOCOL = 'exploratory_norm_context_pre_20261015'
+ CONTROL_PROTOCOLS = (PROTOCOL, FOLLOWUP_PROTOCOL)
+-P1_PROTOCOLS = ('p1_rsaca_20260913',) + CONTROL_PROTOCOLS
++P1_PROTOCOLS = ('p1_rsaca_20260913',) + CONTROL_PROTOCOLS + (EXPLORATORY_NORM_PROTOCOL,)
+ ARMS = ('card', 'plain_fusion', 'rsaca', 'fixed_gate')
+ DATASETS = ('levir_cc', 'levir_mci', 'second_cc')
+ SEEDS = (1111, 2222, 3333)

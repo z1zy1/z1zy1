@@ -32,6 +32,8 @@ R2 支持在其既有实验条件下三数据集五项均值改善，不证明�
 
 均值改善、实际意义与统计显著是不同结论；不能保证投稿录用。当前没有新四组训练结果。
 
+单因素 `legacy_post_norm` vs `context_pre_norm` 探索于 2026-10-18 完成 LEVIR-CC seed 2222 筛选；N1 的 CIDEr 与 BLEU-4 均下降，预设阶段门未通过，因此未进入新增 seed 或 MCI 迁移阶段。该单 seed 探索不改变历史 15/15 准入状态，也不支持修改论文主张。登记、完整报告和结果见 [`experiments/exploratory_norm_context_pre_20261015/`](../experiments/exploratory_norm_context_pre_20261015/PUBLICATION_INDEX.md)。
+
 ## 历史材料（以下为旧方案和旧验收定义，不代表当前 R2 结论）
 
 旧结果、旧失败结论、旧 8 项及 3 项验收口径仅用于追溯；不得覆盖上文五项指标复算。
@@ -39,7 +41,7 @@ R2 支持在其既有实验条件下三数据集五项均值改善，不证明�
 
 > 本文档是模型实现、实验设计和论文结论的统一语义来源。修改 CARD/RSACA、数据输入、训练协议、选点策略、测试结果或论文主张后，必须运行 `python scripts/update_experiment_claim_reference.py` 并复核结论。
 
-结果快照时间：`2026-09-28 02:47:48 UTC`
+结果快照时间：`2026-10-18 06:43:28 UTC`
 
 ## 1. 原始论文主张
 

@@ -1,0 +1,136 @@
+{
+  "schema": "rsaca_exploratory_protocol.v1",
+  "protocol_id": "exploratory_norm_context_pre_20261015",
+  "created_utc": "2026-10-15T13:01:07Z",
+  "timestamp_note": "Local filesystem record; not a third-party trusted timestamp.",
+  "status_at_registration": "REGISTERED_RESOURCE_BLOCKED_BEFORE_TRAINING",
+  "source": {
+    "baseline_commit": "99d1659acf37c6a1099be9fbe10948886b3afb9f",
+    "baseline_branch": "origin/V1",
+    "isolated_branch": "exploratory/norm_context_pre_20261015",
+    "worktree": "/root/autodl-tmp/v1_exploratory_norm_20261015T130107Z/worktree",
+    "unmodified_source_workspace": "/root/autodl-tmp/z1zy1_v1_accept_20260920",
+    "implementation_diff": "CODE_DIFF.patch",
+    "implementation_diff_sha256": "20120eee71f1a9fb09abcb1a64d2ab63771e3227b7392cb267cd9dc8c7514e27",
+    "historical_protocol_ids_reused": false
+  },
+  "question": "Does changing only semantic fusion normalization placement improve LEVIR-CC validation CIDEr without reducing BLEU-4 or SPICE, and does the unchanged candidate transfer to LEVIR-MCI?",
+  "hypothesis": "Context pre-normalization may reduce additional perturbation to visual query features. This is an exploratory hypothesis, not a confirmed root cause and not a claim that spatial description errors will be fixed.",
+  "arms": {
+    "C0": {
+      "semantic_fusion_norm_mode": "legacy_post_norm",
+      "formula_without_dropout": "y = x + g * [LN(x + gamma * u) - x]"
+    },
+    "N1": {
+      "semantic_fusion_norm_mode": "context_pre_norm",
+      "formula_without_dropout": "y = x + g * gamma * LN(u)"
+    }
+  },
+  "only_scientific_difference": "model.semantic_fusion_norm_mode",
+  "shared_configuration": {
+    "model": "sgc_card",
+    "semantic_input_mode": "cross_attention",
+    "semantic_fusion_sparse_change_tokens": true,
+    "semantic_fusion_reliability_gate": true,
+    "semantic_fusion_global_token": true,
+    "semantic_fusion_global_token_mode": "all_mean",
+    "semantic_fusion_gate_whole_adapter": true,
+    "semantic_fusion_gamma_init": 0.01,
+    "semantic_fusion_gamma_max": 0.5,
+    "semantic_fusion_reliability_gate_bias": -1.5,
+    "semantic_fusion_detach_reliability_inputs": false,
+    "train.use_semantic_partial_detach": true,
+    "train.semantic_detach_ratio": 0.5,
+    "train.use_aux_mask": false,
+    "train.use_semantic_aux": false,
+    "train.lambda_mask": 0.0,
+    "train.lambda_semantic": 0.0,
+    "train.use_feature_reweight": false,
+    "semantic_fusion_visual_consistency_gate": false,
+    "semantic_fusion_visual_fallback": false,
+    "semantic_fusion_warmup_steps": 0,
+    "train.init_checkpoint": "",
+    "data.num_semantic_classes_configured": 7,
+    "data_factory_runtime_semantic_class_derivation": "Preserve normal 7-to-8 class derivation"
+  },
+  "training": {
+    "steps_per_full_run": 10000,
+    "batch_size": 32,
+    "optimizer": "Adam",
+    "learning_rate": 0.0002,
+    "scheduler": "warmup_cosine",
+    "warmup_steps": 500,
+    "minimum_learning_rate_ratio": 0.05,
+    "validation_and_snapshot_steps": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000],
+    "loader_rng_isolation": true,
+    "worker_seeded": true,
+    "paired_initialization": "Fresh scratch initialization; same seed and equal state-dict structure. Compare every parameter summary for detector and decoder before accepting each pair. Never resume from smoke checkpoints or use a previously trained checkpoint as one arm's start.",
+    "selection_rule": "five_metric_equal_weight_log",
+    "selection_reference": {
+      "Bleu_4": 0.4375,
+      "METEOR": 0.3377,
+      "ROUGE_L": 0.6942,
+      "CIDEr": 1.2299,
+      "SPICE": 0.2607
+    },
+    "selection_tie_break": "earlier_step",
+    "formal_update_budget_max": 120000
+  },
+  "matrix": {
+    "stage_A": ["levir_cc/2222/C0", "levir_cc/2222/N1"],
+    "stage_A_gate": "Enter B iff valid run pair, delta CIDEr > 0, delta BLEU-4 >= 0, and delta SPICE >= 0.",
+    "stage_B": ["levir_cc/1111/C0", "levir_cc/1111/N1", "levir_cc/3333/C0", "levir_cc/3333/N1"],
+    "stage_B_gate": "Enter C iff all runs valid, mean delta CIDEr > 0, at least two seed deltas CIDEr > 0, mean delta BLEU-4 >= 0, and mean delta SPICE >= 0.",
+    "stage_C": ["levir_mci/1111/C0", "levir_mci/1111/N1", "levir_mci/2222/C0", "levir_mci/2222/N1", "levir_mci/3333/C0", "levir_mci/3333/N1"],
+    "stage_C_is_transfer_check": true,
+    "not_in_scope": ["SECOND", "additional CARD retraining", "formal test", "P2", "P3", "freeze", "hyperparameter search"],
+    "actual_execution_status": "NONE_RESOURCE_PREFLIGHT_BLOCKED"
+  },
+  "metrics": {
+    "primary_screening": ["CIDEr", "Bleu_4", "SPICE"],
+    "reported_all": ["Bleu_4", "METEOR", "ROUGE_L", "CIDEr", "SPICE"],
+    "delta_direction": "N1 - C0",
+    "raw_unrounded_validation_values_required": true,
+    "seed_summary": "paired differences, mean, sample standard deviation, positive/tied/negative seed counts",
+    "significance_claim": false
+  },
+  "annotation_provenance": "Existing rater01 single-rater labels with AI-assisted review. Not independent double-blind annotation; no inter-rater kappa. No existing labels transferred to new predictions.",
+  "budget": {
+    "maximum_full_runs": 12,
+    "steps_each": 10000,
+    "maximum_formal_updates": 120000,
+    "maximum_functional_smoke_steps_per_arm": 100
+  },
+  "resource_preflight": {
+    "cuda_available": false,
+    "gpu_visible": false,
+    "cgroup_memory_limit_bytes": 2147483648,
+    "cgroup_memory_observed_bytes": 2070683648,
+    "disk_free_bytes_approx": 12884901888,
+    "validated_python": "Python 3.8.20 at /root/miniconda3/envs/card/bin/python",
+    "validated_torch_package_metadata": "1.8.0+cu111",
+    "scorer_packages_metadata": {"pycocoevalcap": "1.2", "pycocotools": "2.0.7"},
+    "scoring_java_meteor_spice_runtime": "not fully verified",
+    "training_started": false,
+    "reason": "No visible CUDA device and cgroup memory nearly exhausted; CPU training/decode is not a viable fallback."
+  },
+  "input_identities": {
+    "levir_cc": {
+      "root": "/root/autodl-tmp/z1zy1/Levir-CC",
+      "captions_reference_sha256": "2216246659651d53fd98542103d4a41177f4f67e8f381019e024efac33473242",
+      "splits_sha256": "74b4d8120ac5ed969a52e2aa6cdc48f63a7c69c50cfa8e5712cb5373479c207d",
+      "vocabulary_sha256": "ea85207bbcd20bb8dca5b6d1051c6bf13c1ad218875ca354f14402b48786b9aa",
+      "labels_sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542",
+      "feature_and_semantic_tree_hashes": "not computed"
+    },
+    "levir_mci": {
+      "root": "/root/autodl-tmp/z1zy1/LEVIR-MCI-dataset",
+      "captions_reference_sha256": "58ac690b9081eb45a5ff0bd625f9da9ff46360ecbdb50d9f3814221f20a93ec8",
+      "splits_sha256": "e24c05ea5520eb03e9e2f2d10330ab6e447da8b827fa13ebda061350f7e7df2a",
+      "vocabulary_sha256": "7e9843473ca46e323b64092923284f145d544e4401e9969d7bac26b0bc44d3aa",
+      "labels_sha256": "907caecca819a0b0eb6c8b9a16b8397b661ffbf489391511c1aa70e2d6c1c542",
+      "feature_and_semantic_tree_hashes": "not computed"
+    }
+  },
+  "post_registration_changes": []
+}

@@ -1,0 +1,99 @@
+{
+  "dataset": "levir_cc",
+  "delta_N1_minus_C0": {
+    "Bleu_4": -0.02444977208586796,
+    "CIDEr": -0.0079860177299802,
+    "METEOR": -0.00721998558376824,
+    "ROUGE_L": -0.007331484801067156,
+    "SPICE": 0.006963595288504376
+  },
+  "enter_stage_B": false,
+  "initialization_comparison": {
+    "differences": [],
+    "matched": true,
+    "protocol_id": "exploratory_norm_context_pre_20261015",
+    "seed": 2222
+  },
+  "invalid_attempt": {
+    "arm": "C0",
+    "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222",
+    "python": "/root/miniconda3/bin/python",
+    "reason": "launcher PYTHON was not exported to training child; excluded from selection and paired comparison",
+    "steps": 10000,
+    "torch": "1.10.0+cu113"
+  },
+  "invalid_formal_updates": 10000,
+  "mci_stage": "not run because stage-A gate failed",
+  "protocol_id": "exploratory_norm_context_pre_20261015",
+  "protocol_sha256": "f9bf67e052e6e6510003079a3dbcc9f3e727981ee4a15c9f8e89f9bc96f92469",
+  "run_count_valid": 2,
+  "runs": {
+    "C0": {
+      "environment": {
+        "cuda_available": "True",
+        "gpu_count": "1",
+        "python_executable": "/root/miniconda3/envs/card/bin/python",
+        "torch_version": "1.8.0+cu111"
+      },
+      "repeat_metrics": {
+        "Bleu_4": 0.560524353446705,
+        "CIDEr": 1.356927231954079,
+        "METEOR": 0.39552614541617037,
+        "ROUGE_L": 0.7445054483511463,
+        "SPICE": 0.33718819609047274
+      },
+      "repeat_prediction_sha256": "8045241decb98d087362b9d8e958cf4dd7d83e2a881a4e96983dbbb33f78d42c",
+      "selected_snapshot": "/root/autodl-tmp/v1_exploratory_norm_20261015T130107Z/runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_9000.pt",
+      "selected_snapshot_sha256": "a18ef4babcdad6e8261c212fe1848390fed3c327db33dce29818aa64b8deb87d",
+      "selected_step": 9000,
+      "selection_metrics": {
+        "Bleu_4": 0.560769241524766,
+        "CIDEr": 1.3576223988287586,
+        "METEOR": 0.3956319094121805,
+        "ROUGE_L": 0.7447305684578187,
+        "SPICE": 0.337389545129031
+      },
+      "selection_score": 0.1666982875567074,
+      "status": "completed",
+      "steps": 10000
+    },
+    "N1": {
+      "environment": {
+        "cuda_available": "True",
+        "gpu_count": "1",
+        "python_executable": "/root/miniconda3/envs/card/bin/python",
+        "torch_version": "1.8.0+cu111"
+      },
+      "repeat_metrics": {
+        "Bleu_4": 0.5363194694388981,
+        "CIDEr": 1.3496363810987784,
+        "METEOR": 0.3884119238284123,
+        "ROUGE_L": 0.7373990836567516,
+        "SPICE": 0.3443531404175354
+      },
+      "repeat_prediction_sha256": "fcbb2b940a2d5e534d7c5913d7fca661b28652961de4afe7a75ac9bc82817cec",
+      "selected_snapshot": "/root/autodl-tmp/v1_exploratory_norm_20261015T130107Z/runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_10000.pt",
+      "selected_snapshot_sha256": "3ea16e278a0983f468338234b4f75c1d32148079587ecc317aa9929d152f522b",
+      "selected_step": 10000,
+      "selection_metrics": {
+        "Bleu_4": 0.5363194694388981,
+        "CIDEr": 1.3496363810987784,
+        "METEOR": 0.3884119238284123,
+        "ROUGE_L": 0.7373990836567516,
+        "SPICE": 0.3443531404175354
+      },
+      "selection_score": 0.15502613506790697,
+      "status": "completed",
+      "steps": 10000
+    }
+  },
+  "seed": 2222,
+  "source_commit": "99d1659acf37c6a1099be9fbe10948886b3afb9f",
+  "stage_A_gate": {
+    "delta_BLEU4_ge_zero": false,
+    "delta_CIDEr_gt_zero": false,
+    "delta_SPICE_ge_zero": true,
+    "valid_pair": true
+  },
+  "valid_formal_updates": 20000
+}

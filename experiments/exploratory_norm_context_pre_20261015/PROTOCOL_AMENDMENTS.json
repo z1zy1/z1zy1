@@ -1,0 +1,40 @@
+{
+  "schema": "exploratory_protocol_amendments.v1",
+  "protocol_id": "exploratory_norm_context_pre_20261015",
+  "base_protocol_sha256": "f9bf67e052e6e6510003079a3dbcc9f3e727981ee4a15c9f8e89f9bc96f92469",
+  "amendments": [
+    {
+      "created_utc": "2026-10-18",
+      "reason": "Resource availability restored; the originally registered runner only exposed full 10,000-step training and validation selection, while this resumed task is limited to authorized functional checks.",
+      "change": "Add smoke action capped at 100 updates with snapshot/evaluation at step 100 and output under <experiment-root>/smoke/<arm>/<dataset>.",
+      "follow_up": "A first C0 smoke attempt stopped before step 1 because the full-run 500-step warmup exceeds a 100-step run. Preserve its log and directory. Smoke-only retry scales warmup to 50 steps; full runs retain 500 steps.",
+      "scientific_configuration_changed": false,
+      "formal_matrix_changed": false,
+      "training_budget_changed": false,
+      "smoke_checkpoints_may_seed_formal_runs": false
+    },
+    {
+      "created_utc": "2026-10-18",
+      "reason": "Post-run environment audit found the launcher selected the card Python for its CUDA precheck but did not export PYTHON to the child training script, which therefore resolved the base interpreter.",
+      "change": "Export PYTHON from the exploratory runner so the training child uses the registered card environment. Preserve the completed base-interpreter C0 attempt as invalid environment evidence and rerun from fresh initialization into a separate output root.",
+      "scientific_configuration_changed": false,
+      "formal_matrix_changed": false,
+      "training_budget_changed": false,
+      "retry_reason": "Launcher environment propagation defect; first C0 attempt is not admissible for selection or stage gates."
+    },
+    {
+      "created_utc": "2026-10-18",
+      "reason": "Resource recovery allowed the registered stage-A pair to complete after the original registration-time resource block.",
+      "change": "Record the actual execution outcome in status.json and reports: valid CC seed-2222 C0/N1 pair completed, stage-A CIDEr and BLEU-4 gates failed, and stages B/C were not entered. Keep EXPLORATORY_PROTOCOL.json unchanged as the original registration snapshot.",
+      "scientific_configuration_changed": false,
+      "formal_matrix_changed": false,
+      "training_budget_changed": false,
+      "actual_valid_formal_runs": 2,
+      "actual_valid_formal_updates": 20000,
+      "invalid_environment_formal_attempts": 1,
+      "invalid_environment_formal_updates": 10000,
+      "stage_B_entered": false,
+      "stage_C_entered": false
+    }
+  ]
+}

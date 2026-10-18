@@ -1,0 +1,2008 @@
+{
+  "files": [
+    {
+      "path": "CODE_DIFF.patch",
+      "sha256": "20120eee71f1a9fb09abcb1a64d2ab63771e3227b7392cb267cd9dc8c7514e27",
+      "size_bytes": 14017
+    },
+    {
+      "path": "CODE_DIFF_POST_AMENDMENT.patch",
+      "sha256": "d5868f8b9258b7fecf1017b50cb9cbafbc46cde271f32b27d94e44fc8e8028c3",
+      "size_bytes": 14983
+    },
+    {
+      "path": "COMMANDS.md",
+      "sha256": "7c2640b1e911980cd7b6bcd13536987ce2b913584d87bc86736d727502aad960",
+      "size_bytes": 2735
+    },
+    {
+      "path": "EXPLORATORY_PROTOCOL.json",
+      "sha256": "f9bf67e052e6e6510003079a3dbcc9f3e727981ee4a15c9f8e89f9bc96f92469",
+      "size_bytes": 7019
+    },
+    {
+      "path": "PROTOCOL_AMENDMENTS.json",
+      "sha256": "0b7d926506dd8a23406e01946a7912f66e4abba401353f4c3b38449e4629dbba",
+      "size_bytes": 2681
+    },
+    {
+      "path": "artifact_manifest.json",
+      "sha256": "1c745a2c73b9e2613d4d3e4d50c58f0c7f0676df1725494b61389897a9381338",
+      "size_bytes": 3576
+    },
+    {
+      "path": "configs/C0.json",
+      "sha256": "0e00fa6059d348a59d6645e19d92dbb6b8d682ed1a6538a7c2875092f260bc22",
+      "size_bytes": 2234
+    },
+    {
+      "path": "configs/N1.json",
+      "sha256": "d06b6889ed988e7f158b3b28f3e8422ccbb58ea0d38064881e940f59c7f62a27",
+      "size_bytes": 2234
+    },
+    {
+      "path": "logs/C0_smoke.log",
+      "sha256": "5a28590560dd50557d755f8a10e8ba5316cf6b4a92509fa0f1e0ea5c5f64a432",
+      "size_bytes": 18184
+    },
+    {
+      "path": "logs/C0_smoke_retry.log",
+      "sha256": "043fb4b3e341041f02483e6adece32398d0078216552540b3ee51cb5aa4b55e9",
+      "size_bytes": 547949
+    },
+    {
+      "path": "logs/N1_smoke_retry.log",
+      "sha256": "8a6b4377ff3aec1251b71b6e9e6391ba58cc61929d5ceffbc5bd97342280a45e",
+      "size_bytes": 539964
+    },
+    {
+      "path": "logs/mechanism_C0.log",
+      "sha256": "55d5161d25531bff5b785b82d2e2304ba2889cbc48fcd54429cb56c1bca56694",
+      "size_bytes": 175
+    },
+    {
+      "path": "logs/mechanism_C0_empty_semantic_map_score.log",
+      "sha256": "e061140cdff5634c3aebeea6a6746ff9faab4ea872ada985932c784e2e3cd30c",
+      "size_bytes": 2054
+    },
+    {
+      "path": "logs/mechanism_C0_low_coverage_lt_0_1_score.log",
+      "sha256": "da6eb2124b638bb4832565af126b378c79b9f99849fc12f1cabced3c99de9662",
+      "size_bytes": 2057
+    },
+    {
+      "path": "logs/mechanism_N1.log",
+      "sha256": "55d5161d25531bff5b785b82d2e2304ba2889cbc48fcd54429cb56c1bca56694",
+      "size_bytes": 175
+    },
+    {
+      "path": "logs/mechanism_N1_empty_semantic_map_score.log",
+      "sha256": "ece7160dfdfe00d3cd250d4b09928f0d877e120637f7454682b0997520ad61c2",
+      "size_bytes": 2052
+    },
+    {
+      "path": "logs/mechanism_N1_low_coverage_lt_0_1_score.log",
+      "sha256": "b1bfb8ec605ed13944a66f3076fd9fd9370f46433b274652e4ae7ec94ce3870f",
+      "size_bytes": 2056
+    },
+    {
+      "path": "logs/preflight.log",
+      "sha256": "150ac1fbf6c466906b79247e4261ae1969515556437f535daea476afbf660314",
+      "size_bytes": 1377
+    },
+    {
+      "path": "logs/stageA_C0_levir_cc_seed2222.log",
+      "sha256": "e4a474a36186016035a907cd0ef0c4737ed47f15148604c1abf5a1a12b0aed78",
+      "size_bytes": 5654850
+    },
+    {
+      "path": "logs/stageA_C0_levir_cc_seed2222_card_env.log",
+      "sha256": "e9667229ac25189ae2d0c195dc8cf70ac2c9483671641d45e090ce948b0d9b8a",
+      "size_bytes": 5653282
+    },
+    {
+      "path": "logs/stageA_C0_levir_cc_seed2222_card_env_select.log",
+      "sha256": "d15ce9a80c3cee198a9298fb61008d943f909f8d85d2f9a4166a281ef7601ae5",
+      "size_bytes": 8183
+    },
+    {
+      "path": "logs/stageA_C0_levir_cc_seed2222_repeat_decode.log",
+      "sha256": "be4619a64b585551a83b7415e73e7eaef7ab28c21cf60810b9577e50dbab86ae",
+      "size_bytes": 7654
+    },
+    {
+      "path": "logs/stageA_C0_levir_cc_seed2222_repeat_decode_2.log",
+      "sha256": "3a61d822eb35a76eccdb81edbb1247e4805e3f18ae1797c6e847fa4ea95c4f63",
+      "size_bytes": 7656
+    },
+    {
+      "path": "logs/stageA_C0_levir_cc_seed2222_repeat_score.log",
+      "sha256": "5d54874323ec7ba4991ea99b81e978e269b3d96027661be680532eead3b0d0c9",
+      "size_bytes": 2184
+    },
+    {
+      "path": "logs/stageA_C0_levir_cc_seed2222_repeat_score_2.log",
+      "sha256": "190c8acf92d4c946394027e6a4138c81ca37587c5b7e3ed8214e4f3c01731285",
+      "size_bytes": 2186
+    },
+    {
+      "path": "logs/stageA_C0_levir_cc_seed2222_select.log",
+      "sha256": "6306d0151f53683bd1d48f7b2df87826b9098a18dec89f8b20d62f6acce66d16",
+      "size_bytes": 7974
+    },
+    {
+      "path": "logs/stageA_N1_levir_cc_seed2222_card_env.log",
+      "sha256": "c728eaf4bdf2934de4afda01128ab481384e359539d5fe874811e7a28e3c6f85",
+      "size_bytes": 5651740
+    },
+    {
+      "path": "logs/stageA_N1_levir_cc_seed2222_card_env_select.log",
+      "sha256": "de543558dcb1e66a8869297ee7598e3caf0236681b46916cd16cf8b0ca9cb4df",
+      "size_bytes": 8190
+    },
+    {
+      "path": "logs/stageA_N1_levir_cc_seed2222_repeat_decode.log",
+      "sha256": "7325af07aeae0100f289b0bf080a67956794de4c0021285cd71c48abd22bdfdd",
+      "size_bytes": 7654
+    },
+    {
+      "path": "logs/stageA_N1_levir_cc_seed2222_repeat_score.log",
+      "sha256": "6528319adcb6c611c1e186432eafc73aa0835c19e9e2d65012d50f0386860e27",
+      "size_bytes": 2186
+    },
+    {
+      "path": "logs/test_exploratory_norm_protocol.log",
+      "sha256": "83166b089fbcb82fac63f22522fa6ae99bb5e46368cd35d756277fd463dd6346",
+      "size_bytes": 105
+    },
+    {
+      "path": "logs/test_unified_rsaca_manual.log",
+      "sha256": "b1cd0f50ba134495e5b02d97a1d7babca46942098d9f2a48eb2940b3c3dafe24",
+      "size_bytes": 42
+    },
+    {
+      "path": "logs/test_wcsg_smoke.log",
+      "sha256": "0b81db843fbb062d5d193ea0b659510e5ea305fb81591c1514de42c0bf645399",
+      "size_bytes": 5407
+    },
+    {
+      "path": "reports/ANNOTATION_DIAGNOSTICS.md",
+      "sha256": "26a7dd5416b70f12f078af152ea48c670f3b8d5418c26aee0c709e21529a7c3e",
+      "size_bytes": 2503
+    },
+    {
+      "path": "reports/ARTIFACTS.md",
+      "sha256": "df51d0243759050d22ad4baa86c10b9c00db66219f2641bc8abde5ca54b00816",
+      "size_bytes": 1058
+    },
+    {
+      "path": "reports/BASELINE_AND_EVIDENCE_REVIEW.md",
+      "sha256": "4dce03017bcd71887753618a99981613263a9284cf27aace2027d3fb20c271db",
+      "size_bytes": 5445
+    },
+    {
+      "path": "reports/FINAL_REPORT.md",
+      "sha256": "6ef3a1bee2033c8f5d853a420d13bc5ed923f5cacd59cf4e06842c39fffad310",
+      "size_bytes": 3169
+    },
+    {
+      "path": "reports/IMPLEMENTATION_AND_TESTS.md",
+      "sha256": "c3739b0c3da77fb8af4bc24cc900c2f44eb33044a73097257a340dadf481d8cb",
+      "size_bytes": 5203
+    },
+    {
+      "path": "reports/MECHANISM_DIAGNOSTICS.md",
+      "sha256": "603f91c9c846d106700eb71d5b27d1f7f4a0a2b6fb1f49d9996a822aa82136f2",
+      "size_bytes": 2706
+    },
+    {
+      "path": "reports/NEXT_DECISION.md",
+      "sha256": "6941865752ce48b3d8a9f59e0f49a894c4fccd4ed65ab3f68c3f046d0c6c10a2",
+      "size_bytes": 1153
+    },
+    {
+      "path": "reports/PAIRED_RESULTS.md",
+      "sha256": "992d0980c847dadc3257e3b6a13e7d7f0ebc2d415fefd1e0c5f1cedd455017d3",
+      "size_bytes": 2530
+    },
+    {
+      "path": "reports/RESOURCE_PREFLIGHT.md",
+      "sha256": "d01de191de9eb6b945a017b5dbc2cde1d36661bd778191f8feb8dae0b54abd83",
+      "size_bytes": 2723
+    },
+    {
+      "path": "reports/diagnostics/mechanism_C0_fixed64.json",
+      "sha256": "1d86bf1fe50f36beed870a829896e8ec9e02f45a68e702d049b6b139b4d9286d",
+      "size_bytes": 45293
+    },
+    {
+      "path": "reports/diagnostics/mechanism_N1_fixed64.json",
+      "sha256": "d0b6373bc14afacccc044295fa43dcaf00851cbc193a005e107ff9448c8c2cd1",
+      "size_bytes": 45345
+    },
+    {
+      "path": "runs/C0/levir_cc/.resolved_config_hashes.json",
+      "sha256": "3a2ef7d9c58e7da979fddf6429a5d224200a475a1f49c20cf78d0add0180492d",
+      "size_bytes": 299
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/INVALID_ATTEMPT_NOTE.md",
+      "sha256": "53dc4bfcd458190ba023f41f1dbc6ca26fb373b0c367c3bf66a51c0ecc8b39b7",
+      "size_bytes": 804
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/args.txt",
+      "sha256": "2745443b780a98137f5e648bb7ffe7fee824fa69721bd05c9d062828ade2e0ea",
+      "size_bytes": 7105
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/best_training_checkpoints.json",
+      "sha256": "7af8d5fc56fc37d8b6bcfe99a6f59859cd77ea9d8ef64ff82e9f059170a8d30b",
+      "size_bytes": 700
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/cfg.json",
+      "sha256": "2dba761c0e7307fd49fd59f8abdce0719a6cce0f739dec496e2265f30eff186b",
+      "size_bytes": 7045
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/command.txt",
+      "sha256": "c5db5a85f89504c640f6255dbaf052c21c6b0586900a1bf1177133f1b75bf1dc",
+      "size_bytes": 2661
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/config_hash.txt",
+      "sha256": "91befab281c958071d497ce661c8e15abfab89ee00c67ca1c325cfb2d5797991",
+      "size_bytes": 170
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/config_original.yaml",
+      "sha256": "ed73e9ce834abd5a22045d809f0d91ccf058cbef3759be107ecf1cd36f16d706",
+      "size_bytes": 2550
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/config_resolved.yaml",
+      "sha256": "de782d4b5ef5df8615ec15d6abb579269f8f8d6b13520c6ab4c0a9a49118ebe5",
+      "size_bytes": 6818
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/environment.txt",
+      "sha256": "371f8f35e2bb041591f81787f34a80e5712988e91f195f549deb04cb71d99ee8",
+      "size_bytes": 3850
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_log.txt",
+      "sha256": "de49624e190a138d8ccf1bb2ce04a3f5e5d8a07c40543ec6cb0f9b58dfc338c7",
+      "size_bytes": 2647
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_1000/metrics.json",
+      "sha256": "11dbfa90e056ccf88aaddea8d63f7facddf36875cd795cb47c260e57f555ad04",
+      "size_bytes": 326
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_1000/sc_results.json",
+      "sha256": "fabdefecd6a3d2e57c4f877644e3d67abd6691d55d1c7eace465a5884dc3dbc6",
+      "size_bytes": 115341
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_10000/metrics.json",
+      "sha256": "0438765fac6e2c5bd740973921edfc0191ccfacc0212b4189f5e069e0630b8bf",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_10000/sc_results.json",
+      "sha256": "3dca326e0bd0ece89c88727f79f12dd6bbc3e5e18cc19a756b4bfcd7ef639d03",
+      "size_bytes": 115879
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_2000/metrics.json",
+      "sha256": "849cd73fb3be92b05a29ac3daa2e4ece057278234aaff3e85ec0e1fbd91aee80",
+      "size_bytes": 329
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_2000/sc_results.json",
+      "sha256": "ee4bbbd3d3f0f6606ea542ddb73a09f5ace0f451d57cc059ece11e231f5c606f",
+      "size_bytes": 114490
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_3000/metrics.json",
+      "sha256": "d2bfea9c6810f43895f90a7a028a2e4330a63c4dd419149753f39f6f5f8a55d0",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_3000/sc_results.json",
+      "sha256": "21ba807591ce842062ab447cb9fc9158995295fe981ab7c769d8b270d750e05c",
+      "size_bytes": 114176
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_4000/metrics.json",
+      "sha256": "4536ac64a9fe832af7c24fa177a6c7753f70a6523b5c1caa4b2e233a1fc10ea2",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_4000/sc_results.json",
+      "sha256": "e8506aa811a5b79315f85fad6dd85f0f30bcd5b25296927398b41dca2803b561",
+      "size_bytes": 115931
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_5000/metrics.json",
+      "sha256": "5b864b3c61ffaef734b1321fabff4eac5e80704d557d3c259b7a50891c0222fe",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_5000/sc_results.json",
+      "sha256": "8e4006a334afe3a17fc3d74fc8d584a129f5650bb04cbcabca00d81460e8d879",
+      "size_bytes": 115549
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_6000/metrics.json",
+      "sha256": "8aba979b328b73399db9604edc354b549683543a5df200f2b312bcdc6d7e1a18",
+      "size_bytes": 326
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_6000/sc_results.json",
+      "sha256": "7d372f525d1d8d578ebccb1228a65de240674fb21a38a67d45a6db2742291a4b",
+      "size_bytes": 115927
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_7000/metrics.json",
+      "sha256": "d2caf6cc01926a1967502c29d49d9a75d1acc490833d468ddb76178dfaa27708",
+      "size_bytes": 323
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_7000/sc_results.json",
+      "sha256": "eb299a3d06e1fc7248704b6f90daecef0acf9f9fefbcd30fb0c62f9831c7fb80",
+      "size_bytes": 114982
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_8000/metrics.json",
+      "sha256": "36af92eae7bcf49e94ad4b1a95e2f38183a6b7cf7e170ff8b71ae7441d1b8056",
+      "size_bytes": 329
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_8000/sc_results.json",
+      "sha256": "4c632b29660da3f033868997a2d292898c23aa56b329f5c7a85e60961e5278a0",
+      "size_bytes": 116279
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_9000/metrics.json",
+      "sha256": "bf2c287e41d5f21dc7e65e9dce84907e4f6d6fcaffd189d7c3f2e02b6462a167",
+      "size_bytes": 326
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_9000/sc_results.json",
+      "sha256": "51c7f4f662368f4e8918c633caa1874684baf05801e35c3df50e4caf48d51c0e",
+      "size_bytes": 115323
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/git_info.txt",
+      "sha256": "bbc01199b0116a06a5a745f4b2c21cbc4a0fb259090e3194d30dca116ebe402b",
+      "size_bytes": 468
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/initial_parameter_summary.json",
+      "sha256": "eac44000942432bf4090648ac23b1528fd1026405a24456d71788191d9a6695b",
+      "size_bytes": 18661
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/metrics.csv",
+      "sha256": "dc7643527b348d0a193a0a6287d1d3fee65624b10be267a701a42bc3c9064dfa",
+      "size_bytes": 328792
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/metrics.jsonl",
+      "sha256": "1df0f8bfa0d00d7e03ec67308c73158667999106fbc5169d240b48375cdaab05",
+      "size_bytes": 368325
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/model_print",
+      "sha256": "de499b5f3554d6bf0c97bb981baf67f29b32b50fee9a71e5be855583625c3c88",
+      "size_bytes": 6837
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/model_summary.txt",
+      "sha256": "92ed67fbc9d23e055a77954d7cde5f2ab09d0192a9006ad473f49ba7a7c3cdf0",
+      "size_bytes": 4653
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config.json",
+      "sha256": "aba67174e1f6b199b15efba066cc7b5b58e5a429a83dbe0c74f0ba9084c3fe30",
+      "size_bytes": 8215
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config.yaml",
+      "sha256": "de782d4b5ef5df8615ec15d6abb579269f8f8d6b13520c6ab4c0a9a49118ebe5",
+      "size_bytes": 6818
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/run_summary.json",
+      "sha256": "45218bd3d28a4b387b9a4616652c967e05303c182711a684b256e714de3c932f",
+      "size_bytes": 1522
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/selected_checkpoint.pth",
+      "sha256": "a2794cc7d24e54782008edb5afa85a5f0cd5198ec814b246dae82e4024c77cfe",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/selected_checkpoint.pth.metadata.json",
+      "sha256": "6dc06d731fd74d05e0fb5b21d337740d1552bebd3d48b11a42ff2ac666a9a17b",
+      "size_bytes": 166
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/selected_checkpoint.pth.sha256",
+      "sha256": "a45627f4f60fd8d2052addcf4d09b7cdecebb835e90dc1369941a48dfe48ec00",
+      "size_bytes": 90
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/selection.json",
+      "sha256": "6306d0151f53683bd1d48f7b2df87826b9098a18dec89f8b20d62f6acce66d16",
+      "size_bytes": 7974
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_1000.pt",
+      "sha256": "71915448d50d0bf04b42efd34def884bd5bcd1635035e42196bd0d46ac928c87",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_1000.pt.metadata.json",
+      "sha256": "9c7a8003c8284306867781b956e840e63dd7d551730dd4294041459bbd13d334",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_1000.pt.sha256",
+      "sha256": "ec779fbcc35932f9d4a49a18f070b9035fda820c6e58ee352ecd31eeaa448e0f",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_10000.pt",
+      "sha256": "89ff58065d37e3fbcd2637e82ba02b71aa66f4bad060d8b1f45f6ac82364258e",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_10000.pt.metadata.json",
+      "sha256": "ad771ff9ced864a07870c09b7b3794313ae02fcb845600ee3e0adcdeda364f38",
+      "size_bytes": 189
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_10000.pt.sha256",
+      "sha256": "696d5fc443e1d313bb9e39d620944e2244fbf637d324b04a9b35b76cc17daab3",
+      "size_bytes": 112
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_2000.pt",
+      "sha256": "ca98c1ca4ab30949595c0c6dea7b0ce58bccda0ea89d86b770af288322ff44d5",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_2000.pt.metadata.json",
+      "sha256": "6e929bbd282d2c3550cad3ef4ab009ca8cae9ee482e5e889b817ac02c7dcb8f2",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_2000.pt.sha256",
+      "sha256": "fa44fe11e8a30ef8c429e1d8969e2e65b850569bcfd8c0b97863dc314e8d399f",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_3000.pt",
+      "sha256": "7d7018edba657d78a7cac84efb2d1e06a27f4d69ab561c2d8c748c722425d33d",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_3000.pt.metadata.json",
+      "sha256": "40d790f2b38cfd55bb906d6b616eec081ba95f0c37f4172da83373fb6a61ab18",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_3000.pt.sha256",
+      "sha256": "794a5e7c40e295156531e6e3fe462bc7ba1ed66b759630e5ecce50f0520a67d6",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_4000.pt",
+      "sha256": "bfcfabb7ab3f28968b2b6dd7a2a88f7bab3efb6aebf3cbcaee3a733f4ff08e4c",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_4000.pt.metadata.json",
+      "sha256": "9aef448fd8068831061eec3295d6d4c44db26908386bbeb724b959a42c0050f8",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_4000.pt.sha256",
+      "sha256": "626cb465418475e2d1a0cc3185c72ae31becc97f3514355db80b46c52b86983f",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_5000.pt",
+      "sha256": "eacb9919466fd5f317e6d60f590e68c0d3841670c7cbe0be6d5aebc33884a026",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_5000.pt.metadata.json",
+      "sha256": "d1387dd56dc5d73ba799e29ad21aea9702b0bb3575412dc2e3def69f8e2601e7",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_5000.pt.sha256",
+      "sha256": "7bf49205c01113ab1d22b736bda583acb3e1512b34369d9dc395f035cce871af",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_6000.pt",
+      "sha256": "0fa72b44fbe594aa3f04c70071cd12b8aaba0bebb6aa75efbed96bc60a508503",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_6000.pt.metadata.json",
+      "sha256": "21ab1c805149e97189c391d2541057ff202360434daad5280fa5747ccdd8e658",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_6000.pt.sha256",
+      "sha256": "1a45604c7c5c1fb976d51e95599d0f87e298fc2220ef8335a62a3419f021588f",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_7000.pt",
+      "sha256": "a2794cc7d24e54782008edb5afa85a5f0cd5198ec814b246dae82e4024c77cfe",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_7000.pt.metadata.json",
+      "sha256": "409be610baa12a6250588eda85b6650aab34fdc15badb202fff7e6d76db412e0",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_7000.pt.sha256",
+      "sha256": "e726a2b6d014804338420e59de524ad2e45533b0dfcc6b809e75d1bda5bd4794",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_8000.pt",
+      "sha256": "832311462435bdb90a6bf1ea5ebd24e3015c26782c40419d59daa08205125ab1",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_8000.pt.metadata.json",
+      "sha256": "13aaee0204fed1b665b2ee03d21f25ecf2cf522839f8f3c70b2170217415ac38",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_8000.pt.sha256",
+      "sha256": "4f8f7303daf4b27602601be25a69dc4e744787337d75abe65d04bd3266aad22a",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_9000.pt",
+      "sha256": "efb78accc2dc853db503d720b91d7455727dd7a5c253bbcae1dc443e1addbd78",
+      "size_bytes": 69114385
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_9000.pt.metadata.json",
+      "sha256": "c363bd5393626d2212485fef4134803c8df7dd339afe7c8c3e35dfefc7c9ab75",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_9000.pt.sha256",
+      "sha256": "0bd1c3f5d1b60500a1e682f5274609e8deef3c972eafee654e46b2e3fcf71de5",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/train.log",
+      "sha256": "e4a474a36186016035a907cd0ef0c4737ed47f15148604c1abf5a1a12b0aed78",
+      "size_bytes": 5654850
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/train_log.jsonl",
+      "sha256": "379bfdf40c869e7dfeab3ee213449c23c45bb1bd61e6759bbc554d505a0891b2",
+      "size_bytes": 351126
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/train_log.txt",
+      "sha256": "c182e529b15271773c83a871a4a53ad40c07e10f4922ae5e8c9981de4e37c802",
+      "size_bytes": 306457
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/val.log",
+      "sha256": "de49624e190a138d8ccf1bb2ce04a3f5e5d8a07c40543ec6cb0f9b58dfc338c7",
+      "size_bytes": 2647
+    },
+    {
+      "path": "runs/C0/levir_cc/norm_C0_levir_cc_seed2222/val_metrics.csv",
+      "sha256": "c56f8975bc6438dcaaedc83018add6cf1a4ef5bec53fbe89c8c910124b839d3c",
+      "size_bytes": 3451
+    },
+    {
+      "path": "runs_card_env/annotation_diagnostics/manifest.json",
+      "sha256": "0920396b760cb63eb2cf4c60be5678ceb9db4d795f39cd5c2bb4e12d9f68973f",
+      "size_bytes": 650
+    },
+    {
+      "path": "runs_card_env/annotation_diagnostics/random_cc_new_predictions.json",
+      "sha256": "baad103a18ea4b69e852cad209b4f7eb1f0e3ceaf22b11fa96a5913e93fee232",
+      "size_bytes": 18141
+    },
+    {
+      "path": "runs_card_env/annotation_diagnostics/targeted_cc_new_predictions.json",
+      "sha256": "fad4f2f4d58038034614b47a698d5e036623df034d33caa42349df5d0683dadc",
+      "size_bytes": 2461
+    },
+    {
+      "path": "runs_card_env/mechanism_subgroups/C0_empty_semantic_map.json",
+      "sha256": "1c53ecaa3758d139d5e64e7f13efd6fb15c385d3e6974b8e2d06b40fbf00b38d",
+      "size_bytes": 3130
+    },
+    {
+      "path": "runs_card_env/mechanism_subgroups/C0_empty_semantic_map_metrics.json",
+      "sha256": "2db2980205997c05b5877e1662447a498358ec937ada0d3a04434f834126bd6f",
+      "size_bytes": 666
+    },
+    {
+      "path": "runs_card_env/mechanism_subgroups/C0_low_coverage_lt_0_1.json",
+      "sha256": "77ee32e1c59e0db306c45b3ff0030c1d327bb5a8551e46b7d1eefb7850591499",
+      "size_bytes": 5399
+    },
+    {
+      "path": "runs_card_env/mechanism_subgroups/C0_low_coverage_lt_0_1_metrics.json",
+      "sha256": "d43f746a0654099c51c1641960f474e2b4c3e5d9ff49c12c02c487bfa28a6c4b",
+      "size_bytes": 667
+    },
+    {
+      "path": "runs_card_env/mechanism_subgroups/N1_empty_semantic_map.json",
+      "sha256": "ede37888973622a6fe1a3917ae21a44597fe1a9c8cc5ad1a48e80b67748f903f",
+      "size_bytes": 3117
+    },
+    {
+      "path": "runs_card_env/mechanism_subgroups/N1_empty_semantic_map_metrics.json",
+      "sha256": "9140a9c4b079b85b28d9047ead857828da712162285198db7762c908f409b04e",
+      "size_bytes": 664
+    },
+    {
+      "path": "runs_card_env/mechanism_subgroups/N1_low_coverage_lt_0_1.json",
+      "sha256": "0830a404349dc458114bc8d848ec578d35bacb15a2443c39b52b8901d5d0b977",
+      "size_bytes": 5408
+    },
+    {
+      "path": "runs_card_env/mechanism_subgroups/N1_low_coverage_lt_0_1_metrics.json",
+      "sha256": "7e321843ba5e5fc69c4016abc4d9a3476f710fcb5533887b681d220102a49678",
+      "size_bytes": 666
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/.resolved_config_hashes.json",
+      "sha256": "00966fcfb38e83b55114d76bc2044afa841921efcf3fd88e5581730dadd23400",
+      "size_bytes": 783
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/args.txt",
+      "sha256": "51aa6ceea3eb8c3b7580613938976f247404dae572a30afa803cb000fc71b88f",
+      "size_bytes": 7161
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/args_val.txt",
+      "sha256": "f449736a025b9067c37b2995bda521d8cc76b027343685526af108a996b30627",
+      "size_bytes": 1653
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/best_training_checkpoints.json",
+      "sha256": "e7a1445797a420b6cdec662fa2d511532c63a6dde7ceaaa7743852396781758c",
+      "size_bytes": 743
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/cfg.json",
+      "sha256": "ccbbb4cbf0bef7ca9345b4768f4ae83de03e585b84d9f26203e26c923d06960a",
+      "size_bytes": 7059
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/command.txt",
+      "sha256": "1e498058d7a45793bd8980949da5bef337623a360f7a24d0aeb20adb1c5ccfd9",
+      "size_bytes": 2699
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/command_val.txt",
+      "sha256": "9ec78ce4f49fd4af02ae2890d9698bc0575fcf5b7e589218e7a65602bf957d33",
+      "size_bytes": 369
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/config_hash.txt",
+      "sha256": "c131291160c85b3309002384eaaaad4106c808b7b3e03ccb56dde6c6df52a5a8",
+      "size_bytes": 170
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/config_hash_val.txt",
+      "sha256": "c131291160c85b3309002384eaaaad4106c808b7b3e03ccb56dde6c6df52a5a8",
+      "size_bytes": 170
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/config_original.yaml",
+      "sha256": "ed73e9ce834abd5a22045d809f0d91ccf058cbef3759be107ecf1cd36f16d706",
+      "size_bytes": 2550
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/config_resolved.yaml",
+      "sha256": "048aaae0a3089801a767e16ea89a4d70cbc01b5a74c04df8eb92df72d08feaab",
+      "size_bytes": 6832
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/config_resolved_val.yaml",
+      "sha256": "048aaae0a3089801a767e16ea89a4d70cbc01b5a74c04df8eb92df72d08feaab",
+      "size_bytes": 6832
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/environment.txt",
+      "sha256": "ffb2c48808a0c5dd17c6d870e4d91c06c9b7f20daba68c64b349a3c37f27310a",
+      "size_bytes": 1617
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_log.txt",
+      "sha256": "775ff2e8171f862b34c41fc78668606bf309434b48f6c6e0ec2cb16cb8e741ef",
+      "size_bytes": 6364
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_1000/metrics.json",
+      "sha256": "b878aad4f639c03d8653ccec07bab98d360df8746a348b722ab3146e0853778c",
+      "size_bytes": 329
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_1000/sc_results.json",
+      "sha256": "c94778ca7c95442ecef9edafd4553db0e680cc68d8751d4920e6fafa9d641f38",
+      "size_bytes": 115445
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_10000/metrics.json",
+      "sha256": "419267a41eb4124dedb099cca3549cf15329d9d32c645b7497ddf3866981b9c7",
+      "size_bytes": 325
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_10000/sc_results.json",
+      "sha256": "3ab8f95f196430f8a9e9f80467f661f3c142b6cc82e6d096b4c8d68cf43af590",
+      "size_bytes": 116232
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_2000/metrics.json",
+      "sha256": "dcc97e632254a87868e5b50bbffe8dc12ca14f0580bff163b5e20aff7c7d8988",
+      "size_bytes": 328
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_2000/sc_results.json",
+      "sha256": "13b896a4ff9d7d8074bb008a160f6d5a8d004298c52162e330cd0759b2689c36",
+      "size_bytes": 111028
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_3000/metrics.json",
+      "sha256": "dd17e8ccb0830da449be731d2b73c79973627a0cbe9abd40e4249b5fbd73527c",
+      "size_bytes": 329
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_3000/sc_results.json",
+      "sha256": "e89b7de4191bc8b8ced83efc50e93d2b689bd9d583468453f52fc0fec0b5d68f",
+      "size_bytes": 114113
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_4000/metrics.json",
+      "sha256": "62d34cd9ff34462bbf5603dc36450fd4c2c5ceadef2f9b0c89b94c3434fce9f5",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_4000/sc_results.json",
+      "sha256": "4ee4cb144d2cb7dee59f57a37d3d78cf543080e507fec70702563dbcd3ed88af",
+      "size_bytes": 116010
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_5000/metrics.json",
+      "sha256": "8168687c742d9a6f8fda257c9b226c04b09fc5bc765dc871ceeffb8fc984d186",
+      "size_bytes": 326
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_5000/sc_results.json",
+      "sha256": "2595e016920a67e5a89666d6711d1d962bf611c080695e95a4e787d8766c7347",
+      "size_bytes": 115940
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_6000/metrics.json",
+      "sha256": "4d09fb62cac4946bd9aa183a8a2650f7f56ddc342bfce1bde50fb50532d361df",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_6000/sc_results.json",
+      "sha256": "9dc0cafb330cb7c9bb294889d7eedd496e5c0a8e271f8cfc04b7430b950df47b",
+      "size_bytes": 115404
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_7000/metrics.json",
+      "sha256": "29bae5f14bc240926a18fb3bf8b07b99a997ce4a316617d962a182b44413eae7",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_7000/sc_results.json",
+      "sha256": "dcee39994cd99649f9924d7e9160d917f82a8b0f82d356d306b7edcd1e7dd7d7",
+      "size_bytes": 115216
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_8000/metrics.json",
+      "sha256": "d6f5b9d6385aa5d52da16d091a0d826f0676548458e47134cab82af4f6e0b9c6",
+      "size_bytes": 326
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_8000/sc_results.json",
+      "sha256": "9627df089519cf62651ed92a55acafbe3e3992f5d8b5a0c43284badb13091e49",
+      "size_bytes": 117070
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_9000/metrics.json",
+      "sha256": "3b52c4461167b9e4dbf5917e1758dfdb368a61f693e7c904a9eb574cd9ade2fe",
+      "size_bytes": 324
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_9000/sc_results.json",
+      "sha256": "6029dfeb6d7b40f8282f98511d2729e3376db87348f2a741076cb03c60093762",
+      "size_bytes": 115960
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/git_info.txt",
+      "sha256": "bbc01199b0116a06a5a745f4b2c21cbc4a0fb259090e3194d30dca116ebe402b",
+      "size_bytes": 468
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/initial_parameter_summary.json",
+      "sha256": "eac44000942432bf4090648ac23b1528fd1026405a24456d71788191d9a6695b",
+      "size_bytes": 18661
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/metrics.csv",
+      "sha256": "27c3895984da3a3ec55fce6e4f523fd33a1ba4c2ef20545fcdc3ea475ab49d63",
+      "size_bytes": 329069
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/metrics.jsonl",
+      "sha256": "382988ceaf241af46b04b1fe371da9942c8aa763abcec5fc92e85f36ea19df8f",
+      "size_bytes": 369004
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/model_print",
+      "sha256": "c7296fda3529e8387f90dd2700d6e5562a73a21cec9d9f154418bb40c2211a77",
+      "size_bytes": 6725
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/model_summary.txt",
+      "sha256": "eebafbe07fa4b3cb6c15e8cf51422de31b5cef0b5024c549adafa5f012390563",
+      "size_bytes": 4541
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/repeat_decode/metrics.json",
+      "sha256": "5a99e2920d9eec12d9edd08d9b6744bd80da9396fb9e88134578fe93b4cb4a5e",
+      "size_bytes": 775
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/repeat_decode/sc_results.json",
+      "sha256": "8045241decb98d087362b9d8e958cf4dd7d83e2a881a4e96983dbbb33f78d42c",
+      "size_bytes": 115957
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/repeat_decode_2/metrics.json",
+      "sha256": "20b78fcff353973ba2fc770da0295660ac43e0de65f76ef251dfcf4b5290f1cc",
+      "size_bytes": 777
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/repeat_decode_2/sc_results.json",
+      "sha256": "8045241decb98d087362b9d8e958cf4dd7d83e2a881a4e96983dbbb33f78d42c",
+      "size_bytes": 115957
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config.json",
+      "sha256": "081339d011ee2e9c7b15941cad550da6c1ddf98a7618be210690e991dc955636",
+      "size_bytes": 8229
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config.yaml",
+      "sha256": "048aaae0a3089801a767e16ea89a4d70cbc01b5a74c04df8eb92df72d08feaab",
+      "size_bytes": 6832
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config_val.json",
+      "sha256": "081339d011ee2e9c7b15941cad550da6c1ddf98a7618be210690e991dc955636",
+      "size_bytes": 8229
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config_val.yaml",
+      "sha256": "048aaae0a3089801a767e16ea89a4d70cbc01b5a74c04df8eb92df72d08feaab",
+      "size_bytes": 6832
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/run_summary.json",
+      "sha256": "a7b0074120519f9c0cecb97483aabe72d2a68760af6d04e478e8ed8aa2ccfcd6",
+      "size_bytes": 1885
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/selected_checkpoint.pth",
+      "sha256": "a18ef4babcdad6e8261c212fe1848390fed3c327db33dce29818aa64b8deb87d",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/selected_checkpoint.pth.metadata.json",
+      "sha256": "42ad475188f204899530dd817cb6fc12d6da9c659e85802d8d2abb36aa541b9e",
+      "size_bytes": 166
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/selected_checkpoint.pth.sha256",
+      "sha256": "98af8be8f332a722dc30270a69fc44fc12f9895b89d2f155397fcc8c6c0706c3",
+      "size_bytes": 90
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/selection.json",
+      "sha256": "d15ce9a80c3cee198a9298fb61008d943f909f8d85d2f9a4166a281ef7601ae5",
+      "size_bytes": 8183
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_1000.pt",
+      "sha256": "12e661ab7fa2c33db6ed51c4e0433c148a5cc49ebb81563149414131184f80ad",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_1000.pt.metadata.json",
+      "sha256": "2ba78910363d0360e6d256d2beca45e220b4204513c6f18bbee2cd2a512f56a6",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_1000.pt.sha256",
+      "sha256": "cca83841d43cb4e5efae2c0ee2cf3ea79d1db41a74ca677a0d8feffac45f074b",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_10000.pt",
+      "sha256": "87bb842c34c4ff3579823ea45b143ab2259c071e4657c1e1407ef60bd3f3a455",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_10000.pt.metadata.json",
+      "sha256": "a78a43f10b09698fbc049d185427d4e81ee39b36a60878dbaa82a795be6f29fd",
+      "size_bytes": 189
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_10000.pt.sha256",
+      "sha256": "27ee06be8f6cf5542d7dac190e4b54ea618630d4ea2bc3870aa76b656f9cb2a0",
+      "size_bytes": 112
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_2000.pt",
+      "sha256": "a5d5c04368eeb002b738db320d3905858ba8165b94b538cfcf4557e9786c78fa",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_2000.pt.metadata.json",
+      "sha256": "07589f652e3621c7868a328ef7f6cf91ca0ca3dcfa32cf995931a2ed04977e5b",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_2000.pt.sha256",
+      "sha256": "8bbe2ed798e5264869d4c227a484cc0d17f33a3b8ae28f1a5b8c3a23aa9a43b5",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_3000.pt",
+      "sha256": "81aa9a6be48f520da25694e43997e63b42a2997d42f36645cadb9fc8e612a504",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_3000.pt.metadata.json",
+      "sha256": "9711f06f71121472c1bcbe207b4c505a4fc803cf34fe7be83a8b2f6d66956faf",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_3000.pt.sha256",
+      "sha256": "9ffb070abb9ec7b0b7356fc312e4f3b1a30022ac15110739fbccc7ad9c6b5eb3",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_4000.pt",
+      "sha256": "956a0f1d703a27d8477dfc7aa8116ac4ce1206071075f039c77e0adf1544503e",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_4000.pt.metadata.json",
+      "sha256": "60c8e556d20deb4edb3585185edfaaeaa376c5550268fd5697f45ca44f9487aa",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_4000.pt.sha256",
+      "sha256": "2e3526a27fe5132d8b3f8c920daf070f8f1eca8638c681af5999974367764abc",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_5000.pt",
+      "sha256": "6ed66e0f3ed4fa2b790f848f60ebd925a3f669c57a195065947082087e1796d9",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_5000.pt.metadata.json",
+      "sha256": "d95192b20a1802aa08b032697e3cd0498add8e06ccdc33c150714d9e4941581e",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_5000.pt.sha256",
+      "sha256": "0b6d082bf43bc9bf2fe2dccb1fb4ef30bf2089d601583cf5d36356fb77838a6a",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_6000.pt",
+      "sha256": "92260e2b23515245c398384280187b10f4c4c2bb25e74483acccec64f5d77ac9",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_6000.pt.metadata.json",
+      "sha256": "2ecf3921f0f86c13fee0bf5db0f349c694a0f943cd60394691c4e68487a3bc42",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_6000.pt.sha256",
+      "sha256": "415fce028b48ff17b934ecc1a07cd398664b9f808e69cafdee848a8096323538",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_7000.pt",
+      "sha256": "6d40a2b944f826dadd7a109b0518c3c3ce32de779505f9a42a76d8e9af90f1d4",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_7000.pt.metadata.json",
+      "sha256": "73c90fb1e005c0e7f2b9092dbb1e6124303e2211d87f688d44539fd490f89b13",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_7000.pt.sha256",
+      "sha256": "38674b6c512cad032164c53ed9693f0a05256ea24da9f65a038536d34ee2f8ed",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_8000.pt",
+      "sha256": "60fca153c716797dab99c497aef2cd4bf115eb1365fc9cf985a7ee115cb975f4",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_8000.pt.metadata.json",
+      "sha256": "cb3f0956b7656f847b123af053fa6550144dfeba2ded30ac2a7001419dcdfeed",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_8000.pt.sha256",
+      "sha256": "60123c0208462df894d28349afedf065ead90fcfd134cdeda759d55f702be340",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_9000.pt",
+      "sha256": "a18ef4babcdad6e8261c212fe1848390fed3c327db33dce29818aa64b8deb87d",
+      "size_bytes": 69115974
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_9000.pt.metadata.json",
+      "sha256": "a3b77d6abecf02f4fc56524dfc3d06f26da59ca661de13a71f6993bf30330c68",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_9000.pt.sha256",
+      "sha256": "2da96b0d23b1235652890b5eed53063b4be0467caacca369419d7529e0ce1010",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/train.log",
+      "sha256": "e9667229ac25189ae2d0c195dc8cf70ac2c9483671641d45e090ce948b0d9b8a",
+      "size_bytes": 5653282
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/train_log.jsonl",
+      "sha256": "133ea943fe6011754fee3725ac55447157931d0d239b9b7d580efd5cd35111f9",
+      "size_bytes": 351227
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/train_log.txt",
+      "sha256": "53957892f68da0b60e81e6f2085afec1ed0be3de88c8dfe54eac7ac95ae72145",
+      "size_bytes": 306362
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/val.log",
+      "sha256": "3c89c17b046cb5fa544e2c18bed2f875b9524a6e0ecc4587b41d5ba364e02a0f",
+      "size_bytes": 3358
+    },
+    {
+      "path": "runs_card_env/runs/C0/levir_cc/norm_C0_levir_cc_seed2222/val_metrics.csv",
+      "sha256": "ab44d4c908a7937d0491e161e894f1b7a6a0826d7ae699609677c0f01f473677",
+      "size_bytes": 3592
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/.resolved_config_hashes.json",
+      "sha256": "55f9c42d5023d6076f1cb07784b80c040670631f3ad7e9347d1dbe41e1839aba",
+      "size_bytes": 548
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/args.txt",
+      "sha256": "cdb825354376c8ec8b7ff73be1cf49b64eeace373c94b97694009c8304ef9677",
+      "size_bytes": 7161
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/args_val.txt",
+      "sha256": "f36a4231758da6552a9a5e317b0df2b287d6280d922e6556bcd20dffe7accf2d",
+      "size_bytes": 1649
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/best_training_checkpoints.json",
+      "sha256": "ebb723a0476cf24346f139413ccc475b45fe54670edd4c4a17c90378212db7cd",
+      "size_bytes": 744
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/cfg.json",
+      "sha256": "3f453f98e72a64cafb38a98a0d161cf5933b28ba0a8ba26beaeb4a71703016e4",
+      "size_bytes": 7059
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/command.txt",
+      "sha256": "7b0d838645062bfc980329ac10b81f9147cffce3966ad62617b6f8c31b9331d4",
+      "size_bytes": 2699
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/command_val.txt",
+      "sha256": "79837156e4ad6636c692c683df6ea0e2026aba80a01c59b33134a099adf09ff6",
+      "size_bytes": 367
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/config_hash.txt",
+      "sha256": "646154da73e3256c1d9e1d8531263ae69cb944aeef54b103c7d60a6ec34fb6bf",
+      "size_bytes": 170
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/config_hash_val.txt",
+      "sha256": "646154da73e3256c1d9e1d8531263ae69cb944aeef54b103c7d60a6ec34fb6bf",
+      "size_bytes": 170
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/config_original.yaml",
+      "sha256": "ed73e9ce834abd5a22045d809f0d91ccf058cbef3759be107ecf1cd36f16d706",
+      "size_bytes": 2550
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/config_resolved.yaml",
+      "sha256": "3668877f46728818a37ce3d008ab97d1ef5068df6a35b51c1894b33a9e3ceb14",
+      "size_bytes": 6832
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/config_resolved_val.yaml",
+      "sha256": "3668877f46728818a37ce3d008ab97d1ef5068df6a35b51c1894b33a9e3ceb14",
+      "size_bytes": 6832
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/environment.txt",
+      "sha256": "f748ac210c9e330f4f7d6f3f6bdc1c2d8350d6850a951a84b57e5fd69d59eda3",
+      "size_bytes": 1617
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_log.txt",
+      "sha256": "a923c227142768c267185a7d7a2e81c816a109ea67bf1eff423af4427cec6336",
+      "size_bytes": 4458
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_1000/metrics.json",
+      "sha256": "7bade8b86c4d5eb4c97b5f3b6b982efe9a1e9e528139cff914c87533242abe13",
+      "size_bytes": 329
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_1000/sc_results.json",
+      "sha256": "2b00e92e500d0b4925a5af87181de1c10becf9844c7b9e36e842b11e6edf5dc2",
+      "size_bytes": 113316
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_10000/metrics.json",
+      "sha256": "a4187fc8d7146e15dea3f81e498c6f6a94e15916cc375f14e6395cb5a780c865",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_10000/sc_results.json",
+      "sha256": "fcbb2b940a2d5e534d7c5913d7fca661b28652961de4afe7a75ac9bc82817cec",
+      "size_bytes": 116374
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_2000/metrics.json",
+      "sha256": "738335240ff9f41d07727fe68499ddb51e28e7939ca7b814d7b2c686e039a22f",
+      "size_bytes": 324
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_2000/sc_results.json",
+      "sha256": "2b44fa8597ff3a13af66f0fd4325db1c566a3cda951b7fa4c4f619f347d986de",
+      "size_bytes": 111365
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_3000/metrics.json",
+      "sha256": "793ff5511c2391e30d2284c36f111bdd69cd064dfb4d6cbe46ac0a6bbf82d9c5",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_3000/sc_results.json",
+      "sha256": "0b62193cd9cc3476604d28d59076fcf06e12de8bcc3b046cbbc04620d473f105",
+      "size_bytes": 113917
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_4000/metrics.json",
+      "sha256": "927ccba432d075b9b4d52714d1d5b1034474df63de69e8fcea09b3c76150cb22",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_4000/sc_results.json",
+      "sha256": "fe795a046dcd2746c9ea92c33af7acd8ebbe42bc05f4d31edc4897c8e502f76a",
+      "size_bytes": 117892
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_5000/metrics.json",
+      "sha256": "a68e7fbcf2b9315102f21092585e792a673660a02bd9398a5665e4eb0d8ed73e",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_5000/sc_results.json",
+      "sha256": "e8eabf6b5df7b9cef35025f42d1630ce500995d31efb54f0eb4f616c391b61a8",
+      "size_bytes": 116113
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_6000/metrics.json",
+      "sha256": "15e373f3d40fa024677aaee3fb2016c9518ac968c33aba5fe77c8c7389a90e88",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_6000/sc_results.json",
+      "sha256": "301c1d5c1fca557982c850ad77a573231f160df305948cf9d0165c633c69c308",
+      "size_bytes": 116038
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_7000/metrics.json",
+      "sha256": "63c2f7056a7f5c6a65f62ed456ada4a346b30c4ca302ef7f63e28479f7a43464",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_7000/sc_results.json",
+      "sha256": "0c182ce0d416e5d06d16c2a3c6e80478807f0f3e30c5c1e7d5e9e2112368d7f9",
+      "size_bytes": 114654
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_8000/metrics.json",
+      "sha256": "5823cdf9d8b9809c91c2a4e062149c53f164490111debde79734d6e069e4cdef",
+      "size_bytes": 327
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_8000/sc_results.json",
+      "sha256": "769987d3a99fc3ebab4132630690cb02e47e504199cb80ca5c9daa0b4e726e2d",
+      "size_bytes": 115833
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_9000/metrics.json",
+      "sha256": "f72274a6e5d4eb94c31e9027d293ae436e41f3cec21268207891fba593312fa4",
+      "size_bytes": 329
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_9000/sc_results.json",
+      "sha256": "2964af0fb49c362df14b9b11dc65d17d1700045f63f70a61f4c07236bd4175e6",
+      "size_bytes": 115375
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/git_info.txt",
+      "sha256": "bbc01199b0116a06a5a745f4b2c21cbc4a0fb259090e3194d30dca116ebe402b",
+      "size_bytes": 468
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/initial_parameter_summary.json",
+      "sha256": "eac44000942432bf4090648ac23b1528fd1026405a24456d71788191d9a6695b",
+      "size_bytes": 18661
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/metrics.csv",
+      "sha256": "855481acc1ad4ecd68b2001ae3362c29e7c584bced06a7d4146e46763ff65631",
+      "size_bytes": 328902
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/metrics.jsonl",
+      "sha256": "ff5697ccea90d3089a971c40ed5c5c9f241761f470215926137e148f8c5f2598",
+      "size_bytes": 368636
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/model_print",
+      "sha256": "eb7b49a88d3265b666ebf678b482e70989ef5e520541996dc64dde2fd9d65f0b",
+      "size_bytes": 6725
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/model_summary.txt",
+      "sha256": "eebafbe07fa4b3cb6c15e8cf51422de31b5cef0b5024c549adafa5f012390563",
+      "size_bytes": 4541
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/repeat_decode/metrics.json",
+      "sha256": "cf5afe250951eeaa7caeb57dde0b649bb49fabf3385d8e955e28aeee8930e917",
+      "size_bytes": 777
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/repeat_decode/sc_results.json",
+      "sha256": "fcbb2b940a2d5e534d7c5913d7fca661b28652961de4afe7a75ac9bc82817cec",
+      "size_bytes": 116374
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/resolved_config.json",
+      "sha256": "194617a17c33d8d65f0a85224e49e96763670d9265def518fa1f91782ef90a4e",
+      "size_bytes": 8229
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/resolved_config.yaml",
+      "sha256": "3668877f46728818a37ce3d008ab97d1ef5068df6a35b51c1894b33a9e3ceb14",
+      "size_bytes": 6832
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/resolved_config_val.json",
+      "sha256": "194617a17c33d8d65f0a85224e49e96763670d9265def518fa1f91782ef90a4e",
+      "size_bytes": 8229
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/resolved_config_val.yaml",
+      "sha256": "3668877f46728818a37ce3d008ab97d1ef5068df6a35b51c1894b33a9e3ceb14",
+      "size_bytes": 6832
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/run_summary.json",
+      "sha256": "17ea9d93c1d0091b9e5d59e0d4b6437840553b4ea83fc161e39ccc4c669d32e4",
+      "size_bytes": 1884
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/selected_checkpoint.pth",
+      "sha256": "3ea16e278a0983f468338234b4f75c1d32148079587ecc317aa9929d152f522b",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/selected_checkpoint.pth.metadata.json",
+      "sha256": "0966c948b7abda7681f87116bf6628e67f542084e722c6c689d43350b0029d2c",
+      "size_bytes": 167
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/selected_checkpoint.pth.sha256",
+      "sha256": "e3c75e633ac0c052d975043feee76949765a970d9bde1a1b273dc8ac6e15f0ca",
+      "size_bytes": 90
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/selection.json",
+      "sha256": "de543558dcb1e66a8869297ee7598e3caf0236681b46916cd16cf8b0ca9cb4df",
+      "size_bytes": 8190
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_1000.pt",
+      "sha256": "6e255752f85462257c9137ef6bb23d10572c16063cc8d044b2d77fc8d3e2fb08",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_1000.pt.metadata.json",
+      "sha256": "fd03f6ac5525dece5eec46e95b80a768b372ffdb18a674afea9f6b8b7edaebc8",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_1000.pt.sha256",
+      "sha256": "67a2e6781990c3f8040801ae9dced54df1585914ebf4dbe4f3a2aadf469d29f7",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_10000.pt",
+      "sha256": "3ea16e278a0983f468338234b4f75c1d32148079587ecc317aa9929d152f522b",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_10000.pt.metadata.json",
+      "sha256": "a2d68d9fbabd231f04cce32cd6c5bc3704e6f8f0ce8db6a5649a0fe815bbdbb9",
+      "size_bytes": 189
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_10000.pt.sha256",
+      "sha256": "8ea2dc80dcfd4c1d0952be0a044286826064f5d7ce2ff62442b7c36b15a41bd7",
+      "size_bytes": 112
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_2000.pt",
+      "sha256": "5da25b4466d2a151e405630830e18242310fe207ed5cebf95bb8430902e5fe27",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_2000.pt.metadata.json",
+      "sha256": "a7b5db170383336dfa90efb685a10793038ec10d64bfedb102d00158aebeaf31",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_2000.pt.sha256",
+      "sha256": "22e2f5d5ce0a5645260c9fcf978dde183396c73a13e20230ac619ab6c501e974",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_3000.pt",
+      "sha256": "8a5fb329a298e67b7273eb400a792ea37031cab88b05ac94b0d01d843e2a37d3",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_3000.pt.metadata.json",
+      "sha256": "0da579d6e568ccee3893279c2c9b819f16d7b0aab0b7889c44bf40779190cf82",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_3000.pt.sha256",
+      "sha256": "c72cae0a249a77e3fd60f4fa5e07e2efb0e3d0636d68b5ba6eaf14fbc345aef4",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_4000.pt",
+      "sha256": "52cd6e451024943278f0416eea8678e35dd98868931d89a59fe1087352cceb13",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_4000.pt.metadata.json",
+      "sha256": "09a87bd3a5c43f49f8eb2d6c67869948069c73029c8a145bdd69981327998211",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_4000.pt.sha256",
+      "sha256": "706c45d27eb81efd8ecf6efbcdde789eaefa0535c579ea81b0b3d2fb2ed4d21c",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_5000.pt",
+      "sha256": "c8ea224f9887bc17c02ac3dd8812a13595a3cfeb07d2e1924e6164133d0da09b",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_5000.pt.metadata.json",
+      "sha256": "9b9c4bda0f2d9ba3c9a7e9135548452182a01f255743a43f2e331d046a37ed84",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_5000.pt.sha256",
+      "sha256": "ad21760d476ad8086d269b71b47bbc3b13af7e505563172f7421ff2c38fe7ca2",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_6000.pt",
+      "sha256": "15be9737f0149132802ecbd1b33936fa2f1eee147b2de82c421861e91923be9e",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_6000.pt.metadata.json",
+      "sha256": "3a277e4b6a0155d7c423bd35d51851522e4db291feb73bacf9a9d32982bc4b10",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_6000.pt.sha256",
+      "sha256": "4bf92980e7d58f61f1bc1dff76dcfb80691032f0c0abd335e5b6d529f63268bd",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_7000.pt",
+      "sha256": "32eeca01a30ff4d036886b58b6d7806778844b72587402eb77faf1866615f116",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_7000.pt.metadata.json",
+      "sha256": "efb54b530653e340ef1fdf9aa357d92db35272e743241397c87ee6b11874b3bc",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_7000.pt.sha256",
+      "sha256": "5473bb5d845e5805df68fd59f7ebce10038245ddbfea1a176830ee619153651f",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_8000.pt",
+      "sha256": "23cc61dfa483c11aa4b8bff860a6a6aee398c8b23264f1befe87fe95b94dda20",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_8000.pt.metadata.json",
+      "sha256": "c6f7e8ddb43419572a2c14ca754b93095b200541d586cc43381080c2dbb34c5e",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_8000.pt.sha256",
+      "sha256": "ac8f85d21d49bef0653946a53417f07694ddfd9017602f6f30b31cbb4a04f971",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_9000.pt",
+      "sha256": "aab0be3b576574f0d0da4167ff5715a9d6427054fb0d7a209cc657789892580f",
+      "size_bytes": 69116106
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_9000.pt.metadata.json",
+      "sha256": "c7d0ddd50bb7708e174d9fb5228c6f861b63966de3625165bd69dc50fbd9d7ee",
+      "size_bytes": 187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_9000.pt.sha256",
+      "sha256": "7280410e1ead7f98cbc0cf4fd8ef9ba5781679b733f9b2263585dd99e5de05a4",
+      "size_bytes": 111
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/train.log",
+      "sha256": "c728eaf4bdf2934de4afda01128ab481384e359539d5fe874811e7a28e3c6f85",
+      "size_bytes": 5651740
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/train_log.jsonl",
+      "sha256": "4f452ceca244a0d82a1a033b6c254efe5067c2801658848d41d4a2dd98ab6035",
+      "size_bytes": 351187
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/train_log.txt",
+      "sha256": "8ccf5ea72da4d46eade8c42d90b94c5e126d41301f97fab8226411607b5f591f",
+      "size_bytes": 306362
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/val.log",
+      "sha256": "8a36f5badb93debbf92ef8decfad74cd44122e193cdd0e11e551d40c6586a139",
+      "size_bytes": 2954
+    },
+    {
+      "path": "runs_card_env/runs/N1/levir_cc/norm_N1_levir_cc_seed2222/val_metrics.csv",
+      "sha256": "e1fda3ae5c94ccc220e707e33f6c1a452737dd98b7eb41fe8abf2302ba99865f",
+      "size_bytes": 3594
+    },
+    {
+      "path": "runs_card_env/stageA_cc_seed2222_paired_initialization.json",
+      "sha256": "5526286f9cada1c09816f7a2ea69dd23c22fd3e2e959babda229e4ce7e406e1c",
+      "size_bytes": 117
+    },
+    {
+      "path": "runs_card_env/stageA_results.json",
+      "sha256": "932029df6a14a8cb0c814d4ba689835cad83244d3de03d1b69a87371b710ba65",
+      "size_bytes": 3656
+    },
+    {
+      "path": "smoke/C0/levir_cc/.resolved_config_hashes.json",
+      "sha256": "60b1dfd84923008ed04d9905e69d2b362321f3a4315588867cb23505733a907e",
+      "size_bytes": 300
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/args.txt",
+      "sha256": "aee54b1335aef5edb3b03b48e9d3303895a8a06331ffdcb5894ab20176460c2f",
+      "size_bytes": 7099
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/cfg.json",
+      "sha256": "2654eb6dc91133ee4f5f6e4fe9919478477360cd14fc9f84b97bbc0f7d34c32d",
+      "size_bytes": 7039
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/command.txt",
+      "sha256": "cc7f01559efdd535e45c98b2d5d0d63670241724409f7750f9dd17a52a65bc15",
+      "size_bytes": 2668
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/config_hash.txt",
+      "sha256": "8504fa282f48ff09deb58a0c18c2821cbaa2ddeda4fd36a176f034e13d243aa7",
+      "size_bytes": 170
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/config_original.yaml",
+      "sha256": "ed73e9ce834abd5a22045d809f0d91ccf058cbef3759be107ecf1cd36f16d706",
+      "size_bytes": 2550
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/config_resolved.yaml",
+      "sha256": "4476d2431f89bdaca36643ee2f3eb032c1a8a570d82f573415e25a4b24cd698b",
+      "size_bytes": 6812
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/environment.txt",
+      "sha256": "23f1165283da9c6fb3ea29d3dc48b2b6f368573efa20941da92b9fc32148e8a4",
+      "size_bytes": 1617
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/error.log",
+      "sha256": "f8ca79694c9dadb5a9411334c6952bd4367cddb05cf560735392b0c43f9209c7",
+      "size_bytes": 429
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_log.txt",
+      "sha256": "4bb1db68bcb71608bef4a1e34aa4568601f93465bec5bf7b305b281ee9945f07",
+      "size_bytes": 102
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/git_info.txt",
+      "sha256": "bbc01199b0116a06a5a745f4b2c21cbc4a0fb259090e3194d30dca116ebe402b",
+      "size_bytes": 468
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/initial_parameter_summary.json",
+      "sha256": "eac44000942432bf4090648ac23b1528fd1026405a24456d71788191d9a6695b",
+      "size_bytes": 18661
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/model_print",
+      "sha256": "c965226932c21d6e5411d93da78f7880aa1131648083527cc054cc39896ac358",
+      "size_bytes": 6720
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/model_summary.txt",
+      "sha256": "eebafbe07fa4b3cb6c15e8cf51422de31b5cef0b5024c549adafa5f012390563",
+      "size_bytes": 4541
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config.json",
+      "sha256": "d3f23b16dcbf1538c13e759180bb6ab88a185b2517352456ea3eec7402e16482",
+      "size_bytes": 8209
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config.yaml",
+      "sha256": "4476d2431f89bdaca36643ee2f3eb032c1a8a570d82f573415e25a4b24cd698b",
+      "size_bytes": 6812
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/run_summary.json",
+      "sha256": "bcf8d38de11c4468b1679b206b69483a9ce50656e49129767cb55617dd7fbe43",
+      "size_bytes": 645
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/train.log",
+      "sha256": "5a28590560dd50557d755f8a10e8ba5316cf6b4a92509fa0f1e0ea5c5f64a432",
+      "size_bytes": 18184
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/train_log.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/train_log.txt",
+      "sha256": "4f9bcdd3af8ed8c7f3c9e15a9a1e0f0f6d754006d2e199c750d7a4994843d583",
+      "size_bytes": 1918
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/val.log",
+      "sha256": "4bb1db68bcb71608bef4a1e34aa4568601f93465bec5bf7b305b281ee9945f07",
+      "size_bytes": 102
+    },
+    {
+      "path": "smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/val_metrics.csv",
+      "sha256": "d9792f2c70d14eff86611576b0f996187c7e39bb17e5354cfc18dd8b9bfca636",
+      "size_bytes": 122
+    },
+    {
+      "path": "smoke_retry_20261018/SHA256SUMS",
+      "sha256": "2a36ee11b2b0b204dce2fc418b451c8191fa885d9615063e22ef48054a767a8b",
+      "size_bytes": 9421
+    },
+    {
+      "path": "smoke_retry_20261018/paired_initialization.json",
+      "sha256": "5526286f9cada1c09816f7a2ea69dd23c22fd3e2e959babda229e4ce7e406e1c",
+      "size_bytes": 117
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/.resolved_config_hashes.json",
+      "sha256": "f56d8dfd44051e180c0a3f2c6de64394d62b47950e8cf3a262bdca1d95c436c6",
+      "size_bytes": 321
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/args.txt",
+      "sha256": "74ecda04e84f986994b12e48ecf2daede52d16215b9496107e64293df84cd494",
+      "size_bytes": 7181
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/best_training_checkpoints.json",
+      "sha256": "4ff456f3ed7a5dc86e484c95783d7435604717f867f08dcc84d9f60c865f9caf",
+      "size_bytes": 765
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/cfg.json",
+      "sha256": "5347dfa49c303b07f79e529845f19b854929549069c06d23d7eb8e451e44564c",
+      "size_bytes": 7059
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/command.txt",
+      "sha256": "ebae60f9afe99b04f2f6092cb2fa397401c9640c5fe646cdb1a0aea93728bfe7",
+      "size_bytes": 2709
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/config_hash.txt",
+      "sha256": "249424bca21ad8f94c60396dc3826a83842c6074acf790e21ccc6288a04d12c6",
+      "size_bytes": 170
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/config_original.yaml",
+      "sha256": "ed73e9ce834abd5a22045d809f0d91ccf058cbef3759be107ecf1cd36f16d706",
+      "size_bytes": 2550
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/config_resolved.yaml",
+      "sha256": "da176d04c1770249b50d635190d253719b686caf82b09164a8408a305b6e7f20",
+      "size_bytes": 6832
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/environment.txt",
+      "sha256": "30246b5e67917196c094131e30509843d6fc791ac48b4df0b193e16281649ef6",
+      "size_bytes": 1617
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_log.txt",
+      "sha256": "2b14145257854adc4ccc5b6e69b75741dca889112ea4c72239b6e272507f51cb",
+      "size_bytes": 345
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_100/metrics.json",
+      "sha256": "2720870d4eba5967f882d9136149aea7624aa4667f1bd99134eb0d661c0bfacf",
+      "size_bytes": 335
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/eval_sents/norm_C0_levir_cc_seed2222_sents_100/sc_results.json",
+      "sha256": "9ad97d24029bb491ccd8af0149c469086a7b08fb615e266652707b9386211841",
+      "size_bytes": 100243
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/git_info.txt",
+      "sha256": "bbc01199b0116a06a5a745f4b2c21cbc4a0fb259090e3194d30dca116ebe402b",
+      "size_bytes": 468
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/initial_parameter_summary.json",
+      "sha256": "eac44000942432bf4090648ac23b1528fd1026405a24456d71788191d9a6695b",
+      "size_bytes": 18661
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/metrics.csv",
+      "sha256": "5530779b09bf6cc2291f3ce79c7334179774489c2d30358f8eb683fa41429871",
+      "size_bytes": 3821
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/metrics.jsonl",
+      "sha256": "d92cadf07c77f91e2e26c6dd0fed9e153661478a2c34a0a9d88c41000f17fc19",
+      "size_bytes": 4186
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/model_print",
+      "sha256": "854a49407d4f25b25a2296fde53c1e7e50ed021c75c7a5d64c7663e712adb172",
+      "size_bytes": 6719
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/model_summary.txt",
+      "sha256": "eebafbe07fa4b3cb6c15e8cf51422de31b5cef0b5024c549adafa5f012390563",
+      "size_bytes": 4541
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config.json",
+      "sha256": "45830a6b88ea7490458fcecf8c93e891dc4bdd54015d06d42ac4c88d0e452d53",
+      "size_bytes": 8229
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/resolved_config.yaml",
+      "sha256": "da176d04c1770249b50d635190d253719b686caf82b09164a8408a305b6e7f20",
+      "size_bytes": 6832
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/run_summary.json",
+      "sha256": "7e1f999e3ea9732389303840f1472c691c2b58f8c7b215dd4517403e8bc7cb9a",
+      "size_bytes": 1584
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_100.pt",
+      "sha256": "20076f260a85b9fd5218e4fbbdff4112bc28e83fa9aff11df2cfa03bffbd10d1",
+      "size_bytes": 69115982
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_100.pt.metadata.json",
+      "sha256": "72fb5b6fada0ca622b5be64e7bbbd352e68275446e8b2f7be4a2780d570c829d",
+      "size_bytes": 185
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/snapshots/norm_C0_levir_cc_seed2222_checkpoint_100.pt.sha256",
+      "sha256": "0258b68adae7241e53a9190443fbda53e860620e668a9a80e7d3e9dd3ec7ee2a",
+      "size_bytes": 110
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/train.log",
+      "sha256": "043fb4b3e341041f02483e6adece32398d0078216552540b3ee51cb5aa4b55e9",
+      "size_bytes": 547949
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/train_log.jsonl",
+      "sha256": "6509ad5562b062535b9e69ec432986a795dff1626bbb54dafc21cbf168d790ef",
+      "size_bytes": 3474
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/train_log.txt",
+      "sha256": "0a7a9e30c51290a727def877775a9f3420c0629e863783aa3d462a67e974ac35",
+      "size_bytes": 4957
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/val.log",
+      "sha256": "2b14145257854adc4ccc5b6e69b75741dca889112ea4c72239b6e272507f51cb",
+      "size_bytes": 345
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/C0/levir_cc/norm_C0_levir_cc_seed2222/val_metrics.csv",
+      "sha256": "6bb8ab7c147bb888a4162a75afcab7c6016e7177fd9ecb11d0348c73e9f9f3c0",
+      "size_bytes": 482
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/.resolved_config_hashes.json",
+      "sha256": "4f04ecc562627bd15306c860e7d9f055f3dc6bedac9df3bcd2263c9cd3cd5bf4",
+      "size_bytes": 321
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/args.txt",
+      "sha256": "d3757843f0a4235dea067a23a6e751bd49cfa965445998a994dddde4f044cc45",
+      "size_bytes": 7181
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/best_training_checkpoints.json",
+      "sha256": "0066dded11cbb0d8ac2b09a1f0c715277cec9d049d2404d6349d44c798e6d9dc",
+      "size_bytes": 766
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/cfg.json",
+      "sha256": "a1fe6e3048f8d9c9ef6b088297d57274d6d8dfae44c21a7200ae65b8ce0790f9",
+      "size_bytes": 7059
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/command.txt",
+      "sha256": "1e6e2bf1357251a40e4de1e1d42e03264164a036316f4c2da255ddab73072d4d",
+      "size_bytes": 2709
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/config_hash.txt",
+      "sha256": "563104ebdf8f4f3f979bf980c681070f147ca1d5972392446ce74872a88987c4",
+      "size_bytes": 170
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/config_original.yaml",
+      "sha256": "ed73e9ce834abd5a22045d809f0d91ccf058cbef3759be107ecf1cd36f16d706",
+      "size_bytes": 2550
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/config_resolved.yaml",
+      "sha256": "bafd76525bdb2e01549461b2bce8ac7c8c310186886465787143c4afed3debd3",
+      "size_bytes": 6832
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/environment.txt",
+      "sha256": "630d4ee6dd095c337c54e5a592ebcd33465e3e2c3baa7a77beb7e4c536c78f9d",
+      "size_bytes": 1617
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_log.txt",
+      "sha256": "a99d5a3fd98a56730eadc0cc781827ce34f7dc931e551249ed825129649d962e",
+      "size_bytes": 345
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_100/metrics.json",
+      "sha256": "5346ca1a94571c371d16e1af8fb34f8d76fc9c0235611b61d568b2883ded439b",
+      "size_bytes": 335
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/eval_sents/norm_N1_levir_cc_seed2222_sents_100/sc_results.json",
+      "sha256": "484cb4ac157ec2a9e18f00026eae5d01cf191ce2f0ba981893c126129a54bae1",
+      "size_bytes": 92260
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/git_info.txt",
+      "sha256": "bbc01199b0116a06a5a745f4b2c21cbc4a0fb259090e3194d30dca116ebe402b",
+      "size_bytes": 468
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/initial_parameter_summary.json",
+      "sha256": "eac44000942432bf4090648ac23b1528fd1026405a24456d71788191d9a6695b",
+      "size_bytes": 18661
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/metrics.csv",
+      "sha256": "6738b638af05b4746d3cc86bcbadccf6cc959556e74eecc7d35015ae3b1c6626",
+      "size_bytes": 3810
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/metrics.jsonl",
+      "sha256": "a4910b79e43026f26fc98b62720e75335193d664fc08d3fecd9310fb34839f7d",
+      "size_bytes": 4175
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/model_print",
+      "sha256": "6e9f2aa8b331f700cc29efbdcc00bda84396dd7aa6184367a9ab79c31ee41b40",
+      "size_bytes": 6719
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/model_summary.txt",
+      "sha256": "eebafbe07fa4b3cb6c15e8cf51422de31b5cef0b5024c549adafa5f012390563",
+      "size_bytes": 4541
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/resolved_config.json",
+      "sha256": "3b877970489332ea2d5cce2622cda4973b9d71df3d34df18e8aba23f85e7e818",
+      "size_bytes": 8229
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/resolved_config.yaml",
+      "sha256": "bafd76525bdb2e01549461b2bce8ac7c8c310186886465787143c4afed3debd3",
+      "size_bytes": 6832
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/run_summary.json",
+      "sha256": "9a486e0702d831051c02bfd8e1630b2756b4e1f5b436000af0ed9710b9a57bc3",
+      "size_bytes": 1585
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_100.pt",
+      "sha256": "411285c819ec999a6995affe33ce472f083924e7276e4eb91e4ee7e0719e8457",
+      "size_bytes": 69116192
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_100.pt.metadata.json",
+      "sha256": "330f327d2c94f7838856287ba767eab009104c34127b7c067e271d3de4b8c055",
+      "size_bytes": 185
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/snapshots/norm_N1_levir_cc_seed2222_checkpoint_100.pt.sha256",
+      "sha256": "40e77a5d17d54d940b932dc3595eac87c035de7d6413b47f8ad95f3a89519310",
+      "size_bytes": 110
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/train.log",
+      "sha256": "8a6b4377ff3aec1251b71b6e9e6391ba58cc61929d5ceffbc5bd97342280a45e",
+      "size_bytes": 539964
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/train_log.jsonl",
+      "sha256": "a5e14de9878fab0c647329c6d6dbf7fde864886863964a0584a8787b59f3a6f5",
+      "size_bytes": 3460
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/train_log.txt",
+      "sha256": "fb0cd5a2e7517fde9c454e4d8d18c6bbaf9cc1dd92be0209f92adea32f01b977",
+      "size_bytes": 4957
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/val.log",
+      "sha256": "a99d5a3fd98a56730eadc0cc781827ce34f7dc931e551249ed825129649d962e",
+      "size_bytes": 345
+    },
+    {
+      "path": "smoke_retry_20261018/smoke/N1/levir_cc/norm_N1_levir_cc_seed2222/val_metrics.csv",
+      "sha256": "699376c083e6bd822e897bcdb0e572bd9ac06b131ec3897d34e838c06628d8de",
+      "size_bytes": 482
+    },
+    {
+      "path": "status.json",
+      "sha256": "02a88fc6344b147d9b8155bee65f41cf7cf21bd676e8ba7434ed8e0e4eae31b9",
+      "size_bytes": 1913
+    },
+    {
+      "path": "worktree/docs/EXPERIMENT_CLAIM_REFERENCE.md",
+      "sha256": "2c55fce8f13b9ac73107f3dad2a8f5ffa1978b2fce9df3bfe8dc9c6fa2d6c11d",
+      "size_bytes": 20973
+    },
+    {
+      "path": "worktree/scripts/compare_exploratory_initialization.py",
+      "sha256": "ee59ac270f47b148e016d932fe64b015644e316da583ba07bc4e19d82a463b9b",
+      "size_bytes": 1813
+    },
+    {
+      "path": "worktree/scripts/run_exploratory_norm_pair.sh",
+      "sha256": "2658d15ea4280df10edfd25dd5fdc6c81e44ebcc91248f6cfbcbc996d11f14be",
+      "size_bytes": 4166
+    },
+    {
+      "path": "worktree/scripts/select_best_snapshot_p1.py",
+      "sha256": "6291d401655b0a61b840f633ca746b85a17418e5f1f53cfeac0bc914402bba30",
+      "size_bytes": 7922
+    },
+    {
+      "path": "worktree/tests/test_exploratory_norm_protocol.py",
+      "sha256": "52ea2d6a5b9beb9cfa116aea38ed3a3b02a3d488609872f8c81f06aa05356d38",
+      "size_bytes": 4566
+    },
+    {
+      "path": "worktree/utils/config_validation.py",
+      "sha256": "473f21676a9f4d91dec556e94f901977e12ec08a28f4010440953f51b8ba8199",
+      "size_bytes": 6342
+    },
+    {
+      "path": "worktree/utils/semantic_controls.py",
+      "sha256": "37f2d91824931d9dbc4669e070d62bc92fcb002575f1e3ea48b932a4908f279d",
+      "size_bytes": 9630
+    }
+  ],
+  "note": "Individually hashed local artifacts; not a third-party trusted timestamp. Registration-time artifact_manifest.json is preserved unchanged.",
+  "protocol_id": "exploratory_norm_context_pre_20261015",
+  "protocol_sha256": "f9bf67e052e6e6510003079a3dbcc9f3e727981ee4a15c9f8e89f9bc96f92469",
+  "schema": "exploratory_norm_post_run_manifest.v1"
+}

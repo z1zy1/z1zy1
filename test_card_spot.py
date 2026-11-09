@@ -341,8 +341,6 @@ output_dir = os.path.join(exp_dir, exp_name)
 if args.result_json is not None:
     result_save_path_pos = os.path.normpath(args.result_json)
     caption_output_path = os.path.dirname(result_save_path_pos)
-    if caption_output_path and not os.path.exists(caption_output_path):
-        os.makedirs(caption_output_path)
     eval_output_dir = os.path.dirname(os.path.dirname(caption_output_path))
 else:
     eval_output_dir = os.path.join(output_dir, '%s_output' % args.split)
@@ -365,6 +363,8 @@ elif args.snapshot is not None:
 else:
     raise ValueError('Either --snapshot, --snapshot_path, or --checkpoint must be provided.')
 
+from utils.rsaca_position_protocol import guard_output_route
+guard_output_route(cfg, args.split, result_save_path_pos)
 admission = enforce_test_admission(PROJECT, cfg, snapshot_full_path, result_save_path_pos) \
     if args.split == 'test' else 'not_controls_protocol'
 if admission == 'complete':
@@ -503,6 +503,9 @@ with torch.no_grad():
     test_iter_end_time = time.time() - test_iter_start_time
     stage_logger.info('%s inference took %.4f seconds', args.split, test_iter_end_time)
     coco_gen_format_save(result_sents_pos, result_save_path_pos)
+    if args.split == 'test':
+        from utils.rsaca_position_protocol import record_position_prediction
+        record_position_prediction(cfg, result_save_path_pos, snapshot_full_path)
     stage_logger.info('Saved captions to %s', result_save_path_pos)
     aux_metrics = {}
     averaged_mask_metrics = average_metric_list(mask_metric_items)

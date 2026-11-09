@@ -176,6 +176,10 @@ def input_manifest(cfg, source_kind='unknown'):
                     paths = [ds._resolve_semantic_path(split, phase, filename) for phase in
                              (data.semantic_before_phase, data.semantic_after_phase)]
                 row['semantic'] = [fingerprint(p) for p in paths]
+            if (getattr(cfg.train, 'protocol_id', '') == 'rsaca_local_position_20261109'
+                    and data.use_semantic_maps):
+                from utils.semantic_input_preflight import preflight_semantic_input
+                row['semantic_preflight'] = preflight_semantic_input(cfg, split, filename)
             rows.append(row)
     ref = read(data.eval_anno_path)
     reference_ids = {str(a['image_id']) for a in ref['annotations']}
@@ -236,7 +240,13 @@ def enforce_test_admission(project, cfg, checkpoint, result_path):
     and the low-level test entry point.  Legacy/P1 runs and validation
     diagnostics are left untouched.
     """
+    from utils.rsaca_position_protocol import position_root, enforce_position_admission
+    from utils.semantic_controls import POSITION_PROTOCOL
     protocol_id = str(getattr(cfg.train, 'protocol_id', 'legacy'))
+    protected = (position_root(Path(str(cfg.exp_dir)) / str(cfg.exp_name))
+                 or position_root(result_path) or position_root(checkpoint))
+    if protected is not None or protocol_id == POSITION_PROTOCOL:
+        return enforce_position_admission(project, cfg, checkpoint, result_path)
     if protocol_id == FOLLOWUP_PROTOCOL:
         raise ValueError('Follow-up development protocol is validation-only; formal test is prohibited')
     if protocol_id != PROTOCOL:

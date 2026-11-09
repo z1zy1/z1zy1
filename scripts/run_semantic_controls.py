@@ -295,11 +295,19 @@ def test_one(root, frozen, dataset, seed, arm, run):
             '--result_json', str(prediction)], run)
         identity = prediction_identity(prediction, annotation, expected_ids)
         identity['checkpoint_sha256'] = selected['best_snapshot_sha256']
-        write(identity_path, identity, immutable=True)
+        if cfg['train']['protocol_id'] == 'rsaca_local_position_20261109':
+            identity['scorer_identity'] = read(root/'protocol.json')['runtime']
+        if identity_path.exists():
+            if read(identity_path) != identity:
+                raise ValueError('Direct inference prediction identity differs')
+        else:
+            write(identity_path, identity, immutable=True)
     if not identity_path.exists():
         raise ValueError('Predictions without frozen-run provenance; audit interrupted inference before reuse')
     identity = prediction_identity(prediction, annotation, expected_ids)
     identity['checkpoint_sha256'] = selected['best_snapshot_sha256']
+    if cfg['train']['protocol_id'] == 'rsaca_local_position_20261109':
+        identity['scorer_identity'] = read(root/'protocol.json')['runtime']
     if identity != read(identity_path):
         raise ValueError('Test prediction/reference/checkpoint identity changed')
     score = run/'test_metrics.json'
@@ -331,6 +339,15 @@ def planned_command(stage, run):
 
 
 def main():
+    dispatch = argparse.ArgumentParser(add_help=False)
+    dispatch.add_argument('--protocol-id')
+    selected, remaining = dispatch.parse_known_args()
+    if selected.protocol_id == 'rsaca_local_position_20261109':
+        from scripts.run_rsaca_position import main as position_main
+        sys.argv = [sys.argv[0]] + remaining
+        return position_main()
+    if selected.protocol_id is not None:
+        raise ValueError('Use the registered position protocol ID or omit --protocol-id for legacy controls')
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--stage', required=True, choices=('audit', 'preflight', 'train', 'select', 'freeze', 'test', 'summary'))
     parser.add_argument('--root', default='experiments/'+PROTOCOL)

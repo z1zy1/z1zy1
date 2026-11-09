@@ -811,6 +811,8 @@ sync_wcsg_config_aliases(cfg)
 apply_train_step_aliases(cfg)
 validate_resolved_config(cfg, phase='train')
 from utils.semantic_controls import CONTROL_PROTOCOLS, FOLLOWUP_PROTOCOL
+from utils.rsaca_position_protocol import guard_position_training
+guard_position_training(cfg)
 if str(getattr(cfg.train, 'protocol_id', 'legacy')) == FOLLOWUP_PROTOCOL:
     from utils.semantic_followup import validate_training_registration
     validate_training_registration(cfg)

@@ -71,9 +71,12 @@ def main():
     parser.add_argument('--protocol-id', default='p1_rsaca_20260913',
                         choices=('p1_rsaca_20260913', 'p1_semantic_controls_20260915',
                                  'semantic_controls_followup_20261005',
-                                 'exploratory_norm_context_pre_20261015'))
+                                 'exploratory_norm_context_pre_20261015',
+                                 'rsaca_local_position_20261109'))
     args = parser.parse_args()
     exp_dir = os.path.abspath(args.exp_dir)
+    from utils.rsaca_position_protocol import guard_position_selection
+    guard_position_selection(exp_dir, args.protocol_id, args.csv, args.reference_json)
     if args.protocol_id in ('p1_semantic_controls_20260915', 'semantic_controls_followup_20261005'):
         protocol_root = os.path.dirname(os.path.dirname(exp_dir))
         if os.path.exists(os.path.join(protocol_root, 'frozen.json')):

@@ -294,6 +294,7 @@ __C.train.content_word_token_ids = []
 __C.train.paper_selection_mode = False
 __C.train.selection_strategy = 'spice_constrained_balanced'
 __C.train.protocol_id = 'legacy'
+__C.train.semantic_control_arm = ''
 __C.train.followup_registration = ''
 __C.train.followup_stage = ''
 __C.train.followup_config_sha256 = ''

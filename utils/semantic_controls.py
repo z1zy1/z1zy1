@@ -11,7 +11,9 @@ PROTOCOL = 'p1_semantic_controls_20260915'
 FOLLOWUP_PROTOCOL = 'semantic_controls_followup_20261005'
 EXPLORATORY_NORM_PROTOCOL = 'exploratory_norm_context_pre_20261015'
 POSITION_PROTOCOL = 'rsaca_local_position_20261109'
-CONTROL_PROTOCOLS = (PROTOCOL, FOLLOWUP_PROTOCOL)
+POSITION_ARMS = ('E0', 'E1', 'E2')
+POSITION_DATASETS = ('levir_mci', 'second_cc')
+CONTROL_PROTOCOLS = (PROTOCOL, FOLLOWUP_PROTOCOL, POSITION_PROTOCOL)
 P1_PROTOCOLS = ('p1_rsaca_20260913',) + CONTROL_PROTOCOLS + (EXPLORATORY_NORM_PROTOCOL,)
 ARMS = ('card', 'plain_fusion', 'rsaca', 'fixed_gate')
 DATASETS = ('levir_cc', 'levir_mci', 'second_cc')
@@ -128,6 +130,20 @@ def configuration(project, run_root, dataset, seed, arm, environment):
     return cfg
 
 
+def position_configuration(project, run_root, dataset, seed, arm, environment):
+    """Registered three-arm position comparison, reusing the E1 controls setup."""
+    if dataset not in POSITION_DATASETS or arm not in POSITION_ARMS:
+        raise ValueError('Unknown position dataset or arm')
+    cfg = configuration(project, run_root, dataset, seed,
+                        'card' if arm == 'E0' else 'rsaca', environment)
+    cfg.exp_dir = str(Path(run_root) / arm)
+    cfg.exp_name = '%s_%s_seed%d' % (arm, dataset, seed)
+    cfg.train.protocol_id = POSITION_PROTOCOL
+    cfg.train.semantic_control_arm = arm
+    cfg.model.semantic_fusion_local_position = 'sincos2d_kv' if arm == 'E2' else 'none'
+    return cfg
+
+
 def parameter_summary(module):
     return {name: {'shape': list(p.shape), 'dtype': str(p.dtype),
                    'sha256': hashlib.sha256(p.detach().cpu().contiguous().numpy().tobytes()).hexdigest()}
@@ -142,6 +158,7 @@ def build_control_models(cfg, card_factory, speaker_factory):
     seed = int(cfg.train.seed)
     public_cfg = copy.deepcopy(cfg)
     public_cfg.model.semantic_input_mode = 'none'
+    public_cfg.model.semantic_fusion_local_position = 'none'
     public_cfg.data.use_semantic_maps = False
     public_cfg.train.use_semantic_cross_attention = False
     with seeded_initialization(seed + 1001):

@@ -10,6 +10,7 @@ from torch.utils.data import DataLoader, Dataset
 from torch.utils.data.dataloader import default_collate
 
 from utils.dataset_config import feature_extraction_command
+from utils.semantic_input_preflight import requires_semantic_preflight, preflight_semantic_input
 from utils.semantic_tags import build_semantic_label, read_semantic_tags
 from utils.semantic_label import (
     ACTION_VOCAB,
@@ -158,6 +159,7 @@ class RCCDataset(Dataset):
 
         self.semantic_input_mode = str(getattr(cfg.model, 'semantic_input_mode', 'none')).lower()
         self.use_semantic_maps = _as_bool(getattr(cfg.data, 'use_semantic_maps', False)) or self.semantic_input_mode in ('early_fusion', 'cross_attention', 'hard_gate')
+        self.require_semantic_inputs = requires_semantic_preflight(cfg)
         self.semantic_map_root = getattr(cfg.data, 'semantic_map_root', '') or self.s_img_dir
         self.semantic_before_phase = getattr(cfg.data, 'semantic_before_phase', '') or 'sem/A'
         self.semantic_after_phase = getattr(cfg.data, 'semantic_after_phase', '') or 'sem/B'
@@ -238,6 +240,17 @@ class RCCDataset(Dataset):
             self.label_end_idx = h5_label_file['label_end_idx'][:]
         print('Max sequence length is %d' % self.max_seq_length)
         self._preflight_feature_paths()
+        self.semantic_input_records = []
+        if self.require_semantic_inputs:
+            if not self.use_semantic_maps:
+                raise ValueError('The semantic position protocol requires semantic maps for E1/E2.')
+            for img_idx in self.split_idxs[:self.num_samples]:
+                key = str(int(img_idx))
+                filename = self.idx_to_filename[key]
+                record = preflight_semantic_input(
+                    self.cfg, self.idx_to_split[key], filename, dataset=self)
+                self.semantic_input_records.append(dict(record, sample_id=filename,
+                                                        split=self.idx_to_split[key]))
 
         if self.use_tag_semantic_aux:
             self.semantic_labels_by_img_idx = self._build_semantic_labels_by_img_idx()
@@ -488,6 +501,12 @@ class RCCDataset(Dataset):
     def _load_semantic_pair(self, split_name, filename):
         if not self.use_semantic_maps:
             return None, None, None, None
+        if getattr(self, 'require_semantic_inputs', False):
+            # Re-read through the same check so a file removed/corrupted after
+            # construction cannot silently disable a complete batch neighbour.
+            _, tensors = preflight_semantic_input(
+                self.cfg, split_name, filename, dataset=self, return_tensors=True)
+            return tensors
         diff_path = self._resolve_semantic_diff_path(split_name, filename)
         diff = self._load_semantic_diff_map(diff_path) if diff_path else None
         confidence = None

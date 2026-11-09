@@ -209,7 +209,7 @@ class SemanticCrossAttentionFusion(nn.Module):
                  gate_whole_adapter=False, use_visual_consistency_gate=False,
                  use_visual_fallback=False, fusion_warmup_steps=0,
                  detach_reliability_inputs=False, fixed_nonempty_gate=False,
-                 fixed_gate_value=1.0, dense_local_access=False):
+                 fixed_gate_value=1.0, dense_local_access=False, local_position='none'):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_semantic_classes = max(1, int(num_semantic_classes))
@@ -235,6 +235,14 @@ class SemanticCrossAttentionFusion(nn.Module):
         if self.fixed_gate_value != 1.0 and not self.fixed_nonempty_gate:
             raise ValueError('A constant gate value requires fixed_nonempty_gate')
         self.dense_local_access = bool(dense_local_access)
+        self.local_position = str(local_position).lower()
+        if self.local_position not in ('none', 'sincos2d_kv'):
+            raise ValueError('Unknown semantic fusion local position: %s.' % self.local_position)
+        if self.local_position != 'none':
+            if not self.use_sparse_change_tokens or self.dense_local_access:
+                raise ValueError('Local position requires sparse local semantic access')
+            if self.embed_dim % 4:
+                raise ValueError('2D local position requires embed_dim divisible by four')
         if self.dense_local_access and not self.use_sparse_change_tokens:
             raise ValueError('Dense local access requires the RSACA token path')
         if self.fixed_nonempty_gate and not (use_reliability_gate and gate_whole_adapter):
@@ -345,8 +353,28 @@ class SemanticCrossAttentionFusion(nn.Module):
             changed = before_ids != after_ids
         return (valid & changed).flatten(1)
 
+    def _local_position_encoding(self, spatial_size, reference):
+        """Fixed grid-centre coordinates, row first, computed in FP32 without RNG/state."""
+        height, width = map(int, spatial_size)
+        if height <= 0 or width <= 0 or height * width != reference.size(1):
+            raise ValueError('Local position spatial size does not match semantic tokens')
+        axis_dim = self.embed_dim // 2
+        frequency = 10000.0 ** (
+            -torch.arange(0, axis_dim, 2, device=reference.device, dtype=torch.float32) / axis_dim
+        )
+
+        def axis_encoding(length):
+            centres = torch.arange(length, device=reference.device, dtype=torch.float32) + 0.5
+            phase = centres[:, None] * frequency[None, :]
+            return 0.1 * torch.stack((phase.sin(), phase.cos()), dim=-1).flatten(1)
+
+        rows, columns = axis_encoding(height), axis_encoding(width)
+        position = torch.cat((rows[:, None, :].expand(-1, width, -1),
+                              columns[None, :, :].expand(height, -1, -1)), dim=-1)
+        return position.reshape(1, height * width, self.embed_dim).to(dtype=reference.dtype)
+
     def _sparse_semantic_context(self, query, sem_diff_feat, change_mask, change_weights=None,
-                                 local_valid_mask=None):
+                                 local_valid_mask=None, spatial_size=None):
         # A learned fallback keeps attention well-defined for no-change images;
         # key_padding_mask excludes every unchanged semantic location.
         batch_size = query.size(0)
@@ -358,7 +386,12 @@ class SemanticCrossAttentionFusion(nn.Module):
         # Confidence scales changed tokens without changing the unchanged-token
         # padding rule. A hard mask alone cannot distinguish a noisy pseudo-mask
         # pixel from a reliable semantic label.
-        key_values = [sem_diff_feat * change_weights.unsqueeze(-1)]
+        local_content = sem_diff_feat
+        if self.local_position == 'sincos2d_kv':
+            if spatial_size is None:
+                raise ValueError('Local position requires the actual spatial size')
+            local_content = sem_diff_feat + self._local_position_encoding(spatial_size, sem_diff_feat)
+        key_values = [local_content * change_weights.unsqueeze(-1)]
         padding_masks = [~change_mask]
         if self.dense_local_access:
             # Only local access changes: global/fallback tokens, coverage and
@@ -454,7 +487,7 @@ class SemanticCrossAttentionFusion(nn.Module):
                 local_valid_mask = (before_valid & after_valid).flatten(1)
             sem_context, attn, coverage, semantic_summary, semantic_quality = self._sparse_semantic_context(
                 query, sem_diff_feat, change_mask, change_weights=change_weights,
-                local_valid_mask=local_valid_mask)
+                local_valid_mask=local_valid_mask, spatial_size=spatial_size)
         else:
             query_t = query.transpose(0, 1).contiguous()
             sem_diff_t = sem_diff_feat.transpose(0, 1).contiguous()
@@ -660,6 +693,7 @@ class CARD(nn.Module):
                     ),
                     fixed_gate_value=float(getattr(cfg.model, 'semantic_fusion_fixed_gate_value', 1.0)),
                     dense_local_access=bool(getattr(cfg.model, 'semantic_fusion_dense_local_access', False)),
+                    local_position=str(getattr(cfg.model, 'semantic_fusion_local_position', 'none')),
                     detach_reliability_inputs=bool(
                         getattr(cfg.model, 'semantic_fusion_detach_reliability_inputs', False)
                     ),

@@ -26,6 +26,7 @@ KEY_SWITCHES = [
     'semantic_detach_ratio',
     'semantic_fusion_gamma_max',
     'semantic_fusion_norm_mode',
+    'semantic_fusion_local_position',
     'semantic_fusion_sparse_change_tokens',
     'semantic_fusion_reliability_gate',
     'semantic_fusion_reliability_gate_bias',
@@ -141,6 +142,9 @@ def key_switch_summary(cfg, checkpoint_path=''):
         'semantic_fusion_gamma_max': float(getattr(cfg.model, 'semantic_fusion_gamma_max', 0.0)),
         'semantic_fusion_norm_mode': str(
             getattr(cfg.model, 'semantic_fusion_norm_mode', 'legacy_post_norm')
+        ),
+        'semantic_fusion_local_position': str(
+            getattr(cfg.model, 'semantic_fusion_local_position', 'none')
         ),
         'semantic_fusion_sparse_change_tokens': bool(
             getattr(cfg.model, 'semantic_fusion_sparse_change_tokens', False)

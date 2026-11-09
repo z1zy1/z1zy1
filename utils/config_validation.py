@@ -38,6 +38,15 @@ def validate_resolved_config(cfg, *, phase='train'):
             'model.semantic_input_mode=%r is invalid; expected one of %s.'
             % (semantic_mode, sorted(SEMANTIC_INPUT_MODES))
         )
+    local_position = str(getattr(cfg.model, 'semantic_fusion_local_position', 'none')).lower()
+    if local_position not in ('none', 'sincos2d_kv'):
+        raise ValueError('Unknown model.semantic_fusion_local_position: %s.' % local_position)
+    if local_position != 'none' and (
+        semantic_mode != 'cross_attention'
+        or not getattr(cfg.model, 'semantic_fusion_sparse_change_tokens', False)
+        or getattr(cfg.model, 'semantic_fusion_dense_local_access', False)
+    ):
+        raise ValueError('Local position requires sparse local cross-attention')
     if semantic_mode in ('early_fusion', 'cross_attention', 'hard_gate'):
         if int(getattr(cfg.data, 'num_semantic_classes', 0) or 0) <= 0:
             raise ValueError(

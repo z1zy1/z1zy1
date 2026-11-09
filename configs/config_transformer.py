@@ -49,6 +49,7 @@ __C.model.semantic_fusion_gate_whole_adapter = False
 __C.model.semantic_fusion_fixed_nonempty_gate = False
 __C.model.semantic_fusion_fixed_gate_value = 1.0
 __C.model.semantic_fusion_dense_local_access = False
+__C.model.semantic_fusion_local_position = 'none'
 __C.model.semantic_fusion_detach_reliability_inputs = False
 __C.model.semantic_fusion_visual_consistency_gate = False
 __C.model.semantic_fusion_visual_fallback = False

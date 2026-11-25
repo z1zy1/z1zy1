@@ -41,7 +41,7 @@ run_history --series "$series" --stage replay
 run_history --series "$series" --stage freeze
 ~~~
 
-按完整性、身份和重放结果选主系列，在任何新增正式 test 解码前登记。两批均合格时默认 O。仅 S 合格时指定 S 并记下原因。正式解码用官方 test、batch 1、greedy、eval、no_grad。两个 LEVIR 各 1,929 个 test ID，SECOND 1,227 个。预测与参考身份相符时，评分中断可续跑。孤立的新工件可通过 --retry-incomplete 保留到 failed_evaluations 再重试。
+按完整性、身份和重放结果选主系列，在任何新增正式 test 解码前登记。两批均合格时默认 O。仅 S 合格时指定 S 并记下原因。正式解码用官方 test、batch 1、greedy、eval、no_grad。两个 LEVIR 各 1,929 个 test ID，SECOND 1,227 个。预测与参考身份相符时，评分中断可续跑。解码和评分尝试写入 evaluation_attempts。孤立的新工件可通过 --retry-incomplete 保留到 failed_evaluations 再重试。
 
 ~~~bash
 run_supplement --stage primary --series O

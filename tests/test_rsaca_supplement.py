@@ -84,12 +84,22 @@ def test_historical_model_caption_equivalence(arm):
     old = namespace['CARD'](cfg)
     old.load_state_dict(detector.state_dict(), strict=True)
     assert set(old.state_dict()) == set(detector.state_dict())
+    assert all(torch.equal(old.state_dict()[name], value) for name, value in detector.state_dict().items())
     first, second = torch.randn(1, 16, 14, 14), torch.randn(1, 16, 14, 14)
     semantics = dict(semantic_diff=None if arm == 'card' else torch.randint(0, 5, (1, 14, 14)))
     for module in (old, detector, speaker):
         module.eval()
+    observed = []
+    if arm != 'card':
+        for module in (detector, old):
+            module.semantic_cross_fusion.attention.register_forward_hook(
+                lambda _, inputs, outputs: observed.append((inputs, outputs)))
     with torch.no_grad():
         actual, expected = detector(first, second, **semantics)[0], old(first, second, **semantics)[0]
+        if observed:
+            for current, historical in zip(observed[0], observed[1]):
+                assert len(current) == len(historical)
+                assert all(torch.equal(a, b) for a, b in zip(current, historical))
         assert torch.equal(actual, expected)
         assert torch.isfinite(actual).all()
         if arm in ('rsaca', 'fixed_gate'):
@@ -172,7 +182,17 @@ def test_cli_fixture_freeze_admission_scoring_and_retry(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match='Incomplete output'):
         enforce_test_admission(ROOT, cfg, checkpoint, prediction)
     filters = ('--dataset', 'levir_cc', '--arm', 'rsaca', '--seed', '1111')
-    invoke('test', *filters, '--retry-incomplete')
+    def broken_score(*args):
+        raise RuntimeError('fixture scorer interrupted')
+
+    with monkeypatch.context() as scored:
+        scored.setattr(runner, 'score_prediction', broken_score)
+        with pytest.raises(RuntimeError, match='scorer interrupted'):
+            invoke('test', *filters, '--retry-incomplete')
+    failure = next((root/'evaluation_attempts').glob('*/execution.json'))
+    assert read(failure)['status'] == 'failed'
+    assert enforce_test_admission(ROOT, cfg, checkpoint, prediction) == 'prediction_only'
+    invoke('test', *filters)
     assert list((root/'failed_evaluations').glob('*/evaluation/captions/test.json'))
     assert enforce_test_admission(ROOT, cfg, checkpoint, prediction) == 'complete'
     invoke('test', *filters)

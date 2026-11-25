@@ -49,9 +49,9 @@ O 的 36 次训练总计 16.47 GPU 小时，S 为 18.26 小时，均含周期验
 | LEVIR-MCI | 14,878,509 | 16,729,902 | 17,256,239 |
 | SECOND-CC-AUG | 14,956,557 | 16,807,950 | 17,334,287 |
 
-RSACA 相对 CARD 的下游增量为 2,377,730，三个条件均匹配论文附录。已生成 O 验证矢量统计图，并实际对齐和渲染 O LEVIR-MCI val seed 1111 四模型样例 val_000752.png。样例图的实际输入图核过档案哈希，包含五条参考及四条描述。
+RSACA 相对 CARD 的下游增量为 2,377,730，三个条件均匹配论文附录。已生成 R2 历史 test、S val、O val 矢量统计图。O 的 LEVIR-MCI 与 SECOND-CC-AUG 各渲染一个 val seed 1111 样例，地图核过档案哈希。SECOND 样例包含 A、B 两期图。
 
-CPU 审核由 scripts/run_semantic_tests.py 启动。Windows 下用同一 D 盘上的 basetemp 覆盖历史相对路径测试。fixture 的正式解码与 COCO 评分使用模拟实现。CPU 比较使用固定输入和共享权重，覆盖原模型及两项单因素消融，真实历史 S/O checkpoint 前向和全验证重放待服务器执行。
+CPU 审核由 scripts/run_semantic_tests.py 启动。固定代码上的全量回归为 123 通过、1 跳过，加入失败尝试记录后补充实验专项回归为 14 通过。Windows 使用 PYTHONUTF8=1 和同一 D 盘上的 basetemp。另用真实 CPU 模型权重核对严格加载，测试无全局 token 与完整 RSACA 的相同参数布局仍需配置匹配。服务器文档 Bash 片段通过 bash -n。fixture 的正式解码与 COCO 评分使用模拟实现。CPU 比较使用固定输入和共享权重，覆盖原模型及两项单因素消融，真实历史 S/O checkpoint 前向和全验证重放待服务器执行。
 
 ## 交付文件
 

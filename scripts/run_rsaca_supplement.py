@@ -203,7 +203,10 @@ def audit(args, root, mappings):
                    validation=statistics_report(rows, supplement.arms_for(series)))
     if args.metadata_only:
         return payload
-    payload['scorer'] = supplement.scorer_identity()
+    try:
+        payload['scorer'] = supplement.scorer_identity()
+    except (ImportError, OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
+        payload['errors'].append(dict(run='scorer', error=str(error)))
     return payload
 
 
@@ -349,18 +352,33 @@ def test_one(root, item, retry=False):
     if state == 'complete':
         return
     publish(cfg_path, item['config'])
-    if state == 'new':
-        execute('test_card_spot.py', '--cfg', cfg_path, '--model', 'sgc_card', '--snapshot_path',
-                item['checkpoint'], '--split', 'test', '--result_json', prediction)
-    observed = supplement.observed_prediction(run, cfg, item, manifest)
-    if observed != read(receipt)['identity']:
-        raise ValueError('Prediction receipt differs before scoring')
-    values = score_prediction(prediction, cfg.data.eval_anno_path)
-    if observed != supplement.observed_prediction(run, cfg, item, manifest):
-        raise ValueError('Prediction/reference changed during scoring')
-    write(score, dict(identity=observed, scorer=frozen['scorer'], metrics=values,
-                      split='test', scored_at=supplement.now()), immutable=True)
-    write(score_receipt, {'score_sha256': sha256_file(score)}, immutable=True)
+    attempts = root/'evaluation_attempts'
+    attempts.mkdir(parents=True, exist_ok=True)
+    attempt = Path(tempfile.mkdtemp(prefix=run.name+'-', dir=str(attempts)))
+    ledger = {
+        'run': str(run), 'checkpoint_sha256': item['checkpoint_sha256'], 'started_at': supplement.now(),
+        'frozen_sha256': sha256_file(root/'frozen.json'), 'stage': 'score',
+    }
+    try:
+        if state == 'new':
+            ledger['stage'] = 'decode'
+            execute('test_card_spot.py', '--cfg', cfg_path, '--model', 'sgc_card', '--snapshot_path',
+                    item['checkpoint'], '--split', 'test', '--result_json', prediction)
+            ledger['stage'] = 'score'
+        observed = supplement.observed_prediction(run, cfg, item, manifest)
+        if observed != read(receipt)['identity']:
+            raise ValueError('Prediction receipt differs before scoring')
+        values = score_prediction(prediction, cfg.data.eval_anno_path)
+        if observed != supplement.observed_prediction(run, cfg, item, manifest):
+            raise ValueError('Prediction/reference changed during scoring')
+        write(score, dict(identity=observed, scorer=frozen['scorer'], metrics=values,
+                          split='test', scored_at=supplement.now()), immutable=True)
+        write(score_receipt, {'score_sha256': sha256_file(score)}, immutable=True)
+    except (Exception, KeyboardInterrupt) as error:
+        write(attempt/'execution.json', dict(ledger, status='failed', error=repr(error),
+                                             ended_at=supplement.now()), immutable=True)
+        raise
+    write(attempt/'execution.json', dict(ledger, status='completed', ended_at=supplement.now()), immutable=True)
 
 
 def main():

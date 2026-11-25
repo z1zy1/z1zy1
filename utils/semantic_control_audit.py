@@ -35,7 +35,7 @@ def metrics(payload):
     return result
 
 
-def statistics_report(rows):
+def statistics_report(rows, arms=ARMS, extra_comparisons=()):
     """Rows: dataset, seed, arm, metrics. Missing runs never become zeroes."""
     report = {'datasets': {}, 'mean_goal': None, 'positive_seed_metrics': 0,
               'paired_seed_metrics': 0, 'statistical_significance': 'not inferred from three seeds'}
@@ -48,7 +48,7 @@ def statistics_report(rows):
                     raise ValueError('Duplicate run identity')
                 values[key] = metrics(r['metrics'])
         item = {'arms': {}, 'paired': {}}
-        for arm in ARMS:
+        for arm in arms:
             seeds = sorted(s for a, s in values if a == arm)
             if not seeds:
                 continue
@@ -56,8 +56,9 @@ def statistics_report(rows):
                 'mean': {m: statistics.mean(values[arm, s][m] for s in seeds) for m in METRICS},
                 'sample_std': {m: statistics.stdev(values[arm, s][m] for s in seeds)
                                if len(seeds) > 1 else None for m in METRICS}}
-        for candidate, baseline in (('plain_fusion', 'card'), ('rsaca', 'card'),
-                                    ('rsaca', 'plain_fusion'), ('rsaca', 'fixed_gate')):
+        comparisons = (('plain_fusion', 'card'), ('rsaca', 'card'),
+                       ('rsaca', 'plain_fusion'), ('rsaca', 'fixed_gate')) + tuple(extra_comparisons)
+        for candidate, baseline in comparisons:
             seeds = sorted(set(s for a, s in values if a == candidate) &
                            set(s for a, s in values if a == baseline))
             if not seeds:
@@ -120,7 +121,7 @@ def source_identity(project):
     return {'commit': sha, 'execution_files': files, 'execution_sha256': stable_hash(files), 'dirty_execution': bool(dirty)}
 
 
-def input_manifest(cfg, source_kind='unknown'):
+def input_manifest(cfg, source_kind='unknown', *, hash_cache=None, validate_maps=False):
     """Resolve each split/sample using the dataset's actual resolution methods.
 
     No dataset constructor: avoids cache generation and caption/label leakage.
@@ -136,7 +137,18 @@ def input_manifest(cfg, source_kind='unknown'):
     ds.s_img_dir = data.semantic_img_dir
     ds.semantic_diff_root, ds.semantic_diff_phase = data.semantic_diff_root, data.semantic_diff_phase
     ds._missing_semantic_warnings = 0
-    cache, rows, missing = {}, [], []
+    cache = {} if hash_cache is None else hash_cache
+    rows, missing = [], []
+    if validate_maps:
+        ds.cfg, ds.dataset_name = cfg, data.dataset
+        ds.mask_ignore_index = cfg.train.mask_ignore_index
+        ds.use_semantic_maps = data.use_semantic_maps
+        ds.semantic_diff_only = data.semantic_diff_only
+        ds.semantic_diff_binary = data.semantic_diff_binary
+        ds.semantic_unknown_change_class = data.semantic_unknown_change_class
+        ds.semantic_before_phase, ds.semantic_after_phase = data.semantic_before_phase, data.semantic_after_phase
+        ds.semantic_diff_confidence_root = data.semantic_diff_confidence_root
+        ds.semantic_diff_confidence_phase = data.semantic_diff_confidence_phase
 
     def fingerprint(path):
         if not path or not Path(path).is_file():
@@ -176,6 +188,9 @@ def input_manifest(cfg, source_kind='unknown'):
                     paths = [ds._resolve_semantic_path(split, phase, filename) for phase in
                              (data.semantic_before_phase, data.semantic_after_phase)]
                 row['semantic'] = [fingerprint(p) for p in paths]
+                if validate_maps and all(paths):
+                    from utils.rsaca_supplement import validate_semantic_sample
+                    validate_semantic_sample(ds, split, filename, paths)
             rows.append(row)
     ref = read(data.eval_anno_path)
     reference_ids = {str(a['image_id']) for a in ref['annotations']}
@@ -237,7 +252,11 @@ def enforce_test_admission(project, cfg, checkpoint, result_path):
     diagnostics are left untouched.
     """
     protocol_id = str(getattr(cfg.train, 'protocol_id', 'legacy'))
-    if protocol_id == FOLLOWUP_PROTOCOL:
+    from utils.semantic_controls import EXPLORATORY_NORM_PROTOCOL, SUPPLEMENT_PROTOCOL
+    if protocol_id == SUPPLEMENT_PROTOCOL:
+        from utils.rsaca_supplement import admit
+        return admit(project, cfg, checkpoint, result_path)
+    if protocol_id in (FOLLOWUP_PROTOCOL, EXPLORATORY_NORM_PROTOCOL):
         raise ValueError('Follow-up development protocol is validation-only; formal test is prohibited')
     if protocol_id != PROTOCOL:
         return 'not_controls_protocol'
@@ -286,6 +305,9 @@ def enforce_test_admission(project, cfg, checkpoint, result_path):
     if not manifest_path.is_file():
         raise ValueError('Frozen input manifest is missing')
     manifest = read(manifest_path)
+    if not cfg.data.use_semantic_maps:
+        for row in manifest['samples']:
+            row['semantic'] = []
     actual_manifest = input_manifest(cfg, manifest.get('source_kind', 'unknown'))
     if actual_manifest != manifest or actual_manifest.get('missing'):
         raise ValueError('Frozen input manifest no longer matches dataset resolution')

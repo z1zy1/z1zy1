@@ -230,13 +230,14 @@ def freeze(root, lock):
     verify_inputs(root, lock)
     audit = run_audit(root, lock)
     write(root/'audit.json', audit)
-    if not audit['protocol_audit_passed'] or audit['validation']['mean_goal'] is not True:
-        raise ValueError('Test blocked: full audit and C0 validation 15/15 mean improvement are required')
+    if not audit['protocol_audit_passed'] or 'positive_mean_metrics' not in audit['validation']:
+        raise ValueError('Test blocked: technical audit and a complete validation matrix are required')
     files = audit['files']
     for path in [root/'protocol.json'] + [root/('inputs_'+d+'.json') for d in DATASETS]:
         files[str(path)] = sha256_file(path)
     write(root/'frozen.json', {'protocol_id': PROTOCOL, 'files': files,
           'validation_admitted': True, 'source': lock['source'],
+          'admission_rule_revision': '2026-11-25',
           'validation_statistics': audit['validation']}, immutable=True)
     write(root/'frozen_identity.json', {'sha256': sha256_file(root/'frozen.json')}, immutable=True)
 

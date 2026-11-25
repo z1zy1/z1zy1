@@ -10,10 +10,12 @@ from types import SimpleNamespace
 PROTOCOL = 'p1_semantic_controls_20260915'
 FOLLOWUP_PROTOCOL = 'semantic_controls_followup_20261005'
 EXPLORATORY_NORM_PROTOCOL = 'exploratory_norm_context_pre_20261015'
-CONTROL_PROTOCOLS = (PROTOCOL, FOLLOWUP_PROTOCOL)
+SUPPLEMENT_PROTOCOL = 'rsaca_paper_supplement_20261125'
+CONTROL_PROTOCOLS = (PROTOCOL, FOLLOWUP_PROTOCOL, SUPPLEMENT_PROTOCOL)
 P1_PROTOCOLS = ('p1_rsaca_20260913',) + CONTROL_PROTOCOLS + (EXPLORATORY_NORM_PROTOCOL,)
 ARMS = ('card', 'plain_fusion', 'rsaca', 'fixed_gate')
 DATASETS = ('levir_cc', 'levir_mci', 'second_cc')
+ABLATIONS = ('dense_local', 'no_global')
 SEEDS = (1111, 2222, 3333)
 METRICS = ('Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE')
 REFERENCE = dict(zip(METRICS, (0.4375, 0.3377, 0.6942, 1.2299, 0.2607)))
@@ -127,6 +129,19 @@ def configuration(project, run_root, dataset, seed, arm, environment):
     return cfg
 
 
+def supplement_configuration(project, root, dataset, seed, arm, environment):
+    base = 'rsaca' if arm in ABLATIONS else arm
+    cfg = configuration(project, root, dataset, seed, base, environment)
+    cfg.train.protocol_id = SUPPLEMENT_PROTOCOL
+    cfg.exp_dir = str(Path(root)/arm)
+    cfg.exp_name = '%s_%s_seed%d' % (arm, dataset, seed)
+    if arm == 'dense_local':
+        cfg.model.semantic_fusion_dense_local_access = True
+    if arm == 'no_global':
+        cfg.model.semantic_fusion_global_token = False
+    return cfg
+
+
 def parameter_summary(module):
     return {name: {'shape': list(p.shape), 'dtype': str(p.dtype),
                    'sha256': hashlib.sha256(p.detach().cpu().contiguous().numpy().tobytes()).hexdigest()}
@@ -153,6 +168,7 @@ def build_control_models(cfg, card_factory, speaker_factory):
         for key in ('semantic_fusion_sparse_change_tokens', 'semantic_fusion_reliability_gate',
                     'semantic_fusion_global_token', 'semantic_fusion_gate_whole_adapter'):
             template_cfg.model[key] = True
+        template_cfg.model.semantic_fusion_dense_local_access = False
         template_cfg.model.semantic_fusion_fixed_nonempty_gate = False
         template_cfg.model.semantic_fusion_fixed_gate_value = 1.0
         with seeded_initialization(seed + 3001):

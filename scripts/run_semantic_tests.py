@@ -16,7 +16,7 @@ def main():
     return pytest.main(['-q', '-p', 'no:cacheprovider',
         'tests/test_semantic_followup.py', 'tests/test_semantic_controls.py',
         'tests/test_semantic_control_admission.py', 'tests/test_semantic_diagnostics.py',
-        'tests/test_p1_checkpoint_integrity.py'] + sys.argv[1:])
+        'tests/test_p1_checkpoint_integrity.py', 'tests/test_rsaca_supplement.py'] + sys.argv[1:])
 
 
 if __name__ == '__main__':

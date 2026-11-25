@@ -61,6 +61,37 @@ def finite_metric(row, name):
     return value
 
 
+def validation_rows(csv_path, reference, exp_dir=None):
+    """Read and score the ten prescribed validation observations."""
+    rows = []
+    with open(csv_path, newline='', encoding='utf-8-sig') as handle:
+        for row_number, row in enumerate(csv.DictReader(handle), start=2):
+            if not any(str(value or '').strip() for value in row.values()):
+                continue
+            try:
+                iteration = int(row.get('iter', ''))
+            except (TypeError, ValueError):
+                raise ValueError('row %d has invalid iter' % row_number)
+            snapshot = row['snapshot_path']
+            integrity = {}
+            if exp_dir is not None:
+                snapshot, digest, size = resolve(snapshot, exp_dir, iteration)
+                if not snapshot:
+                    raise ValueError('row %d has no valid checksummed snapshot for iter %d'
+                                     % (row_number, iteration))
+                integrity.update(snapshot_sha256=digest, snapshot_size_bytes=size)
+            values = {name: finite_metric(row, name) for name in METRICS}
+            score = sum(math.log(max(values[name], 1e-12) / reference[name])
+                        for name in METRICS) / len(METRICS)
+            rows.append({'row': row_number, 'iter': iteration,
+                         'snapshot_path': snapshot, 'metrics': values, 'score': score, **integrity})
+    actual_steps = sorted(row['iter'] for row in rows)
+    if actual_steps != list(range(1000, 10001, 1000)):
+        raise ValueError('P1 validation grid must contain each step 1000..10000 exactly once; got %s'
+                         % actual_steps)
+    return rows
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--exp-dir', required=True)
@@ -71,10 +102,11 @@ def main():
     parser.add_argument('--protocol-id', default='p1_rsaca_20260913',
                         choices=('p1_rsaca_20260913', 'p1_semantic_controls_20260915',
                                  'semantic_controls_followup_20261005',
-                                 'exploratory_norm_context_pre_20261015'))
+                                 'exploratory_norm_context_pre_20261015', 'rsaca_paper_supplement_20261125'))
     args = parser.parse_args()
     exp_dir = os.path.abspath(args.exp_dir)
-    if args.protocol_id in ('p1_semantic_controls_20260915', 'semantic_controls_followup_20261005'):
+    if args.protocol_id in ('p1_semantic_controls_20260915', 'semantic_controls_followup_20261005',
+                            'rsaca_paper_supplement_20261125'):
         protocol_root = os.path.dirname(os.path.dirname(exp_dir))
         if os.path.exists(os.path.join(protocol_root, 'frozen.json')):
             raise ValueError('Semantic controls are frozen; reselection is forbidden')
@@ -100,35 +132,7 @@ def main():
     if any(not math.isfinite(reference[key]) or reference[key] <= 0 for key in METRICS):
         raise ValueError('P1 reference values must be finite and strictly positive')
     reference_sha = hashlib.sha256(json.dumps(reference, sort_keys=True, separators=(',', ':')).encode('utf-8')).hexdigest()
-    rows = []
-    with open(csv_path, newline='', encoding='utf-8-sig') as handle:
-        for row_number, row in enumerate(csv.DictReader(handle), start=2):
-            if not any(str(value or '').strip() for value in row.values()):
-                continue
-            try:
-                iteration = int(row.get('iter', ''))
-            except (TypeError, ValueError):
-                raise ValueError('row %d has invalid iter' % row_number)
-            snapshot, snapshot_sha256, snapshot_size = resolve(
-                row.get('snapshot_path', ''), exp_dir, iteration)
-            if not snapshot:
-                raise ValueError(
-                    'row %d has no valid checksummed snapshot for iter %d' % (row_number, iteration))
-            metrics = {name: finite_metric(row, name) for name in METRICS}
-            score = sum(math.log(max(metrics[name], 1e-12) / reference[name]) for name in METRICS) / len(METRICS)
-            rows.append({
-                'row': row_number, 'iter': iteration, 'snapshot_path': snapshot,
-                'snapshot_sha256': snapshot_sha256, 'snapshot_size_bytes': snapshot_size,
-                'metrics': metrics, 'score': score,
-            })
-    if not rows:
-        raise RuntimeError('no validation rows in %s' % csv_path)
-    actual_steps = [row['iter'] for row in rows]
-    expected_steps = list(range(1000, 10001, 1000))
-    if sorted(actual_steps) != expected_steps:
-        raise ValueError(
-            'P1 validation grid must contain each step 1000..10000 exactly once; got %s'
-            % sorted(actual_steps))
+    rows = validation_rows(csv_path, reference, exp_dir)
     # Higher score wins; ties are resolved by the earlier validation step.
     best = sorted(rows, key=lambda item: (-item['score'], item['iter']))[0]
     selected_sha256 = best['snapshot_sha256']

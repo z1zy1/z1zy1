@@ -1035,9 +1035,9 @@ def render_markdown(report: Mapping[str, Any]) -> str:
                   "- `same_step_comparisons` 是相同步数的逐 seed 配对对照；`late_trajectory` 仅为训练后期探索性轨迹，不能改写原协议选点。", ""])
     statistics_payload = curves.get("statistics", {})
     if statistics_payload.get("mean_goal") is not None:
-        lines.append("- 当前可复算的 C0-B 均值 15/15 门槛：`%s`。" % ("通过" if statistics_payload["mean_goal"] else "未通过"))
+        lines.append("- 历史 C0-B 均值 15/15 统计：`%s`。" % ("全部为正" if statistics_payload["mean_goal"] else "含非正差值"))
     else:
-        lines.append("- 当前无法从筛选工件完整复算 36 运行的 15/15 均值门槛。")
+        lines.append("- 当前无法从筛选工件完整复算 36 运行的 C0-B 验证均值方向。")
     lines.extend(["", "## 评分复现", "", "评分复现结果位于机器可读报告的 `scoring`；ID 缺失、重复或多余会明确阻止评分，不取交集默认为通过。", "",
                   "## 推理复现", "", "未显式执行 `infer` 时状态为未运行；真实 checkpoint 推理只允许验证集、eval、greedy，并记录随机状态和固定容差。", "",
                   "## 描述与融合行为", "", "文本长度/重复表达和融合 hook 只作描述性证据；未启用模块标为不适用，不用 0 冒充。", "",

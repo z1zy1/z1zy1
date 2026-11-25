@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import random
+import sys
 import textwrap
 
 
@@ -197,4 +198,9 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    if '--supplement' in sys.argv:
+        from rsaca_supplement_cases import cases_main
+        sys.argv.remove('--supplement')
+        cases_main()
+    else:
+        main()

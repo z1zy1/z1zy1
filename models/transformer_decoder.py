@@ -226,7 +226,7 @@ class DynamicSpeaker(nn.Module):
 
     def sample(
             self,
-            encoder_output, start_idx=2, unk_idx=1, sample_max=0):
+            encoder_output, start_idx=2, unk_idx=1, sample_max=0, fixed_steps=None):
         """The first few args are the same to the input to the forward_step func
         Note:
             1, Copy the prev_ms each word generation step, as the func will modify this value,
@@ -241,7 +241,9 @@ class DynamicSpeaker(nn.Module):
         text_input_ids = encoder_output.new_zeros((bsz, max_cap_len), dtype=torch.long)
         text_masks = encoder_output.new_zeros(bsz, max_cap_len).float()  # zeros
         next_symbols = torch.LongTensor([start_idx] * bsz)  # (N, )
-        for dec_idx in range(max_cap_len):
+        if fixed_steps is not None and not 1 <= fixed_steps <= max_cap_len:
+            raise ValueError('fixed_steps must be within decoder sequence length')
+        for dec_idx in range(max_cap_len if fixed_steps is None else fixed_steps):
             text_input_ids[:, dec_idx] = next_symbols
             text_masks[:, dec_idx] = 1
             decoder_outputs, attention_weight = self.core(text_input_ids, text_masks, encoder_output, diagonal_mask=True)
@@ -263,7 +265,7 @@ class DynamicSpeaker(nn.Module):
             next_symbols = next_symbols * unfinished.type_as(next_symbols)
 
             # quit loop if all sequences have finished
-            if unfinished.sum() == 0:
+            if fixed_steps is None and unfinished.sum() == 0:
                 break
         return text_input_ids, attention_weight
 

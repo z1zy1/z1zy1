@@ -221,18 +221,18 @@ def test_selector_itself_rejects_frozen_protocol(tmp_path):
     assert result.returncode != 0 and 'reselection is forbidden' in result.stderr
 
 
-def test_freeze_requires_complete_audit_and_positive_means(tmp_path, monkeypatch):
+def test_freeze_requires_complete_audit_and_validation_matrix(tmp_path, monkeypatch):
     monkeypatch.setattr(runner, 'verify_inputs', lambda *args: None)
-    for audit_passed, goal in ((False, True), (True, False), (True, None)):
+    for audit_passed, goal in ((False, True), (True, None)):
         monkeypatch.setattr(runner, 'run_audit', lambda *args: {
-            'protocol_audit_passed': audit_passed, 'validation': {'mean_goal': goal}})
+            'protocol_audit_passed': audit_passed, 'validation': {'mean_goal': goal, **({'positive_mean_metrics': 15} if goal else {})}})
         with pytest.raises(ValueError, match='Test blocked'):
             runner.freeze(tmp_path, {})
         assert not (tmp_path/'frozen.json').exists()
     file = tmp_path/'checkpoint'
     file.write_text('original')
     monkeypatch.setattr(runner, 'run_audit', lambda *args: {
-        'protocol_audit_passed': True, 'validation': {'mean_goal': True}, 'files': {str(file): sha256_file(file)}})
+        'protocol_audit_passed': True, 'validation': {'mean_goal': False, 'positive_mean_metrics': 0}, 'files': {str(file): sha256_file(file)}})
     write(tmp_path/'protocol.json', {})
     for d in DATASETS:
         write(tmp_path/('inputs_'+d+'.json'), {})

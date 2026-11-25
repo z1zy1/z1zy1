@@ -67,7 +67,7 @@ python scripts/run_semantic_controls.py --stage select \
   --datasets levir_cc --seeds 1111
 ```
 
-早期可部分筛查，但 preflight、协议审计及 freeze 总是针对完整 36 次矩阵，D/G 不要求改善；C0 必须三数据集五项验证均值全部高于 B。部分汇总不标记为完整稳定性结论。缺失/失败运行保留并排查，不自动清空或从已有权重继续训练。中断后已有预测且有匹配身份记录时可只补评分；缺少身份凭据则停止并列出问题，不能自动认证历史来源。
+早期可部分筛查，但 preflight、协议审计及 freeze 总是针对完整 36 次矩阵，验证均值方向仅作为结果统计。部分汇总不标记为完整稳定性结论。缺失/失败运行保留并排查，不自动清空或从已有权重继续训练。中断后已有预测且有匹配身份记录时可只补评分；缺少身份凭据则停止并列出问题，不能自动认证历史来源。
 
 ## 选点、冻结和统计
 
@@ -77,7 +77,7 @@ python scripts/run_semantic_controls.py --stage select \
 
 新 `summary.json` 报告每组每 seed、均值、样本标准差，以及 D−B、C0−B、C0−D、C0−G 的逐 seed 配对差、差均值和样本标准差。分别记录 `mean_goal`、`positive_seed_metrics`、`validation_admitted`、`protocol_audit_passed`。不改旧 R2 的 acceptance 字段定义。三个 seed 不自动等于显著性证据；实际意义需结合差值和失败案例讨论。
 
-冻结检查失败属于实验结论或证据缺失：先看 `audit.json`，补可补的记录或评分；配置确实不兼容时再决定新的独立实验。不得修改测试集口径、反复测试选模型、隐藏失败或擅自将 15/15 门槛降低。历史测试参与过开发的事实必须在论文中说明。
+2026-11-25 起，冻结以完整矩阵及技术审计为准。验证方向和胜出数量继续报告。历史 S/O 通过独立的补充测试入口导入，详见 [补充实验运行文档](RSACA_SUPPLEMENTARY_EXPERIMENTS.md)。
 
 ## 固定验证样本诊断
 

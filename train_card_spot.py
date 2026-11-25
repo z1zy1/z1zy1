@@ -5,6 +5,7 @@ import json
 import argparse
 import time
 import shutil
+from pathlib import Path
 import numpy as np
 import torch
 torch.backends.cudnn.enabled = False
@@ -810,10 +811,13 @@ apply_cli_overrides(args, cfg)
 sync_wcsg_config_aliases(cfg)
 apply_train_step_aliases(cfg)
 validate_resolved_config(cfg, phase='train')
-from utils.semantic_controls import CONTROL_PROTOCOLS, FOLLOWUP_PROTOCOL
+from utils.semantic_controls import CONTROL_PROTOCOLS, FOLLOWUP_PROTOCOL, SUPPLEMENT_PROTOCOL
 if str(getattr(cfg.train, 'protocol_id', 'legacy')) == FOLLOWUP_PROTOCOL:
     from utils.semantic_followup import validate_training_registration
     validate_training_registration(cfg)
+if cfg.train.protocol_id == SUPPLEMENT_PROTOCOL:
+    from utils.rsaca_supplement import validate_training
+    validate_training(Path(__file__).resolve().parent, cfg, args.output_dir)
 if str(getattr(cfg.train, 'protocol_id', 'legacy')) in CONTROL_PROTOCOLS:
     if os.path.exists(os.path.join(cfg.exp_dir, '..', 'frozen.json')):
         raise ValueError('Semantic controls are frozen; further training is forbidden')
@@ -1709,6 +1713,8 @@ while t < cfg.train.max_iter:
                         sent_pos = gen_sents_pos[val_j]
 
                         image_id = os.path.basename(d_img_paths[val_j])
+                        if cfg.train.protocol_id == SUPPLEMENT_PROTOCOL and image_id in result_sents_pos:
+                            raise ValueError('Duplicate validation sample ID: '+image_id)
                         result_sents_pos[image_id] = sent_pos
 
                         message = '%s results:\n' % d_img_paths[val_j]

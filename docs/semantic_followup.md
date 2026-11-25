@@ -1,6 +1,6 @@
 # 验证阶段的后续实验入口
 
-`scripts/run_semantic_followup.py` 实现修订方案 P0—P3，使用独立的 `semantic_controls_followup_20261005` 协议。原 `run_semantic_controls.py`、旧锁、36 运行矩阵、1000—10000 选点网格及15/15准入规则保留。本入口没有冻结/test命令；底层配置验证和 test admission 同样拒绝新协议的 test。
+`scripts/run_semantic_followup.py` 实现修订方案 P0—P3，使用独立的 `semantic_controls_followup_20261005` 协议。本协议保留旧锁、36 运行矩阵与 1000—10000 选点网格。四模型正式测试的 2026-11-25 修订见 [补充实验运行文档](RSACA_SUPPLEMENTARY_EXPERIMENTS.md)。本入口没有冻结/test命令；底层配置验证和 test admission 同样拒绝新协议的 test。
 
 本次交付是代码及 CPU/合成工件测试。真实服务器复评分、完整解码、训练和人工标注均未运行，不改变上一批11/15、34/45结论。
 

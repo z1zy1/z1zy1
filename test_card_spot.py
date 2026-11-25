@@ -16,7 +16,7 @@ from models.CARD import CARD
 from models.transformer_decoder import DynamicSpeaker
 from utils.dataset_config import apply_dataset_cli_overrides
 from utils.config_validation import validate_resolved_config
-from utils.checkpointing import split_model_states
+from utils.checkpointing import load_checkpoint_file, split_model_states
 from utils.experiment_tracking import save_resolved_config, sync_wcsg_config_aliases, write_single_row_csv
 from utils.experiment_runtime import (
     StructuredMetricLogger,
@@ -27,11 +27,12 @@ from utils.experiment_runtime import (
 )
 from utils.semantic_label import build_content_word_token_ids
 from utils.semantic_control_audit import enforce_test_admission
+from utils.semantic_controls import (
+    CONTROL_PROTOCOLS, EXPLORATORY_NORM_PROTOCOL, PROTOCOL, SUPPLEMENT_PROTOCOL,
+)
 
-from utils.utils import AverageMeter, accuracy, set_mode, load_checkpoint, \
+from utils.utils import AverageMeter, accuracy, set_mode, \
                         decode_sequence, decode_sequence_transformer, coco_gen_format_save
-from utils.vis_utils import visualize_att
-from tqdm import tqdm
 
 PROJECT = Path(os.environ.get('PROJECT_DIR') or Path(__file__).resolve().parent).resolve()
 
@@ -349,6 +350,9 @@ else:
     caption_output_path = os.path.join(eval_output_dir, 'captions', args.split)
     result_save_path_pos = os.path.join(caption_output_path, 'sc_results.json')
 
+supplement_protocol = cfg.train.protocol_id == SUPPLEMENT_PROTOCOL
+if supplement_protocol:
+    eval_output_dir = output_dir
 att_output_path = os.path.join(eval_output_dir, 'attentions', args.split)
 
 snapshot_path_arg = args.snapshot_path or args.checkpoint
@@ -365,6 +369,12 @@ elif args.snapshot is not None:
 else:
     raise ValueError('Either --snapshot, --snapshot_path, or --checkpoint must be provided.')
 
+if supplement_protocol and args.gpu != -1:
+    raise ValueError('Supplement evaluation uses the registered GPU configuration')
+if supplement_protocol and args.split == 'val':
+    from utils.rsaca_supplement import admit_replay
+    admit_replay(PROJECT, cfg, snapshot_full_path, result_save_path_pos)
+
 admission = enforce_test_admission(PROJECT, cfg, snapshot_full_path, result_save_path_pos) \
     if args.split == 'test' else 'not_controls_protocol'
 if admission == 'complete':
@@ -374,6 +384,14 @@ if admission == 'prediction_only':
     print('Matching predictions exist without scoring; skipping inference so the scorer may resume.')
     raise SystemExit(0)
 
+checkpoint = load_checkpoint_file(snapshot_full_path)
+if args.split == 'test':
+    checkpoint_cfg = checkpoint.get('config') or {}
+    training_protocol = checkpoint_cfg.get('train', {}).get('protocol_id')
+    if training_protocol in CONTROL_PROTOCOLS + (EXPLORATORY_NORM_PROTOCOL,):
+        if training_protocol != cfg.train.protocol_id and not (
+                supplement_protocol and training_protocol == PROTOCOL):
+            raise ValueError('Checkpoint training protocol cannot be relabeled for test')
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 install_error_hook(output_dir)
@@ -397,7 +415,6 @@ if args.split == 'test' and not os.path.exists(test_metrics_csv_path):
         {'checkpoint_path': '', 'Bleu_1': '', 'Bleu_2': '', 'Bleu_3': '', 'Bleu_4': '', 'METEOR': '', 'ROUGE_L': '', 'CIDEr': '', 'SPICE': '', 'Mask_Precision': '', 'Mask_Recall': '', 'Mask_F1': '', 'Mask_IoU': '', 'Mask_mIoU': ''},
         fieldnames=['checkpoint_path', 'Bleu_1', 'Bleu_2', 'Bleu_3', 'Bleu_4', 'METEOR', 'ROUGE_L', 'CIDEr', 'SPICE', 'Mask_Precision', 'Mask_Recall', 'Mask_F1', 'Mask_IoU', 'Mask_mIoU'],
     )
-checkpoint = load_checkpoint(snapshot_full_path)
 change_detector_state, speaker_state = split_model_states(checkpoint)
 stage_logger.info('Loaded checkpoint for %s inference: %s', args.split, snapshot_full_path)
 
@@ -414,9 +431,14 @@ if is_content_word_weighted_ce_enabled(cfg):
 else:
     cfg.train.content_word_token_ids = []
 
+from tqdm import tqdm
+
 # Load modules
 change_detector = CARD(cfg)
-load_change_detector_state_compat(change_detector, change_detector_state)
+if supplement_protocol:
+    change_detector.load_state_dict(change_detector_state, strict=True)
+else:
+    load_change_detector_state_compat(change_detector, change_detector_state)
 change_detector = change_detector.to(device)
 
 speaker = DynamicSpeaker(cfg)
@@ -497,12 +519,18 @@ with torch.no_grad():
                 image_id = os.path.basename(str(d_img_paths[j]))
             else:
                 image_id = str(i * cfg.data.batch_size + j)
+            if supplement_protocol and image_id in result_sents_pos:
+                raise ValueError('Duplicate decoded sample ID: '+image_id)
             result_sents_pos[image_id] = sent_pos
             image_num = image_id.split('.')[0]
 
     test_iter_end_time = time.time() - test_iter_start_time
     stage_logger.info('%s inference took %.4f seconds', args.split, test_iter_end_time)
-    coco_gen_format_save(result_sents_pos, result_save_path_pos)
+    if supplement_protocol and args.split == 'test':
+        from utils.rsaca_supplement import publish_prediction
+        publish_prediction(cfg, result_save_path_pos, result_sents_pos)
+    else:
+        coco_gen_format_save(result_sents_pos, result_save_path_pos)
     stage_logger.info('Saved captions to %s', result_save_path_pos)
     aux_metrics = {}
     averaged_mask_metrics = average_metric_list(mask_metric_items)
